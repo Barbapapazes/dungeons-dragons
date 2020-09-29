@@ -4,7 +4,7 @@ class Person():
     def __init__(self,nom="Joe",STR=10,DEX=10,CON=10,INT=10,WIS=10,CHA=10,PV=500,PM=50):
         self.nom = nom
         self.STR = STR      #force
-        self.DEX = DEX      #dexterité
+        self.DEX = DEX      #dexterite
         self.CON = CON      #
         self.INT = INT      #intelligence
         self.WIS = WIS      #chance
@@ -100,9 +100,3 @@ class Person():
     def getMax_PM(self):
         return self.max_PM
 
-sosso=Person()
-akim=Person("akim",5,5,5,5,5,5,100,25)
-print(sosso.getPV())
-sosso.dammage(6000)
-print(sosso.getPV())
-print(sosso.IsDead())
