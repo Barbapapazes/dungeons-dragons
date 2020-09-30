@@ -1,8 +1,8 @@
 class Person():
 
     
-    def __init__(self,nom="Joe",STR=10,DEX=10,CON=10,INT=10,WIS=10,CHA=10,PV=500,PM=50):
-        self.nom = nom
+    def __init__(self,name="Joe",STR=10,DEX=10,CON=10,INT=10,WIS=10,CHA=10,PV=500,PM=50,capacity=100):
+        self.name = name
         self.STR = STR      #force
         self.DEX = DEX      #dexterite
         self.CON = CON      #
@@ -13,7 +13,11 @@ class Person():
         self.max_PV = PV
         self.PM = PM        #point de mana
         self.max_PM = PM
+        self.capacity = capacity   # capacite de porter des items dans l'inventaire,  peut etre a init en fonction du poid de la personne (si on implemente) 
+        self.itemTransport = 0
+        self.items = []
 
+        #TODO cf la methode d'implementation pour le gadrillage (x,y)?
 
     
     def dammage(self,dmg):
@@ -25,10 +29,30 @@ class Person():
     def IsDead(self):
         return self.getPV() <= 0
 
+    def addItems(self,Item):
+        New = True
+        for i in self.getItems():
+            if i.getName() == Item.getName():
+                self.setItemTransport(self.getItemTransport() + Item.getHeight() * Item.getQuantity())
+                i.setQuantity(i.getQuantity() + Item.getQuantity())
+                New = False
+                break
+        
+        if New:
+            self.setItemTransport(self.getItemTransport() + Item.getHeight())
+            self.setItems(Item)
+        
+
+    def rmItems(self,Item):
+        #TODO
+        return 0
 
 
 
     ######SETTER########
+
+    def setName(self,name):
+        self.name = name
 
     def setSTR(self,STR):
         self.STR = STR
@@ -62,13 +86,20 @@ class Person():
     def setMax_PM(self,max_PM):
         self.max_PM = max_PM
 
+    def setCapacity(self,capacity):
+        self.capacity = capacity
 
+    def setItemTransport(self,ItemHeight):
+        assert self.getItemTransport() + int(ItemHeight) <= self.getCapacity()
+        self.itemTransport = ItemHeight
 
+    def setItems(self,items):
+        self.items.append(items)
 
     #######GETTER########
 
-    def getNom(self):
-        return self.nom
+    def getName(self):
+        return self.name
     
     def getSTR(self):
         return self.STR
@@ -100,3 +131,11 @@ class Person():
     def getMax_PM(self):
         return self.max_PM
 
+    def getCapacity(self):
+        return self.capacity
+
+    def getItemTransport(self):
+        return self.itemTransport
+
+    def getItems(self):
+        return self.items
