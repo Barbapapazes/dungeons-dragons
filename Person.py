@@ -39,7 +39,7 @@ class Person():
                 break
         
         if New:
-            self.setItemTransport(self.getItemTransport() + Item.getHeight())
+            self.setItemTransport(self.getItemTransport() + Item.getHeight() * Item.getQuantity())
             self.setItems(Item)
         
 
