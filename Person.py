@@ -15,21 +15,25 @@ class Person():
         self.max_PM = PM
         self.capacity = capacity   # capacite de porter des items dans l'inventaire,  peut etre a init en fonction du poid de la personne (si on implemente) 
         self.itemTransport = 0
-        self.items = []
+        self.items = []         #c'est l'inventaire
 
         #TODO cf la methode d'implementation pour le gadrillage (x,y)?
 
     
     def dammage(self,dmg):
+        "Dégat subbit"
         self.setPV(self.getPV() - int(dmg))
 
     def heal(self,heal):
+        "Redonne des PM"
         self.setPV(self.getPV() + int(heal))
 
     def IsDead(self):
+        "Vérifie si Class Person est morte"
         return self.getPV() <= 0
 
     def addItems(self,Item):
+        "ajout d'un item (arg --> obj type Item)"
         New = True
         for i in self.getItems():
             if i.getName() == Item.getName():
