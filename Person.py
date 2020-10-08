@@ -48,8 +48,17 @@ class Person():
         
 
     def rmItems(self,Item):
-        #TODO
-        return 0
+
+        for i in self.getItems():
+            if i.getName() == Item.getName():
+                if i.getQuantity() - Item.getQuantity() <= 0:
+                    self.setItemTransport(self.getItemTransport() - i.getHeight() * i.getQuantity())
+                    self.getItems().remove(i)
+                else:
+                    self.setItemTransport(self.getItemTransport() - Item.getHeight() * Item.getQuantity())
+                    i.setQuantity(i.getQuantity() - Item.getQuantity())
+        
+
 
 
 
@@ -99,7 +108,7 @@ class Person():
         self.capacity = capacity
 
     def setItemTransport(self,ItemHeight):
-        assert self.getItemTransport() + int(ItemHeight) <= self.getCapacity()
+        assert int(ItemHeight) <= self.getCapacity() , (self.getItemTransport(),ItemHeight,self.getCapacity())
         self.itemTransport = ItemHeight
 
     def setItems(self,items):
