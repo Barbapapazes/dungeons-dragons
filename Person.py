@@ -25,7 +25,7 @@ class Person():
         self.setPV(self.getPV() - int(dmg))
 
     def heal(self,heal):
-        "Redonne des PM"
+        "Redonne des PV"
         self.setPV(self.getPV() + int(heal))
 
     def IsDead(self):
@@ -77,11 +77,16 @@ class Person():
         self.CHA = CHA
 
     def setPV(self,PV):
-        assert PV <= self.getMax_PV()
-        self.PV = PV
+        "Si PV depasse son max -> set PV a son max_PV"
+        if(PV > self.getMax_PV()):
+            self.PV = self.getMax_PV()
+        else:
+            self.PV = PV
 
     def setPM(self,PM):
-        assert PM <= self.getMax_PM()
+        "si PM depasse son max -> set PM a son max_PM"
+        if (PM > self.getMax_PM()):
+            self.PM = self.getMax_PM()
         self.PM = PM
 
     def setMax_PV(self,max_PV):
