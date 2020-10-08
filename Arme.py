@@ -14,7 +14,7 @@ class Arme(Item):
 
     def attack(self):
         dmg = 0
-        for i in range(self.getNb_d()):
+        for _ in range(self.getNb_d()):
             dmg += randint(1,self.getVal_d())
         
         return dmg
