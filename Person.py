@@ -16,8 +16,13 @@ class Person():
         self.capacity = capacity   # capacite de porter des items dans l'inventaire,  peut etre a init en fonction du poid de la personne (si on implemente) 
         self.itemTransport = 0
         self.items = []         #c'est l'inventaire
-
-        #TODO cf la methode d'implementation pour le gadrillage (x,y)?
+        self.x = 0
+        self.y = 0
+        self.armor = []  # selection getArmor[0] --> Casque    [1]--> Torse    [2]-->Pantalon  [3]-->pied
+        self.arme = 0 #add de l'amrme selectionné
+        self.coin = 0
+    
+        
 
     
     def dammage(self,dmg):
@@ -37,13 +42,13 @@ class Person():
         New = True
         for i in self.getItems():
             if i.getName() == Item.getName():
-                self.setItemTransport(self.getItemTransport() + Item.getHeight() * Item.getQuantity())
+                self.setItemTransport(self.getItemTransport() + Item.getWeight() * Item.getQuantity())
                 i.setQuantity(i.getQuantity() + Item.getQuantity())
                 New = False
                 break
         
         if New:
-            self.setItemTransport(self.getItemTransport() + Item.getHeight() * Item.getQuantity())
+            self.setItemTransport(self.getItemTransport() + Item.getWeight() * Item.getQuantity())
             self.setItems(Item)
         
 
@@ -52,17 +57,17 @@ class Person():
         for i in self.getItems():
             if i.getName() == Item.getName():
                 if i.getQuantity() - Item.getQuantity() <= 0:
-                    self.setItemTransport(self.getItemTransport() - i.getHeight() * i.getQuantity())
+                    self.setItemTransport(self.getItemTransport() - i.getWeight() * i.getQuantity())
                     self.getItems().remove(i)
                 else:
-                    self.setItemTransport(self.getItemTransport() - Item.getHeight() * Item.getQuantity())
+                    self.setItemTransport(self.getItemTransport() - Item.getWeight() * Item.getQuantity())
                     i.setQuantity(i.getQuantity() - Item.getQuantity())
         
 
 
 
 
-    ######SETTER########
+ #######SETTER########
 
     def setName(self,name):
         self.name = name
@@ -114,7 +119,17 @@ class Person():
     def setItems(self,items):
         self.items.append(items)
 
-    #######GETTER########
+    def setX(self,posX):
+        self.x = posX
+
+    def setY(self,posY):
+        self.y = posY
+
+    def setCoin(self, coin):
+        self.coin = coin 
+
+
+ ########GETTER########
 
     def getName(self):
         return self.name
@@ -157,3 +172,12 @@ class Person():
 
     def getItems(self):
         return self.items
+
+    def getX(self):
+        return self.x
+    
+    def getY(self):
+        return self.y
+
+    def getCoin(self):
+        return self.coin

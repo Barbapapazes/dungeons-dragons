@@ -1,21 +1,21 @@
 class Item():
     
-    def __init__(self,name="Item",height=0.1,quantity=1,price=0):
+    def __init__(self,name="Item",weight=0.1,quantity=1,price=0):
         self.name = name
-        self.height = height
+        self.weight = weight
         self.quantity = quantity
         self.price = price
 
     
 
 
-    ####SETTER######
+ ####SETTER######
 
     def setName(self,name):
         self.name = name
 
-    def setHeight(self,height):
-        self.height = height
+    def setWeight(self,weight):
+        self.weight = weight
 
     def setQuantity(self,quantity):
         self.quantity = quantity
@@ -24,13 +24,13 @@ class Item():
         self.price = price
 
 
-    ####GETTER######
+ ####GETTER######
 
     def getName(self):
         return self.name
 
-    def getHeight(self):
-        return self.height
+    def getWeight(self):
+        return self.weight
 
     def getQuantity(self):
         return self.quantity
