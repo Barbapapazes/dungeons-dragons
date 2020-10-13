@@ -1,0 +1,8 @@
+{
+  "python.linting.pylintArgs": [
+    "--extension-pkg-whitelist=pygame"
+  ],
+  "cSpell.words": [
+    "blit"
+  ]
+}
