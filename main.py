@@ -7,3 +7,4 @@ if __name__ == '__main__':
     w = Window()
     w.setup_states(states, 'credits')
     w.main()
+    w.quit()
