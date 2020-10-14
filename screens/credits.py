@@ -1,41 +1,44 @@
+"""Credits screen"""
+
 import pygame as pg
 from window import _State
+from config.window import WIDTH, HEIGHT
 
 
 class Credits(_State):
-    """
-    End Credits Scene.
-    """
+    """Credits screen"""
 
     def __init__(self):
         super(Credits, self).__init__()
         self.name = 'credits'
-        self.credit = None
         self.next = 'menu'
+
+        self.background = pg.Surface((WIDTH, HEIGHT))
         self.startup(0, 0)
 
     def startup(self, current_time, game_data):
-        """
-        Initialize data at scene start. 
-        """
+        """Initialize data at scene start."""
         self.game_data = game_data
         self.current_time = current_time
-        self.background = pg.Surface((500, 500))
         self.background.fill((255, 0, 0))
+        super().setup_transition()
 
     def update(self, surface, keys, current_time):
-        """
-        Update scene.
-        """
+        """Update states"""
+        update_level = self.states_dict[self.state]
+        update_level(keys)
         self.draw_scene(surface)
 
-    def get_event(self, event):
+    def normal_update(self, *args):
+        """Update the normal state"""
+
+    def events(self, event):
+        """Events loop"""
         if event.type == pg.KEYDOWN:
-            self.done = True
+            if event.key == pg.K_RIGHT:
+                super().set_state('transition out')
 
     def draw_scene(self, surface):
-        """
-        Draw all graphics to the window surface.
-        """
+        """Draw all graphics to the window surface."""
         surface.blit(self.background, (0, 0))
-        # self.credit.draw(surface)
+        super().transtition_active(surface)
