@@ -15,3 +15,5 @@ python_version = "3.7"
 
 [scripts]
 dev = "python main.py"
+lint_fix = "autopep8 --aggressive --aggressive --in-place -r -v ."
+lint = "pylint"

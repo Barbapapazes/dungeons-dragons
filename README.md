@@ -46,7 +46,7 @@ To automatically format our code, we will use [`autopep8`](https://pypi.org/proj
 
 ```sh
 # check the code
-pipenv run lint
+pipenv run lint <file_name_to_check>
 # format the code
 pipenv run lint_fix
 ```
