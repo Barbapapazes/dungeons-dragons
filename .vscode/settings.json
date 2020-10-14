@@ -3,6 +3,8 @@
     "--extension-pkg-whitelist=pygame"
   ],
   "cSpell.words": [
-    "blit"
+    "KEYUP",
+    "blit",
+    "pylint"
   ]
 }
