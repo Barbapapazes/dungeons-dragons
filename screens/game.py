@@ -4,6 +4,7 @@ import pygame as pg
 from window import _State
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY
+from config.screens import CREDITS, MENU
 
 
 class Game(_State):
@@ -23,11 +24,21 @@ class Game(_State):
     def startup(self, dt, game_data):
         self.all_sprites = pg.sprite.Group()
 
-    def events(self, event):
-        pass
+        super().setup_transition()
 
-    def update(self, keys):
-        pass
+    def events(self, event):
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_LEFT:
+                self.next = MENU
+                super().set_state('transition out')
+            if event.key == pg.K_RIGHT:
+                self.next = CREDITS
+                super().set_state('transition out')
+
+    def update(self):
+        """Update states"""
+        update_level = self.states_dict[self.state]
+        update_level()
 
     @staticmethod
     def draw_grid(surface):
@@ -38,3 +49,4 @@ class Game(_State):
 
     def draw(self, surface):
         self.draw_grid(surface)
+        super().transtition_active(surface)

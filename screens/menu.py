@@ -3,6 +3,7 @@
 import pygame as pg
 from window import _State
 from config.window import WIDTH, HEIGHT
+from config.screens import GAME
 
 
 class Menu(_State):
@@ -11,9 +12,11 @@ class Menu(_State):
     def __init__(self):
         super(Menu, self).__init__()
         self.name = 'menu'
-        self.next = 'game'
+        self.next = None
 
         self.background = pg.Surface((WIDTH, HEIGHT))
+
+        self.startup(0, 0)
 
     def startup(self, dt, game_data):
         """Initialize data at scene start."""
@@ -22,21 +25,22 @@ class Menu(_State):
         self.background.fill((0, 255, 0))
         super().setup_transition()
 
-    def update(self, keys):
+    def update(self):
         """Update states"""
         update_level = self.states_dict[self.state]
-        update_level(keys)
+        update_level()
 
     def draw(self, surface):
         self.draw_scene(surface)
 
-    def normal_update(self, *args):
+    def normal_update(self):
         """Update the normal state"""
 
     def events(self, event):
         """Events loop"""
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_RIGHT:
+                self.next = GAME
                 super().set_state('transition out')
 
     def draw_scene(self, surface):

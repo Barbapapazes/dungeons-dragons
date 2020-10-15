@@ -19,7 +19,6 @@ class Window():
         self.dt = None
 
         self.done = False
-        self.keys = pg.key.get_pressed()
         self.states_dict = {}
         self.state_name = None
         self.state = None
@@ -46,7 +45,7 @@ class Window():
             self.done = True
         elif self.state.done:
             self.flip_state()
-        self.state.update(self.keys)
+        self.state.update()
         self.show_fps_caption()
 
     def events(self):
@@ -55,13 +54,11 @@ class Window():
             if event.type == pg.QUIT:
                 self.done = True
             elif event.type == pg.KEYDOWN:
-                self.keys = pg.key.get_pressed()
                 if event.key == pg.K_EQUALS:
                     self.show_fps = not self.show_fps
                     self.normal_caption()
                 self.state.events(event)
             elif event.type == pg.KEYUP:
-                self.keys = pg.key.get_pressed()
                 self.state.events(event)
 
     def draw(self):
@@ -132,7 +129,7 @@ class _State():
     def events(self, event):
         """Manage the event for this screen"""
 
-    def update(self, keys):
+    def update(self):
         """Update states"""
 
     def draw(self, surface):
@@ -184,5 +181,5 @@ class _State():
         if self.state != 'normal':
             surface.blit(self.transition_surface, (0, 0))
 
-    def normal_update(self, *arg):
+    def normal_update(self):
         """Update the normal state"""

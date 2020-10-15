@@ -3,6 +3,7 @@
 import pygame as pg
 from window import _State
 from config.window import WIDTH, HEIGHT
+from config.screens import GAME
 
 
 class Credits(_State):
@@ -11,10 +12,9 @@ class Credits(_State):
     def __init__(self):
         super(Credits, self).__init__()
         self.name = 'credits'
-        self.next = 'menu'
+        self.next = GAME
 
         self.background = pg.Surface((WIDTH, HEIGHT))
-        self.startup(0, 0)
 
     def startup(self, dt, game_data):
         """Initialize data at scene start."""
@@ -23,21 +23,21 @@ class Credits(_State):
         self.background.fill((255, 0, 0))
         super().setup_transition()
 
-    def update(self, keys):
+    def update(self):
         """Update states"""
         update_level = self.states_dict[self.state]
-        update_level(keys)
+        update_level()
 
     def draw(self, surface):
         self.draw_scene(surface)
 
-    def normal_update(self, *args):
+    def normal_update(self):
         """Update the normal state"""
 
     def events(self, event):
         """Events loop"""
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_RIGHT:
+            if event.key == pg.K_LEFT:
                 super().set_state('transition out')
 
     def draw_scene(self, surface):
