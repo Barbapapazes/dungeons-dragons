@@ -45,7 +45,7 @@ class Window():
             self.done = True
         elif self.state.done:
             self.flip_state()
-        self.state.update()
+        self.state.update(self.dt)
         self.show_fps_caption()
 
     def events(self):
@@ -129,7 +129,7 @@ class _State():
     def events(self, event):
         """Manage the event for this screen"""
 
-    def update(self):
+    def update(self, *args):
         """Update states"""
 
     def draw(self, surface):

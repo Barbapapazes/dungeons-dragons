@@ -2,8 +2,9 @@
 
 import pygame as pg
 from window import _State
+from sprites.player import Player
 from config.window import WIDTH, HEIGHT, TILESIZE
-from config.colors import LIGHTGREY
+from config.colors import LIGHTGREY, BLACK
 from config.screens import CREDITS, MENU, GAME
 
 
@@ -23,8 +24,10 @@ class Game(_State):
         pass
 
     def startup(self, dt, game_data):
+        self.dt = dt
         self.all_sprites = pg.sprite.Group()
 
+        Player(self, 2, 4)
         super().setup_transition()
 
     def events(self, event):
@@ -36,10 +39,15 @@ class Game(_State):
                 self.next = CREDITS
                 super().set_state('transition out')
 
-    def update(self):
+    def update(self, dt):
         """Update states"""
         update_level = self.states_dict[self.state]
+
+        self.dt = dt
         update_level()
+
+    def normal_update(self):
+        self.all_sprites.update()
 
     @staticmethod
     def draw_grid(surface):
@@ -49,5 +57,7 @@ class Game(_State):
             pg.draw.line(surface, LIGHTGREY, (0, y), (WIDTH, y))
 
     def draw(self, surface):
+        surface.fill(BLACK)
         self.draw_grid(surface)
+        self.all_sprites.draw(surface)
         super().transtition_active(surface)

@@ -25,8 +25,9 @@ class Menu(_State):
         self.background.fill((0, 255, 0))
         super().setup_transition()
 
-    def update(self):
+    def update(self, dt):
         """Update states"""
+        self.dt = dt
         update_level = self.states_dict[self.state]
         update_level()
 

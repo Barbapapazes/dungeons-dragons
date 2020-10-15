@@ -23,8 +23,9 @@ class Credits(_State):
         self.background.fill((255, 0, 0))
         super().setup_transition()
 
-    def update(self):
+    def update(self, dt):
         """Update states"""
+        self.dt = dt
         update_level = self.states_dict[self.state]
         update_level()
 
