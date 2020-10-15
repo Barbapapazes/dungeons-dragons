@@ -19,7 +19,6 @@ class Window():
         self.dt = None
 
         self.done = False
-        self.current_time = 0.0
         self.keys = pg.key.get_pressed()
         self.states_dict = {}
         self.state_name = None
@@ -39,18 +38,16 @@ class Window():
         persist = self.state.cleanup()
         self.state = self.states_dict[self.state_name]
         self.state.previous = previous
-        self.state.startup(self.current_time, persist)
+        self.state.startup(self.dt, persist)
 
     def update(self):
         """Update the state"""
-        self.current_time = pg.time.get_ticks()
         if self.state.quit:
             self.done = True
         elif self.state.done:
             self.flip_state()
-        self.state.update(self.screen, self.keys, self.current_time)
+        self.state.update(self.keys)
         self.show_fps_caption()
-        pg.display.update()
 
     def events(self):
         """Manage the event"""
@@ -66,6 +63,11 @@ class Window():
             elif event.type == pg.KEYUP:
                 self.keys = pg.key.get_pressed()
                 self.state.events(event)
+
+    def draw(self):
+        """Draw content"""
+        self.state.draw(self.screen)
+        pg.display.update()
 
     @staticmethod
     def normal_caption():
@@ -84,6 +86,7 @@ class Window():
             self.dt = self.clock.tick(FPS) / 1000
             self.events()
             self.update()
+            self.draw()
 
     @staticmethod
     def quit():
@@ -98,8 +101,7 @@ class _State():
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
-        self.start_time = 0.0
-        self.current_time = 0.0
+        self.dt = 0
 
         self.done = False
         self.quit = False
@@ -114,10 +116,10 @@ class _State():
         self.alpha = None
         self.transition_surface = {}
 
-    def startup(self, current_time, game_data):
+    def startup(self, dt, game_data):
         """Load all data for this screen"""
         self.game_data = game_data
-        self.start_time = current_time
+        self.dt = dt
 
     def setup_transition(self):
         """Generate all things to manage state transition"""
@@ -129,6 +131,12 @@ class _State():
 
     def events(self, event):
         """Manage the event for this screen"""
+
+    def update(self, keys):
+        """Update states"""
+
+    def draw(self, surface):
+        """Draw content"""
 
     def set_state(self, value):
         """Change the state"""
@@ -142,9 +150,6 @@ class _State():
         """
         self.done = False
         return self.game_data
-
-    def update(self, surface, keys, current_time):
-        """Update states"""
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.

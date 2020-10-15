@@ -16,17 +16,19 @@ class Credits(_State):
         self.background = pg.Surface((WIDTH, HEIGHT))
         self.startup(0, 0)
 
-    def startup(self, current_time, game_data):
+    def startup(self, dt, game_data):
         """Initialize data at scene start."""
         self.game_data = game_data
-        self.current_time = current_time
+        self.dt = dt
         self.background.fill((255, 0, 0))
         super().setup_transition()
 
-    def update(self, surface, keys, current_time):
+    def update(self, keys):
         """Update states"""
         update_level = self.states_dict[self.state]
         update_level(keys)
+
+    def draw(self, surface):
         self.draw_scene(surface)
 
     def normal_update(self, *args):
