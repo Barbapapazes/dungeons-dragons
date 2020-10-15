@@ -5,7 +5,7 @@ from window import _State
 from sprites.player import Player
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, BLACK
-from config.screens import CREDITS, MENU, GAME
+from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 
 
 class Game(_State):
@@ -34,10 +34,10 @@ class Game(_State):
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_LEFT:
                 self.next = MENU
-                super().set_state('transition out')
+                super().set_state(TRANSITION_OUT)
             if event.key == pg.K_RIGHT:
                 self.next = CREDITS
-                super().set_state('transition out')
+                super().set_state(TRANSITION_IN)
 
     def update(self, dt):
         """Update states"""

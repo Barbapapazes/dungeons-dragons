@@ -4,6 +4,7 @@ import sys
 import pygame as pg
 from config.window import WIDTH, HEIGHT, FPS, TITLE
 from config.colors import BLACK
+from config.screens import TRANSITION_IN, TRANSITION_OUT
 
 
 class Window():
@@ -121,7 +122,7 @@ class _State():
     def setup_transition(self):
         """Generate all things to manage state transition"""
         self.alpha = 255
-        self.state = 'transition in'
+        self.state = TRANSITION_IN
         self.transition_surface = pg.Surface((WIDTH, HEIGHT))
         self.transition_surface.fill(BLACK)
         self.transition_surface.set_alpha(self.alpha)
@@ -155,8 +156,8 @@ class _State():
         Returns:
             object: define all the possible states for a screen
         """
-        states_dict = {'transition in': self.transition_in,
-                       'transition out': self.transition_out,
+        states_dict = {TRANSITION_IN: self.transition_in,
+                       TRANSITION_OUT: self.transition_out,
                        'normal': self.normal_update}
 
         return states_dict
