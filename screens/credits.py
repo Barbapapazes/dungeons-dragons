@@ -3,7 +3,7 @@
 import pygame as pg
 from window import _State
 from config.window import WIDTH, HEIGHT
-from config.screens import GAME
+from config.screens import GAME, CREDITS
 
 
 class Credits(_State):
@@ -11,7 +11,7 @@ class Credits(_State):
 
     def __init__(self):
         super(Credits, self).__init__()
-        self.name = 'credits'
+        self.name = CREDITS
         self.next = GAME
 
         self.background = pg.Surface((WIDTH, HEIGHT))

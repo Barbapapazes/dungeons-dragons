@@ -4,7 +4,7 @@ import pygame as pg
 from window import _State
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY
-from config.screens import CREDITS, MENU
+from config.screens import CREDITS, MENU, GAME
 
 
 class Game(_State):
@@ -12,6 +12,7 @@ class Game(_State):
 
     def __init__(self):
         super(Game, self).__init__()
+        self.name = GAME
         self.next = None
 
         self.all_sprites = None

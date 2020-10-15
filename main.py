@@ -4,7 +4,7 @@ from window import Window
 from screens.credits import Credits
 from screens.menu import Menu
 from screens.game import Game
-from config.screens import *
+from config.screens import MENU, CREDITS, GAME
 
 if __name__ == '__main__':
     STATES = {CREDITS: Credits(), MENU: Menu(), GAME: Game()}

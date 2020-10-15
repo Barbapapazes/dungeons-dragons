@@ -3,7 +3,7 @@
 import pygame as pg
 from window import _State
 from config.window import WIDTH, HEIGHT
-from config.screens import GAME
+from config.screens import GAME, MENU
 
 
 class Menu(_State):
@@ -11,7 +11,7 @@ class Menu(_State):
 
     def __init__(self):
         super(Menu, self).__init__()
-        self.name = 'menu'
+        self.name = MENU
         self.next = None
 
         self.background = pg.Surface((WIDTH, HEIGHT))
