@@ -3,7 +3,7 @@
 import pygame as pg
 from window import _State
 from config.window import WIDTH, HEIGHT
-from config.screens import GAME, CREDITS
+from config.screens import GAME, CREDITS, TRANSITION_OUT
 
 
 class Credits(_State):
@@ -23,25 +23,25 @@ class Credits(_State):
         self.background.fill((255, 0, 0))
         super().setup_transition()
 
-    def update(self, dt):
-        """Update states"""
+    def run(self, surface, keys, dt):
+        """Run states"""
+        self.screen = surface
+        self.keys = keys
         self.dt = dt
         update_level = self.states_dict[self.state]
+        if self.state != 'normal':
+            self.draw()
         update_level()
 
-    def draw(self, surface):
-        self.draw_scene(surface)
-
-    def normal_update(self):
-        """Update the normal state"""
+    def normal_run(self):
+        """Run the normal state"""
+        self.draw()
 
     def events(self, event):
         """Events loop"""
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_LEFT:
-                super().set_state('transition out')
+                super().set_state(TRANSITION_OUT)
 
-    def draw_scene(self, surface):
-        """Draw all graphics to the window surface."""
-        surface.blit(self.background, (0, 0))
-        super().transtition_active(surface)
+    def draw(self):
+        self.screen.blit(self.background, (0, 0))

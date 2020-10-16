@@ -18,6 +18,7 @@ class Window():
         self.normal_caption()
         self.clock = pg.time.Clock()
         self.dt = None
+        self.keys = pg.key.get_pressed()
 
         self.done = False
         self.states_dict = {}
@@ -40,13 +41,13 @@ class Window():
         self.state.previous = previous
         self.state.startup(self.dt, persist)
 
-    def update(self):
-        """Update the state"""
+    def run(self):
+        """Run the state"""
         if self.state.quit:
             self.done = True
         elif self.state.done:
             self.flip_state()
-        self.state.update(self.dt)
+        self.state.run(self.screen, self.keys, self.dt)
         self.show_fps_caption()
 
     def events(self):
@@ -55,17 +56,14 @@ class Window():
             if event.type == pg.QUIT:
                 self.done = True
             elif event.type == pg.KEYDOWN:
+                self.keys = pg.key.get_pressed()
                 if event.key == pg.K_EQUALS:
                     self.show_fps = not self.show_fps
                     self.normal_caption()
                 self.state.events(event)
             elif event.type == pg.KEYUP:
+                self.keys = pg.key.get_pressed()
                 self.state.events(event)
-
-    def draw(self):
-        """Draw content"""
-        self.state.draw(self.screen)
-        pg.display.update()
 
     @staticmethod
     def normal_caption():
@@ -83,8 +81,8 @@ class Window():
         while not self.done:
             self.dt = self.clock.tick(FPS) / 1000
             self.events()
-            self.update()
-            self.draw()
+            self.run()
+            pg.display.update()
 
     @staticmethod
     def quit():
@@ -99,6 +97,8 @@ class _State():
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
+        self.screen = None
+        self.keys = None
         self.dt = 0
 
         self.done = False
@@ -130,11 +130,11 @@ class _State():
     def events(self, event):
         """Manage the event for this screen"""
 
-    def update(self, *args):
-        """Update states"""
-
-    def draw(self, surface):
-        """Draw content"""
+    def run(self, surface, keys, dt):
+        """Run states"""
+        self.screen = surface
+        self.keys = keys
+        self.dt = dt
 
     def set_state(self, value):
         """Change the state"""
@@ -158,29 +158,30 @@ class _State():
         """
         states_dict = {TRANSITION_IN: self.transition_in,
                        TRANSITION_OUT: self.transition_out,
-                       'normal': self.normal_update}
+                       'normal': self.normal_run}
 
         return states_dict
 
-    def transition_in(self, *arg):
+    def transition_in(self):
         """Transition into scene with a fade."""
         self.transition_surface.set_alpha(self.alpha)
-        self.alpha -= 35
+        self.alpha -= 25
         if self.alpha <= 0:
             self.alpha = 0
             self.state = 'normal'
+        self.transtition_active(self.screen)
 
-    def transition_out(self, *arg):
+    def transition_out(self):
         """Transition out of scene with a fade."""
         self.transition_surface.set_alpha(self.alpha)
-        self.alpha += 35
+        self.alpha += 25
         if self.alpha >= 255:
             self.done = True
+        self.transtition_active(self.screen)
 
     def transtition_active(self, surface):
         """Check if there is a transition to remove the unused blit surface"""
-        if self.state != 'normal':
-            surface.blit(self.transition_surface, (0, 0))
+        surface.blit(self.transition_surface, (0, 0))
 
-    def normal_update(self):
+    def normal_run(self):
         """Update the normal state"""

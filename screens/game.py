@@ -37,17 +37,22 @@ class Game(_State):
                 super().set_state(TRANSITION_OUT)
             if event.key == pg.K_RIGHT:
                 self.next = CREDITS
-                super().set_state(TRANSITION_IN)
+                super().set_state(TRANSITION_OUT)
 
-    def update(self, dt):
-        """Update states"""
-        update_level = self.states_dict[self.state]
-
+    def run(self, surface, keys, dt):
+        """Run states"""
+        self.screen = surface
+        self.keys = keys
         self.dt = dt
+        update_level = self.states_dict[self.state]
+        if self.state != 'normal':
+            self.draw()
         update_level()
 
-    def normal_update(self):
-        self.all_sprites.update()
+    def normal_run(self):
+        """Run the normal state"""
+        self.update()
+        self.draw()
 
     @staticmethod
     def draw_grid(surface):
@@ -56,8 +61,11 @@ class Game(_State):
         for y in range(0, HEIGHT, TILESIZE):
             pg.draw.line(surface, LIGHTGREY, (0, y), (WIDTH, y))
 
-    def draw(self, surface):
-        surface.fill(BLACK)
-        self.draw_grid(surface)
-        self.all_sprites.draw(surface)
-        super().transtition_active(surface)
+    def update(self):
+        self.all_sprites.update()
+
+    def draw(self):
+        self.screen.fill(BLACK)
+        self.draw_grid(self.screen)
+        self.all_sprites.draw(self.screen)
+        super().transtition_active(self.screen)
