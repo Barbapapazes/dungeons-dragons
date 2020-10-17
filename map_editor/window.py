@@ -39,6 +39,47 @@ class Window:
         pg.quit()
         sys.exit()
 
+    def events(self):
+        """"Catch all events here"""
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.quit()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    self.quit()
+            if event.type == pg.MOUSEBUTTONDOWN:
+                self.mouse_listener()
+
+    def mouse_listener(self):
+        """Listen mouse button"""
+        mouse_x, mouse_y = self.get_mouse_pos()
+        paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
+        print(paint_x, paint_y)
+
+    @staticmethod
+    def get_mouse_pos():
+        """Get the position of the mouse
+
+        Returns:
+            (int, int): the x and the y of the mouse
+        """
+        # """Get the position of the mouse"""
+        mouse_x, mouse_y = pg.mouse.get_pos()
+        return mouse_x, mouse_y
+
+    @staticmethod
+    def calc_mouse_pos(x, y):
+        """Calcul the case of the given position
+
+        Args:
+            x (int)
+            y (int)
+
+        Returns:
+            (int, int): the case of the grid
+        """
+        return x // TILESIZE, y // TILESIZE
+
     def update(self):
         """ Update portion of the game loop"""
 
@@ -54,15 +95,6 @@ class Window:
         self.screen.fill(BGCOLOR)
         self.draw_grid()
         pg.display.flip()
-
-    def events(self):
-        """"Catch all events here"""
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                self.quit()
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
-                    self.quit()
 
     def show_start_screen(self):
         pass
