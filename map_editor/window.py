@@ -22,6 +22,9 @@ class Window:
         """Load data"""
 
     def new(self):
+        self.list_rect = list()
+        self.cut_surface = None
+        self.red = None
         """Create data for a new loading"""
 
     def run(self):
@@ -55,6 +58,15 @@ class Window:
         mouse_x, mouse_y = self.get_mouse_pos()
         paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
         print(paint_x, paint_y)
+
+        if 0 < mouse_x < 3 * TILESIZE and 0 < mouse_y < 3 * TILESIZE:
+            self.cut_surface = self.red.subsurface(pg.Rect(paint_x, paint_y, TILESIZE, TILESIZE)).copy()
+            print(self.cut_surface)
+        elif self.cut_surface != None:
+            print('add a new surface')
+            self.list_rect.append({'surface': self.cut_surface, 'rect': pg.Rect(
+                paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
+            self.cut_surface = None
 
     @staticmethod
     def get_mouse_pos():
@@ -94,6 +106,19 @@ class Window:
         """Draw all elements to the screen"""
         self.screen.fill(BGCOLOR)
         self.draw_grid()
+
+        self.red = pg.Surface((TILESIZE, TILESIZE))
+        self.red.fill((255, 0, 0))
+        red_rect = self.red.get_rect()
+        red_rect.top = 0
+        red_rect.left = 0
+        self.screen.blit(self.red, red_rect)
+
+        # print(self.list_rect)
+        for rect in self.list_rect:
+            # print(rect)
+            self.screen.blit(rect['surface'], rect['rect'])
+
         pg.display.flip()
 
     def show_start_screen(self):
