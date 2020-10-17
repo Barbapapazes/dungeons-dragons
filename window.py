@@ -60,10 +60,10 @@ class Window():
                 if event.key == pg.K_EQUALS:
                     self.show_fps = not self.show_fps
                     self.normal_caption()
-                self.state.events(event)
+                self.state.get_events(event)
             elif event.type == pg.KEYUP:
                 self.keys = pg.key.get_pressed()
-                self.state.events(event)
+                self.state.get_events(event)
 
     @staticmethod
     def normal_caption():
@@ -127,7 +127,7 @@ class _State():
         self.transition_surface.fill(BLACK)
         self.transition_surface.set_alpha(self.alpha)
 
-    def events(self, event):
+    def get_events(self, event):
         """Manage the event for this screen"""
 
     def run(self, surface, keys, dt):

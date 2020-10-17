@@ -39,7 +39,7 @@ class Menu(_State):
         """Run the normal state"""
         self.draw()
 
-    def events(self, event):
+    def get_events(self, event):
         """Events loop"""
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_RIGHT:

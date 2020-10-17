@@ -30,7 +30,7 @@ class Game(_State):
         Player(self, 2, 4)
         super().setup_transition()
 
-    def events(self, event):
+    def get_events(self, event):
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_LEFT:
                 self.next = MENU
