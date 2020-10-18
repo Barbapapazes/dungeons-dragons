@@ -3,6 +3,7 @@
 import sys
 from os import path
 import pygame as pg
+# pylint: disable=import-error
 from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE
 # pylint: disable=import-error
 from tileset import Tileset
@@ -61,6 +62,7 @@ class Window:
                     pg.event.wait()
                     self.save_map()
             if event.type == pg.MOUSEBUTTONDOWN:
+                self.tileset.get_mouse(event)
                 self.mouse_listener()
 
     def save_map(self):
@@ -137,7 +139,6 @@ class Window:
         self.screen.fill(BGCOLOR)
         self.draw_grid()
 
-        # mettre en place la grille de 20*20
         # mettre en place du scroll pour défiler le tileset
         #  mettre en place un clique droit pour dépop la tuile sélect
         # faire une classe et l'instancier pour chaque case, on verra ensuite

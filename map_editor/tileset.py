@@ -54,3 +54,15 @@ class Tileset():
             self.move_y += 1
         if keys[pg.K_s] and self.move_y > - (self.tileset_height - HEIGHT) // TILESIZE:
             self.move_y -= 1
+
+    def get_mouse(self, event):
+        """Use the mouse to move the tileset
+
+        Args:
+            event (dict): the event from the events function
+        """
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if event.button == 4 and self.move_y < 0:
+                self.move_y += 1
+            elif event.button == 5 and self.move_y > - (self.tileset_height - HEIGHT) // TILESIZE:
+                self.move_y -= 1
