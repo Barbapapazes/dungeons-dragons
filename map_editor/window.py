@@ -65,17 +65,18 @@ class Window:
         paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
         print(paint_x, paint_y)
 
-        if 0 < mouse_x <= 3 * TILESIZE and 0 < mouse_y <= 3 * TILESIZE:
-            self.cut_surface = self.tileset.get_tileset().subsurface(
-                pg.Rect(
-                    paint_x * TILESIZE - self.tileset.get_move_x(),
-                    paint_y * TILESIZE - self.tileset.get_move_y(),
-                    TILESIZE, TILESIZE)).copy()
-        elif self.cut_surface != None:
-            print('add a new surface')
-            self.list_rect.append({'surface': self.cut_surface, 'rect': pg.Rect(
-                paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
-            self.cut_surface = None
+        if pg.mouse.get_pressed()[0] == True:
+            if self.tileset.get_move_x() < mouse_x <= self.tileset.tileset_width and self.tileset.get_move_y() < mouse_y <= self.tileset.tileset_height:
+                self.cut_surface = self.tileset.get_tileset().subsurface(
+                    pg.Rect(
+                        paint_x * TILESIZE - self.tileset.get_move_x(),
+                        paint_y * TILESIZE - self.tileset.get_move_y(),
+                        TILESIZE, TILESIZE)).copy()
+            elif self.cut_surface != None:
+                print('add a new surface')
+                self.list_rect.append({'surface': self.cut_surface, 'rect': pg.Rect(
+                    paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
+                self.cut_surface = None
 
     @staticmethod
     def get_mouse_pos():

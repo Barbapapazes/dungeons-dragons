@@ -12,8 +12,8 @@ class Tileset():
         self.tileset = pg.image.load(path.join(assets_folder, filename)).convert_alpha()
         self.tileset_width = self.tileset.get_width()
         self.tileset_height = self.tileset.get_height()
-        self.move_x = 2
-        self.move_y = -10
+        self.move_x = 0
+        self.move_y = 0
 
     def get_tileset(self):
         """Get the tileset
