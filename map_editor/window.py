@@ -1,8 +1,10 @@
 """Map editor for a user to create a new tiled map"""
 
 import sys
+from os import path
 import pygame as pg
 from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, BGCOLOR
+from tileset import Tileset
 
 
 class Window:
@@ -20,12 +22,16 @@ class Window:
 
     def load_data(self):
         """Load data"""
+        map_editor_folder = path.dirname(__file__)
+        game_folder = path.dirname('..')
+        assets_folder = path.join(game_folder, 'assets', 'map_editor')
+        self.tileset = Tileset(assets_folder, 'town1.png')
 
     def new(self):
+        """Create data for a new loading"""
         self.list_rect = list()
         self.cut_surface = None
-        self.red = None
-        """Create data for a new loading"""
+        self.map_color = None
 
     def run(self):
         """Main loop for the program"""
@@ -59,9 +65,12 @@ class Window:
         paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
         print(paint_x, paint_y)
 
-        if 0 < mouse_x < 3 * TILESIZE and 0 < mouse_y < 3 * TILESIZE:
-            self.cut_surface = self.red.subsurface(pg.Rect(paint_x, paint_y, TILESIZE, TILESIZE)).copy()
-            print(self.cut_surface)
+        if 0 < mouse_x <= 3 * TILESIZE and 0 < mouse_y <= 3 * TILESIZE:
+            self.cut_surface = self.tileset.get_tileset().subsurface(
+                pg.Rect(
+                    paint_x * TILESIZE - self.tileset.get_move_x(),
+                    paint_y * TILESIZE - self.tileset.get_move_y(),
+                    TILESIZE, TILESIZE)).copy()
         elif self.cut_surface != None:
             print('add a new surface')
             self.list_rect.append({'surface': self.cut_surface, 'rect': pg.Rect(
@@ -94,6 +103,7 @@ class Window:
 
     def update(self):
         """ Update portion of the game loop"""
+        self.tileset.update()
 
     def draw_grid(self):
         """Draw a grid to visualize"""
@@ -107,12 +117,32 @@ class Window:
         self.screen.fill(BGCOLOR)
         self.draw_grid()
 
-        self.red = pg.Surface((TILESIZE, TILESIZE))
-        self.red.fill((255, 0, 0))
-        red_rect = self.red.get_rect()
-        red_rect.top = 0
-        red_rect.left = 0
-        self.screen.blit(self.red, red_rect)
+        # faire une grande surface avec plus de couleur et sélectionner dedans à chaque clique
+        # passer ensuite à une image (utiliser que quelques cases d'une image de tuiles)
+        # faire une classe et l'instancier pour chaque case
+        # dessiner toutes les cases
+        # sauvegarder en tmx en réfléchissant bien pour être en mesure de l'ouvrir avec tiled
+        # self.map_color = pg.Surface((3 * TILESIZE, 3 * TILESIZE))
+        # self.map_color.fill((0, 255, 0))
+        # map_color_rect = self.map_color.get_rect()
+        # map_color_rect.top = 0
+        # map_color_rect.left = 0
+
+        # self.red = pg.Surface((TILESIZE, TILESIZE))
+        # self.red.fill((255, 0, 0))
+        # red_rect = self.red.get_rect()
+        # red_rect.top = 0
+        # red_rect.left = 0
+        # self.map_color.blit(self.red, red_rect)
+        # self.blue = pg.Surface((TILESIZE, TILESIZE))
+        # self.blue.fill((0, 0, 255))
+        # blue_rect = self.blue.get_rect()
+        # blue_rect.top = TILESIZE
+        # blue_rect.left = TILESIZE
+        # self.map_color.blit(self.blue, blue_rect)
+        # self.screen.blit(self.map_color, map_color_rect)
+
+        self.screen.blit(self.tileset.get_tileset(), (0 + self.tileset.get_move_x(), 0 + self.tileset.get_move_y()))
 
         # print(self.list_rect)
         for rect in self.list_rect:
