@@ -15,14 +15,13 @@ class Window:
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
-        # pg.key.set_repeat(500, 100)
+        pg.key.set_repeat(500, 100)
         self.load_data()
         self.playing = None
         self.dt = None
 
     def load_data(self):
         """Load data"""
-        map_editor_folder = path.dirname(__file__)
         game_folder = path.dirname('..')
         assets_folder = path.join(game_folder, 'assets', 'map_editor')
         self.tileset = Tileset(assets_folder, 'town1.png')
@@ -118,36 +117,14 @@ class Window:
         self.screen.fill(BGCOLOR)
         self.draw_grid()
 
-        # faire une grande surface avec plus de couleur et sélectionner dedans à chaque clique
-        # passer ensuite à une image (utiliser que quelques cases d'une image de tuiles)
-        # faire une classe et l'instancier pour chaque case
+        # faire en sorte de pouvoir déplacer le tileset
+        # faire une classe et l'instancier pour chaque case, on verra ensuite
         # dessiner toutes les cases
         # sauvegarder en tmx en réfléchissant bien pour être en mesure de l'ouvrir avec tiled
-        # self.map_color = pg.Surface((3 * TILESIZE, 3 * TILESIZE))
-        # self.map_color.fill((0, 255, 0))
-        # map_color_rect = self.map_color.get_rect()
-        # map_color_rect.top = 0
-        # map_color_rect.left = 0
-
-        # self.red = pg.Surface((TILESIZE, TILESIZE))
-        # self.red.fill((255, 0, 0))
-        # red_rect = self.red.get_rect()
-        # red_rect.top = 0
-        # red_rect.left = 0
-        # self.map_color.blit(self.red, red_rect)
-        # self.blue = pg.Surface((TILESIZE, TILESIZE))
-        # self.blue.fill((0, 0, 255))
-        # blue_rect = self.blue.get_rect()
-        # blue_rect.top = TILESIZE
-        # blue_rect.left = TILESIZE
-        # self.map_color.blit(self.blue, blue_rect)
-        # self.screen.blit(self.map_color, map_color_rect)
 
         self.screen.blit(self.tileset.get_tileset(), (0 + self.tileset.get_move_x(), 0 + self.tileset.get_move_y()))
 
-        # print(self.list_rect)
         for rect in self.list_rect:
-            # print(rect)
             self.screen.blit(rect['surface'], rect['rect'])
 
         pg.display.flip()

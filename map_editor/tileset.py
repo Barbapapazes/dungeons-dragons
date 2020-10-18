@@ -2,7 +2,7 @@
 
 import pygame as pg
 from os import path
-from settings import TILESIZE
+from settings import TILESIZE, HEIGHT
 
 
 class Tileset():
@@ -41,7 +41,16 @@ class Tileset():
 
     def update(self):
         """Update the map"""
+        self.get_keys()
 
     def get_keys(self):
         """Use the key to move the tileset"""
         keys = pg.key.get_pressed()
+        if keys[pg.K_a]:
+            pass
+        if keys[pg.K_d]:
+            pass
+        if keys[pg.K_w] and self.move_y < 0:
+            self.move_y += 1
+        if keys[pg.K_s] and self.move_y > - (self.tileset_height - HEIGHT) // TILESIZE:
+            self.move_y -= 1
