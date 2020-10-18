@@ -3,7 +3,8 @@
 import sys
 from os import path
 import pygame as pg
-from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, BGCOLOR
+from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE
+# pylint: disable=import-error
 from tileset import Tileset
 
 
@@ -23,8 +24,8 @@ class Window:
     def load_data(self):
         """Load data"""
         game_folder = path.dirname('..')
-        assets_folder = path.join(game_folder, 'assets', 'map_editor')
-        self.tileset = Tileset(assets_folder, 'town1.png')
+        self.assets_folder = path.join(game_folder, 'assets', 'map_editor')
+        self.tileset = Tileset(self.assets_folder, 'town1.png')
 
     def new(self):
         """Create data for a new loading"""
@@ -55,8 +56,22 @@ class Window:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
+                if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
+                    print('ctrl_s')
+                    pg.event.wait()
+                    self.save_map()
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.mouse_listener()
+
+    def save_map(self):
+        """Save a tmx file map"""
+        for rect in self.list_rect:
+            print(rect)
+        # with open(path.join(self.assets_folder, 'map_template.tmx'), 'r') as f:
+        #     for row in f:
+        #         print(row)
+        # with open(path.join(self.assets_folder, 'map.tmx'), 'w') as f:
+        #     f.write('bonjour')
 
     def mouse_listener(self):
         """Listen mouse button"""
@@ -64,14 +79,14 @@ class Window:
         paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
         print(paint_x, paint_y)
 
-        if pg.mouse.get_pressed()[0] == True:
+        if pg.mouse.get_pressed()[0]:
             if self.tileset.get_move_x() < mouse_x <= self.tileset.tileset_width and self.tileset.get_move_y() < mouse_y <= self.tileset.tileset_height:
                 self.cut_surface = self.tileset.get_tileset().subsurface(
                     pg.Rect(
                         paint_x * TILESIZE - self.tileset.get_move_x(),
                         paint_y * TILESIZE - self.tileset.get_move_y(),
                         TILESIZE, TILESIZE)).copy()
-            elif self.cut_surface != None:
+            elif self.cut_surface != None and WIDTH - MAPSIZE * TILESIZE < mouse_x < WIDTH and 0 < mouse_y < MAPSIZE * TILESIZE:
                 print('add a new surface')
                 self.list_rect.append({'surface': self.cut_surface, 'rect': pg.Rect(
                     paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
@@ -112,13 +127,21 @@ class Window:
         for y in range(0, HEIGHT, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
 
+        pg.draw.line(self.screen, RED, (WIDTH - MAPSIZE * TILESIZE, 0),
+                     (WIDTH - MAPSIZE * TILESIZE, MAPSIZE * TILESIZE), 2)
+        pg.draw.line(self.screen, RED, (WIDTH - MAPSIZE * TILESIZE, MAPSIZE * TILESIZE),
+                     (WIDTH, MAPSIZE * TILESIZE), 2)
+
     def draw(self):
         """Draw all elements to the screen"""
         self.screen.fill(BGCOLOR)
         self.draw_grid()
 
-        # faire en sorte de pouvoir déplacer le tileset
+        # mettre en place la grille de 20*20
+        # mettre en place du scroll pour défiler le tileset
+        #  mettre en place un clique droit pour dépop la tuile sélect
         # faire une classe et l'instancier pour chaque case, on verra ensuite
+        # réfléchir à la data à sauvegarder pour pouvoir ensuite la retranscrire dans le fichier tmx
         # dessiner toutes les cases
         # sauvegarder en tmx en réfléchissant bien pour être en mesure de l'ouvrir avec tiled
 
