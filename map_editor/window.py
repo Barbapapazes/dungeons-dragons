@@ -30,6 +30,8 @@ class Window:
 
     def new(self):
         """Create data for a new loading"""
+        self.layer_1 = list()
+        self.layer_2 = list()
         self.list_rect = list()
         self.cut_surface = None
         self.map_color = None
@@ -61,7 +63,11 @@ class Window:
 
     def save_map(self):
         """Save a tmx file map"""
-        for rect in self.list_rect:
+        print("layer 1")
+        for rect in self.layer_1:
+            print(rect)
+        print("layer 2")
+        for rect in self.layer_2:
             print(rect)
         # with open(path.join(self.assets_folder, 'map_template.tmx'), 'r') as f:
         #     for row in f:
@@ -83,22 +89,54 @@ class Window:
                         paint_y * TILESIZE - self.tileset.get_move_y(),
                         TILESIZE, TILESIZE)).copy()
             elif self.cut_surface != None and self.is_in_map(mouse_x, mouse_y):
-                print('add a new surface')
-                self.list_rect.append({'surface': self.cut_surface, 'rect': pg.Rect(
-                    paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
+                if self.find_in_layer(self.layer_1, paint_x, paint_y):
+                    if self.find_in_layer(self.layer_2, paint_x, paint_y):
+                        print('can add this tile here')
+                    else:
+                        print('add to layer 2')
+                        self.layer_2.append({'surface': self.cut_surface.copy(), 'rect': pg.Rect(
+                            paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
+                else:
+                    print('add to layer 1')
+                    self.layer_1.append({'surface': self.cut_surface.copy(), 'rect': pg.Rect(
+                        paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
                 self.cut_surface = None
+
         if pg.mouse.get_pressed()[2]:
             if self.is_in_map(mouse_x, mouse_y):
-                self.remove_tile(paint_x, paint_y)
+                if self.find_in_layer(self.layer_2, paint_x, paint_y):
+                    print('remove in layer 2')
+                    self.remove_tile(self.layer_2, paint_x, paint_y)
+                elif self.find_in_layer(self.layer_1, paint_x, paint_y):
+                    print('remove in layer 1')
+                    self.remove_tile(self.layer_1, paint_x, paint_y)
 
-    def remove_tile(self, x, y):
-        for tile in self.list_rect:
+    @staticmethod
+    def remove_tile(layer, x, y):
+        for tile in layer:
             if tile['rect'].left == x * TILESIZE and tile['rect'].top == y * TILESIZE:
-                self.list_rect.remove(tile)
+                layer.remove(tile)
+
+    @staticmethod
+    def find_in_layer(layer, x, y):
+        """Find a tile in a layer using a position
+
+        Args:
+            layer (list): contains all tiles
+            x (int)
+            y (int)
+
+        Returns:
+            tile: a tile if found or None
+        """
+        for tile in layer:
+            if tile['rect'].left == x * TILESIZE and tile['rect'].top == y * TILESIZE:
+                return tile
+        return None
 
     @staticmethod
     def is_in_map(x, y):
-        """check if the position is in the map editor
+        """Check if the position is in the map editor
 
         Args:
             x (int): x position
@@ -161,7 +199,9 @@ class Window:
 
         self.screen.blit(self.tileset.get_tileset(), (0 + self.tileset.get_move_x(), 0 + self.tileset.get_move_y()))
 
-        for rect in self.list_rect:
+        for rect in self.layer_1:
+            self.screen.blit(rect['surface'], rect['rect'])
+        for rect in self.layer_2:
             self.screen.blit(rect['surface'], rect['rect'])
 
         pg.display.flip()
