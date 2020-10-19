@@ -9,7 +9,7 @@ from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOL
 from tileset import Tileset
 
 
-class Window:
+class Window():
     """Open the main window"""
 
     def __init__(self):
@@ -30,11 +30,12 @@ class Window:
 
     def new(self):
         """Create data for a new loading"""
-        self.layer_1 = list()
-        self.layer_2 = list()
-        self.list_rect = list()
+        # faire une boucle pour créer toute les layers (0-9)
+        self.layers = {f"layer_{x}": list() for x in range(10)}
         self.cut_surface = None
         self.map_color = None
+        self.selected_layer = 0
+        # self.SHOW_LAYER = True
 
     def run(self):
         """Main loop for the program"""
@@ -57,18 +58,25 @@ class Window:
                     print('ctrl_s')
                     pg.event.wait()
                     self.save_map()
+                if event.key == pg.K_r:
+                    self.cut_surface = None
+                if event.key == pg.K_l:
+                    pass
+                    # use to show all the layer
+                    # self.SHOW_LAYER = not self.SHOW_LAYER
+                if event.key in [pg.K_0, pg.K_1, pg.K_2, pg.K_3, pg.K_4, pg.K_5, pg.K_6, pg.K_7, pg.K_8, pg.K_9]:
+                    self.selected_layer = event.unicode
+                    print('layer selected', self.selected_layer)
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.tileset.get_mouse(event)
                 self.mouse_listener()
 
     def save_map(self):
         """Save a tmx file map"""
-        print("layer 1")
-        for rect in self.layer_1:
-            print(rect)
-        print("layer 2")
-        for rect in self.layer_2:
-            print(rect)
+        for layer in self.layers:
+            print(f"layer {layer}")
+            for rect in self.layers[layer]:
+                print(rect)
         # with open(path.join(self.assets_folder, 'map_template.tmx'), 'r') as f:
         #     for row in f:
         #         print(row)
@@ -88,28 +96,40 @@ class Window:
                         paint_x * TILESIZE - self.tileset.get_move_x(),
                         paint_y * TILESIZE - self.tileset.get_move_y(),
                         TILESIZE, TILESIZE)).copy()
-            elif self.cut_surface != None and self.is_in_map(mouse_x, mouse_y):
-                if self.find_in_layer(self.layer_1, paint_x, paint_y):
-                    if self.find_in_layer(self.layer_2, paint_x, paint_y):
-                        print('can add this tile here')
+            # pg.event.wait()
+
+        while pg.mouse.get_pressed()[0]:
+            pg.event.poll()
+            mouse_x, mouse_y = self.get_mouse_pos()
+            paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
+            print(paint_x, paint_y, mouse_x, mouse_y)
+            if self.is_in_map(mouse_x, mouse_y):
+                if pg.mouse.get_pressed()[0] and self.cut_surface != None:
+                    if self.find_in_layer(self.layers[f"layer_{self.selected_layer}"], paint_x, paint_y):
+                        print('can\'t add this tile here')
+
+                        # if self.find_in_layer(self.layer_2, paint_x, paint_y):
+                        # else:
+                        #     print('add to layer 2')
+                        #     self.layer_2.append({'surface': self.cut_surface.copy(), 'rect': pg.Rect(
+                        #         paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
                     else:
-                        print('add to layer 2')
-                        self.layer_2.append({'surface': self.cut_surface.copy(), 'rect': pg.Rect(
-                            paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
-                else:
-                    print('add to layer 1')
-                    self.layer_1.append({'surface': self.cut_surface.copy(), 'rect': pg.Rect(
-                        paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
-                self.cut_surface = None
+                        print(f'add to layer {self.selected_layer}')
+                        self.layers[f'layer_{self.selected_layer}'].append(
+                            {'surface': self.cut_surface.copy(),
+                             'rect': pg.Rect(paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
+            self.draw()
 
         if pg.mouse.get_pressed()[2]:
             if self.is_in_map(mouse_x, mouse_y):
-                if self.find_in_layer(self.layer_2, paint_x, paint_y):
-                    print('remove in layer 2')
-                    self.remove_tile(self.layer_2, paint_x, paint_y)
-                elif self.find_in_layer(self.layer_1, paint_x, paint_y):
-                    print('remove in layer 1')
-                    self.remove_tile(self.layer_1, paint_x, paint_y)
+                pass
+                # faire une boucle au travers de tout les layers en inversant le sens
+                # if self.find_in_layer(self.layer_2, paint_x, paint_y):
+                #     print('remove in layer 2')
+                #     self.remove_tile(self.layer_2, paint_x, paint_y)
+                # elif self.find_in_layer(self.layer_1, paint_x, paint_y):
+                #     print('remove in layer 1')
+                #     self.remove_tile(self.layer_1, paint_x, paint_y)
 
     @staticmethod
     def remove_tile(layer, x, y):
@@ -192,17 +212,24 @@ class Window:
         self.screen.fill(BGCOLOR)
         self.draw_grid()
 
-        # faire une classe et l'instancier pour chaque case, on verra ensuite
+        # faire une classe et l'instancier pour chaque case, ça va permettre de faire une fonction pour lui donner un gid et d'avoir toutes les infos de la case
         # réfléchir à la data à sauvegarder pour pouvoir ensuite la retranscrire dans le fichier tmx
         # dessiner toutes les cases
+        # mettre en place un système pour ajouter pleins de cases
+        # faire un menu accessible à tout moment pour avoir accès au short cuts
+        # faire le menu d'accueil aussi
         # sauvegarder en tmx en réfléchissant bien pour être en mesure de l'ouvrir avec tiled
 
         self.screen.blit(self.tileset.get_tileset(), (0 + self.tileset.get_move_x(), 0 + self.tileset.get_move_y()))
 
-        for rect in self.layer_1:
-            self.screen.blit(rect['surface'], rect['rect'])
-        for rect in self.layer_2:
-            self.screen.blit(rect['surface'], rect['rect'])
+        for layer in self.layers:
+            for rect in self.layers[layer]:
+                self.screen.blit(rect['surface'], rect['rect'])
+
+        # for rect in self.layer_1:
+        #     self.screen.blit(rect['surface'], rect['rect'])
+        # if self.SHOW_LAYER:
+        # for rect in self.layer_2:
 
         pg.display.flip()
 
