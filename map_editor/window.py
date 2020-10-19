@@ -7,6 +7,8 @@ import pygame as pg
 from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE
 # pylint: disable=import-error
 from tileset import Tileset
+# pylint: disable=import-error
+from tile import Tile
 
 
 class Window():
@@ -91,11 +93,11 @@ class Window():
 
         if pg.mouse.get_pressed()[0]:
             if self.tileset.get_move_x() < mouse_x <= self.tileset.tileset_width and self.tileset.get_move_y() < mouse_y <= self.tileset.tileset_height:
-                self.cut_surface = self.tileset.get_tileset().subsurface(
+                self.cut_surface = {'image': self.tileset.get_tileset().subsurface(
                     pg.Rect(
                         paint_x * TILESIZE - self.tileset.get_move_x(),
                         paint_y * TILESIZE - self.tileset.get_move_y(),
-                        TILESIZE, TILESIZE)).copy()
+                        TILESIZE, TILESIZE)).copy(), 'pos': (paint_x, paint_y)}
             # pg.event.wait()
 
         while pg.mouse.get_pressed()[0]:
@@ -107,17 +109,14 @@ class Window():
                 if pg.mouse.get_pressed()[0] and self.cut_surface != None:
                     if self.find_in_layer(self.layers[f"layer_{self.selected_layer}"], paint_x, paint_y):
                         print('can\'t add this tile here')
-
-                        # if self.find_in_layer(self.layer_2, paint_x, paint_y):
-                        # else:
-                        #     print('add to layer 2')
-                        #     self.layer_2.append({'surface': self.cut_surface.copy(), 'rect': pg.Rect(
-                        #         paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
                     else:
                         print(f'add to layer {self.selected_layer}')
-                        self.layers[f'layer_{self.selected_layer}'].append(
-                            {'surface': self.cut_surface.copy(),
-                             'rect': pg.Rect(paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
+                        tile = Tile(
+                            self.tileset, self.cut_surface['image'].copy(),
+                            self.cut_surface['pos'][0],
+                            self.cut_surface['pos'][1])
+                        tile.set_pos(paint_x, paint_y)
+                        self.layers[f'layer_{self.selected_layer}'].append(tile)
             self.draw()
 
         while pg.mouse.get_pressed()[2]:
@@ -142,7 +141,7 @@ class Window():
     @staticmethod
     def remove_tile(layer, x, y):
         for tile in layer:
-            if tile['rect'].left == x * TILESIZE and tile['rect'].top == y * TILESIZE:
+            if tile.rect.left == x * TILESIZE and tile.rect.top == y * TILESIZE:
                 layer.remove(tile)
 
     @staticmethod
@@ -158,7 +157,7 @@ class Window():
             tile: a tile if found or None
         """
         for tile in layer:
-            if tile['rect'].left == x * TILESIZE and tile['rect'].top == y * TILESIZE:
+            if tile.rect.left == x * TILESIZE and tile.rect.top == y * TILESIZE:
                 return tile
         return None
 
@@ -232,12 +231,7 @@ class Window():
 
         for layer in self.layers:
             for rect in self.layers[layer]:
-                self.screen.blit(rect['surface'], rect['rect'])
-
-        # for rect in self.layer_1:
-        #     self.screen.blit(rect['surface'], rect['rect'])
-        # if self.SHOW_LAYER:
-        # for rect in self.layer_2:
+                self.screen.blit(rect.image, rect.rect)
 
         pg.display.flip()
 
