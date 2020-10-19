@@ -43,12 +43,6 @@ class Window:
             self.update()
             self.draw()
 
-    @staticmethod
-    def quit():
-        """Function to quit everything"""
-        pg.quit()
-        sys.exit()
-
     def events(self):
         """"Catch all events here"""
         for event in pg.event.get():
@@ -88,11 +82,32 @@ class Window:
                         paint_x * TILESIZE - self.tileset.get_move_x(),
                         paint_y * TILESIZE - self.tileset.get_move_y(),
                         TILESIZE, TILESIZE)).copy()
-            elif self.cut_surface != None and WIDTH - MAPSIZE * TILESIZE < mouse_x < WIDTH and 0 < mouse_y < MAPSIZE * TILESIZE:
+            elif self.cut_surface != None and self.is_in_map(mouse_x, mouse_y):
                 print('add a new surface')
                 self.list_rect.append({'surface': self.cut_surface, 'rect': pg.Rect(
                     paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
                 self.cut_surface = None
+        if pg.mouse.get_pressed()[2]:
+            if self.is_in_map(mouse_x, mouse_y):
+                self.remove_tile(paint_x, paint_y)
+
+    def remove_tile(self, x, y):
+        for tile in self.list_rect:
+            if tile['rect'].left == x * TILESIZE and tile['rect'].top == y * TILESIZE:
+                self.list_rect.remove(tile)
+
+    @staticmethod
+    def is_in_map(x, y):
+        """check if the position is in the map editor
+
+        Args:
+            x (int): x position
+            y (int): y position
+
+        Returns:
+            boolean
+        """
+        return WIDTH - MAPSIZE * TILESIZE < x < WIDTH and 0 < y < MAPSIZE * TILESIZE
 
     @staticmethod
     def get_mouse_pos():
@@ -139,8 +154,6 @@ class Window:
         self.screen.fill(BGCOLOR)
         self.draw_grid()
 
-        # mettre en place du scroll pour défiler le tileset
-        #  mettre en place un clique droit pour dépop la tuile sélect
         # faire une classe et l'instancier pour chaque case, on verra ensuite
         # réfléchir à la data à sauvegarder pour pouvoir ensuite la retranscrire dans le fichier tmx
         # dessiner toutes les cases
@@ -158,3 +171,9 @@ class Window:
 
     def show_go_screen(self):
         pass
+
+    @staticmethod
+    def quit():
+        """Function to quit everything"""
+        pg.quit()
+        sys.exit()
