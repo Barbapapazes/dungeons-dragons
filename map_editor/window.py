@@ -120,16 +120,24 @@ class Window():
                              'rect': pg.Rect(paint_x * TILESIZE, paint_y * TILESIZE, TILESIZE, TILESIZE)})
             self.draw()
 
-        if pg.mouse.get_pressed()[2]:
+        while pg.mouse.get_pressed()[2]:
+            pg.event.poll()
+            mouse_x, mouse_y = self.get_mouse_pos()
+            paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
+            print(paint_x, paint_y, mouse_x, mouse_y)
             if self.is_in_map(mouse_x, mouse_y):
-                pass
-                # faire une boucle au travers de tout les layers en inversant le sens
-                # if self.find_in_layer(self.layer_2, paint_x, paint_y):
-                #     print('remove in layer 2')
-                #     self.remove_tile(self.layer_2, paint_x, paint_y)
-                # elif self.find_in_layer(self.layer_1, paint_x, paint_y):
-                #     print('remove in layer 1')
-                #     self.remove_tile(self.layer_1, paint_x, paint_y)
+                if pg.mouse.get_pressed()[2]:
+                    if self.find_in_layer(self.layers[f"layer_{self.selected_layer}"], paint_x, paint_y):
+                        print(f"remove in layer_{self.selected_layer}")
+                        self.remove_tile(self.layers[f"layer_{self.selected_layer}"], paint_x, paint_y)
+                    # remove all layers on a tile
+                    # for index, _ in enumerate(self.layers):
+                    #     desc_layer = len(self.layers) - index - 1
+                    #     if self.find_in_layer(self.layers[f"layer_{desc_layer}"], paint_x, paint_y):
+                    #         print(f"remove in layer_{desc_layer}")
+                    #         self.remove_tile(self.layers[f"layer_{desc_layer}"], paint_x, paint_y)
+                    #         break
+            self.draw()
 
     @staticmethod
     def remove_tile(layer, x, y):
