@@ -261,7 +261,6 @@ class Window():
 
         # faire la doc absolument
         # mettre en place un système pour les murs
-        # mettre en place un système pour ajouter pleins de cases (très complexe du coup on va faire un pot de peinture)
         # faire un menu accessible à tout moment pour avoir accès au short cuts
         # faire le menu d'accueil aussi
         # donner la possibilité de charger une map en la sélectionnant depuis un menu dans le dossier /maps (là ou on les save)
