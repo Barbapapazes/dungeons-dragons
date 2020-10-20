@@ -4,7 +4,7 @@ import sys
 from os import path
 import pygame as pg
 # pylint: disable=import-error
-from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE
+from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE, WHITE, BLACK
 # pylint: disable=import-error
 from tileset import Tileset
 # pylint: disable=import-error
@@ -26,11 +26,39 @@ class Window():
         self.playing = None
         self.dt = None
 
+    def draw_text(self, text, font_name, size, color, x, y, align="nw"):
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        if align == "nw":
+            text_rect.topleft = (x, y)
+        if align == "ne":
+            text_rect.topright = (x, y)
+        if align == "sw":
+            text_rect.bottomleft = (x, y)
+        if align == "se":
+            text_rect.bottomright = (x, y)
+        if align == "n":
+            text_rect.midtop = (x, y)
+        if align == "s":
+            text_rect.midbottom = (x, y)
+        if align == "e":
+            text_rect.midright = (x, y)
+        if align == "w":
+            text_rect.midleft = (x, y)
+        if align == "center":
+            text_rect.center = (x, y)
+        self.screen.blit(text_surface, text_rect)
+
     def load_data(self):
         """Load data"""
         game_folder = path.dirname('..')
-        self.assets_folder = path.join(game_folder, 'assets', 'map_editor')
-        self.tileset = Tileset(self.assets_folder, 'town1.png')
+        self.assets_folder = path.join(game_folder, 'assets')
+        self.map_editor_folder = path.join(self.assets_folder, 'map_editor')
+        self.fonts_folder = path.join(self.assets_folder, 'fonts')
+        self.saved_maps = path.join(self.assets_folder, 'saved_maps')
+        self.tileset = Tileset(self.map_editor_folder, 'town1.png')
+        self.text_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
 
     def new(self):
         """Create data for a new loading"""
@@ -77,7 +105,7 @@ class Window():
 
     def save_map(self):
         """Save a tmx file map"""
-        with open(path.join(self.assets_folder, 'map_template.tmx'), 'r') as r, open(path.join(self.assets_folder, 'map.tmx'), 'w') as f:
+        with open(path.join(self.map_editor_folder, 'map_template.tmx'), 'r') as r, open(path.join(self.saved_maps, 'map.tmx'), 'w') as f:
             for row in r:
                 if row.rstrip('\n') == '_LAYERS':
                     found = False
@@ -259,6 +287,12 @@ class Window():
         self.screen.fill(BGCOLOR)
         self.draw_grid()
 
+        self.draw_text(f'Layer Selected: {self.selected_layer}', self.text_font, 30, WHITE, WIDTH, HEIGHT, align="se")
+
+        self.draw_text(f'Tile Selected: ', self.text_font, 30, WHITE, WIDTH // 2, HEIGHT, align="s")
+        if self.cut_surface != None:
+            self.screen.blit(self.cut_surface['image'], (19 * TILESIZE, HEIGHT - TILESIZE))
+
         # faire la doc absolument
         # mettre en place un système pour les murs
         # faire un menu accessible à tout moment pour avoir accès au short cuts
@@ -276,7 +310,24 @@ class Window():
         pg.display.flip()
 
     def show_start_screen(self):
-        pass
+        self.screen.fill(BLACK)
+        # self.draw_text(f'Map Editor', self.text_font, 45, WHITE, WIDTH // 2, HEIGHT // 2, align="center")
+        # self.waiting = True
+        # while self.waiting:
+        #     self.clock.tick(FPS)
+        #     self.start_events()
+        #     print([f for f in os.listdir() if path.isfile(path.join(f))])
+        #     pg.display.flip()
+
+    def start_events(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.waiting = False
+                self.quit()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    self.waiting = False
+                    self.quit()
 
     def show_go_screen(self):
         pass
