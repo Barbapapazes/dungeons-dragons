@@ -77,7 +77,7 @@ class Paint(tool):
         """
         found = False
         for row in range(MAPSIZE):
-            for col in range(Tile.get_offset_x(), MAPSIZE + Tile.get_offset_x()):
+            for col in range(MAPSIZE):
                 for tile in layer:
                     if tile.x == col and tile.y == row:
                         found = True
@@ -90,9 +90,6 @@ class Paint(tool):
                         self.game.tileset, cut_surface['image'].copy(),
                         cut_surface['pos'][0],
                         cut_surface['pos'][1])
-                    tile.set_pos(col, row)
+                    tile.set_pos(col + Tile.get_offset_x(), row)
                     layer.append(tile)
-
-        for tile in layer:
-            print(tile)
         return layer
