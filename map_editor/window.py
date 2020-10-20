@@ -32,12 +32,10 @@ class Window():
 
     def new(self):
         """Create data for a new loading"""
-        # faire une boucle pour créer toute les layers (0-9)
         self.layers = {f"layer_{x}": list() for x in range(10)}
         self.cut_surface = None
         self.map_color = None
         self.selected_layer = 0
-        # self.SHOW_LAYER = True
 
     def run(self):
         """Main loop for the program"""
@@ -62,10 +60,6 @@ class Window():
                     self.save_map()
                 if event.key == pg.K_r:
                     self.cut_surface = None
-                if event.key == pg.K_l:
-                    pass
-                    # use to show all the layer
-                    # self.SHOW_LAYER = not self.SHOW_LAYER
                 if event.key in [pg.K_0, pg.K_1, pg.K_2, pg.K_3, pg.K_4, pg.K_5, pg.K_6, pg.K_7, pg.K_8, pg.K_9]:
                     self.selected_layer = event.unicode
                     print('layer selected', self.selected_layer)
@@ -140,6 +134,13 @@ class Window():
 
     @staticmethod
     def remove_tile(layer, x, y):
+        """Remove a tile form a layer
+
+        Args:
+            layer (list)
+            x (int)
+            y (int)
+        """
         for tile in layer:
             if tile.rect.left == x * TILESIZE and tile.rect.top == y * TILESIZE:
                 layer.remove(tile)
@@ -219,13 +220,10 @@ class Window():
         self.screen.fill(BGCOLOR)
         self.draw_grid()
 
-        # faire une classe et l'instancier pour chaque case, ça va permettre de faire une fonction pour lui donner un gid et d'avoir toutes les infos de la case
         # réfléchir à la data à sauvegarder pour pouvoir ensuite la retranscrire dans le fichier tmx
-        # dessiner toutes les cases
-        # mettre en place un système pour ajouter pleins de cases
+        # mettre en place un système pour ajouter pleins de cases (très complexe)
         # faire un menu accessible à tout moment pour avoir accès au short cuts
         # faire le menu d'accueil aussi
-        # sauvegarder en tmx en réfléchissant bien pour être en mesure de l'ouvrir avec tiled
 
         self.screen.blit(self.tileset.get_tileset(), (0 + self.tileset.get_move_x(), 0 + self.tileset.get_move_y()))
 
