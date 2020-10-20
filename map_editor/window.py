@@ -76,10 +76,10 @@ class Window():
                     for layer in self.layers:
                         f.write(f' <layer id="1" name="{layer}" width="{MAPSIZE}" height="{MAPSIZE}">\n')
                         f.write('  <data encoding="csv">\n')
-                        for row in range(20):
-                            for col in range(20):
+                        for row_layer in range(MAPSIZE):
+                            for col_layer in range(MAPSIZE):
                                 for tile in self.layers[layer]:
-                                    if tile.x == col and tile.y == row:
+                                    if tile.x == col_layer and tile.y == row_layer:
                                         f.write(f'{tile.gid}')
                                         found = True
                                         break
@@ -87,9 +87,9 @@ class Window():
                                     f.write('0')
                                 else:
                                     found = False
-                                if row == 19 and col == 19:
+                                if row_layer == 19 and col_layer == 19:
                                     f.write('\n')
-                                elif col != 19:
+                                elif col_layer != 19:
                                     f.write(',')
                                 else:
                                     f.write(',\n')
@@ -97,8 +97,6 @@ class Window():
                         f.write(" </layer>\n")
                 else:
                     f.write(row)
-        # with open(path.join(self.assets_folder, 'map.tmx'), 'w') as f:
-        #     f.write('bonjour')
 
     def mouse_listener(self):
         """Listen mouse button"""
