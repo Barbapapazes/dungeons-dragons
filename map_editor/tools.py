@@ -2,7 +2,7 @@
 
 import pygame as pg
 from tile import Tile
-from settings import RED, TILESIZE, MAPSIZE
+from settings import RED, TILESIZE, MAPSIZE, YELLOW
 import copy
 
 
@@ -29,6 +29,18 @@ class tool(pg.sprite.Sprite):
 
     def action():
         pass
+
+
+class Rubber(tool):
+    """A paint pot"""
+
+    def __init__(self, game, x, y, name):
+        super(Rubber, self).__init__(game, x, y, name)
+        self.image.fill(YELLOW)
+
+    @staticmethod
+    def action():
+        return []
 
 
 class Paint(tool):

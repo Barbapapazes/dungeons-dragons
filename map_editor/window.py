@@ -10,7 +10,7 @@ from tileset import Tileset
 # pylint: disable=import-error
 from tile import Tile
 # pylint: disable=import-error
-from tools import Paint
+from tools import Paint, Rubber
 
 
 class Window():
@@ -39,10 +39,11 @@ class Window():
         self.map_color = None
         self.selected_layer = 0
         self.selected_tool = None
-        self.tool_images = {'paint_pot': pg.Surface((TILESIZE, TILESIZE))}
+        self.tool_images = {'paint_pot': pg.Surface((TILESIZE, TILESIZE)), 'rubber': pg.Surface((TILESIZE, TILESIZE))}
         self.tools = pg.sprite.Group()
 
         self.paint_pot = Paint(self, 9, 0, 'paint_pot')
+        self.rubber = Rubber(self, 10, 0, 'rubber')
 
     def run(self):
         """Main loop for the program"""
@@ -115,6 +116,9 @@ class Window():
             self.layers[f"layer_{self.selected_layer}"] = self.paint_pot.action(
                 self.layers[f"layer_{self.selected_layer}"],
                 self.cut_surface)
+
+        if self.rubber.clicked(paint_x, paint_y):
+            self.layers[f"layer_{self.selected_layer}"] = self.rubber.action()
 
         if pg.mouse.get_pressed()[0]:
             if self.tileset.get_move_x() < mouse_x <= self.tileset.tileset_width and self.tileset.get_move_y() < mouse_y <= self.tileset.tileset_height:
