@@ -1,7 +1,7 @@
 """The tile class"""
 
 import pygame as pg
-from settings import TILESIZE
+from settings import TILESIZE, MAPSIZE, WIDTH
 
 
 class Tile():
@@ -11,6 +11,8 @@ class Tile():
         self.image = image
         self.rect = pg.Rect(x * TILESIZE, y * TILESIZE, TILESIZE, TILESIZE)
         self.gid = self.calc_gid(tileset, x, y)
+        self.x = x
+        self.y = x
 
     def __str__(self):
         return f"gid: {self.gid}"
@@ -22,8 +24,19 @@ class Tile():
             x (int)
             y (int)
         """
+        self.x = x - self.get_offset_x()
+        self.y = y
         self.rect.top = y * TILESIZE
         self.rect.left = x * TILESIZE
+
+    @staticmethod
+    def get_offset_x():
+        """Get the offset of the map
+
+        Returns:
+            int
+        """
+        return WIDTH // TILESIZE - MAPSIZE
 
     @staticmethod
     def calc_gid(tileset, x, y):
@@ -39,5 +52,5 @@ class Tile():
         """
         cols = tileset.tileset_width // TILESIZE
         # rows = tileset.tileset_height // TILESIZE
-        gid = y * cols + x
+        gid = y * cols + x + 1
         return gid

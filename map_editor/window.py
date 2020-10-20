@@ -69,13 +69,34 @@ class Window():
 
     def save_map(self):
         """Save a tmx file map"""
-        for layer in self.layers:
-            print(f"layer {layer}")
-            for rect in self.layers[layer]:
-                print(rect)
-        # with open(path.join(self.assets_folder, 'map_template.tmx'), 'r') as f:
-        #     for row in f:
-        #         print(row)
+        with open(path.join(self.assets_folder, 'map_template.tmx'), 'r') as r, open(path.join(self.assets_folder, 'map.tmx'), 'w') as f:
+            for row in r:
+                if row.rstrip('\n') == '_LAYERS':
+                    found = False
+                    for layer in self.layers:
+                        f.write(f' <layer id="1" name="{layer}" width="{MAPSIZE}" height="{MAPSIZE}">\n')
+                        f.write('  <data encoding="csv">\n')
+                        for row in range(20):
+                            for col in range(20):
+                                for tile in self.layers[layer]:
+                                    if tile.x == col and tile.y == row:
+                                        f.write(f'{tile.gid}')
+                                        found = True
+                                        break
+                                if not found:
+                                    f.write('0')
+                                else:
+                                    found = False
+                                if row == 19 and col == 19:
+                                    f.write('\n')
+                                elif col != 19:
+                                    f.write(',')
+                                else:
+                                    f.write(',\n')
+                        f.write("  </data>\n")
+                        f.write(" </layer>\n")
+                else:
+                    f.write(row)
         # with open(path.join(self.assets_folder, 'map.tmx'), 'w') as f:
         #     f.write('bonjour')
 
@@ -221,6 +242,8 @@ class Window():
         self.draw_grid()
 
         # réfléchir à la data à sauvegarder pour pouvoir ensuite la retranscrire dans le fichier tmx
+        # faire la doc absolument
+        # mettre en place un système pour les murs
         # mettre en place un système pour ajouter pleins de cases (très complexe)
         # faire un menu accessible à tout moment pour avoir accès au short cuts
         # faire le menu d'accueil aussi
