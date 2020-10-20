@@ -9,6 +9,8 @@ from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOL
 from tileset import Tileset
 # pylint: disable=import-error
 from tile import Tile
+# pylint: disable=import-error
+from tools import Paint
 
 
 class Window():
@@ -36,6 +38,11 @@ class Window():
         self.cut_surface = None
         self.map_color = None
         self.selected_layer = 0
+        self.selected_tool = None
+        self.tool_images = {'paint_pot': pg.Surface((TILESIZE, TILESIZE))}
+        self.tools = pg.sprite.Group()
+
+        self.paint_pot = Paint(self, 9, 0, 'paint_pot')
 
     def run(self):
         """Main loop for the program"""
@@ -104,13 +111,22 @@ class Window():
         paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
         print(paint_x, paint_y)
 
+        if self.paint_pot.clicked(paint_x, paint_y) and self.cut_surface != None:
+            self.layers[f"layer_{self.selected_layer}"] = self.paint_pot.action(
+                self.layers[f"layer_{self.selected_layer}"],
+                self.cut_surface)
+
         if pg.mouse.get_pressed()[0]:
             if self.tileset.get_move_x() < mouse_x <= self.tileset.tileset_width and self.tileset.get_move_y() < mouse_y <= self.tileset.tileset_height:
-                self.cut_surface = {'image': self.tileset.get_tileset().subsurface(
-                    pg.Rect(
-                        paint_x * TILESIZE - self.tileset.get_move_x(),
-                        paint_y * TILESIZE - self.tileset.get_move_y(),
-                        TILESIZE, TILESIZE)).copy(), 'pos': (paint_x, paint_y)}
+                self.cut_surface = {
+                    'image': self.tileset.get_tileset().subsurface(
+                        pg.Rect(
+                            paint_x * TILESIZE - self.tileset.get_move_x(),
+                            paint_y * TILESIZE - self.tileset.get_move_y(),
+                            TILESIZE, TILESIZE)).copy(),
+                    'pos': (paint_x,
+                            paint_y - self.tileset.get_move_y() // TILESIZE)}
+                print('pos', self.cut_surface['pos'])
             # pg.event.wait()
 
         while pg.mouse.get_pressed()[0]:
@@ -239,18 +255,20 @@ class Window():
         self.screen.fill(BGCOLOR)
         self.draw_grid()
 
-        # réfléchir à la data à sauvegarder pour pouvoir ensuite la retranscrire dans le fichier tmx
         # faire la doc absolument
         # mettre en place un système pour les murs
-        # mettre en place un système pour ajouter pleins de cases (très complexe)
+        # mettre en place un système pour ajouter pleins de cases (très complexe du coup on va faire un pot de peinture)
         # faire un menu accessible à tout moment pour avoir accès au short cuts
         # faire le menu d'accueil aussi
+        # donner la possibilité de charger une map en la sélectionnant depuis un menu dans le dossier /maps (là ou on les save)
 
         self.screen.blit(self.tileset.get_tileset(), (0 + self.tileset.get_move_x(), 0 + self.tileset.get_move_y()))
 
         for layer in self.layers:
             for rect in self.layers[layer]:
                 self.screen.blit(rect.image, rect.rect)
+
+        self.tools.draw(self.screen)
 
         pg.display.flip()
 

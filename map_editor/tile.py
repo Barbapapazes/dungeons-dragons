@@ -15,18 +15,18 @@ class Tile():
         self.y = x
 
     def __str__(self):
-        return f"gid: {self.gid}"
+        return f"gid: {self.gid}, pos: {self.x} {self.y}"
 
     def set_pos(self, x, y):
         """Set the pos of the rect
 
         Args:
-            x (int)
+            x (int): postition sur l'écran
             y (int)
         """
-        self.x = x - self.get_offset_x()
+        self.x = x - self.get_offset_x()  # pos on the map
         self.y = y
-        self.rect.top = y * TILESIZE
+        self.rect.top = y * TILESIZE  # pos on the screen
         self.rect.left = x * TILESIZE
 
     @staticmethod
