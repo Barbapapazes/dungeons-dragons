@@ -1,10 +1,11 @@
 """Map editor for a user to create a new tiled map"""
 
 import sys
+import os
 from os import path
 import pygame as pg
 # pylint: disable=import-error
-from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE, WHITE, BLACK
+from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE, WHITE, BLACK, YELLOW
 # pylint: disable=import-error
 from tileset import Tileset
 # pylint: disable=import-error
@@ -58,6 +59,7 @@ class Window():
         self.fonts_folder = path.join(self.assets_folder, 'fonts')
         self.saved_maps = path.join(self.assets_folder, 'saved_maps')
         self.tileset = Tileset(self.map_editor_folder, 'town1.png')
+        self.title_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
         self.text_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
 
     def new(self):
@@ -311,13 +313,25 @@ class Window():
 
     def show_start_screen(self):
         self.screen.fill(BLACK)
-        # self.draw_text(f'Map Editor', self.text_font, 45, WHITE, WIDTH // 2, HEIGHT // 2, align="center")
-        # self.waiting = True
-        # while self.waiting:
-        #     self.clock.tick(FPS)
-        #     self.start_events()
-        #     print([f for f in os.listdir() if path.isfile(path.join(f))])
-        #     pg.display.flip()
+        self.draw_text('Map Editor', self.title_font, 45, WHITE, WIDTH // 2, HEIGHT // 2, align="center")
+        self.waiting = True
+        self.selected = 0
+        self.selected_map = None
+        self.len_maps = 0
+        while self.waiting:
+            self.clock.tick(FPS)
+            self.maps = [f for f in os.listdir(self.saved_maps) if path.isfile(path.join(self.saved_maps, f))]
+            self.selected_map = self.maps[self.selected]
+            self.len_maps = len(self.maps)
+            for value in enumerate(self.maps):
+                color = WHITE
+                if value[0] == self.selected:
+                    color = YELLOW
+                self.draw_text(value[1], self.text_font, 25, color, WIDTH //
+                               2, 6 * HEIGHT // 10 + 30 * value[0], align="center")
+            self.start_events()
+
+            pg.display.flip()
 
     def start_events(self):
         for event in pg.event.get():
@@ -328,6 +342,19 @@ class Window():
                 if event.key == pg.K_ESCAPE:
                     self.waiting = False
                     self.quit()
+                if event.key == pg.K_DOWN:
+                    self.selected += 1
+                    if self.selected >= self.len_maps:
+                        self.selected = self.len_maps - 1
+                    self.selected_map = self.maps[self.selected]
+                if event.key == pg.K_UP:
+                    self.selected -= 1
+                    if self.selected < 0:
+                        self.selected = 0
+                    self.selected_map = self.maps[self.selected]
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_RETURN:
+                    print(self.selected_map)
 
     def show_go_screen(self):
         pass
