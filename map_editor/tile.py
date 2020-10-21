@@ -12,7 +12,7 @@ class Tile():
         self.rect = pg.Rect(x * TILESIZE, y * TILESIZE, TILESIZE, TILESIZE)
         self.gid = self.calc_gid(tileset, x, y)
         self.x = x
-        self.y = x
+        self.y = y
 
     def __str__(self):
         return f"gid: {self.gid}, pos: {self.x} {self.y}"

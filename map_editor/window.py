@@ -4,6 +4,8 @@ import sys
 import os
 from os import path
 import pygame as pg
+import inspect
+import pytmx
 # pylint: disable=import-error
 from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE, WHITE, BLACK, YELLOW
 # pylint: disable=import-error
@@ -26,6 +28,7 @@ class Window():
         self.load_data()
         self.playing = None
         self.dt = None
+        self.layers = {f"layer_{x}": list() for x in range(10)}
 
     def draw_text(self, text, font_name, size, color, x, y, align="nw"):
         font = pg.font.Font(font_name, size)
@@ -64,7 +67,6 @@ class Window():
 
     def new(self):
         """Create data for a new loading"""
-        self.layers = {f"layer_{x}": list() for x in range(10)}
         self.cut_surface = None
         self.map_color = None
         self.selected_layer = 0
@@ -355,6 +357,26 @@ class Window():
             if event.type == pg.KEYUP:
                 if event.key == pg.K_RETURN:
                     print(self.selected_map)
+                    self.load_map(self.saved_maps, self.selected_map)
+                    self.waiting = False
+                    # si c'est new file alors on commence normal, sinon on fait appelle à la fonction de création de map qui met dans les layers les bonnes choses
+
+    def load_map(self, pathname, filename):
+        tm = pytmx.load_pygame(path.join(pathname, filename), pixel_alpha=True)
+        # print(tm.tiledgidmap) # dict with the translation btween the gid and the pytmx gid
+        ti = tm.get_tile_image_by_gid
+        for index, layer in enumerate(tm.visible_layers):
+            if isinstance(layer, pytmx.TiledTileLayer):
+                for x, y, gid in layer:
+                    tile = ti(gid)
+                    if tile:
+                        # create the tile using the pos for the screen
+                        new_tile = Tile(self.tileset, tile, x + Tile.get_offset_x(), y)
+                        # set the gid using it from the tmx file
+                        new_tile.gid = tm.tiledgidmap[gid]
+                        # set the x value for the map
+                        new_tile.x = x
+                        self.layers[f"layer_{index}"].append(new_tile)
 
     def show_go_screen(self):
         pass
