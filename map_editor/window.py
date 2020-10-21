@@ -331,7 +331,7 @@ class Window():
                     color = YELLOW
                 self.draw_text(value[1], self.text_font, 25, color, WIDTH //
                                2, 6 * HEIGHT // 10 + 30 * value[0], align="center")
-            self.draw_text("Press space to create a new file", self.text_font, 25, color, WIDTH // 2, HEIGHT, align="s")
+            self.draw_text("Press space to create a new file", self.text_font, 25, WHITE, WIDTH // 2, HEIGHT, align="s")
             self.start_events()
 
             pg.display.flip()
