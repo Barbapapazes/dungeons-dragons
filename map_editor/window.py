@@ -4,7 +4,7 @@ import sys
 import os
 from os import path
 import pygame as pg
-import inspect
+from datetime import datetime, date
 import pytmx
 # pylint: disable=import-error
 from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE, WHITE, BLACK, YELLOW
@@ -109,7 +109,7 @@ class Window():
 
     def save_map(self):
         """Save a tmx file map"""
-        with open(path.join(self.map_editor_folder, 'map_template.tmx'), 'r') as r, open(path.join(self.saved_maps, 'map.tmx'), 'w') as f:
+        with open(path.join(self.map_editor_folder, 'map_template.tmx'), 'r') as r, open(path.join(self.saved_maps, self.selected_map), 'w') as f:
             for row in r:
                 if row.rstrip('\n') == '_LAYERS':
                     found = False
@@ -331,6 +331,7 @@ class Window():
                     color = YELLOW
                 self.draw_text(value[1], self.text_font, 25, color, WIDTH //
                                2, 6 * HEIGHT // 10 + 30 * value[0], align="center")
+            self.draw_text("Press space to create a new file", self.text_font, 25, color, WIDTH // 2, HEIGHT, align="s")
             self.start_events()
 
             pg.display.flip()
@@ -359,7 +360,13 @@ class Window():
                     print(self.selected_map)
                     self.load_map(self.saved_maps, self.selected_map)
                     self.waiting = False
-                    # si c'est new file alors on commence normal, sinon on fait appelle à la fonction de création de map qui met dans les layers les bonnes choses
+                if event.key == pg.K_SPACE:
+                    now = datetime.now()
+                    date = now.strftime("%Y-%b-%d")
+                    timestamp = datetime.timestamp(now)
+                    self.selected_map = f"{date}-{int(timestamp)}.tmx"
+                    print("create a new file")  # ajouter le path dans le logger
+                    self.waiting = False
 
     def load_map(self, pathname, filename):
         tm = pytmx.load_pygame(path.join(pathname, filename), pixel_alpha=True)
