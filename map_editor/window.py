@@ -4,6 +4,7 @@ import sys
 import os
 from os import path
 import pygame as pg
+from logger import logger
 from datetime import datetime, date
 import pytmx
 # pylint: disable=import-error
@@ -20,6 +21,7 @@ class Window():
     """Open the main window"""
 
     def __init__(self):
+        logger.info('Start Window')
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
@@ -58,6 +60,7 @@ class Window():
 
     def load_data(self):
         """Load data"""
+        logger.info('Load data')
         game_folder = path.dirname('..')
         self.assets_folder = path.join(game_folder, 'assets')
         self.map_editor_folder = path.join(self.assets_folder, 'map_editor')
@@ -100,17 +103,16 @@ class Window():
                 if event.key == pg.K_ESCAPE:
                     self.quit()
                 if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
-                    print('ctrl_s')
                     pg.event.wait()
                     self.save_map()
                 if event.key == pg.K_r:
                     self.cut_surface = None
+                    logger.info('Remove cut surface')
                 if event.key in [pg.K_0, pg.K_1, pg.K_2, pg.K_3, pg.K_4, pg.K_5, pg.K_6, pg.K_7, pg.K_8, pg.K_9]:
                     self.selected_layer = event.unicode
-                    print('layer selected', self.selected_layer)
+                    logger.info(f'Layer selected {self.selected_layer}')
             if event.type == pg.MOUSEBUTTONDOWN:
                 if pg.key.get_mods() & pg.KMOD_ALT:
-                    print('alt click')
                     self.bound_drawer()
                 else:
                     self.tileset.get_mouse(event)
@@ -157,14 +159,17 @@ class Window():
                     f.write(' </objectgroup>\n')
                 else:
                     f.write(row)
+            logger.info(f'Save "{self.selected_map}" in "{path.abspath(self.saved_maps)}"')
 
     def bound_drawer(self):
+        """Draw wall"""
         # reset the relative pos
         pg.mouse.get_rel()
         left, top = self.get_mouse_pos()
         move_x = 0
         move_y = 0
         first_time = True
+        bound_size = len(self.bounds)
         while pg.mouse.get_pressed()[0]:
             pg.event.poll()
 
@@ -183,6 +188,9 @@ class Window():
                 first_time = False
                 self.draw()
 
+        if len(self.bounds) > bound_size:
+            logger.info("Create a wall")
+
         touched_rect = list()
         if pg.mouse.get_pressed()[2]:
             mouse_x, mouse_y = self.get_mouse_pos()
@@ -193,6 +201,7 @@ class Window():
 
                 for touched in touched_rect:
                     self.bounds.remove(touched)
+                    logger.info('Remove a wall')
 
                 touched_rect = list()
                 for rect in self.players:
@@ -201,26 +210,30 @@ class Window():
 
                 for touched in touched_rect:
                     self.players.remove(touched)
+                    logger.info('Remove a player')
 
     def mouse_listener(self):
         """Listen mouse button"""
         mouse_x, mouse_y = self.get_mouse_pos()
         paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
-        print(paint_x, paint_y)
 
         if self.paint_pot.clicked(paint_x, paint_y) and self.cut_surface != None:
             self.layers[f"layer_{self.selected_layer}"] = self.paint_pot.action(
                 self.layers[f"layer_{self.selected_layer}"],
                 self.cut_surface)
+            logger.info("Use paint pot")
 
         if self.rubber.clicked(paint_x, paint_y):
             self.layers[f"layer_{self.selected_layer}"] = self.rubber.action()
+            logger.info("Use rubber")
 
         if pg.mouse.get_pressed()[0] and self.is_in_map(mouse_x, mouse_y) and self.selected_tool:
             self.selected_tool.action(self.players, mouse_x, mouse_y)
+            logger.info(f"Use action of {self.selected_tool.name}")
 
         if self.player.clicked(paint_x, paint_y):
             self.selected_tool = self.player
+            logger.info("Select player tool")
 
         if pg.mouse.get_pressed()[0]:
             if self.tileset.get_move_x() < mouse_x <= self.tileset.tileset_width and self.tileset.get_move_y() < mouse_y <= self.tileset.tileset_height:
@@ -233,38 +246,35 @@ class Window():
                             TILESIZE, TILESIZE)).copy(),
                     'pos': (paint_x,
                             paint_y - self.tileset.get_move_y() // TILESIZE)}
-                print('pos', self.cut_surface['pos'])
-            # pg.event.wait()
+                logger.info(f"Cut surface at {self.cut_surface['pos']}")
 
         while pg.mouse.get_pressed()[0]:
             pg.event.poll()
             mouse_x, mouse_y = self.get_mouse_pos()
             paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
-            print(paint_x, paint_y, mouse_x, mouse_y)
             if self.is_in_map(mouse_x, mouse_y):
                 if pg.mouse.get_pressed()[0] and self.cut_surface != None:
                     if self.find_in_layer(self.layers[f"layer_{self.selected_layer}"], paint_x, paint_y):
-                        print('can\'t add this tile here')
+                        logger.info(f'Can\'t add this tile at {paint_x} {paint_y}')
                     else:
-                        print(f'add to layer {self.selected_layer}')
                         tile = Tile(
                             self.tileset, self.cut_surface['image'].copy(),
                             self.cut_surface['pos'][0],
                             self.cut_surface['pos'][1])
                         tile.set_pos(paint_x, paint_y)
                         self.layers[f'layer_{self.selected_layer}'].append(tile)
+                        logger.info(f"Create a tile at {paint_x} {paint_y} in layer {self.selected_layer}")
             self.draw()
 
         while pg.mouse.get_pressed()[2]:
             pg.event.poll()
             mouse_x, mouse_y = self.get_mouse_pos()
             paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
-            print(paint_x, paint_y, mouse_x, mouse_y)
             if self.is_in_map(mouse_x, mouse_y):
                 if pg.mouse.get_pressed()[2]:
                     if self.find_in_layer(self.layers[f"layer_{self.selected_layer}"], paint_x, paint_y):
-                        print(f"remove in layer_{self.selected_layer}")
                         self.remove_tile(self.layers[f"layer_{self.selected_layer}"], paint_x, paint_y)
+                        logger.info(f"Remove tile at {paint_x} {paint_y} in layer {self.selected_layer}")
                     # remove all layers on a tile
                     # for index, _ in enumerate(self.layers):
                     #     desc_layer = len(self.layers) - index - 1
@@ -369,7 +379,6 @@ class Window():
             self.screen.blit(self.cut_surface['image'], (19 * TILESIZE, HEIGHT - TILESIZE))
 
         # faire la doc absolument
-        # mettre en place un système pour les murs
         # faire un menu accessible à tout moment pour avoir accès au short cuts
         # add a logger pour infomer dans la console ce qu'il se passe
 
@@ -391,6 +400,7 @@ class Window():
 
     def show_start_screen(self):
         """Create the menu where the user choose a map"""
+        logger.info("Start menu")
         self.screen.fill(BLACK)
         self.draw_text('Map Editor', self.title_font, 45, WHITE, WIDTH // 2, HEIGHT // 2, align="center")
         self.waiting = True
@@ -429,14 +439,15 @@ class Window():
                     if self.selected >= self.len_maps:
                         self.selected = self.len_maps - 1
                     self.selected_map = self.maps[self.selected]
+                    logger.info(f"Selected map: {self.selected_map}")
                 if event.key == pg.K_UP:
                     self.selected -= 1
                     if self.selected < 0:
                         self.selected = 0
                     self.selected_map = self.maps[self.selected]
+                    logger.info(f"Selected map: {self.selected_map}")
             if event.type == pg.KEYUP:
                 if event.key == pg.K_RETURN:
-                    print(self.selected_map)
                     self.load_map(self.saved_maps, self.selected_map)
                     self.waiting = False
                 if event.key == pg.K_SPACE:
@@ -444,7 +455,7 @@ class Window():
                     date = now.strftime("%Y-%b-%d")
                     timestamp = datetime.timestamp(now)
                     self.selected_map = f"{date}-{int(timestamp)}.tmx"
-                    print("create a new file")  # ajouter le path dans le logger
+                    logger.info(f'Create "{self.selected_map}" in "{path.abspath(self.saved_maps)}"')
                     self.waiting = False
 
     def load_map(self, pathname, filename):
@@ -454,8 +465,8 @@ class Window():
             pathname (string)
             filename (string)
         """
+        logger.info(f'Load "{self.selected_map}" from "{path.abspath(self.saved_maps)}"')
         tm = pytmx.load_pygame(path.join(pathname, filename), pixel_alpha=True)
-        # print(tm.tiledgidmap) # dict with the translation btween the gid and the pytmx gid
         ti = tm.get_tile_image_by_gid
         for index, layer in enumerate(tm.visible_layers):
             if isinstance(layer, pytmx.TiledTileLayer):
@@ -476,6 +487,7 @@ class Window():
             if obj.name == 'player':
                 rect = pg.Rect(obj.x + Tile.get_offset_x() * TILESIZE, obj.y, obj.width, obj.height)
                 self.players.append(rect)
+        logger.info('Map loaded')
 
     def show_go_screen(self):
         pass

@@ -11,6 +11,7 @@ class tool(pg.sprite.Sprite):
     def __init__(self, game, x, y, name):
         self.groups = game.tools
         pg.sprite.Sprite.__init__(self, self.groups)
+        self.name = name
         self.game = game
         self.image = game.tool_images[name]
         self.rect = self.image.get_rect()
@@ -31,8 +32,6 @@ class tool(pg.sprite.Sprite):
         Returns:
             bool
         """
-        print(paint_x * TILESIZE, paint_y * TILESIZE)
-        print(self.rect.left, self.rect.right, self.rect.top,  self.rect.bottom)
         return self.rect.left == paint_x * TILESIZE and self.rect.top == paint_y * TILESIZE
 
     def action(self, *args):
@@ -85,7 +84,6 @@ class Paint(tool):
                 if found:
                     found = False
                 else:
-                    print(row, col)
                     tile = Tile(
                         self.game.tileset, cut_surface['image'].copy(),
                         cut_surface['pos'][0],
@@ -96,9 +94,18 @@ class Paint(tool):
 
 
 class Player(tool):
+    """Create a player"""
+
     def __init__(self, game, x, y, name):
         super(Player, self).__init__(game, x, y, name)
         self.image.fill((GREEN))
 
     def action(self, players, mouse_x, mouse_y):
+        """Create a rect which représente a user
+
+        Args:
+            players (list): list which contains all created players
+            mouse_x (int)
+            mouse_y (int)
+        """
         players.append(pg.Rect(mouse_x - TILESIZE // 2, mouse_y - TILESIZE // 2, TILESIZE, TILESIZE))
