@@ -146,10 +146,14 @@ class Window():
                         f.write(" </layer>\n")
                 elif row.rstrip('\n') == '_OBJECTS':
                     f.write(' <objectgroup name="Obstacles">\n')
+                    i = 1
                     for index, rect in enumerate(self.bounds):
-                        print(rect.x - Tile.get_offset_x() * TILESIZE)
+                        i = index
                         f.write(
                             f'  <object id="{index + 1}" name="wall" x="{rect.x - Tile.get_offset_x() * TILESIZE}" y="{rect.y}" width="{rect.width}" height="{rect.height}"/>\n')
+                    for index, rect in enumerate(self.players):
+                        f.write(
+                            f'  <object id="{index + i + 2}" name="player" x="{rect.x - Tile.get_offset_x() * TILESIZE}" y="{rect.y}" width="{rect.width}" height="{rect.height}"/>\n')
                     f.write(' </objectgroup>\n')
                 else:
                     f.write(row)
