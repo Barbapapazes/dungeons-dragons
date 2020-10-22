@@ -69,9 +69,12 @@ class Window():
         self.tileset = Tileset(self.map_editor_folder, 'town1.png')
         self.title_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
         self.text_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
 
     def new(self):
         """Create data for a new loading"""
+        self.show_shortcuts = False
         self.cut_surface = None
         self.map_color = None
         self.selected_layer = 0
@@ -105,6 +108,9 @@ class Window():
                 if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
                     pg.event.wait()
                     self.save_map()
+                if event.key == pg.K_k and pg.key.get_mods() & pg.KMOD_CTRL:
+                    self.show_shortcuts = not self.show_shortcuts
+                    logger.info("Display all shortcuts")
                 if event.key == pg.K_r:
                     self.cut_surface = None
                     logger.info('Remove cut surface')
@@ -395,6 +401,35 @@ class Window():
             pg.draw.rect(self.screen, GREEN, rect, 2)
 
         self.tools.draw(self.screen)
+
+        if self.show_shortcuts:
+            self.screen.blit(self.dim_screen, (0, 0))
+            self.draw_text('Shortcuts', self.title_font, 45, YELLOW, WIDTH / 2, 0, align="n")
+            self.draw_text('CTRL + K: show all shortcuts', self.title_font, 25, WHITE, 0, 1 * HEIGHT / 10, align="w")
+            self.draw_text('Left Click: select a tile', self.title_font, 25, WHITE, 0, 2 * HEIGHT / 10, align="w")
+            self.draw_text('ZQSD or Scroll Wheel: move the tileset',
+                           self.title_font, 25, WHITE, 0, 3 * HEIGHT / 10, align="w")
+            # self.draw_text('CTRL + K: show all shortcuts', self.title_font, 25, WHITE, 0, 4 * HEIGHT / 10, align="w")
+            # self.draw_text('CTRL + K: show all shortcuts', self.title_font, 25, WHITE, 0, 5 * HEIGHT / 10, align="w")
+            # self.draw_text('CTRL + K: show all shortcuts', self.title_font, 25, WHITE, 0, 6 * HEIGHT / 10, align="w")
+            # self.draw_text('CTRL + K: show all shortcuts', self.title_font, 25, WHITE, 0, 7 * HEIGHT / 10, align="w")
+            # self.draw_text('CTRL + K: show all shortcuts', self.title_font, 25, WHITE, 0, 8 * HEIGHT / 10, align="w")
+            # self.draw_text('CTRL + K: show all shortcuts', self.title_font, 25, WHITE, 0, 9 * HEIGHT / 10, align="w")
+
+            self.draw_text('Number: select a layer', self.title_font, 25, WHITE, WIDTH // 2, 1 * HEIGHT / 10, align="w")
+            self.draw_text('Left Click:  add a tile',
+                           self.title_font, 25, WHITE, WIDTH // 2, 2 * HEIGHT / 10, align="w")
+            self.draw_text('Right Click: remove a tile',
+                           self.title_font, 25, WHITE, WIDTH // 2, 3 * HEIGHT / 10, align="w")
+            self.draw_text('ALT + Left Click: create a wall', self.title_font,
+                           25, WHITE, WIDTH // 2, 4 * HEIGHT / 10, align="w")
+            self.draw_text('ALT + Right Click: remove a wall or a player', self.title_font,
+                           25, WHITE, WIDTH // 2, 5 * HEIGHT / 10, align="w")
+            self.draw_text('CTRL + R: remove the selected tile',
+                           self.title_font, 25, WHITE, WIDTH // 2, 6 * HEIGHT / 10, align="w")
+            self.draw_text('CTRL + S: save the map', self.title_font, 25, WHITE, WIDTH // 2, 7 * HEIGHT / 10, align="w")
+            # self.draw_text('CTRL + K: show all shortcuts', self.title_font, 25, WHITE, 0, 8 * HEIGHT / 10, align="e")
+            # self.draw_text('CTRL + K: show all shortcuts', self.title_font, 25, WHITE, 0, 9 * HEIGHT / 10, align="e")
 
         pg.display.flip()
 
