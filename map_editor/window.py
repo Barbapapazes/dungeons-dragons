@@ -167,6 +167,17 @@ class Window():
                 first_time = False
                 self.draw()
 
+        touched_bounds = list()
+        if pg.mouse.get_pressed()[2]:
+            mouse_x, mouse_y = self.get_mouse_pos()
+            if self.is_in_map(mouse_x, mouse_y):
+                for rect in self.bounds:
+                    if rect.collidepoint(mouse_x, mouse_y):
+                        touched_bounds.append(rect)
+
+                for touched in touched_bounds:
+                    self.bounds.remove(touched)
+
     def mouse_listener(self):
         """Listen mouse button"""
         mouse_x, mouse_y = self.get_mouse_pos()
@@ -338,7 +349,7 @@ class Window():
                 self.screen.blit(rect.image, rect.rect)
 
         for rect in self.bounds:
-            pg.draw.rect(self.screen, (255, 0, 0), rect, 1)
+            pg.draw.rect(self.screen, (255, 0, 0), rect, 2)
 
         self.tools.draw(self.screen)
 
