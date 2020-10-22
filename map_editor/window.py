@@ -473,6 +473,9 @@ class Window():
             if obj.name == "wall":
                 rect = pg.Rect(obj.x + Tile.get_offset_x() * TILESIZE, obj.y, obj.width, obj.height)
                 self.bounds.append(rect)
+            if obj.name == 'player':
+                rect = pg.Rect(obj.x + Tile.get_offset_x() * TILESIZE, obj.y, obj.width, obj.height)
+                self.players.append(rect)
 
     def show_go_screen(self):
         pass
