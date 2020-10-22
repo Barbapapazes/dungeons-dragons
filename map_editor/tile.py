@@ -31,7 +31,7 @@ class Tile():
 
     @staticmethod
     def get_offset_x():
-        """Get the offset of the map
+        """Get the offset of the map in tile
 
         Returns:
             int

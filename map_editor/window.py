@@ -7,13 +7,13 @@ import pygame as pg
 from datetime import datetime, date
 import pytmx
 # pylint: disable=import-error
-from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE, WHITE, BLACK, YELLOW
+from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE, WHITE, BLACK, YELLOW, GREEN
 # pylint: disable=import-error
 from tileset import Tileset
 # pylint: disable=import-error
 from tile import Tile
 # pylint: disable=import-error
-from tools import Paint, Rubber
+from tools import Paint, Rubber, Player
 
 
 class Window():
@@ -30,6 +30,7 @@ class Window():
         self.dt = None
         self.layers = {f"layer_{x}": list() for x in range(10)}
         self.bounds = list()
+        self.players = list()
 
     def draw_text(self, text, font_name, size, color, x, y, align="nw"):
         font = pg.font.Font(font_name, size)
@@ -71,11 +72,15 @@ class Window():
         self.cut_surface = None
         self.map_color = None
         self.selected_layer = 0
-        self.tool_images = {'paint_pot': pg.Surface((TILESIZE, TILESIZE)), 'rubber': pg.Surface((TILESIZE, TILESIZE))}
+        self.selected_tool = None
+        self.tool_images = {'paint_pot': pg.Surface((TILESIZE, TILESIZE)),
+                            'rubber': pg.Surface((TILESIZE, TILESIZE)),
+                            'p': pg.Surface((TILESIZE, TILESIZE))}
         self.tools = pg.sprite.Group()
 
         self.paint_pot = Paint(self, 9, 0, 'paint_pot')
         self.rubber = Rubber(self, 10, 0, 'rubber')
+        self.player = Player(self, 9, 1, 'p')
 
     def run(self):
         """Main loop for the program"""
@@ -139,6 +144,13 @@ class Window():
                                     f.write(',\n')
                         f.write("  </data>\n")
                         f.write(" </layer>\n")
+                elif row.rstrip('\n') == '_OBJECTS':
+                    f.write(' <objectgroup name="Obstacles">\n')
+                    for index, rect in enumerate(self.bounds):
+                        print(rect.x - Tile.get_offset_x() * TILESIZE)
+                        f.write(
+                            f'  <object id="{index + 1}" name="wall" x="{rect.x - Tile.get_offset_x() * TILESIZE}" y="{rect.y}" width="{rect.width}" height="{rect.height}"/>\n')
+                    f.write(' </objectgroup>\n')
                 else:
                     f.write(row)
 
@@ -167,16 +179,24 @@ class Window():
                 first_time = False
                 self.draw()
 
-        touched_bounds = list()
+        touched_rect = list()
         if pg.mouse.get_pressed()[2]:
             mouse_x, mouse_y = self.get_mouse_pos()
             if self.is_in_map(mouse_x, mouse_y):
                 for rect in self.bounds:
                     if rect.collidepoint(mouse_x, mouse_y):
-                        touched_bounds.append(rect)
+                        touched_rect.append(rect)
 
-                for touched in touched_bounds:
+                for touched in touched_rect:
                     self.bounds.remove(touched)
+
+                touched_rect = list()
+                for rect in self.players:
+                    if rect.collidepoint(mouse_x, mouse_y):
+                        touched_rect.append(rect)
+
+                for touched in touched_rect:
+                    self.players.remove(touched)
 
     def mouse_listener(self):
         """Listen mouse button"""
@@ -192,8 +212,15 @@ class Window():
         if self.rubber.clicked(paint_x, paint_y):
             self.layers[f"layer_{self.selected_layer}"] = self.rubber.action()
 
+        if pg.mouse.get_pressed()[0] and self.is_in_map(mouse_x, mouse_y) and self.selected_tool:
+            self.selected_tool.action(self.players, mouse_x, mouse_y)
+
+        if self.player.clicked(paint_x, paint_y):
+            self.selected_tool = self.player
+
         if pg.mouse.get_pressed()[0]:
             if self.tileset.get_move_x() < mouse_x <= self.tileset.tileset_width and self.tileset.get_move_y() < mouse_y <= self.tileset.tileset_height:
+                self.selected_tool = None
                 self.cut_surface = {
                     'image': self.tileset.get_tileset().subsurface(
                         pg.Rect(
@@ -351,6 +378,9 @@ class Window():
         for rect in self.bounds:
             pg.draw.rect(self.screen, (255, 0, 0), rect, 2)
 
+        for rect in self.players:
+            pg.draw.rect(self.screen, GREEN, rect, 2)
+
         self.tools.draw(self.screen)
 
         pg.display.flip()
@@ -374,7 +404,8 @@ class Window():
                     color = YELLOW
                 self.draw_text(value[1], self.text_font, 25, color, WIDTH //
                                2, 6 * HEIGHT // 10 + 30 * value[0], align="center")
-            self.draw_text("Press space to create a new file", self.text_font, 25, WHITE, WIDTH // 2, HEIGHT, align="s")
+            self.draw_text("Press space to create a new file", self.text_font,
+                           25, WHITE, WIDTH // 2, HEIGHT, align="s")
             self.start_events()
 
             pg.display.flip()
@@ -434,6 +465,10 @@ class Window():
                         # set the x value for the map
                         new_tile.x = x
                         self.layers[f"layer_{index}"].append(new_tile)
+        for obj in tm.objects:
+            if obj.name == "wall":
+                rect = pg.Rect(obj.x + Tile.get_offset_x() * TILESIZE, obj.y, obj.width, obj.height)
+                self.bounds.append(rect)
 
     def show_go_screen(self):
         pass

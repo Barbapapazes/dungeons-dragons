@@ -2,7 +2,7 @@
 
 import pygame as pg
 from tile import Tile
-from settings import RED, TILESIZE, MAPSIZE, YELLOW
+from settings import RED, TILESIZE, MAPSIZE, YELLOW, GREEN
 
 
 class tool(pg.sprite.Sprite):
@@ -93,3 +93,12 @@ class Paint(tool):
                     tile.set_pos(col + Tile.get_offset_x(), row)
                     layer.append(tile)
         return layer
+
+
+class Player(tool):
+    def __init__(self, game, x, y, name):
+        super(Player, self).__init__(game, x, y, name)
+        self.image.fill((GREEN))
+
+    def action(self, players, mouse_x, mouse_y):
+        players.append(pg.Rect(mouse_x - TILESIZE // 2, mouse_y - TILESIZE // 2, TILESIZE, TILESIZE))
