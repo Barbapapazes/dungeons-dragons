@@ -29,6 +29,7 @@ class Window():
         self.playing = None
         self.dt = None
         self.layers = {f"layer_{x}": list() for x in range(10)}
+        self.bounds = list()
 
     def draw_text(self, text, font_name, size, color, x, y, align="nw"):
         font = pg.font.Font(font_name, size)
@@ -70,7 +71,6 @@ class Window():
         self.cut_surface = None
         self.map_color = None
         self.selected_layer = 0
-        self.selected_tool = None
         self.tool_images = {'paint_pot': pg.Surface((TILESIZE, TILESIZE)), 'rubber': pg.Surface((TILESIZE, TILESIZE))}
         self.tools = pg.sprite.Group()
 
@@ -104,8 +104,12 @@ class Window():
                     self.selected_layer = event.unicode
                     print('layer selected', self.selected_layer)
             if event.type == pg.MOUSEBUTTONDOWN:
-                self.tileset.get_mouse(event)
-                self.mouse_listener()
+                if pg.key.get_mods() & pg.KMOD_ALT:
+                    print('alt click')
+                    self.bound_drawer()
+                else:
+                    self.tileset.get_mouse(event)
+                    self.mouse_listener()
 
     def save_map(self):
         """Save a tmx file map"""
@@ -113,8 +117,8 @@ class Window():
             for row in r:
                 if row.rstrip('\n') == '_LAYERS':
                     found = False
-                    for layer in self.layers:
-                        f.write(f' <layer id="1" name="{layer}" width="{MAPSIZE}" height="{MAPSIZE}">\n')
+                    for index, layer in enumerate(self.layers):
+                        f.write(f' <layer id="{index + 1}" name="{layer}" width="{MAPSIZE}" height="{MAPSIZE}">\n')
                         f.write('  <data encoding="csv">\n')
                         for row_layer in range(MAPSIZE):
                             for col_layer in range(MAPSIZE):
@@ -137,6 +141,31 @@ class Window():
                         f.write(" </layer>\n")
                 else:
                     f.write(row)
+
+    def bound_drawer(self):
+        # reset the relative pos
+        pg.mouse.get_rel()
+        left, top = self.get_mouse_pos()
+        move_x = 0
+        move_y = 0
+        first_time = True
+        while pg.mouse.get_pressed()[0]:
+            pg.event.poll()
+
+            mouse_x, mouse_y = self.get_mouse_pos()
+            paint_x, paint_y = pg.mouse.get_rel()
+
+            if self.is_in_map(mouse_x, mouse_y):
+                if not first_time:
+                    self.bounds = self.bounds[0:-1]
+                move_x += paint_x
+                move_y += paint_y
+
+                tmp_rect = pg.Rect(left, top, move_x, move_y)
+                self.bounds.append(tmp_rect)
+
+                first_time = False
+                self.draw()
 
     def mouse_listener(self):
         """Listen mouse button"""
@@ -300,12 +329,16 @@ class Window():
         # faire la doc absolument
         # mettre en place un système pour les murs
         # faire un menu accessible à tout moment pour avoir accès au short cuts
+        # add a logger pour infomer dans la console ce qu'il se passe
 
         self.screen.blit(self.tileset.get_tileset(), (0 + self.tileset.get_move_x(), 0 + self.tileset.get_move_y()))
 
         for layer in self.layers:
             for rect in self.layers[layer]:
                 self.screen.blit(rect.image, rect.rect)
+
+        for rect in self.bounds:
+            pg.draw.rect(self.screen, (255, 0, 0), rect, 1)
 
         self.tools.draw(self.screen)
 
