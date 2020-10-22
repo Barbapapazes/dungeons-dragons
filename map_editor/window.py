@@ -300,8 +300,6 @@ class Window():
         # faire la doc absolument
         # mettre en place un système pour les murs
         # faire un menu accessible à tout moment pour avoir accès au short cuts
-        # faire le menu d'accueil aussi
-        # donner la possibilité de charger une map en la sélectionnant depuis un menu dans le dossier /maps (là ou on les save)
 
         self.screen.blit(self.tileset.get_tileset(), (0 + self.tileset.get_move_x(), 0 + self.tileset.get_move_y()))
 
@@ -314,6 +312,7 @@ class Window():
         pg.display.flip()
 
     def show_start_screen(self):
+        """Create the menu where the user choose a map"""
         self.screen.fill(BLACK)
         self.draw_text('Map Editor', self.title_font, 45, WHITE, WIDTH // 2, HEIGHT // 2, align="center")
         self.waiting = True
@@ -337,6 +336,7 @@ class Window():
             pg.display.flip()
 
     def start_events(self):
+        """Manage the event in the menu"""
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.waiting = False
@@ -369,6 +369,12 @@ class Window():
                     self.waiting = False
 
     def load_map(self, pathname, filename):
+        """Load a map for the editor
+
+        Args:
+            pathname (string)
+            filename (string)
+        """
         tm = pytmx.load_pygame(path.join(pathname, filename), pixel_alpha=True)
         # print(tm.tiledgidmap) # dict with the translation btween the gid and the pytmx gid
         ti = tm.get_tile_image_by_gid
