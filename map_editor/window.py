@@ -468,18 +468,19 @@ class Window():
         self.draw_text('ZQSD or Scroll Wheel: move the tileset',
                        self.text_font, 25, WHITE, 0, 3 * HEIGHT / 10, align="w")
 
-        self.draw_text('Number: select a layer', self.text_font, 25, WHITE, WIDTH // 2, 1 * HEIGHT / 10, align="w")
+        self.draw_text('IJKL: move the map', self.text_font, 25, WHITE, WIDTH // 2, 1 * HEIGHT / 10, align="w")
+        self.draw_text('Number: select a layer', self.text_font, 25, WHITE, WIDTH // 2, 2 * HEIGHT / 10, align="w")
         self.draw_text('Left Click:  add a tile',
-                       self.text_font, 25, WHITE, WIDTH // 2, 2 * HEIGHT / 10, align="w")
-        self.draw_text('Right Click: remove a tile',
                        self.text_font, 25, WHITE, WIDTH // 2, 3 * HEIGHT / 10, align="w")
+        self.draw_text('Right Click: remove a tile',
+                       self.text_font, 25, WHITE, WIDTH // 2, 4 * HEIGHT / 10, align="w")
         self.draw_text('ALT + Left Click: create a wall', self.text_font,
-                       25, WHITE, WIDTH // 2, 4 * HEIGHT / 10, align="w")
-        self.draw_text('ALT + Right Click: remove a wall or a player', self.text_font,
                        25, WHITE, WIDTH // 2, 5 * HEIGHT / 10, align="w")
+        self.draw_text('ALT + Right Click: remove a wall or a player', self.text_font,
+                       25, WHITE, WIDTH // 2, 6 * HEIGHT / 10, align="w")
         self.draw_text('CTRL + R: remove the selected tile',
-                       self.text_font, 25, WHITE, WIDTH // 2, 6 * HEIGHT / 10, align="w")
-        self.draw_text('CTRL + S: save the map', self.text_font, 25, WHITE, WIDTH // 2, 7 * HEIGHT / 10, align="w")
+                       self.text_font, 25, WHITE, WIDTH // 2, 7 * HEIGHT / 10, align="w")
+        self.draw_text('CTRL + S: save the map', self.text_font, 25, WHITE, WIDTH // 2, 8 * HEIGHT / 10, align="w")
 
     def show_start_screen(self):
         """Create the menu where the user choose a map"""
