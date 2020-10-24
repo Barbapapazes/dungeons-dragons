@@ -248,7 +248,7 @@ class Window():
             logger.info("Use rubber")
 
         if pg.mouse.get_pressed()[0] and self.is_in_map(mouse_x, mouse_y) and self.selected_tool:
-            self.selected_tool.action(self.players, mouse_x, mouse_y)
+            self.selected_tool.action(self.players, mouse_x - self.camera.x, mouse_y - self.camera.y)
             logger.info(f"Use action of {self.selected_tool.name}")
 
         if self.player.clicked(paint_x, paint_y):
@@ -417,7 +417,6 @@ class Window():
         for rect in self.bounds:
             # width - cam_offset + diff between start rect and map border
             rect_width = rect.width + self.camera.get_x() * TILESIZE + (rect.left - Tile.get_offset_x() * TILESIZE)
-            rect_height = rect.height + self.camera.get_y() * TILESIZE
             cam_rect = self.camera.apply(rect)
             if cam_rect.left < Tile.get_offset_x() * TILESIZE:
                 cam_rect.left = Tile.get_offset_x() * TILESIZE
@@ -432,10 +431,26 @@ class Window():
                     cam_rect.height = 0
 
             if cam_rect.width != 0 and cam_rect.height != 0:
-                pg.draw.rect(self.screen, (255, 0, 0), cam_rect, 2)
+                pg.draw.rect(self.screen, RED, cam_rect, 2)
 
         for rect in self.players:
-            pg.draw.rect(self.screen, GREEN, rect, 2)
+            # width - cam_offset + diff between start rect and map border
+            rect_width = rect.width + self.camera.get_x() * TILESIZE + (rect.left - Tile.get_offset_x() * TILESIZE)
+            cam_rect = self.camera.apply(rect)
+            if cam_rect.left < Tile.get_offset_x() * TILESIZE:
+                cam_rect.left = Tile.get_offset_x() * TILESIZE
+                cam_rect.width = rect_width
+                if cam_rect.width < 0:
+                    cam_rect.width = 0
+            rect_bottom = cam_rect.bottom
+            if cam_rect.bottom > VIEWSIZE * TILESIZE:
+                cam_rect.height = rect.height - (rect_bottom - VIEWSIZE * TILESIZE)
+                cam_rect.bottom = VIEWSIZE * TILESIZE
+                if cam_rect.height < 0:
+                    cam_rect.height = 0
+
+            if cam_rect.width != 0 and cam_rect.height != 0:
+                pg.draw.rect(self.screen, GREEN, cam_rect, 2)
 
         self.tools.draw(self.screen)
 
