@@ -1,7 +1,7 @@
 """The tile class"""
 
 import pygame as pg
-from settings import TILESIZE, MAPSIZE, WIDTH
+from settings import TILESIZE, VIEWSIZE, WIDTH
 
 
 class Tile():
@@ -36,7 +36,7 @@ class Tile():
         Returns:
             int
         """
-        return WIDTH // TILESIZE - MAPSIZE
+        return WIDTH // TILESIZE - VIEWSIZE
 
     @staticmethod
     def calc_gid(tileset, x, y):

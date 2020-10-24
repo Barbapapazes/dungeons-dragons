@@ -4,17 +4,20 @@ import sys
 import os
 from os import path
 import pygame as pg
-from logger import logger
 from datetime import datetime, date
 import pytmx
 # pylint: disable=import-error
-from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE, WHITE, BLACK, YELLOW, GREEN
+from settings import WIDTH, HEIGHT, TITLE, FPS, TILESIZE, LIGHTGREY, RED,  BGCOLOR, MAPSIZE, WHITE, BLACK, YELLOW, GREEN, VIEWSIZE
 # pylint: disable=import-error
 from tileset import Tileset
 # pylint: disable=import-error
 from tile import Tile
 # pylint: disable=import-error
 from tools import Paint, Rubber, Player
+# pylint: disable=import-error
+from logger import logger
+# pylint: disable=import-error
+from tilemap import Camera
 
 
 class Window():
@@ -77,6 +80,8 @@ class Window():
 
     def new(self):
         """Create data for a new loading"""
+        self.map = pg.Surface((MAPSIZE * TILESIZE, MAPSIZE * TILESIZE))
+        self.camera = Camera(MAPSIZE * TILESIZE, MAPSIZE * TILESIZE)
         self.show_shortcuts = False
         self.cut_surface = None
         self.map_color = None
@@ -134,7 +139,10 @@ class Window():
         """Save a tmx file map"""
         with open(path.join(self.map_editor_folder, 'map_template.tmx'), 'r') as r, open(path.join(self.saved_maps, self.selected_map), 'w') as f:
             for row in r:
-                if row.rstrip('\n') == '_LAYERS':
+                if row.rstrip('\n') == '_MAP':
+                    f.write(
+                        f'<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="{MAPSIZE}" height="{MAPSIZE}" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">')
+                elif row.rstrip('\n') == '_LAYERS':
                     found = False
                     for index, layer in enumerate(self.layers):
                         f.write(f' <layer id="{index + 1}" name="{layer}" width="{MAPSIZE}" height="{MAPSIZE}">\n')
@@ -150,9 +158,9 @@ class Window():
                                     f.write('0')
                                 else:
                                     found = False
-                                if row_layer == 19 and col_layer == 19:
+                                if row_layer == MAPSIZE - 1 and col_layer == MAPSIZE - 1:
                                     f.write('\n')
-                                elif col_layer != 19:
+                                elif col_layer != MAPSIZE - 1:
                                     f.write(',')
                                 else:
                                     f.write(',\n')
@@ -194,7 +202,7 @@ class Window():
                 move_x += paint_x
                 move_y += paint_y
 
-                tmp_rect = pg.Rect(left, top, move_x, move_y)
+                tmp_rect = pg.Rect(left - self.camera.x, top - self.camera.y, move_x, move_y)
                 self.bounds.append(tmp_rect)
 
                 first_time = False
@@ -247,6 +255,13 @@ class Window():
             self.selected_tool = self.player
             logger.info("Select player tool")
 
+        self.cut_tile()
+        self.add_tiles()
+        self.remove_tiles()
+
+    def cut_tile(self):
+        mouse_x, mouse_y = self.get_mouse_pos()
+        paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
         if pg.mouse.get_pressed()[0]:
             if self.tileset.get_move_x() < mouse_x <= self.tileset.tileset_width and self.tileset.get_move_y() < mouse_y <= self.tileset.tileset_height:
                 self.selected_tool = None
@@ -260,40 +275,40 @@ class Window():
                             paint_y - self.tileset.get_move_y() // TILESIZE)}
                 logger.info(f"Cut surface at {self.cut_surface['pos']}")
 
+    def add_tiles(self):
         while pg.mouse.get_pressed()[0]:
             pg.event.poll()
             mouse_x, mouse_y = self.get_mouse_pos()
             paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
             if self.is_in_map(mouse_x, mouse_y):
                 if pg.mouse.get_pressed()[0] and self.cut_surface != None:
-                    if self.find_in_layer(self.layers[f"layer_{self.selected_layer}"], paint_x, paint_y):
-                        logger.info(f'Can\'t add this tile at {paint_x} {paint_y}')
+                    x = paint_x - self.camera.get_x()
+                    y = paint_y - self.camera.get_y()
+                    if self.find_in_layer(self.layers[f"layer_{self.selected_layer}"], x - Tile.get_offset_x(), y):
+                        logger.info(f'Can\'t add this tile at {x} {y}')
                     else:
                         tile = Tile(
                             self.tileset, self.cut_surface['image'].copy(),
                             self.cut_surface['pos'][0],
                             self.cut_surface['pos'][1])
-                        tile.set_pos(paint_x, paint_y)
+                        tile.set_pos(x, y)
                         self.layers[f'layer_{self.selected_layer}'].append(tile)
-                        logger.info(f"Create a tile at {paint_x} {paint_y} in layer {self.selected_layer}")
+                        logger.info(
+                            f"Create a tile at {x} {y} in layer {self.selected_layer}")
             self.draw()
 
+    def remove_tiles(self):
         while pg.mouse.get_pressed()[2]:
             pg.event.poll()
             mouse_x, mouse_y = self.get_mouse_pos()
             paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
             if self.is_in_map(mouse_x, mouse_y):
                 if pg.mouse.get_pressed()[2]:
-                    if self.find_in_layer(self.layers[f"layer_{self.selected_layer}"], paint_x, paint_y):
-                        self.remove_tile(self.layers[f"layer_{self.selected_layer}"], paint_x, paint_y)
-                        logger.info(f"Remove tile at {paint_x} {paint_y} in layer {self.selected_layer}")
-                    # remove all layers on a tile
-                    # for index, _ in enumerate(self.layers):
-                    #     desc_layer = len(self.layers) - index - 1
-                    #     if self.find_in_layer(self.layers[f"layer_{desc_layer}"], paint_x, paint_y):
-                    #         print(f"remove in layer_{desc_layer}")
-                    #         self.remove_tile(self.layers[f"layer_{desc_layer}"], paint_x, paint_y)
-                    #         break
+                    x = paint_x - self.camera.get_x() - Tile.get_offset_x()
+                    y = paint_y - self.camera.get_y()
+                    if self.find_in_layer(self.layers[f"layer_{self.selected_layer}"], x, y):
+                        self.remove_tile(self.layers[f"layer_{self.selected_layer}"],  x, y)
+                        logger.info(f"Remove tile at {x} {y} in layer {self.selected_layer}")
             self.draw()
 
     @staticmethod
@@ -306,7 +321,7 @@ class Window():
             y (int)
         """
         for tile in layer:
-            if tile.rect.left == x * TILESIZE and tile.rect.top == y * TILESIZE:
+            if tile.x == x and tile.y == y:
                 layer.remove(tile)
 
     @staticmethod
@@ -322,7 +337,7 @@ class Window():
             tile: a tile if found or None
         """
         for tile in layer:
-            if tile.rect.left == x * TILESIZE and tile.rect.top == y * TILESIZE:
+            if tile.x == x and tile.y == y:
                 return tile
         return None
 
@@ -337,7 +352,7 @@ class Window():
         Returns:
             boolean
         """
-        return WIDTH - MAPSIZE * TILESIZE < x < WIDTH and 0 < y < MAPSIZE * TILESIZE
+        return WIDTH - VIEWSIZE * TILESIZE < x < WIDTH and 0 < y < VIEWSIZE * TILESIZE
 
     @staticmethod
     def get_mouse_pos():
@@ -366,6 +381,7 @@ class Window():
     def update(self):
         """ Update portion of the game loop"""
         self.tileset.update()
+        self.camera.update()
 
     def draw_grid(self):
         """Draw a grid to visualize"""
@@ -374,10 +390,10 @@ class Window():
         for y in range(0, HEIGHT, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
 
-        pg.draw.line(self.screen, RED, (WIDTH - MAPSIZE * TILESIZE, 0),
-                     (WIDTH - MAPSIZE * TILESIZE, MAPSIZE * TILESIZE), 2)
-        pg.draw.line(self.screen, RED, (WIDTH - MAPSIZE * TILESIZE, MAPSIZE * TILESIZE),
-                     (WIDTH, MAPSIZE * TILESIZE), 2)
+        pg.draw.line(self.screen, RED, (WIDTH - VIEWSIZE * TILESIZE, 0),
+                     (WIDTH - VIEWSIZE * TILESIZE, VIEWSIZE * TILESIZE), 2)
+        pg.draw.line(self.screen, RED, (WIDTH - VIEWSIZE * TILESIZE, VIEWSIZE * TILESIZE),
+                     (WIDTH, VIEWSIZE * TILESIZE), 2)
 
     def draw(self):
         """Draw all elements to the screen"""
@@ -390,18 +406,33 @@ class Window():
         if self.cut_surface != None:
             self.screen.blit(self.cut_surface['image'], (19 * TILESIZE, HEIGHT - TILESIZE))
 
-        # faire la doc absolument
-        # faire un menu accessible à tout moment pour avoir accès au short cuts
-        # add a logger pour infomer dans la console ce qu'il se passe
-
         self.screen.blit(self.tileset.get_tileset(), (0 + self.tileset.get_move_x(), 0 + self.tileset.get_move_y()))
 
         for layer in self.layers:
             for rect in self.layers[layer]:
-                self.screen.blit(rect.image, rect.rect)
+                cam_rect = self.camera.apply(rect.rect)
+                if self.is_in_map(cam_rect.centerx, cam_rect.centery):
+                    self.screen.blit(rect.image, cam_rect)
 
         for rect in self.bounds:
-            pg.draw.rect(self.screen, (255, 0, 0), rect, 2)
+            # width - cam_offset + diff between start rect and map border
+            rect_width = rect.width + self.camera.get_x() * TILESIZE + (rect.left - Tile.get_offset_x() * TILESIZE)
+            rect_height = rect.height + self.camera.get_y() * TILESIZE
+            cam_rect = self.camera.apply(rect)
+            if cam_rect.left < Tile.get_offset_x() * TILESIZE:
+                cam_rect.left = Tile.get_offset_x() * TILESIZE
+                cam_rect.width = rect_width
+                if cam_rect.width < 0:
+                    cam_rect.width = 0
+            rect_bottom = cam_rect.bottom
+            if cam_rect.bottom > VIEWSIZE * TILESIZE:
+                cam_rect.height = rect.height - (rect_bottom - VIEWSIZE * TILESIZE)
+                cam_rect.bottom = VIEWSIZE * TILESIZE
+                if cam_rect.height < 0:
+                    cam_rect.height = 0
+
+            if cam_rect.width != 0 and cam_rect.height != 0:
+                pg.draw.rect(self.screen, (255, 0, 0), cam_rect, 2)
 
         for rect in self.players:
             pg.draw.rect(self.screen, GREEN, rect, 2)
