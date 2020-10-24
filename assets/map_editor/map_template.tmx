@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
+_MAP
  <tileset firstgid="1" name="spritesheet_tiles" tilewidth="32" tileheight="32" tilecount="632" columns="8">
-  <image source="town1.png" width="256" height="2528"/>
+  <image source="../map_editor/town1.png" width="256" height="2528"/>
  </tileset>
 _LAYERS
+_OBJECTS
 </map>
