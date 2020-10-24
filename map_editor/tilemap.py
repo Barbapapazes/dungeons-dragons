@@ -27,6 +27,7 @@ class Camera():
         return rect.move(self.camera.topleft)
 
     def update(self):
+        """Used to move the camera"""
         keys = pg.key.get_pressed()
         if keys[pg.K_i]:
             self.y += TILESIZE
@@ -45,7 +46,17 @@ class Camera():
         self.camera = pg.Rect(self.x, self.y, self.width, self.height)
 
     def get_x(self):
+        """Get the number of tiles moved in x
+
+        Returns:
+            int
+        """
         return self.x // TILESIZE
 
     def get_y(self):
+        """Get the number of tiles moved in y
+
+        Returns:
+            int
+        """
         return self.y // TILESIZE

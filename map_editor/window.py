@@ -38,6 +38,18 @@ class Window():
         self.players = list()
 
     def draw_text(self, text, font_name, size, color, x, y, align="nw", screen=None):
+        """Used to draw text
+
+        Args:
+            text (str)
+            font_name (str)
+            size (int)
+            color (tuple)
+            x (int)
+            y (int)
+            align (str, optional): where we want that the text is aligned. Defaults to "nw".
+            screen (Surface, optional): Defaults to None.
+        """
         font = pg.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
@@ -260,6 +272,7 @@ class Window():
         self.remove_tiles()
 
     def cut_tile(self):
+        """Used to cut a tile from the tileset"""
         mouse_x, mouse_y = self.get_mouse_pos()
         paint_x, paint_y = self.calc_mouse_pos(mouse_x, mouse_y)
         if pg.mouse.get_pressed()[0]:
@@ -276,6 +289,7 @@ class Window():
                 logger.info(f"Cut surface at {self.cut_surface['pos']}")
 
     def add_tiles(self):
+        """Used to add a tile on the map through the view"""
         while pg.mouse.get_pressed()[0]:
             pg.event.poll()
             mouse_x, mouse_y = self.get_mouse_pos()
@@ -298,6 +312,7 @@ class Window():
             self.draw()
 
     def remove_tiles(self):
+        """Used to remove a tile from the map through the view"""
         while pg.mouse.get_pressed()[2]:
             pg.event.poll()
             mouse_x, mouse_y = self.get_mouse_pos()
@@ -589,7 +604,7 @@ class Window():
         logger.info('Map loaded')
 
     def show_go_screen(self):
-        pass
+        """Screen when the map editing is over"""
 
     @staticmethod
     def quit():
