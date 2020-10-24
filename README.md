@@ -15,6 +15,8 @@ pipenv install
 pipenv run start
 # start in dev mode
 pipenv run dev
+# start the map editor
+pipenv run map_editor
 ```
 
 ## Docs
