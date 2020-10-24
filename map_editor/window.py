@@ -194,6 +194,11 @@ class Window():
             logger.info(f'Save "{self.selected_map}" in "{path.abspath(self.saved_maps)}"')
 
     def bound_drawer(self):
+        """Draw wall and remove bound"""
+        self.draw_wall()
+        self.remove_bound()
+
+    def draw_wall(self):
         """Draw wall"""
         # reset the relative pos
         pg.mouse.get_rel()
@@ -223,12 +228,14 @@ class Window():
         if len(self.bounds) > bound_size:
             logger.info("Create a wall")
 
+    def remove_bound(self):
+        """Remove rect"""
         touched_rect = list()
         if pg.mouse.get_pressed()[2]:
             mouse_x, mouse_y = self.get_mouse_pos()
             if self.is_in_map(mouse_x, mouse_y):
                 for rect in self.bounds:
-                    if rect.collidepoint(mouse_x, mouse_y):
+                    if rect.collidepoint(mouse_x - self.camera.x, mouse_y - self.camera.y):
                         touched_rect.append(rect)
 
                 for touched in touched_rect:
@@ -237,7 +244,7 @@ class Window():
 
                 touched_rect = list()
                 for rect in self.players:
-                    if rect.collidepoint(mouse_x, mouse_y):
+                    if rect.collidepoint(mouse_x - self.camera.x, mouse_y - self.camera.y):
                         touched_rect.append(rect)
 
                 for touched in touched_rect:
@@ -326,75 +333,8 @@ class Window():
                         logger.info(f"Remove tile at {x} {y} in layer {self.selected_layer}")
             self.draw()
 
-    @staticmethod
-    def remove_tile(layer, x, y):
-        """Remove a tile form a layer
-
-        Args:
-            layer (list)
-            x (int)
-            y (int)
-        """
-        for tile in layer:
-            if tile.x == x and tile.y == y:
-                layer.remove(tile)
-
-    @staticmethod
-    def find_in_layer(layer, x, y):
-        """Find a tile in a layer using a position
-
-        Args:
-            layer (list): contains all tiles
-            x (int)
-            y (int)
-
-        Returns:
-            tile: a tile if found or None
-        """
-        for tile in layer:
-            if tile.x == x and tile.y == y:
-                return tile
-        return None
-
-    @staticmethod
-    def is_in_map(x, y):
-        """Check if the position is in the map editor
-
-        Args:
-            x (int): x position
-            y (int): y position
-
-        Returns:
-            boolean
-        """
-        return WIDTH - VIEWSIZE * TILESIZE < x < WIDTH and 0 < y < VIEWSIZE * TILESIZE
-
-    @staticmethod
-    def get_mouse_pos():
-        """Get the position of the mouse
-
-        Returns:
-            (int, int): the x and the y of the mouse
-        """
-        # """Get the position of the mouse"""
-        mouse_x, mouse_y = pg.mouse.get_pos()
-        return mouse_x, mouse_y
-
-    @staticmethod
-    def calc_mouse_pos(x, y):
-        """Calcul the case of the given position
-
-        Args:
-            x (int)
-            y (int)
-
-        Returns:
-            (int, int): the case of the grid
-        """
-        return x // TILESIZE, y // TILESIZE
-
     def update(self):
-        """ Update portion of the game loop"""
+        """Update portion of the game loop"""
         self.tileset.update()
         self.camera.update()
 
@@ -405,95 +345,44 @@ class Window():
         for y in range(0, HEIGHT, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
 
+    def draw_borders(self):
+        """Draw red border for the map view"""
         pg.draw.line(self.screen, RED, (WIDTH - VIEWSIZE * TILESIZE, 0),
                      (WIDTH - VIEWSIZE * TILESIZE, VIEWSIZE * TILESIZE), 2)
         pg.draw.line(self.screen, RED, (WIDTH - VIEWSIZE * TILESIZE, VIEWSIZE * TILESIZE),
                      (WIDTH, VIEWSIZE * TILESIZE), 2)
 
-    def draw(self):
-        """Draw all elements to the screen"""
-        self.screen.fill(BGCOLOR)
-        self.draw_grid()
+    def draw_players(self):
+        """Draw players"""
+        for rect in self.players:
+            cam_rect = self.calc_cam_rect(self.camera, rect)
+            if cam_rect.width != 0 and cam_rect.height != 0:
+                pg.draw.rect(self.screen, GREEN, cam_rect, 2)
 
-        self.draw_text(f'Layer Selected: {self.selected_layer}', self.text_font, 30, WHITE, WIDTH, HEIGHT, align="se")
+    def draw_bounds(self):
+        """Draw Bounds"""
+        for rect in self.bounds:
+            cam_rect = self.calc_cam_rect(self.camera, rect)
+            if cam_rect.width != 0 and cam_rect.height != 0:
+                pg.draw.rect(self.screen, RED, cam_rect, 2)
 
-        self.draw_text(f'Tile Selected: ', self.text_font, 30, WHITE, WIDTH // 2, HEIGHT, align="s")
-        if self.cut_surface != None:
-            self.screen.blit(self.cut_surface['image'], (19 * TILESIZE, HEIGHT - TILESIZE))
-
-        self.screen.blit(self.tileset.get_tileset(), (0 + self.tileset.get_move_x(), 0 + self.tileset.get_move_y()))
-
+    def draw_layers(self):
+        """Draw layers"""
         for layer in self.layers:
             for rect in self.layers[layer]:
                 cam_rect = self.camera.apply(rect.rect)
                 if self.is_in_map(cam_rect.centerx, cam_rect.centery):
                     self.screen.blit(rect.image, cam_rect)
 
-        for rect in self.bounds:
-            # width - cam_offset + diff between start rect and map border
-            rect_width = rect.width + self.camera.get_x() * TILESIZE + (rect.left - Tile.get_offset_x() * TILESIZE)
-            cam_rect = self.camera.apply(rect)
-            if cam_rect.left < Tile.get_offset_x() * TILESIZE:
-                cam_rect.left = Tile.get_offset_x() * TILESIZE
-                cam_rect.width = rect_width
-                if cam_rect.width < 0:
-                    cam_rect.width = 0
-            rect_bottom = cam_rect.bottom
-            if cam_rect.bottom > VIEWSIZE * TILESIZE:
-                cam_rect.height = rect.height - (rect_bottom - VIEWSIZE * TILESIZE)
-                cam_rect.bottom = VIEWSIZE * TILESIZE
-                if cam_rect.height < 0:
-                    cam_rect.height = 0
+    def draw_action(self, content):
+        """Draw a screen with the content
 
-            if cam_rect.width != 0 and cam_rect.height != 0:
-                pg.draw.rect(self.screen, RED, cam_rect, 2)
-
-        for rect in self.players:
-            # width - cam_offset + diff between start rect and map border
-            rect_width = rect.width + self.camera.get_x() * TILESIZE + (rect.left - Tile.get_offset_x() * TILESIZE)
-            cam_rect = self.camera.apply(rect)
-            if cam_rect.left < Tile.get_offset_x() * TILESIZE:
-                cam_rect.left = Tile.get_offset_x() * TILESIZE
-                cam_rect.width = rect_width
-                if cam_rect.width < 0:
-                    cam_rect.width = 0
-            rect_bottom = cam_rect.bottom
-            if cam_rect.bottom > VIEWSIZE * TILESIZE:
-                cam_rect.height = rect.height - (rect_bottom - VIEWSIZE * TILESIZE)
-                cam_rect.bottom = VIEWSIZE * TILESIZE
-                if cam_rect.height < 0:
-                    cam_rect.height = 0
-
-            if cam_rect.width != 0 and cam_rect.height != 0:
-                pg.draw.rect(self.screen, GREEN, cam_rect, 2)
-
-        self.tools.draw(self.screen)
-
+        Args:
+            content (str): message to show
+        """
         if self.show_shortcuts:
-            self.screen.blit(self.dim_screen, (0, 0))
-            self.draw_text('Shortcuts', self.title_font, 45, YELLOW, WIDTH / 2, 0, align="n")
+            self.draw_shortcuts()
 
-            self.draw_text('CTRL + K: show all shortcuts', self.text_font, 25, WHITE, 0, 1 * HEIGHT / 10, align="w")
-            self.draw_text('Left Click: select a tile', self.text_font, 25, WHITE, 0, 2 * HEIGHT / 10, align="w")
-            self.draw_text('ZQSD or Scroll Wheel: move the tileset',
-                           self.text_font, 25, WHITE, 0, 3 * HEIGHT / 10, align="w")
-
-            self.draw_text('Number: select a layer', self.text_font, 25, WHITE, WIDTH // 2, 1 * HEIGHT / 10, align="w")
-            self.draw_text('Left Click:  add a tile',
-                           self.text_font, 25, WHITE, WIDTH // 2, 2 * HEIGHT / 10, align="w")
-            self.draw_text('Right Click: remove a tile',
-                           self.text_font, 25, WHITE, WIDTH // 2, 3 * HEIGHT / 10, align="w")
-            self.draw_text('ALT + Left Click: create a wall', self.text_font,
-                           25, WHITE, WIDTH // 2, 4 * HEIGHT / 10, align="w")
-            self.draw_text('ALT + Right Click: remove a wall or a player', self.text_font,
-                           25, WHITE, WIDTH // 2, 5 * HEIGHT / 10, align="w")
-            self.draw_text('CTRL + R: remove the selected tile',
-                           self.text_font, 25, WHITE, WIDTH // 2, 6 * HEIGHT / 10, align="w")
-            self.draw_text('CTRL + S: save the map', self.text_font, 25, WHITE, WIDTH // 2, 7 * HEIGHT / 10, align="w")
-
-        transition = pg.Surface((WIDTH, HEIGHT))
-        transition.fill(BLACK)
-        transition.set_alpha(self.alpha)
         if self.saved:
             self.alpha += 20
 
@@ -507,10 +396,90 @@ class Window():
             transition = pg.Surface((WIDTH, HEIGHT))
             transition.fill(BLACK)
             transition.set_alpha(self.alpha)
-            self.draw_text('Saved', self.title_font, 50, WHITE,
+            self.draw_text(content, self.title_font, 50, WHITE,
                            WIDTH // 2, HEIGHT / 2, align="center", screen=transition)
             self.screen.blit(transition, (0, 0))
+
+    def draw_hud(self):
+        """Draw the hud"""
+        self.draw_text(f'Layer Selected: {self.selected_layer}', self.text_font, 30, WHITE, WIDTH, HEIGHT, align="se")
+
+        self.draw_text(f'Tile Selected: ', self.text_font, 30, WHITE, WIDTH // 2, HEIGHT, align="s")
+        if self.cut_surface != None:
+            self.screen.blit(self.cut_surface['image'], (19 * TILESIZE, HEIGHT - TILESIZE))
+
+        self.tools.draw(self.screen)
+
+    def draw_tileset(self):
+        """Draw tileset"""
+        self.screen.blit(self.tileset.get_tileset(), (0 + self.tileset.get_move_x(), 0 + self.tileset.get_move_y()))
+
+    @staticmethod
+    def calc_cam_rect(camera, rect):
+        """Calc if a rect in in, out or in a border of the map
+
+        Args:
+            camera (Camera)
+            rect (Rect)
+
+        Returns:
+            Rect: a modified rect
+        """
+        # width - cam_offset + diff between start rect and map border
+        cam_rect = camera.apply(rect)
+        rect_width = rect.width + camera.get_x() * TILESIZE + (rect.left - Tile.get_offset_x() * TILESIZE)
+        if cam_rect.left < Tile.get_offset_x() * TILESIZE:
+            cam_rect.left = Tile.get_offset_x() * TILESIZE
+            cam_rect.width = rect_width
+            if cam_rect.width < 0:
+                cam_rect.width = 0
+        rect_bottom = cam_rect.bottom
+        if cam_rect.bottom > VIEWSIZE * TILESIZE:
+            cam_rect.height = rect.height - (rect_bottom - VIEWSIZE * TILESIZE)
+            cam_rect.bottom = VIEWSIZE * TILESIZE
+            if cam_rect.height < 0:
+                cam_rect.height = 0
+        return cam_rect
+
+    def draw(self):
+        """Draw all elements to the screen"""
+        self.screen.fill(BGCOLOR)
+        self.draw_grid()
+
+        self.draw_hud()
+        self.draw_tileset()
+
+        self.draw_layers()
+        self.draw_bounds()
+        self.draw_players()
+        self.draw_borders()
+
+        self.draw_action("Saved")
+
         pg.display.flip()
+
+    def draw_shortcuts(self):
+        """Create screen to show shortcuts"""
+        self.screen.blit(self.dim_screen, (0, 0))
+        self.draw_text('Shortcuts', self.title_font, 45, YELLOW, WIDTH / 2, 0, align="n")
+
+        self.draw_text('CTRL + K: show all shortcuts', self.text_font, 25, WHITE, 0, 1 * HEIGHT / 10, align="w")
+        self.draw_text('Left Click: select a tile', self.text_font, 25, WHITE, 0, 2 * HEIGHT / 10, align="w")
+        self.draw_text('ZQSD or Scroll Wheel: move the tileset',
+                       self.text_font, 25, WHITE, 0, 3 * HEIGHT / 10, align="w")
+
+        self.draw_text('Number: select a layer', self.text_font, 25, WHITE, WIDTH // 2, 1 * HEIGHT / 10, align="w")
+        self.draw_text('Left Click:  add a tile',
+                       self.text_font, 25, WHITE, WIDTH // 2, 2 * HEIGHT / 10, align="w")
+        self.draw_text('Right Click: remove a tile',
+                       self.text_font, 25, WHITE, WIDTH // 2, 3 * HEIGHT / 10, align="w")
+        self.draw_text('ALT + Left Click: create a wall', self.text_font,
+                       25, WHITE, WIDTH // 2, 4 * HEIGHT / 10, align="w")
+        self.draw_text('ALT + Right Click: remove a wall or a player', self.text_font,
+                       25, WHITE, WIDTH // 2, 5 * HEIGHT / 10, align="w")
+        self.draw_text('CTRL + R: remove the selected tile',
+                       self.text_font, 25, WHITE, WIDTH // 2, 6 * HEIGHT / 10, align="w")
+        self.draw_text('CTRL + S: save the map', self.text_font, 25, WHITE, WIDTH // 2, 7 * HEIGHT / 10, align="w")
 
     def show_start_screen(self):
         """Create the menu where the user choose a map"""
@@ -611,3 +580,70 @@ class Window():
         """Function to quit everything"""
         pg.quit()
         sys.exit()
+
+    @staticmethod
+    def remove_tile(layer, x, y):
+        """Remove a tile form a layer
+
+        Args:
+            layer (list)
+            x (int)
+            y (int)
+        """
+        for tile in layer:
+            if tile.x == x and tile.y == y:
+                layer.remove(tile)
+
+    @staticmethod
+    def find_in_layer(layer, x, y):
+        """Find a tile in a layer using a position
+
+        Args:
+            layer (list): contains all tiles
+            x (int)
+            y (int)
+
+        Returns:
+            tile: a tile if found or None
+        """
+        for tile in layer:
+            if tile.x == x and tile.y == y:
+                return tile
+        return None
+
+    @staticmethod
+    def is_in_map(x, y):
+        """Check if the position is in the map editor
+
+        Args:
+            x (int): x position
+            y (int): y position
+
+        Returns:
+            boolean
+        """
+        return WIDTH - VIEWSIZE * TILESIZE < x < WIDTH and 0 < y < VIEWSIZE * TILESIZE
+
+    @staticmethod
+    def get_mouse_pos():
+        """Get the position of the mouse
+
+        Returns:
+            (int, int): the x and the y of the mouse
+        """
+        # """Get the position of the mouse"""
+        mouse_x, mouse_y = pg.mouse.get_pos()
+        return mouse_x, mouse_y
+
+    @staticmethod
+    def calc_mouse_pos(x, y):
+        """Calcul the case of the given position
+
+        Args:
+            x (int)
+            y (int)
+
+        Returns:
+            (int, int): the case of the grid
+        """
+        return x // TILESIZE, y // TILESIZE

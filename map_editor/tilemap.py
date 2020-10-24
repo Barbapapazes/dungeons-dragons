@@ -46,7 +46,7 @@ class Camera():
         self.camera = pg.Rect(self.x, self.y, self.width, self.height)
 
     def get_x(self):
-        """Get the number of tiles moved in x
+        """Get the number of tile moved in x
 
         Returns:
             int
@@ -54,7 +54,7 @@ class Camera():
         return self.x // TILESIZE
 
     def get_y(self):
-        """Get the number of tiles moved in y
+        """Get the number of tile moved in y
 
         Returns:
             int
