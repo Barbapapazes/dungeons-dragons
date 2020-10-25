@@ -21,6 +21,19 @@ pipenv run map_editor
 
 ## Docs
 
+Read the docs [here](https://barbapapazes.github.io/dungeons-dragons/).
+
+To start the docs locally, you need [nodejs](https://nodejs.org).
+
+```sh
+# install dependencies
+npm i
+# start the docs in dev mode
+npm docs:dev
+# build the docs in production mode
+npm docs:build
+```
+
 ## Tools
 
 ### Virtual Environnement
