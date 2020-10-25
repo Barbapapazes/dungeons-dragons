@@ -1,3 +1,13 @@
+# custom
+pids
+node_modules
+npm-debug.log
+run
+.DS_Store
+.nyc_output
+.basement
+config.local.js
+basement_dist
 assets/saved_maps/**
 
 # Byte-compiled / optimized / DLL files
