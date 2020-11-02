@@ -491,11 +491,16 @@ class Window():
         self.selected = 0
         self.selected_map = None
         self.len_maps = 0
+        self.maps = list()
         while self.waiting:
             self.clock.tick(FPS)
-            self.maps = [f for f in os.listdir(self.saved_maps) if path.isfile(path.join(self.saved_maps, f))]
-            self.selected_map = self.maps[self.selected]
-            self.len_maps = len(self.maps)
+            try:
+                self.maps = [f for f in os.listdir(self.saved_maps) if path.isfile(
+                    path.join(self.saved_maps, f)) and f.endswith('tmx')]
+                self.selected_map = self.maps[self.selected]
+                self.len_maps = len(self.maps)
+            except:
+                pass
             for value in enumerate(self.maps):
                 color = WHITE
                 if value[0] == self.selected:
