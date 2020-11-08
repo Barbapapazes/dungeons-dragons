@@ -4,11 +4,12 @@ module.exports = {
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
-  title: 'Vuepress Docs Boilerplate',
+  title: 'Dungeons & Dragons',
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#description
    */
   description: description,
+  base: '/dungeons-dragons/',
 
   /**
    * Extra tags to be injected to the page HTML `<head>`
@@ -34,45 +35,46 @@ module.exports = {
     editLinks: true,
     docsDir: 'docs',
     docsBranch: 'master',
-    editLinkText: 'Help us to improve this page !',
+    editLinkText: 'Aidez nous à améliorer cette page',
     lastUpdated: true,
-    nav: [
-      {
-        text: 'Presentation',
-        link: '/presentation/',
-      },
-      {
-        text: 'Config',
-        link: '/config/',
-      },
-      {
-        text: 'Guide',
-        link: '/guide/',
-      },
-    ],
-    sidebar: {
-      '/presentation/': [
-        {
-          title: 'Presentation',
-          collapsable: false,
-          children: [''],
-        },
-      ],
-      '/config/': [
-        {
-          title: 'Configuration',
-          collapsable: false,
-          children: [''],
-        },
-      ],
-      '/guide/': [
-        {
-          title: 'Guide',
-          collapsable: false,
-          children: ['', 'window', 'map_editor'],
-        },
-      ],
-    },
+    // nav: [
+    //   {
+    //     text: 'Présentation',
+    //     link: '/presentation/',
+    //   },
+    //   {
+    //     text: 'Config',
+    //     link: '/config/',
+    //   },
+    //   {
+    //     text: 'Guide',
+    //     link: '/guide/',
+    //   },
+    // ],
+    sidebar: ['/presentation.md', '/config.md', '/window.md', '/map_editor.md'],
+    // {
+    //   '/presentation/': [
+    //     {
+    //       title: 'Présentation',
+    //       collapsable: false,
+    //       children: [''],
+    //     },
+    //   ],
+    //   '/config/': [
+    //     {
+    //       title: 'Configuration',
+    //       collapsable: false,
+    //       children: [''],
+    //     },
+    //   ],
+    //   '/guide/': [
+    //     {
+    //       title: 'Guide',
+    //       collapsable: false,
+    //       children: ['', 'window', 'map_editor'],
+    //     },
+    //   ],
+    // },
   },
 
   /**

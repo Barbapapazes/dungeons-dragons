@@ -1,4 +1,4 @@
-# Presentation
+# Présentation
 
 > Ce projet est un projet de 3A STI de l'INSA Centre Val de Loire.
 

@@ -1,13 +1,11 @@
-# Dungeons and Dragons
-
-> A 3A students project for INSA's python courses
+# Config
 
 ## Build Setup
 
 You need **python 3** and **pip** installed on your machine.
 
 ```sh
-# install pipenv
+# install a local environment
 $ pip install pipenv
 # install all packages
 $ pipenv install
@@ -21,16 +19,14 @@ $ pipenv run map_editor
 
 ## Docs
 
-Read the docs [here](https://barbapapazes.github.io/dungeons-dragons/).
-
 To start the docs locally, you need [nodejs](https://nodejs.org).
 
 ```sh
 # install dependencies
-npm i
+npm install
 # start the docs in dev mode
 npm docs:dev
-# build the docs in production mode
+# build the docs
 npm docs:build
 ```
 
