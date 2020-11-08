@@ -16,7 +16,7 @@ module.exports = {
    * ref：https://v1.vuepress.vuejs.org/config/#head
    */
   head: [
-    ['meta', { name: 'theme-color', content: '#3eaf7c' }],
+    ['meta', { name: 'theme-color', content: '#b33939' }],
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
     [
       'meta',
@@ -30,22 +30,41 @@ module.exports = {
    * ref：https://v1.vuepress.vuejs.org/theme/default-theme-config.html
    */
   themeConfig: {
-    repo: '',
-    editLinks: false,
-    docsDir: '',
-    editLinkText: '',
+    repo: 'https://github.com/Barbapapazes/dungeons-dragons',
+    editLinks: true,
+    docsDir: 'docs',
+    docsBranch: 'master',
+    editLinkText: 'Help us to improve this page !',
     lastUpdated: true,
     nav: [
       {
-        text: 'Guide',
-        link: '/guide/',
+        text: 'Presentation',
+        link: '/presentation/',
       },
       {
         text: 'Config',
         link: '/config/',
       },
+      {
+        text: 'Guide',
+        link: '/guide/',
+      },
     ],
     sidebar: {
+      '/presentation/': [
+        {
+          title: 'Presentation',
+          collapsable: false,
+          children: [''],
+        },
+      ],
+      '/config/': [
+        {
+          title: 'Configuration',
+          collapsable: false,
+          children: [''],
+        },
+      ],
       '/guide/': [
         {
           title: 'Guide',

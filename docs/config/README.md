@@ -2,6 +2,8 @@
 sidebar: auto
 ---
 
+# Présentation
+
 # Config
 
 ## foo
