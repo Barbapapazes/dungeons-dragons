@@ -16,7 +16,7 @@ In the `Window`, there is a function called `flip_state` which is called every t
 
 ### Operation of a state
 
-The `run` function from the `Window` class run the `run` function from the state. This function call a function depending of the chosen sub-state. For example, the `normal_run` is the main loop of a classique pygame project, which is often call `main`. Inside, we can call the `update`, `events` and `draw` functions. The call of this is to have the same design that for a single screen game. Multiple screen is now easy !
+The `run` function from the `Window` class run the `run` function from the state. This function call a function depending of the chosen sub-state. For example, the `normal_run` is the main loop of a classique pygame project, which is often call `main`. Inside, we can call the `update`, `events` and `draw` functions. The call of this is to have the same design that for a single screen game. Multiple screens is now easy !
 
 ### Sub-states
 
