@@ -139,6 +139,7 @@ class _State():
         """Load assets"""
         game_folder = path.dirname('.')
         self.assets_folder = path.join(game_folder, 'assets')
+        self.saved_games = path.join(self.assets_folder, 'saved_games')
         self.fonts_folder = path.join(self.assets_folder, 'fonts')
         self.title_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
 

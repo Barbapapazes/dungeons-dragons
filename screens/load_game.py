@@ -1,6 +1,9 @@
 """Load game screen"""
 
 import pygame as pg
+import os
+import json
+from os import path
 from window import _State
 from config.screens import MENU, LOAD_GAME, TRANSITION_OUT
 from config.colors import WHITE
@@ -18,7 +21,13 @@ class LoadGame(_State):
 
         self.background = pg.Surface((WIDTH, HEIGHT))
 
-        self.startup(0, create_game_data())
+        games = [f for f in os.listdir(self.saved_games) if path.isfile(
+            path.join(self.saved_games, f)) and f.endswith('json')]
+        if (len(games) == 1):
+            with open(path.join(self.saved_games, games[0])) as f:
+                self.startup(0, json.load(f))
+        else:
+            self.startup(0, create_game_data())
 
     def run(self, surface, keys, dt):
         """Run states"""
