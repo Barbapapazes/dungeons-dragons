@@ -8,7 +8,9 @@ run
 .basement
 config.local.js
 basement_dist
-assets/saved_maps/**
+assets/saved_maps/*.tmx
+assets/saved_games/*.json
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
