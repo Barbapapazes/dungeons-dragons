@@ -4,7 +4,6 @@ import pygame as pg
 from window import _State
 from config.window import WIDTH, HEIGHT
 from config.screens import GAME, MENU, TRANSITION_OUT
-from data.game_data import create_game_data
 
 
 class Menu(_State):
@@ -17,7 +16,7 @@ class Menu(_State):
 
         self.background = pg.Surface((WIDTH, HEIGHT))
 
-        self.startup(0, create_game_data())
+        self.startup(0, 0)
 
     def startup(self, dt, game_data):
         """Initialize data at scene start."""

@@ -21,14 +21,6 @@ class Game(_State):
 
         self.states_dict = self.make_states_dict()
 
-        self.load_data()
-
-    def load_data(self):
-        game_folder = path.dirname('.')
-        self.assets_folder = path.join(game_folder, 'assets')
-        self.fonts_folder = path.join(self.assets_folder, 'fonts')
-        self.title_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
-
     def startup(self, dt, game_data):
         self.dt = dt
         self.game_data = game_data

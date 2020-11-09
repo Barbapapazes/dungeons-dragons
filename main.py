@@ -4,11 +4,17 @@ from window import Window
 from screens.credits import Credits
 from screens.menu import Menu
 from screens.game import Game
-from config.screens import MENU, CREDITS, GAME
+from screens.load_game import LoadGame
+from config.screens import MENU, CREDITS, GAME, LOAD_GAME
 
 if __name__ == '__main__':
-    STATES = {CREDITS: Credits(), MENU: Menu(), GAME: Game()}
+    STATES = {
+        LOAD_GAME: LoadGame(),
+        MENU: Menu(),
+        GAME: Game(),
+        CREDITS: Credits(),
+    }
     W = Window()
-    W.setup_states(STATES, MENU)
+    W.setup_states(STATES, LOAD_GAME)
     W.main()
     W.quit()

@@ -2,5 +2,5 @@
 
 
 def create_game_data():
-    """Create game data, to use in the first screen only"""
+    """Create game data"""
     return {"count": 0}

@@ -1,10 +1,12 @@
 """Create the main window and the base for all screens"""
 
-import sys
-import pygame as pg
-from config.window import WIDTH, HEIGHT, FPS, TITLE
-from config.colors import BLACK
 from config.screens import TRANSITION_IN, TRANSITION_OUT
+from config.colors import BLACK
+from config.window import WIDTH, HEIGHT, FPS, TITLE
+import pygame as pg
+import sys
+from os import path
+import json
 
 
 class Window():
@@ -27,6 +29,13 @@ class Window():
 
         self.show_fps = False
 
+        self.load_data()
+
+    def load_data(self):
+        game_folder = path.dirname('.')
+        self.assets_folder = path.join(game_folder, 'assets')
+        self.saved_games = path.join(self.assets_folder, 'saved_games')
+
     def setup_states(self, states_dict, start_state):
         """Load all states"""
         self.states_dict = states_dict
@@ -36,11 +45,11 @@ class Window():
     def flip_state(self):
         """Change state to a new state"""
         previous, self.state_name = self.state_name, self.state.next
-        persist = self.state.cleanup()
-        print(persist)
+        self.persist = self.state.cleanup()
+        print(self.persist)
         self.state = self.states_dict[self.state_name]
         self.state.previous = previous
-        self.state.startup(self.dt, persist)
+        self.state.startup(self.dt, self.persist)
 
     def run(self):
         """Run the state"""
@@ -62,9 +71,18 @@ class Window():
                     self.show_fps = not self.show_fps
                     self.normal_caption()
                 self.state.get_events(event)
+                if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
+                    pg.event.wait()
+                    print("save game data")
+                    self.save()
             elif event.type == pg.KEYUP:
                 self.keys = pg.key.get_pressed()
                 self.state.get_events(event)
+
+    def save(self):
+        # pourquoi ne pas passer ça dans le state pour gérer la sauvegarde à tout moment
+        with open(path.join(self.saved_games, "game_data.json"), "w") as outfile:
+            json.dump(self.persist, outfile)
 
     @staticmethod
     def normal_caption():
@@ -115,6 +133,15 @@ class _State():
         self.alpha = None
         self.transition_surface = {}
 
+        self.load_data()
+
+    def load_data(self):
+        """Load assets"""
+        game_folder = path.dirname('.')
+        self.assets_folder = path.join(game_folder, 'assets')
+        self.fonts_folder = path.join(self.assets_folder, 'fonts')
+        self.title_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
+
     def draw_text(self, text, font_name, size, color, x, y, align="nw", screen=None):
         """Used to draw text
 
@@ -158,6 +185,7 @@ class _State():
         """Load all data for this screen"""
         self.game_data = game_data
         self.dt = dt
+        self.setup_transition()
 
     def setup_transition(self):
         """Generate all things to manage state transition"""
@@ -196,9 +224,11 @@ class _State():
         Returns:
             object: define all the possible states for a screen
         """
-        states_dict = {TRANSITION_IN: self.transition_in,
-                       TRANSITION_OUT: self.transition_out,
-                       'normal': self.normal_run}
+        states_dict = {
+            TRANSITION_IN: self.transition_in,
+            TRANSITION_OUT: self.transition_out,
+            'normal': self.normal_run
+        }
 
         return states_dict
 
