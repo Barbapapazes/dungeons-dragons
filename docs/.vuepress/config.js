@@ -51,7 +51,13 @@ module.exports = {
     //     link: '/guide/',
     //   },
     // ],
-    sidebar: ['/presentation.md', '/config.md', '/window.md', '/map_editor.md'],
+    sidebar: [
+      '/presentation.md',
+      '/config.md',
+      '/window.md',
+      '/map_editor.md',
+      '/save.md',
+    ],
     // {
     //   '/presentation/': [
     //     {
