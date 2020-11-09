@@ -37,6 +37,7 @@ class Window():
         """Change state to a new state"""
         previous, self.state_name = self.state_name, self.state.next
         persist = self.state.cleanup()
+        print(persist)
         self.state = self.states_dict[self.state_name]
         self.state.previous = previous
         self.state.startup(self.dt, persist)

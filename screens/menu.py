@@ -4,6 +4,7 @@ import pygame as pg
 from window import _State
 from config.window import WIDTH, HEIGHT
 from config.screens import GAME, MENU, TRANSITION_OUT
+from data.game_data import create_game_data
 
 
 class Menu(_State):
@@ -16,7 +17,7 @@ class Menu(_State):
 
         self.background = pg.Surface((WIDTH, HEIGHT))
 
-        self.startup(0, 0)
+        self.startup(0, create_game_data())
 
     def startup(self, dt, game_data):
         """Initialize data at scene start."""
@@ -44,6 +45,9 @@ class Menu(_State):
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_RIGHT:
                 super().set_state(TRANSITION_OUT)
+            if event.key == pg.K_p:
+                self.game_data['count'] += 1
+                print(self.game_data["count"])
 
     def draw(self):
         self.screen.blit(self.background, (0, 0))

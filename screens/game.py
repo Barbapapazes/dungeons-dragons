@@ -31,6 +31,7 @@ class Game(_State):
 
     def startup(self, dt, game_data):
         self.dt = dt
+        self.game_data = game_data
         self.all_sprites = pg.sprite.Group()
 
         Player(self, 2, 4)
