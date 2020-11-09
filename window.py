@@ -114,6 +114,45 @@ class _State():
         self.alpha = None
         self.transition_surface = {}
 
+    def draw_text(self, text, font_name, size, color, x, y, align="nw", screen=None):
+        """Used to draw text
+
+        Args:
+            text (str)
+            font_name (str)
+            size (int)
+            color (tuple)
+            x (int)
+            y (int)
+            align (str, optional): where we want that the text is aligned. Defaults to "nw".
+            screen (Surface, optional): Defaults to None.
+        """
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        if align == "nw":
+            text_rect.topleft = (x, y)
+        if align == "ne":
+            text_rect.topright = (x, y)
+        if align == "sw":
+            text_rect.bottomleft = (x, y)
+        if align == "se":
+            text_rect.bottomright = (x, y)
+        if align == "n":
+            text_rect.midtop = (x, y)
+        if align == "s":
+            text_rect.midbottom = (x, y)
+        if align == "e":
+            text_rect.midright = (x, y)
+        if align == "w":
+            text_rect.midleft = (x, y)
+        if align == "center":
+            text_rect.center = (x, y)
+        if not screen:
+            self.screen.blit(text_surface, text_rect)
+        else:
+            screen.blit(text_surface, text_rect)
+
     def startup(self, dt, game_data):
         """Load all data for this screen"""
         self.game_data = game_data

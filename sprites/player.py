@@ -22,11 +22,11 @@ class Player(pg.sprite.Sprite):
     def get_keys(self):
         self.vx, self.vy = 0, 0
         keys = pg.key.get_pressed()
-        if keys[pg.K_LEFT] or keys[pg.K_a]:
+        if keys[pg.K_LEFT] or keys[pg.K_q]:
             self.vx = -PLAYER_SPEED
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
             self.vx = PLAYER_SPEED
-        if keys[pg.K_UP] or keys[pg.K_w]:
+        if keys[pg.K_UP] or keys[pg.K_z]:
             self.vy = -PLAYER_SPEED
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vy = PLAYER_SPEED

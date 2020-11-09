@@ -6,5 +6,6 @@
     "KEYUP",
     "blit",
     "pylint"
-  ]
+  ],
+  "python.linting.pylintEnabled": true
 }
