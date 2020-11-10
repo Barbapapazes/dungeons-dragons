@@ -80,7 +80,7 @@ class Window():
                 self.state.get_events(event)
 
     def save(self):
-        # pourquoi ne pas passer ça dans le state pour gérer la sauvegarde à tout moment
+        # pourquoi ne pas passer ça dans le state pour gérer la sauvegarde à plus précisément
         with open(path.join(self.saved_games, self.persist['file_name']), "w") as outfile:
             file_name = self.persist['file_name']
             del self.persist['file_name']
