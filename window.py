@@ -81,8 +81,12 @@ class Window():
 
     def save(self):
         # pourquoi ne pas passer ça dans le state pour gérer la sauvegarde à tout moment
-        with open(path.join(self.saved_games, "game_data.json"), "w") as outfile:
+        with open(path.join(self.saved_games, self.persist['file_name']), "w") as outfile:
+            file_name = self.persist['file_name']
+            del self.persist['file_name']
+            # Remove the file name to be able to change manually the file name
             json.dump(self.persist, outfile)
+            self.persist['file_name'] = file_name
 
     @staticmethod
     def normal_caption():

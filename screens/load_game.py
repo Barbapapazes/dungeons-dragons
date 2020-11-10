@@ -6,7 +6,7 @@ import json
 from os import path
 from window import _State
 from config.screens import MENU, LOAD_GAME, TRANSITION_OUT
-from config.colors import WHITE
+from config.colors import BURGUNDY, WHITE
 from config.window import WIDTH, HEIGHT
 from data.game_data import create_game_data
 
@@ -18,16 +18,22 @@ class LoadGame(_State):
         super(LoadGame, self).__init__()
         self.name = LOAD_GAME
         self.next = MENU
+        self.state = 'normal'
 
         self.background = pg.Surface((WIDTH, HEIGHT))
 
-        games = [f for f in os.listdir(self.saved_games) if path.isfile(
-            path.join(self.saved_games, f)) and f.endswith('json')]
-        if (len(games) == 1):
-            with open(path.join(self.saved_games, games[0])) as f:
-                self.startup(0, json.load(f))
-        else:
-            self.startup(0, create_game_data())
+        # if (len(games) == 1):
+        #     with open(path.join(self.saved_games, games[0])) as f:
+        #         self.startup(0, json.load(f))
+        # else:
+        #     self.startup(0, create_game_data())
+        self.selected = 0
+        self.games = [f for f in os.listdir(self.saved_games) if f.endswith('.json')]
+        self.len_games = len(self.games)
+
+        self.startup(0, 0)
+
+        print(self.games)
 
     def run(self, surface, keys, dt):
         """Run states"""
@@ -40,9 +46,55 @@ class LoadGame(_State):
     def normal_run(self):
         """Run the normal state"""
         self.draw()
-        super().set_state(TRANSITION_OUT)
+
+    def get_events(self, event):
+        """Manage event
+
+        Args:
+            event (Event)
+        """
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_DOWN:
+                self.selected += 1
+                if self.selected >= self.len_games:
+                    self.selected = self.len_games - 1
+            if event.key == pg.K_UP:
+                self.selected -= 1
+                if self.selected < 0:
+                    self.selected = 0
+        if event.type == pg.KEYUP:
+            if event.key == pg.K_RETURN:
+                print(self.games[self.selected])
+                self.load(self.games[self.selected])
+
+        pg.event.clear()
+
+    def load(self, selected):
+        """Load the selected files
+
+        Args:
+            selected (string): name of the file
+        """
+        with open(path.join(self.saved_games, selected)) as f:
+            self.game_data = json.load(f)
+            self.game_data['file_name'] = selected
+            super().set_state(TRANSITION_OUT)
 
     def draw(self):
         """Draw loading page"""
-        self.background.fill((0, 255, 0))
-        self.draw_text("Loading", self.title_font, 30, WHITE, WIDTH // 2, HEIGHT // 2, "center")
+        self.background.fill((0, 0, 0))
+        self.screen.blit(self.background, (0, 0))
+        self.draw_text("Load a game :", self.title_font, 30, WHITE, WIDTH // 2, HEIGHT // 2, "center")
+        self.draw_files()
+
+    def draw_files(self):
+        """Print game data file name"""
+        for index, name in enumerate(self.games):
+            color = WHITE
+            font_size = 25
+            if index == self.selected:
+                color = BURGUNDY
+                font_size = 26
+
+            self.draw_text(name, self.title_font, font_size, color, WIDTH //
+                           2, HEIGHT * 6 / 10 + 35 * index, align="center")
