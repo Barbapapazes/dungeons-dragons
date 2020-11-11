@@ -1,12 +1,13 @@
 """Create the main window and the base for all screens"""
 
+from os import path
+import pygame as pg
+import sys
+import json
+from logger import logger
 from config.screens import TRANSITION_IN, TRANSITION_OUT
 from config.colors import BLACK
 from config.window import WIDTH, HEIGHT, FPS, TITLE
-import pygame as pg
-import sys
-from os import path
-import json
 
 
 class Window():
@@ -15,7 +16,9 @@ class Window():
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
+        logger.info("Start pygame")
         pg.init()
+        logger.info("Create window")
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         self.normal_caption()
         self.clock = pg.time.Clock()
@@ -32,12 +35,14 @@ class Window():
         self.load_data()
 
     def load_data(self):
+        logger.info('Load data in main window')
         game_folder = path.dirname('.')
         self.assets_folder = path.join(game_folder, 'assets')
         self.saved_games = path.join(self.assets_folder, 'saved_games')
 
     def setup_states(self, states_dict, start_state):
         """Load all states"""
+        logger.info("Load states in window")
         self.states_dict = states_dict
         self.state_name = start_state
         self.state = self.states_dict[self.state_name]
@@ -45,10 +50,11 @@ class Window():
     def flip_state(self):
         """Change state to a new state"""
         previous, self.state_name = self.state_name, self.state.next
+        logger.info("Flip state, from %s to %s", previous, self.state_name)
         self.persist = self.state.cleanup()
-        print(self.persist)
         self.state = self.states_dict[self.state_name]
         self.state.previous = previous
+        logger.info("Startup %s", self.state_name)
         self.state.startup(self.dt, self.persist)
 
     def run(self):
@@ -69,11 +75,11 @@ class Window():
                 self.keys = pg.key.get_pressed()
                 if event.key == pg.K_EQUALS:
                     self.show_fps = not self.show_fps
+                    logger.info('Show fps: %s', self.show_fps)
                     self.normal_caption()
                 self.state.get_events(event)
                 if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
                     pg.event.wait()
-                    print("save game data")
                     self.save()
             elif event.type == pg.KEYUP:
                 self.keys = pg.key.get_pressed()
@@ -81,12 +87,16 @@ class Window():
 
     def save(self):
         # pourquoi ne pas passer ça dans le state pour gérer la sauvegarde à plus précisément
-        with open(path.join(self.saved_games, self.persist['file_name']), "w") as outfile:
-            file_name = self.persist['file_name']
-            del self.persist['file_name']
-            # Remove the file name to be able to change manually the file name
-            json.dump(self.persist, outfile)
-            self.persist['file_name'] = file_name
+        try:
+            with open(path.join(self.saved_games, self.persist['file_name']), "w") as outfile:
+                file_name = self.persist['file_name']
+                del self.persist['file_name']
+                # Remove the file name to be able to change manually the file name
+                json.dump(self.persist, outfile)
+                self.persist['file_name'] = file_name
+                logger.info('File %s saved', self.persist['file_name'])
+        except EnvironmentError as e:
+            logger.exception(e)
 
     @staticmethod
     def normal_caption():
@@ -101,6 +111,7 @@ class Window():
 
     def main(self):
         """Main loop for entire program"""
+        logger.info('Start window')
         while not self.done:
             self.dt = self.clock.tick(FPS) / 1000
             self.events()
@@ -110,6 +121,7 @@ class Window():
     @staticmethod
     def quit():
         """Quit all"""
+        logger.info("Quit window")
         pg.quit()
         sys.exit()
 
@@ -119,13 +131,15 @@ class _State():
 
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self):
+    def __init__(self, name):
+        logger.info('Start state %s', name)
         self.screen = None
         self.keys = None
         self.dt = 0
 
         self.done = False
         self.quit = False
+        self.name = name
 
         self.state = None
         self.states_dict = self.make_states_dict()
@@ -141,6 +155,7 @@ class _State():
 
     def load_data(self):
         """Load assets"""
+        logger.info('Load data for state %s', self.name)
         game_folder = path.dirname('.')
         self.assets_folder = path.join(game_folder, 'assets')
         self.saved_games = path.join(self.assets_folder, 'saved_games')
@@ -188,6 +203,7 @@ class _State():
 
     def startup(self, dt, game_data):
         """Load all data for this screen"""
+        logger.info('Start up state %s', self.name)
         self.game_data = game_data
         self.dt = dt
         self.setup_transition()
@@ -219,6 +235,7 @@ class _State():
         Returns:
             object: game data
         """
+        logger.info('Quit state %s', self.name)
         self.done = False
         return self.game_data
 

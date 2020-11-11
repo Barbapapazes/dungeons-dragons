@@ -10,8 +10,8 @@ class Credits(_State):
     """Credits screen"""
 
     def __init__(self):
-        super(Credits, self).__init__()
         self.name = CREDITS
+        super(Credits, self).__init__(self.name)
         self.next = GAME
 
         self.background = pg.Surface((WIDTH, HEIGHT))

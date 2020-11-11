@@ -10,8 +10,8 @@ class Menu(_State):
     """Menu screen"""
 
     def __init__(self):
-        super(Menu, self).__init__()
         self.name = MENU
+        super(Menu, self).__init__(self.name)
         self.next = GAME
 
         self.background = pg.Surface((WIDTH, HEIGHT))

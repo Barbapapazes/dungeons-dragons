@@ -3,6 +3,7 @@
 import pygame as pg
 from os import path
 from window import _State
+from logger import logger
 from sprites.player import Player
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, BLACK, WHITE
@@ -13,8 +14,8 @@ class Game(_State):
     """Game screen"""
 
     def __init__(self):
-        super(Game, self).__init__()
         self.name = GAME
+        super(Game, self).__init__(self.name)
         self.next = None
 
         self.all_sprites = None
@@ -54,7 +55,9 @@ class Game(_State):
                 super().set_state(TRANSITION_OUT)
         if event.type == pg.KEYUP:
             if event.key == pg.K_m:
-                self.state = 'normal' if self.state == 'menu' else 'menu'
+                sub_state = 'normal' if self.state == 'menu' else 'menu'
+                logger.info('Start sub-state %s in %s', sub_state, self.name)
+                super().set_state(sub_state)
 
     def run(self, surface, keys, dt):
         """Run states"""
