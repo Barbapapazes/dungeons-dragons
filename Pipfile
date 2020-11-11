@@ -10,6 +10,7 @@ pylint = "*"
 [packages]
 pygame = "*"
 pytmx = "*"
+colorlog = "*"
 
 [requires]
 python_version = "3.9"

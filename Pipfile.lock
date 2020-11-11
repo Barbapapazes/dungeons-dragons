@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "46464ee93edb072823b52c5e907a0beadd5459d68c60575e7fd013fbb69f9637"
+            "sha256": "325c38d059ac8ad56d1a9f66f749dea9adb770e8f14e93aaeefadef024893d1c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,22 @@
         ]
     },
     "default": {
+        "colorama": {
+            "hashes": [
+                "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b",
+                "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"
+            ],
+            "markers": "sys_platform == 'win32'",
+            "version": "==0.4.4"
+        },
+        "colorlog": {
+            "hashes": [
+                "sha256:54e5f153419c22afc283c130c4201db19a3dbd83221a0f4657d5ee66234a2ea4",
+                "sha256:edd5ada5de03e880e42b2526f8be5570fd9b692f8eb7cf6b1fdcac3e3fb23976"
+            ],
+            "index": "pypi",
+            "version": "==4.6.2"
+        },
         "pygame": {
             "hashes": [
                 "sha256:00268b75204519628760030d256b17e557710a859fadf7cbf80ead80efc22779",
