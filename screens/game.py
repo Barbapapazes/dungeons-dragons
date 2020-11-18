@@ -7,7 +7,7 @@ from logger import logger
 from sprites.player import Player
 from utils.tilemap import TiledMap, Camera
 from config.window import WIDTH, HEIGHT, TILESIZE
-from config.colors import LIGHTGREY, BLACK, WHITE
+from config.colors import LIGHTGREY, BLACK, WHITE, CYAN
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 from config.sprites import WEAPONS
 from inventory.inventory import Armor, Weapon
@@ -75,6 +75,7 @@ class Game(_State):
                        'normal': self.normal_run,
                        'menu': self.menu_run,
                        'inventory': self.inventory_run
+                       'mode_combat':self.mode_combat
                        }
 
         return states_dict
@@ -96,6 +97,12 @@ class Game(_State):
                 logger.info("Toggle inventory from player")
                 self.player.inventory.toggle_inventory()
                 super().toggle_sub_state('inventory')
+
+            if event.key== pg.K_TAB:
+                """Simulate begin versus"""
+                logger.info("Begin Versus")
+                sub_state ='normal' if self.state == 'mode_combat' else 'mode_combat'
+                super().set_state(sub_state)
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 3:
@@ -145,6 +152,12 @@ class Game(_State):
         self.screen.blit(self.dim_screen, (0, 0))
         self.player.inventory.draw(self.screen)
 
+    def mode_combat(self):
+        self.draw_text("GO",self.title_font,35,CYAN,WIDTH // 2, HEIGHT // 2)
+        
+        
+
+
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
 
@@ -171,3 +184,4 @@ class Game(_State):
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
         super().transtition_active(self.screen)
+
