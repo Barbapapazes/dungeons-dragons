@@ -1,4 +1,5 @@
 import socket
+import pickle
 from _thread import *
 from settings import SERVER_IP, SERVER_PORT
 
@@ -30,7 +31,10 @@ def threaded_client(conn):
             if not data:
                 break
             else:
-                print(data)
+                if data == "get":
+                    print(data)
+
+                conn.sendall(pickle.dumps(data))
         except BaseException:
             break
 

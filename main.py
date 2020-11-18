@@ -1,6 +1,7 @@
 """Main file"""
 
 from window import Window
+from screens.online_game import OnlineGame
 from screens.credits import Credits
 from screens.menu import Menu
 from screens.game import Game
@@ -20,6 +21,7 @@ if __name__ == '__main__':
         LOAD_GAME: LoadGame(),
         MENU: Menu(),
         GAME: Game(),
+        "online_game": OnlineGame(),
         CREDITS: Credits(),
         OPTIONS: Options(),
         SHORTCUTS: Shortcuts(),

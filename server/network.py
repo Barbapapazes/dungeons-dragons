@@ -1,5 +1,6 @@
 import socket
-from settings import SERVER_IP, SERVER_PORT
+import pickle
+from config.server import SERVER_IP, SERVER_PORT
 
 
 class Network:
@@ -17,5 +18,12 @@ class Network:
         try:
             self.client.connect(self.addr)
             return self.client.recv(2048).decode()
+        except socket.error as e:
+            print(e)
+
+    def send(self, data):
+        try:
+            self.client.send(str.encode(data))
+            return pickle.loads(self.client.recv(2048))
         except socket.error as e:
             print(e)

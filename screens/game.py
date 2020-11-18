@@ -262,7 +262,7 @@ class Game(_State):
                 self.next = MENU
                 super().set_state(TRANSITION_OUT)
             if event.key == pg.K_RIGHT:
-                self.next = CREDITS
+                self.next = 'online_game'
                 super().set_state(TRANSITION_OUT)
 
             if event.key == pg.K_ESCAPE:
