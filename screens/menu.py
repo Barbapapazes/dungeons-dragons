@@ -102,79 +102,6 @@ class Menu(_State):
         pg.quit()
         quit()
 
-
-        #Backgroud image 
-        self.image=pg.image.load("./img/Menu/background2.jpg").convert()
-        self.image=pg.transform.scale(self.image,(WIDTH,HEIGHT))
-
-
-        #titre du jeu 
-        self.police=pg.font.Font("./assets/fonts/Enchanted Land.otf",150)
-        self.titre=self.police.render("Le Titre Du Jeu  ",True,couleur.YELLOW_LIGHT)
-
-        #Buttons 
-        self.police_button=pg.font.Font("./assets/fonts/Enchanted Land.otf",50)
-        self.New_Game = pw.Button(
-                self.background, 337, 250, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='New Game',
-                fontSize=20, margin=20,
-                inactiveColour=couleur.BEIGE,
-                hoverColour=couleur.YELLOW_LIGHT,
-                pressedColour=(9, 48, 22), radius=10,
-                onClick=self.Change_state,
-                onClickParams=[CREDITS],
-                font=self.police_button,
-                textVAlign="centre",
-                textHAlign="centre"
-            )
-        self.Charge_game = pw.Button(
-                self.background, 337, 350, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='Charge Game ',
-                fontSize=20, margin=20,
-                inactiveColour=couleur.BEIGE,
-                hoverColour=couleur.YELLOW_LIGHT,
-                pressedColour=(9, 48, 22), radius=10,
-                onClick=self.Change_state,
-                onClickParams=[LOAD_GAME],
-                font=self.police_button,
-                textVAlign="centre",
-                textHAlign="centre"
-            )
-        
-        self.Options= pw.Button(
-                self.background, 337, 450,LARGEUR_BOUTON , HAUTEUR_BOUTON, text='Options',
-                fontSize=20, margin=20,
-                inactiveColour=couleur.BEIGE,
-                hoverColour=couleur.YELLOW_LIGHT,
-                pressedColour=(9, 48, 22), radius=10,
-                onClick=self.Change_state,
-                onClickParams=[CREDITS],
-                font=self.police_button,
-                textVAlign="centre",
-                textHAlign="centre"
-            )
-
-        self.Quiter= pw.Button(
-                self.background, 337, 550, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='Leave to desktop',
-                fontSize=20, margin=20,
-                inactiveColour=couleur.BEIGE,
-                hoverColour=couleur.YELLOW_LIGHT,
-                pressedColour=(9, 48, 22), radius=10,
-                onClick=self.Stop,
-                font=self.police_button,
-                textVAlign="centre",
-                textHAlign="centre"
-            )
-
-    def Change_state(self,*etat):
-        #changement etat
-        print(etat[0])
-        self.next=etat[0]
-        super().set_state(TRANSITION_OUT)
-
-    def Stop(self):
-        pg.quit()
-        quit()
-
-
     def startup(self, dt, game_data):
         """Initialize data at scene start."""
         self.game_data = game_data
@@ -230,6 +157,3 @@ class Menu(_State):
 
         self.Quiter.listen(events)
         self.Quiter.draw()
-
-        
-   
