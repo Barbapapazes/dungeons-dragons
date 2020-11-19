@@ -157,8 +157,8 @@ class Game(_State):
         self.draw_text("GO",self.title_font,35,CYAN,WIDTH // 2, HEIGHT // 2, 'top')
 
         #Choose action
-        if(self.action=ATK):
-            
+        if(self.action=='ATK'):
+            logger.critical("cc")
         
         
         
