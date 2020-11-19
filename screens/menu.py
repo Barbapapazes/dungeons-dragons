@@ -36,7 +36,9 @@ class Menu(_State):
         self.image=pg.transform.scale(self.image,(WIDTH,HEIGHT))
 
 
-
+        #titre du jeu 
+        self.police=pg.font.Font(None,70)
+        self.titre=self.police.render("LE TITRE DU JEU ",True,pg.Color(255,255,255))
 
         #Buttons 
         self.New_Game = pw.Button(
