@@ -4,7 +4,7 @@ import pygame_widgets as pw
 
 
 pygame.init()
-police=pygame.font.Font("None",40)
+police=pygame.font.Font("Pixeled.ttf",40)
 police2=pygame.font.Font("Sindentosa.ttf",40)
 police_small=pygame.font.Font("Pixeled.ttf",20)
 
