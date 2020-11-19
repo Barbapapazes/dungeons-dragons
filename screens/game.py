@@ -23,6 +23,7 @@ class Game(_State):
         self.next = None
 
         self.all_sprites = None
+        self.action = None
 
         self.states_dict = self.make_states_dict()
 
@@ -156,6 +157,8 @@ class Game(_State):
         self.draw_text("GO",self.title_font,35,CYAN,WIDTH // 2, HEIGHT // 2, 'top')
 
         #Choose action
+        if(self.action=ATK):
+            
         
         
         
