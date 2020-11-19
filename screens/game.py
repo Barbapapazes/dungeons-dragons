@@ -31,7 +31,8 @@ class Game(_State):
         self.player1 = Player(self, 2, 4)
         super().setup_transition()
 
-        #Temporaire
+        # Temporaire
+        # faire une boucle avec un config
         sword_steel = Weapon('img/sword.png', 20, 'weapon', 'sword')
         sword_wood = Weapon('img/swordWood.png', 10, 'weapon', 'sword')
         hp_potion = Consumable('img/potionRed.png', 2, 30)
@@ -46,7 +47,6 @@ class Game(_State):
         self.player1.inventory.addItemInv(chest_armor)
         self.player1.inventory.addItemInv(upg_helmet_armor)
         self.player1.inventory.addItemInv(upg_chest_armor)
-
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -85,15 +85,13 @@ class Game(_State):
                 if self.player1.inventory.display_inventory:
                     mouse_pos = pg.mouse.get_pos()
                     self.player1.inventory.checkSlot(self.screen, mouse_pos)
-            if event.button == 1 :
+            if event.button == 1:
                 if self.player1.inventory.display_inventory:
                     self.player1.inventory.moveItem(self.screen)
-        if event.type == pg.MOUSEBUTTONUP :
+        if event.type == pg.MOUSEBUTTONUP:
             if event.button == 1:
                 if self.player1.inventory.display_inventory:
                     self.player1.inventory.placeItem(self.screen)
-
-
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
