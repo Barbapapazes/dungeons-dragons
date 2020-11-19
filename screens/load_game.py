@@ -66,8 +66,9 @@ class LoadGame(_State):
                         self.selected = 0
                     logger.info('Game selected : %s', self.games[self.selected])
         if event.type == pg.KEYUP:
-            if event.key == pg.K_RETURN:
-                self.load(self.games[self.selected])
+            if len(self.games):
+                if event.key == pg.K_RETURN:
+                    self.load(self.games[self.selected])
             if event.key == pg.K_SPACE:
                 now = datetime.now()
                 date = now.strftime("%Y-%b-%d")
