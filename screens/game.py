@@ -153,7 +153,10 @@ class Game(_State):
         self.player.inventory.draw(self.screen)
 
     def mode_combat(self):
-        self.draw_text("GO",self.title_font,35,CYAN,WIDTH // 2, HEIGHT // 2)
+        self.draw_text("GO",self.title_font,35,CYAN,WIDTH // 2, HEIGHT // 2, 'top')
+
+        #Choose action
+        
         
         
 

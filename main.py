@@ -19,6 +19,6 @@ if __name__ == '__main__':
         SHORTCUTS: Shortcuts()
     }
     W = Window()
-    W.setup_states(STATES, MENU)
+    W.setup_states(STATES, LOAD_GAME)
     W.main()
     W.quit()

@@ -21,7 +21,8 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0, 0)
         self.pos = vec(x, y)
         self.rot = 0
-
+        self.nbAct = 0 
+        
         # Stats
         self.HP = 100
         self.max_HP = PLAYER_MAX_HP
