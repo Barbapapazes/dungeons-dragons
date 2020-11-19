@@ -20,6 +20,12 @@ COLOR_INACTIVE = pg.Color('lightskyblue3')
 COLOR_ACTIVE = pg.Color('dodgerblue2')
 
 
+HAUTEUR_BOUTON = 50
+LARGEUR_BOUTON = 350
+COLOR_INACTIVE = pg.Color('lightskyblue3')
+COLOR_ACTIVE = pg.Color('dodgerblue2')
+
+
 class Menu(_State):
     """Menu screen"""
 
