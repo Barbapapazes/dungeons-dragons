@@ -29,7 +29,9 @@ class Menu(_State):
         self.image=pg.transform.scale(self.image,(WIDTH,HEIGHT))
 
 
-
+        #titre du jeu 
+        self.police=pg.font.Font(None,70)
+        self.titre=self.police.render("LE TITRE DU JEU ",True,pg.Color(255,255,255))
 
         #Buttons 
         self.New_Game = pw.Button(
@@ -130,6 +132,7 @@ class Menu(_State):
         events=pg.event.get()
         self.screen.blit(self.background, (0, 0))
         self.background.blit(self.image,(0,0))
+        self.background.blit(self.titre,(WIDTH/2-200,100))
 
         self.New_Game.listen(events)
         self.New_Game.draw()
