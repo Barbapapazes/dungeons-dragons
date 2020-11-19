@@ -5,7 +5,7 @@ import pygame_widgets as pw
 from os import path
 from window import _State
 from config.window import WIDTH, HEIGHT
-from config.screens import GAME, MENU, TRANSITION_OUT
+from config.screens import GAME, MENU, TRANSITION_OUT,CREDITS,LOAD_GAME
 
 
 HAUTEUR_BOUTON=50
@@ -39,13 +39,53 @@ class Menu(_State):
                 hoverColour=(9,48,22),
                 pressedColour=(9, 48, 22), radius=20,
                 onClick=self.Change_state,
+                onClickParams=[CREDITS],
+                textVAlign="centre",
+                textHAlign="centre"
+            )
+        self.Charge_game = pw.Button(
+                self.background, 337, 350, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='Charge Game ',
+                fontSize=50, margin=20,
+                inactiveColour=(13, 71, 32),
+                hoverColour=(9,48,22),
+                pressedColour=(9, 48, 22), radius=20,
+                 onClick=self.Change_state,
+                onClickParams=[LOAD_GAME],
                 textVAlign="centre",
                 textHAlign="centre"
             )
         
-    def Change_state(self):
+        self.Options= pw.Button(
+                self.background, 337, 450,LARGEUR_BOUTON , HAUTEUR_BOUTON, text='Options',
+                fontSize=50, margin=20,
+                inactiveColour=(13, 71, 32),
+                hoverColour=(9,48,22),
+                pressedColour=(9, 48, 22), radius=20,
+                onClick=lambda: print('Click'),
+                textVAlign="centre",
+                textHAlign="centre"
+            )
+
+        self.Quiter= pw.Button(
+                self.background, 337, 550, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='Leave to desktop',
+                fontSize=50, margin=20,
+                inactiveColour=(13, 71, 32),
+                hoverColour=(9,48,22),
+                pressedColour=(9, 48, 22), radius=20,
+                onClick=self.Stop,
+                textVAlign="centre",
+                textHAlign="centre"
+            )
+
+    def Change_state(self,*etat):
         #changement etat
+        print(etat[0])
+        self.next=etat[0]
         super().set_state(TRANSITION_OUT)
+
+    def Stop(self):
+        pg.quit()
+        quit()
 
 
     def startup(self, dt, game_data):
@@ -87,9 +127,21 @@ class Menu(_State):
 
     def draw(self):
         """Draw content"""
+        events=pg.event.get()
         self.screen.blit(self.background, (0, 0))
         self.background.blit(self.image,(0,0))
-        self.New_Game.listen(pg.event.get())
+
+        self.New_Game.listen(events)
         self.New_Game.draw()
+
+        self.Charge_game.listen(events)
+        self.Charge_game.draw()
+
+        self.Options.listen(events)
+        self.Options.draw()
+
+        self.Quiter.listen(events)
+        self.Quiter.draw()
+
         
    
