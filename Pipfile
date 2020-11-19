@@ -12,6 +12,7 @@ pygame = "*"
 pytmx = "*"
 colorlog = "*"
 pygame-gui = "*"
+pygame-widgets = "*"
 
 [requires]
 python_version = "3.9"
