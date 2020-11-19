@@ -4,6 +4,7 @@ import pygame as pg
 import os
 import json
 from os import path
+from datetime import datetime
 from logger import logger
 from window import _State
 from config.screens import MENU, LOAD_GAME, TRANSITION_OUT
@@ -66,7 +67,14 @@ class LoadGame(_State):
         if event.type == pg.KEYUP:
             if event.key == pg.K_RETURN:
                 self.load(self.games[self.selected])
-
+            if event.key == pg.K_SPACE:
+                now = datetime.now()
+                date = now.strftime("%Y-%b-%d")
+                timestamp = datetime.timestamp(now)
+                self.game_data = create_game_data()
+                self.game_data['file_name'] = f"{date}-{int(timestamp)}.json"
+                logger.info("Start a new game")
+                super().set_state(TRANSITION_OUT)
         pg.event.clear()
 
     def load(self, selected):
@@ -102,3 +110,5 @@ class LoadGame(_State):
 
             self.draw_text(name, self.title_font, font_size, color, WIDTH //
                            2, HEIGHT * 6 / 10 + 35 * index, align="center")
+            self.draw_text("Press space to create a new file", self.title_font,
+                           25, WHITE, WIDTH // 2, HEIGHT, align="s")
