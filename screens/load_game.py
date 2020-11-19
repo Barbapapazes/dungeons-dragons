@@ -54,16 +54,17 @@ class LoadGame(_State):
             event (Event)
         """
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_DOWN:
-                self.selected += 1
-                if self.selected >= self.len_games:
-                    self.selected = self.len_games - 1
-                logger.info('Game selected : %s', self.games[self.selected])
-            if event.key == pg.K_UP:
-                self.selected -= 1
-                if self.selected < 0:
-                    self.selected = 0
-                logger.info('Game selected : %s', self.games[self.selected])
+            if len(self.games):
+                if event.key == pg.K_DOWN:
+                    self.selected += 1
+                    if self.selected >= self.len_games:
+                        self.selected = self.len_games - 1
+                    logger.info('Game selected : %s', self.games[self.selected])
+                if event.key == pg.K_UP:
+                    self.selected -= 1
+                    if self.selected < 0:
+                        self.selected = 0
+                    logger.info('Game selected : %s', self.games[self.selected])
         if event.type == pg.KEYUP:
             if event.key == pg.K_RETURN:
                 self.load(self.games[self.selected])
@@ -98,6 +99,8 @@ class LoadGame(_State):
         self.screen.blit(self.background, (0, 0))
         self.draw_text("Load a game", self.title_font, 30, WHITE, WIDTH // 2, HEIGHT // 2, "center")
         self.draw_files()
+        self.draw_text("Press space to create a new file", self.title_font,
+                       25, WHITE, WIDTH // 2, HEIGHT, align="s")
 
     def draw_files(self):
         """Print game data file name"""
@@ -110,5 +113,3 @@ class LoadGame(_State):
 
             self.draw_text(name, self.title_font, font_size, color, WIDTH //
                            2, HEIGHT * 6 / 10 + 35 * index, align="center")
-            self.draw_text("Press space to create a new file", self.title_font,
-                           25, WHITE, WIDTH // 2, HEIGHT, align="s")
