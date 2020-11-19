@@ -21,9 +21,9 @@ class Player(pg.sprite.Sprite):
         self.rect.y = self.y
 
         #Stats
-        self.HP = 100       #point de vie
+        self.HP = 100       
         self.max_HP = 100
-        self.shield = 0     #armure
+        self.shield = 0     
 
         #Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
@@ -47,30 +47,58 @@ class Player(pg.sprite.Sprite):
             self.vy *= 0.7071
 
     def addHp(self, hp_gain):
+        """Add passed hp_gain to the player's health
+
+        Args:
+            hp_gain (int)
+        """
         self.HP += hp_gain
         if self.HP > self.max_HP:
             self.HP = self.max_HP
 
     def addShield(self, shield_gain):
+        """Add passed shield_gain to the player's shield 
+
+        Args:
+            shield_gain (int)
+        """
         self.shield += shield_gain
 
     def equip_armor(self, item):
+        """Equip a passed armor item in the right armor slot,
+        if an item is already in the needed armor slot, it will be unequiped
+
+        Args:
+            item (Armor)
+        """
         if self.armor[item.slot] != None:
             self.unequip_armor(item.slot)
         self.armor[item.slot] = item
         self.shield += item.shield
 
     def unequip_armor(self, slot):
+        """Unequip an armor item from a passed slot
+
+        Args:
+            slot (Armor)
+        """
         if self.armor[slot] != None:
             self.shield -= self.armor[slot].shield
             self.armor[slot] = None
 
     def equip_weapon(self, weapon):
+        """Put a passed weapon in the weapon slot
+
+        Args:
+            weapon (Weapon)
+        """
         if self.weapon != None:
             self.unequip_weapon()
         self.weapon = weapon
 
     def unequip_weapon(self):
+        """Set weapon to None if it wasn't
+        """
         if self.weapon != None:
             self.weapon = None
 
