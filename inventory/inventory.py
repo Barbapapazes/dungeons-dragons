@@ -28,21 +28,21 @@ class Inventory():
         """Update the inventory_slots list
         """
         while len(self.inventory_slots) != self.totalSlots:
-            for x in range(WIDTH//2 - ((INVTILESIZE+2) * self.cols)//2, 
-                            WIDTH//2 + ((INVTILESIZE+2) * self.cols) //2, 
-                                                            INVTILESIZE+2):
-                for y in range(UIHEIGTH, UIHEIGTH+INVTILESIZE * self.rows, 
-                                                        INVTILESIZE+2):
+            for x in range(WIDTH//2 - ((INVTILESIZE+2) * self.cols)//2,
+                           WIDTH//2 + ((INVTILESIZE+2) * self.cols) // 2,
+                           INVTILESIZE+2):
+                for y in range(UIHEIGTH, UIHEIGTH+INVTILESIZE * self.rows,
+                               INVTILESIZE+2):
                     self.inventory_slots.append(InventorySlot(x, y))
 
         while len(self.armor_slots) != 4:
-            for y in range(UIHEIGTH-100, UIHEIGTH-100+(INVTILESIZE+1) * 4, 
-                                                            INVTILESIZE+2):
+            for y in range(UIHEIGTH-100, UIHEIGTH-100+(INVTILESIZE+1) * 4,
+                           INVTILESIZE+2):
                 self.armor_slots.append(EquipableSlot(self.inventory_slots[0].x - 100, y))
 
         while len(self.weapon_slots) != 1:
-            self.weapon_slots.append(EquipableSlot(self.armor_slots[3].x - 50, 
-                                                        self.armor_slots[3].y))
+            self.weapon_slots.append(EquipableSlot(self.armor_slots[3].x - 50,
+                                                   self.armor_slots[3].y))
 
     def setSlotTypes(self):
         """Used to define Armor and Weapon slots
@@ -53,7 +53,7 @@ class Inventory():
         self.armor_slots[3].slottype = 'feet'
         self.weapon_slots[0].slottype = 'weapon'
 
-    def draw(self, screen): 
+    def draw(self, screen):
         """Used to draw the inventory
 
         Args:
@@ -107,7 +107,7 @@ class Inventory():
             screen (Surface)
         """
         mousepos = pg.mouse.get_pos()
-        
+
         for slot in self.inventory_slots + self.armor_slots + self.weapon_slots:
             if slot.draw(screen).collidepoint(mousepos) and slot.item != None and self.movingitem == None:
                 slot.item.is_moving = True
@@ -124,10 +124,16 @@ class Inventory():
         mousepos = pg.mouse.get_pos()
         for slot in self.inventory_slots + self.armor_slots + self.weapon_slots:
             if slot.draw(screen).collidepoint(mousepos) and self.movingitem != None:
-                if isinstance(self.movingitemslot, EquipableSlot) and isinstance(slot, InventorySlot) and not isinstance(slot, EquipableSlot) and slot.item == None:
+                if isinstance(
+                        self.movingitemslot, EquipableSlot) and isinstance(
+                        slot, InventorySlot) and not isinstance(
+                        slot, EquipableSlot) and slot.item == None:
                     self.unequipItem(self.movingitem)
                     break
-                if isinstance(slot, InventorySlot) and not isinstance(slot, EquipableSlot) and not isinstance(self.movingitemslot, EquipableSlot):
+                if isinstance(
+                        slot, InventorySlot) and not isinstance(
+                        slot, EquipableSlot) and not isinstance(
+                        self.movingitemslot, EquipableSlot):
                     self.removeItemInv(self.movingitem)
                     self.addItemInv(self.movingitem, slot)
                     break
@@ -235,7 +241,7 @@ class InventorySlot:
         if self.item != None and self.item.is_moving:
             mousepos1 = pg.mouse.get_pos()
             self.image = pg.image.load(self.item.img).convert_alpha()
-            screen.blit(self.image, (mousepos1[0]-20,mousepos1[1]-20))
+            screen.blit(self.image, (mousepos1[0]-20, mousepos1[1]-20))
 
 
 class EquipableSlot(InventorySlot):
@@ -244,12 +250,14 @@ class EquipableSlot(InventorySlot):
         InventorySlot.__init__(self, x, y)
         self.slottype = slottype
 
+
 class Item():
 
     def __init__(self, img, value):
         self.img = img
         self.value = value
         self.is_moving = False
+
 
 class Consumable(Item):
 
@@ -268,6 +276,7 @@ class Consumable(Item):
         inv.removeItemInv(self)
         target.addHp(self.hp_gain)
         target.addShield(self.shield_gain)
+
 
 class Equipable(Item):
 
@@ -290,6 +299,7 @@ class Equipable(Item):
         """
         self.is_equipped = False
         self.equipped_to = None
+
 
 class Armor(Equipable):
 
@@ -324,6 +334,7 @@ class Armor(Equipable):
         Equipable.unequip(self)
         inv.addItemInv(self)
         inv.getEquipSlot(self).item = None
+
 
 class Weapon(Equipable):
 
