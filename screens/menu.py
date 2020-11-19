@@ -6,6 +6,7 @@ from os import path
 from window import _State
 from config.window import WIDTH, HEIGHT
 from config.screens import GAME, MENU, TRANSITION_OUT,CREDITS,LOAD_GAME
+import config.colors as couleur
 
 
 HAUTEUR_BOUTON=50
@@ -25,56 +26,62 @@ class Menu(_State):
         self.startup(0, 0)
 
         #Backgroud image 
-        self.image=pg.image.load("./img/Menu/background.jpg").convert()
+        self.image=pg.image.load("./img/Menu/background2.jpg").convert()
         self.image=pg.transform.scale(self.image,(WIDTH,HEIGHT))
 
 
         #titre du jeu 
-        self.police=pg.font.Font(None,70)
-        self.titre=self.police.render("LE TITRE DU JEU ",True,pg.Color(255,255,255))
+        self.police=pg.font.Font("./assets/fonts/Enchanted Land.otf",150)
+        self.titre=self.police.render("Le Titre Du Jeu  ",True,couleur.YELLOW_LIGHT)
 
         #Buttons 
+        self.police_button=pg.font.Font("./assets/fonts/Enchanted Land.otf",50)
         self.New_Game = pw.Button(
                 self.background, 337, 250, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='New Game',
-                fontSize=50, margin=20,
-                inactiveColour=(13, 71, 32),
-                hoverColour=(9,48,22),
-                pressedColour=(9, 48, 22), radius=20,
+                fontSize=20, margin=20,
+                inactiveColour=couleur.BEIGE,
+                hoverColour=couleur.YELLOW_LIGHT,
+                pressedColour=(9, 48, 22), radius=10,
                 onClick=self.Change_state,
                 onClickParams=[CREDITS],
+                font=self.police_button,
                 textVAlign="centre",
                 textHAlign="centre"
             )
         self.Charge_game = pw.Button(
                 self.background, 337, 350, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='Charge Game ',
-                fontSize=50, margin=20,
-                inactiveColour=(13, 71, 32),
-                hoverColour=(9,48,22),
-                pressedColour=(9, 48, 22), radius=20,
-                 onClick=self.Change_state,
+                fontSize=20, margin=20,
+                inactiveColour=couleur.BEIGE,
+                hoverColour=couleur.YELLOW_LIGHT,
+                pressedColour=(9, 48, 22), radius=10,
+                onClick=self.Change_state,
                 onClickParams=[LOAD_GAME],
+                font=self.police_button,
                 textVAlign="centre",
                 textHAlign="centre"
             )
         
         self.Options= pw.Button(
                 self.background, 337, 450,LARGEUR_BOUTON , HAUTEUR_BOUTON, text='Options',
-                fontSize=50, margin=20,
-                inactiveColour=(13, 71, 32),
-                hoverColour=(9,48,22),
-                pressedColour=(9, 48, 22), radius=20,
-                onClick=lambda: print('Click'),
+                fontSize=20, margin=20,
+                inactiveColour=couleur.BEIGE,
+                hoverColour=couleur.YELLOW_LIGHT,
+                pressedColour=(9, 48, 22), radius=10,
+                onClick=self.Change_state,
+                onClickParams=[CREDITS],
+                font=self.police_button,
                 textVAlign="centre",
                 textHAlign="centre"
             )
 
         self.Quiter= pw.Button(
                 self.background, 337, 550, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='Leave to desktop',
-                fontSize=50, margin=20,
-                inactiveColour=(13, 71, 32),
-                hoverColour=(9,48,22),
-                pressedColour=(9, 48, 22), radius=20,
+                fontSize=20, margin=20,
+                inactiveColour=couleur.BEIGE,
+                hoverColour=couleur.YELLOW_LIGHT,
+                pressedColour=(9, 48, 22), radius=10,
                 onClick=self.Stop,
+                font=self.police_button,
                 textVAlign="centre",
                 textHAlign="centre"
             )
@@ -132,7 +139,7 @@ class Menu(_State):
         events=pg.event.get()
         self.screen.blit(self.background, (0, 0))
         self.background.blit(self.image,(0,0))
-        self.background.blit(self.titre,(WIDTH/2-200,100))
+        self.background.blit(self.titre,(220,50))
 
         self.New_Game.listen(events)
         self.New_Game.draw()
