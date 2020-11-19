@@ -5,6 +5,7 @@ from os import path
 from window import _State
 from logger import logger
 from sprites.player import Player
+from utils.tilemap import TiledMap, Camera
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, BLACK, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
@@ -52,6 +53,13 @@ class Game(_State):
         # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
         # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
         self.player.inventory.add_item(helmet_armor)
+        self.new()
+
+    def new(self):
+        self.map = TiledMap(path.join(self.saved_maps, 'level1.tmx'))
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()
+        self.camera = Camera(self.map.width, self.map.height)
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -149,11 +157,15 @@ class Game(_State):
     def update(self):
         """Update all"""
         self.all_sprites.update()
+        self.camera.update(self.player)
 
     def draw(self):
         """Draw all"""
-        self.screen.fill(BLACK)
-        self.draw_grid(self.screen)
-        self.all_sprites.draw(self.screen)
+        # self.screen.fill(BLACK)
+        # self.draw_grid(self.screen)
+        # self.all_sprites.draw(self.screen)
+        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
 
         super().transtition_active(self.screen)

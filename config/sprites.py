@@ -1,7 +1,8 @@
 """Define settings for the sprites"""
 
 # player
-PLAYER_SPEED = 150
+PLAYER_SPEED = 280
+PLAYER_ROT_SPEED = 200
 PLAYER_MAX_HP = 100
 
 #  ajouter les charastéristiques

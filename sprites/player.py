@@ -2,8 +2,9 @@
 import pygame as pg
 from config.colors import YELLOW
 from config.window import TILESIZE
-from config.sprites import PLAYER_SPEED, PLAYER_MAX_HP
+from config.sprites import PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP
 from inventory.inventory import Inventory
+vec = pg.math.Vector2
 
 
 class Player(pg.sprite.Sprite):
@@ -14,11 +15,12 @@ class Player(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
-        self.vx, self.vy = 0, 0
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rect.center = (x, y)
+        # self.hit_rect = PLAYER_HIT_RECT
+        # self.hit_rect.center = self.rect.center
+        self.vel = vec(0, 0)
+        self.pos = vec(x, y)
+        self.rot = 0
 
         # Stats
         self.HP = 100
@@ -27,32 +29,30 @@ class Player(pg.sprite.Sprite):
         self.MA = 50
 
         # Attribut
-        self.STR = 30      #strenght 
-        self.DEX = 10      #dexterity
-        self.CON = 5      #constitution
-        self.INT = 10      #intelligence
-        self.WIS = 0      #lucky
-        self.CHA = 5      #charisme
-        
+        self.STR = 30  # strenght
+        self.DEX = 10  # dexterity
+        self.CON = 5  # constitution
+        self.INT = 10  # intelligence
+        self.WIS = 0  # lucky
+        self.CHA = 5  # charisme
+
         # Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
         self.inventory = Inventory(self, 5, 8)
 
     def get_keys(self):
-        self.vx, self.vy = 0, 0
+        self.rot_speed = 0
+        self.vel = vec(0, 0)
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_q]:
-            self.vx = -PLAYER_SPEED
+            self.rot_speed = PLAYER_ROT_SPEED
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.vx = PLAYER_SPEED
+            self.rot_speed = -PLAYER_ROT_SPEED
         if keys[pg.K_UP] or keys[pg.K_z]:
-            self.vy = -PLAYER_SPEED
+            self.vel = vec(PLAYER_SPEED, 0).rotate(-self.rot)
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vy = PLAYER_SPEED
-        if self.vx != 0 and self.vy != 0:
-            self.vx *= 0.7071
-            self.vy *= 0.7071
+            self.vel = vec(-PLAYER_SPEED / 2, 0).rotate(-self.rot)
 
     def addHp(self, hp_gain):
         """Add passed hp_gain to the player's health
@@ -112,7 +112,9 @@ class Player(pg.sprite.Sprite):
 
     def update(self):
         self.get_keys()
-        self.x += self.vx * self.game.dt
-        self.y += self.vy * self.game.dt
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+        self.image = pg.transform.rotate(pg.Surface((TILESIZE, TILESIZE)), self.rot)
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        self.pos += self.vel * self.game.dt
