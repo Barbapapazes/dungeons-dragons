@@ -8,6 +8,7 @@ from sprites.player import Player
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, BLACK, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
+from inventory.inventory import *
 
 
 class Game(_State):
@@ -27,8 +28,25 @@ class Game(_State):
         self.game_data = game_data
         self.all_sprites = pg.sprite.Group()
 
-        Player(self, 2, 4)
+        self.player1 = Player(self, 2, 4)
         super().setup_transition()
+
+        #Temporaire
+        sword_steel = Weapon('img/sword.png', 20, 'weapon', 'sword')
+        sword_wood = Weapon('img/swordWood.png', 10, 'weapon', 'sword')
+        hp_potion = Consumable('img/potionRed.png', 2, 30)
+        helmet_armor = Armor('img/helmet.png', 10, 20, 'head')
+        chest_armor = Armor('img/chest.png', 10, 40, 'chest')
+        upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
+        upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
+        self.player1.inventory.addItemInv(helmet_armor)
+        self.player1.inventory.addItemInv(hp_potion)
+        self.player1.inventory.addItemInv(sword_steel)
+        self.player1.inventory.addItemInv(sword_wood)
+        self.player1.inventory.addItemInv(chest_armor)
+        self.player1.inventory.addItemInv(upg_helmet_armor)
+        self.player1.inventory.addItemInv(upg_chest_armor)
+
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -53,16 +71,33 @@ class Game(_State):
             if event.key == pg.K_RIGHT:
                 self.next = CREDITS
                 super().set_state(TRANSITION_OUT)
+            if event.key == pg.K_b:
+                self.player1.inventory.toggleInventory()
+
         if event.type == pg.KEYUP:
             if event.key == pg.K_m:
                 sub_state = 'normal' if self.state == 'menu' else 'menu'
                 logger.info('Start sub-state %s in %s', sub_state, self.name)
                 super().set_state(sub_state)
 
-    def run(self, surface, keys, dt):
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if event.button == 3:
+                if self.player1.inventory.display_inventory:
+                    mouse_pos = pg.mouse.get_pos()
+                    self.player1.inventory.checkSlot(self.screen, mouse_pos)
+            if event.button == 1 :
+                if self.player1.inventory.display_inventory:
+                    self.player1.inventory.moveItem(self.screen)
+        if event.type == pg.MOUSEBUTTONUP :
+            if event.button == 1:
+                if self.player1.inventory.display_inventory:
+                    self.player1.inventory.placeItem(self.screen)
+
+
+
+    def run(self, surface, keys, mouse, dt):
         """Run states"""
         self.screen = surface
-        self.keys = keys
         self.dt = dt
         update_level = self.states_dict[self.state]
         if self.state != 'normal':
@@ -98,4 +133,6 @@ class Game(_State):
         self.screen.fill(BLACK)
         self.draw_grid(self.screen)
         self.all_sprites.draw(self.screen)
+        self.player1.inventory.draw(self.screen)
+
         super().transtition_active(self.screen)
