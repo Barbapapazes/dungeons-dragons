@@ -14,6 +14,12 @@ COLOR_INACTIVE = pg.Color('lightskyblue3')
 COLOR_ACTIVE = pg.Color('dodgerblue2')
 
 
+HAUTEUR_BOUTON=50
+LARGEUR_BOUTON=350
+COLOR_INACTIVE = pg.Color('lightskyblue3')
+COLOR_ACTIVE = pg.Color('dodgerblue2')
+
+
 class Menu(_State):
     """Menu screen"""
 
@@ -23,6 +29,21 @@ class Menu(_State):
         self.next = GAME
         self.background = pg.Surface((WIDTH, HEIGHT))
         self.startup(0, 0)
+        self.New_Game = pw.Button(
+                self.background, 337, 250, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='New Game',
+                fontSize=50, margin=20,
+                inactiveColour=(13, 71, 32),
+                hoverColour=(9,48,22),
+                pressedColour=(9, 48, 22), radius=20,
+                onClick=self.fonction,
+                textVAlign="centre",
+                textHAlign="centre"
+            )
+        
+    def fonction(self):
+        print("Je change d'etat")
+        super().set_state(TRANSITION_OUT)
+
 
         #Backgroud image 
         self.image=pg.image.load("./img/Menu/background2.jpg").convert()
@@ -102,7 +123,6 @@ class Menu(_State):
         self.dt = dt
         self.background.fill((0, 255, 0))
         pg.init()
-        pg.display.set_mode((WIDTH,HEIGHT))
         super().setup_transition()
 
     def run(self, surface, keys, mouse, dt):
@@ -127,6 +147,11 @@ class Menu(_State):
                 super().set_state(TRANSITION_OUT)
             if event.key == pg.K_p:
                 self.game_data['game_data']['count'] += 1
+
+
+    def affiche(self):
+        print('coucou')
+
 
 
     def affiche(self):
