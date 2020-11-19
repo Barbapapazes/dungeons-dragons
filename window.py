@@ -24,6 +24,7 @@ class Window():
         self.clock = pg.time.Clock()
         self.dt = None
         self.keys = pg.key.get_pressed()
+        self.mouse =pg.mouse.get_pressed()
 
         self.done = False
         self.states_dict = {}
@@ -63,7 +64,7 @@ class Window():
             self.done = True
         elif self.state.done:
             self.flip_state()
-        self.state.run(self.screen, self.keys, self.dt)
+        self.state.run(self.screen, self.keys, self.mouse, self.dt)
         self.show_fps_caption()
 
     def events(self):
@@ -84,6 +85,14 @@ class Window():
             elif event.type == pg.KEYUP:
                 self.keys = pg.key.get_pressed()
                 self.state.get_events(event)
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                self.mouse = pg.mouse.get_pressed()
+                self.state.get_events(event)
+            elif event.type == pg.MOUSEBUTTONUP:
+                self.mouse = pg.mouse.get_pressed()
+                self.state.get_events(event)
+
+
 
     def save(self):
         # pourquoi ne pas passer ça dans le state pour gérer la sauvegarde à plus précisément
@@ -135,6 +144,7 @@ class _State():
         logger.info('Start state %s', name)
         self.screen = None
         self.keys = None
+        self.mouse = None
         self.dt = 0
 
         self.done = False
@@ -219,10 +229,11 @@ class _State():
     def get_events(self, event):
         """Manage the event for this screen"""
 
-    def run(self, surface, keys, dt):
+    def run(self, surface, keys, mouse, dt):
         """Run states"""
         self.screen = surface
         self.keys = keys
+        self.mouse = mouse
         self.dt = dt
 
     def set_state(self, value):

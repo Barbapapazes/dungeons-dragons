@@ -34,9 +34,9 @@ class LoadGame(_State):
 
         self.startup(0, 0)
 
-    def run(self, surface, keys, dt):
+    def run(self, surface, keys, mouse, dt):
         """Run states"""
-        super().run(surface, keys, dt)
+        super().run(surface, keys, mouse, dt)
         update_level = self.states_dict[self.state]
         if self.state != 'normal':
             self.draw()
