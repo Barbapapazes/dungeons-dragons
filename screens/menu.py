@@ -5,7 +5,7 @@ import pygame_widgets as pw
 from os import path
 from window import _State
 from config.window import WIDTH, HEIGHT
-from config.screens import GAME, MENU, TRANSITION_OUT,CREDITS,LOAD_GAME
+from config.screens import GAME, MENU, TRANSITION_OUT,CREDITS,LOAD_GAME,CHARACTER_CREA
 import config.colors as couleur
 
 
@@ -49,7 +49,7 @@ class Menu(_State):
                 hoverColour=couleur.YELLOW_LIGHT,
                 pressedColour=(9, 48, 22), radius=10,
                 onClick=self.Change_state,
-                onClickParams=[CREDITS],
+                onClickParams=[CHARACTER_CREA],
                 font=self.police_button,
                 textVAlign="centre",
                 textHAlign="centre"
