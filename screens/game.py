@@ -33,7 +33,7 @@ class Game(_State):
 
         # Temporaire
         # faire une boucle avec un config
-        sword_steel = Weapon('img/sword.png', 20, 'weapon', 'sword')
+        sword_steel = Weapon(path.join('img', 'sword.png'), 20, 'weapon', 'sword')
         sword_wood = Weapon('img/swordWood.png', 10, 'weapon', 'sword')
         hp_potion = Consumable('img/potionRed.png', 2, 30)
         helmet_armor = Armor('img/helmet.png', 10, 20, 'head')
@@ -110,7 +110,10 @@ class Game(_State):
 
     def menu_run(self):
         """Run the menu state"""
-        self.screen.fill(BLACK)
+        self.draw()
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.screen.blit(self.dim_screen, (0, 0))
         self.draw_text("C'est un sub-state ! Un menu dans l'écran game",
                        self.title_font, 15, WHITE, WIDTH // 2, HEIGHT // 2, 'center')
 
