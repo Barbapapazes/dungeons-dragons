@@ -1,7 +1,6 @@
 """"""
 
 import pygame as pg
-import string
 import pygame_widgets as pw
 from window import _State
 from config.window import WIDTH, HEIGHT
