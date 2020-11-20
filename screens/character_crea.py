@@ -15,6 +15,7 @@ class Character_crea(_State):
         self.name = MENU
         super(Character_crea, self).__init__(self.name)
         self.next = GAME
+        self.index=0
 
         self.background = pg.Surface((WIDTH, HEIGHT))
         self.startup(0, 0)
@@ -24,6 +25,7 @@ class Character_crea(_State):
 
         #titre du jeu 
         self.police=pg.font.Font("./assets/fonts/Enchanted Land.otf",100)
+        self.police_bis=pg.font.Font("./assets/fonts/Enchanted Land.otf",50)
         self.titre=self.police.render("NewGame",True,couleur.YELLOW_LIGHT)
 
         #textbox
@@ -31,19 +33,27 @@ class Character_crea(_State):
                   borderColour=(255, 0, 0), textColour=(0, 200, 0),
                   onSubmit=self.output, radius=10, borderThickness=5)
 
+
+        #selector personage
+        self.list_perso=["< MAGE >","< GUERRIER > ","<L'AUTRE >"]
+        self.item_text=self.police_bis.render(self.list_perso[self.index],True,couleur.BLACK)
+
+        #selector image 
+        self.list_image=["./img/Character_crea/Mage.png","./img/Character_crea/Guerrier.png",""]
+        self.perso=pg.image.load(self.list_image[self.index]).convert()
+
+
         
 
     def output(self):
         # Get text in the textbox
-        print(self.name.getText())
+        print("ok")
 
     def startup(self, dt, game_data):
         """Initialize data at scene start."""
         self.game_data = game_data
         self.dt = dt
-        self.background.fill((0, 255, 0))
         pg.init()
-        pg.display.set_mode((WIDTH,HEIGHT))
         super().setup_transition()
 
     def run(self, surface, keys, dt):
@@ -64,16 +74,42 @@ class Character_crea(_State):
         """Events loop"""
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_RIGHT:
-                super().set_state(TRANSITION_OUT)
+                #super().set_state(TRANSITION_OUT)
+                self.switch_perso("r")
+                self.item_text=self.police_bis.render(self.list_perso[self.index],True,couleur.BLACK)
+                self.perso=pg.image.load(self.list_image[self.index]).convert()
+
+            if event.key == pg.K_LEFT:
+                #super().set_state(TRANSITION_OUT)
+                self.switch_perso("l")
+                self.item_text=self.police_bis.render(self.list_perso[self.index],True,couleur.BLACK)
+                self.perso=pg.image.load(self.list_image[self.index]).convert()
+
             if event.key == pg.K_p:
                 self.game_data['count'] += 1
                 print(self.game_data["count"])
+
+    def switch_perso(self,side):
+        if(side=="r"):
+            if(self.index < 2):
+                self.index=self.index+1
+            else:
+                self.index=0
+        if(side=="l"):
+            if(self.index > 0):
+                self.index=self.index-1
+            else:
+                self.index=2
+
+
 
     def draw(self):
         events=pg.event.get()
         self.screen.blit(self.background, (0, 0))
         self.background.blit(self.image,(0,0))
         self.background.blit(self.titre,(375,0))
+        self.background.blit(self.item_text,(425,180))
+        self.background.blit(self.perso,(500,500))
 
         self.name.listen(events)
         self.name.draw()
