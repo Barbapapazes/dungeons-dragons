@@ -20,16 +20,15 @@ class Player(pg.sprite.Sprite):
         self.rect.x = self.x
         self.rect.y = self.y
 
-        #Stats
-        self.HP = 100       
+        # Stats
+        self.HP = 100
         self.max_HP = 100
-        self.shield = 0     
+        self.shield = 0
 
-        #Inventory
+        # Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
-        self.inventory = Inventory(self, 40, 5, 8)
-
+        self.inventory = Inventory(self, 5, 8)
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
@@ -57,7 +56,7 @@ class Player(pg.sprite.Sprite):
             self.HP = self.max_HP
 
     def addShield(self, shield_gain):
-        """Add passed shield_gain to the player's shield 
+        """Add passed shield_gain to the player's shield
 
         Args:
             shield_gain (int)
@@ -71,7 +70,7 @@ class Player(pg.sprite.Sprite):
         Args:
             item (Armor)
         """
-        if self.armor[item.slot] != None:
+        if self.armor[item.slot] is not None:
             self.unequip_armor(item.slot)
         self.armor[item.slot] = item
         self.shield += item.shield
@@ -82,7 +81,7 @@ class Player(pg.sprite.Sprite):
         Args:
             slot (Armor)
         """
-        if self.armor[slot] != None:
+        if self.armor[slot] is not None:
             self.shield -= self.armor[slot].shield
             self.armor[slot] = None
 
@@ -92,14 +91,14 @@ class Player(pg.sprite.Sprite):
         Args:
             weapon (Weapon)
         """
-        if self.weapon != None:
+        if self.weapon is not None:
             self.unequip_weapon()
         self.weapon = weapon
 
     def unequip_weapon(self):
         """Set weapon to None if it wasn't
         """
-        if self.weapon != None:
+        if self.weapon is not None:
             self.weapon = None
 
     def update(self):

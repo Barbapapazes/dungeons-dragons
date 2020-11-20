@@ -1,50 +1,71 @@
 import pygame as pg
-from config.window import WIDTH
+from config.window import HEIGHT, WIDTH, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP, EQUIPMENT_COLS, EQUIPMENT_ROWS
 from config.colors import WHITE
 
 
-UIHEIGTH = 300
-INVTILESIZE = 48
+UIHEIGTH = 500
 
 
 class Inventory():
 
-    def __init__(self, player, totalSlots, cols, rows):
-        self.totalSlots = totalSlots
+    def __init__(self, player, cols, rows):
+        self.totalSlots = cols * rows
+
         self.rows = rows
         self.cols = cols
+
         self.inventory_slots = []
         self.armor_slots = []
         self.weapon_slots = []
-        self.display_inventory = False
-        self.player = player
-        self.appendSlots()
-        self.setSlotTypes()
 
+        self.player = player
+
+        self.display_inventory = False
         self.movingitem = None
         self.movingitemslot = None
 
-    def appendSlots(self):
-        """Update the inventory_slots list
-        """
-        while len(self.inventory_slots) != self.totalSlots:
-            for x in range(WIDTH//2 - ((INVTILESIZE+2) * self.cols)//2,
-                           WIDTH//2 + ((INVTILESIZE+2) * self.cols) // 2,
-                           INVTILESIZE+2):
-                for y in range(UIHEIGTH, UIHEIGTH+INVTILESIZE * self.rows,
-                               INVTILESIZE+2):
-                    self.inventory_slots.append(InventorySlot(x, y))
+        self.create_slots()
+        self.set_slot_types()
 
-        while len(self.armor_slots) != 4:
-            for y in range(UIHEIGTH-100, UIHEIGTH-100+(INVTILESIZE+1) * 4,
-                           INVTILESIZE+2):
-                self.armor_slots.append(EquipableSlot(self.inventory_slots[0].x - 100, y))
+    def create_slots(self):
+        """Create the inventory slots"""
+        self.create_bag()
+        self.create_equipments()
 
-        while len(self.weapon_slots) != 1:
-            self.weapon_slots.append(EquipableSlot(self.armor_slots[3].x - 50,
-                                                   self.armor_slots[3].y))
+    def create_equipments(self):
+        """Create slots to equipe from a bag"""
+        step = INVENTORY_TILESIZE + INVENTORY_SLOT_GAP
 
-    def setSlotTypes(self):
+        cols = EQUIPMENT_COLS
+        rows = EQUIPMENT_ROWS
+        min_x = 2 * WIDTH // 4 - (step * cols) // 2 + INVENTORY_SLOT_GAP
+        max_x = 2 * WIDTH // 4 + (step * cols) // 2
+        min_y = HEIGHT // 2 - (step * rows) // 2 + INVENTORY_SLOT_GAP
+        max_y = HEIGHT // 2 + (step * rows) // 2
+        for x in range(min_x, max_x, step):
+            for y in range(min_y, max_y, step):
+                self.armor_slots.append(EquipableSlot(x, y))
+
+        self.weapon_slots.append(EquipableSlot(min_x - step,
+                                               max_y - step + INVENTORY_SLOT_GAP))
+
+    def create_bag(self):
+        """Create a bag to store item"""
+        step = INVENTORY_TILESIZE + INVENTORY_SLOT_GAP
+
+        min_x = 3 * WIDTH // 4 - (step * self.cols) // 2 + INVENTORY_SLOT_GAP
+        max_x = 3 * WIDTH // 4 + (step * self.cols) // 2
+        min_y = HEIGHT // 2 - (step * self.rows) // 2 + INVENTORY_SLOT_GAP
+        max_y = HEIGHT // 2 + (step * self.rows) // 2
+        # inventory is 3/4 in width
+        for x in range(min_x, max_x,
+                       step):
+            # inventory is center in height
+            for y in range(min_y, max_y,
+                           step):
+                self.inventory_slots.append(InventorySlot(x, y))
+
+    def set_slot_types(self):
         """Used to define Armor and Weapon slots
         """
         self.armor_slots[0].slottype = 'head'
@@ -77,13 +98,13 @@ class Inventory():
             item (Item)
             slot (InventorySlot, optional): when we want a specific slot. Defaults to None.
         """
-        if slot == None:
+        if slot is None:
             for slots in self.inventory_slots:
-                if slots.item == None:
+                if slots.item is None:
                     slots.item = item
                     break
-        if slot != None:
-            if slot.item != None:
+        if slot is not None:
+            if slot.item is not None:
                 self.movingitemslot.item = slot.item
                 slot.item = item
             else:
@@ -101,7 +122,7 @@ class Inventory():
                 break
 
     def moveItem(self, screen):
-        """Drag function, makes an item following the mouse 
+        """Drag function, makes an item following the mouse
 
         Args:
             screen (Surface)
@@ -109,7 +130,8 @@ class Inventory():
         mousepos = pg.mouse.get_pos()
 
         for slot in self.inventory_slots + self.armor_slots + self.weapon_slots:
-            if slot.draw(screen).collidepoint(mousepos) and slot.item != None and self.movingitem == None:
+            if slot.draw(screen).collidepoint(
+                    mousepos) and slot.item is not None and self.movingitem is None:
                 slot.item.is_moving = True
                 self.movingitem = slot.item
                 self.movingitemslot = slot
@@ -123,11 +145,12 @@ class Inventory():
         """
         mousepos = pg.mouse.get_pos()
         for slot in self.inventory_slots + self.armor_slots + self.weapon_slots:
-            if slot.draw(screen).collidepoint(mousepos) and self.movingitem != None:
+            if slot.draw(screen).collidepoint(
+                    mousepos) and self.movingitem is not None:
                 if isinstance(
                         self.movingitemslot, EquipableSlot) and isinstance(
                         slot, InventorySlot) and not isinstance(
-                        slot, EquipableSlot) and slot.item == None:
+                        slot, EquipableSlot) and slot.item is None:
                     self.unequipItem(self.movingitem)
                     break
                 if isinstance(
@@ -137,16 +160,22 @@ class Inventory():
                     self.removeItemInv(self.movingitem)
                     self.addItemInv(self.movingitem, slot)
                     break
-                if isinstance(self.movingitemslot, EquipableSlot) and isinstance(slot.item, Equipable):
+                if isinstance(
+                        self.movingitemslot,
+                        EquipableSlot) and isinstance(
+                        slot.item,
+                        Equipable):
                     if self.movingitem.slot == slot.item.slot:
                         self.unequipItem(self.movingitem)
                         self.equipItem(slot.item)
                         break
-                if isinstance(slot, EquipableSlot) and isinstance(self.movingitem, Equipable):
+                if isinstance(
+                        slot, EquipableSlot) and isinstance(
+                        self.movingitem, Equipable):
                     if slot.slottype == self.movingitem.slot:
                         self.equipItem(self.movingitem)
                         break
-        if self.movingitem != None:
+        if self.movingitem is not None:
             self.movingitem.is_moving = False
             self.movingitem = None
             self.movingitemslot = None
@@ -167,7 +196,7 @@ class Inventory():
                         self.useItem(slot.item)
             if isinstance(slot, EquipableSlot):
                 if slot.draw(screen).collidepoint(mousepos):
-                    if slot.item != None:
+                    if slot.item is not None:
                         self.unequipItem(slot.item)
 
     def getEquipSlot(self, item):
@@ -193,7 +222,7 @@ class Inventory():
             item.use(self, self.player)
 
     def equipItem(self, item):
-        """Equip a passed item if it's an Equipable 
+        """Equip a passed item if it's an Equipable
 
         Args:
             item (Item)
@@ -227,7 +256,8 @@ class InventorySlot:
         Returns:
             [type]: [description]
         """
-        return pg.draw.rect(screen, WHITE, (self.x, self.y, INVTILESIZE, INVTILESIZE))
+        return pg.draw.rect(
+            screen, WHITE, (self.x, self.y, INVENTORY_TILESIZE, INVENTORY_TILESIZE))
 
     def drawItems(self, screen):
         """Draw an image on an inventory slot if the image is not moving else on the mouse position
@@ -235,13 +265,13 @@ class InventorySlot:
         Args:
             screen (Surface)
         """
-        if self.item != None and not self.item.is_moving:
+        if self.item is not None and not self.item.is_moving:
             self.image = pg.image.load(self.item.img).convert_alpha()
-            screen.blit(self.image, (self.x-7, self.y-7))
-        if self.item != None and self.item.is_moving:
+            screen.blit(self.image, (self.x - 7, self.y - 7))
+        if self.item is not None and self.item.is_moving:
             mousepos1 = pg.mouse.get_pos()
             self.image = pg.image.load(self.item.img).convert_alpha()
-            screen.blit(self.image, (mousepos1[0]-20, mousepos1[1]-20))
+            screen.blit(self.image, (mousepos1[0] - 20, mousepos1[1] - 20))
 
 
 class EquipableSlot(InventorySlot):
@@ -309,15 +339,15 @@ class Armor(Equipable):
         self.slot = slot
 
     def equip(self, inv, target):
-        """Equip the Armor on the right player's armor slot, 
-        if an Armor is already in the needed slot, it is unequiped 
+        """Equip the Armor on the right player's armor slot,
+        if an Armor is already in the needed slot, it is unequiped
 
 
         Args:
             inv (Inventory)
-            target (Player): 
+            target (Player):
         """
-        if inv.getEquipSlot(self).item != None:
+        if inv.getEquipSlot(self).item is not None:
             inv.getEquipSlot(self).item.unequip(inv)
         Equipable.equip(self, target)
         target.equip_armor(self)
@@ -351,7 +381,7 @@ class Weapon(Equipable):
             inv (Inventory)
             target (Player)
         """
-        if inv.getEquipSlot(self).item != None:
+        if inv.getEquipSlot(self).item is not None:
             inv.getEquipSlot(self).item.unequip(inv)
         Equipable.equip(self, target)
         target.equip_weapon(self)
