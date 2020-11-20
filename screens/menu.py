@@ -5,7 +5,7 @@ import pygame_widgets as pw
 from os import path
 from window import _State
 from config.window import WIDTH, HEIGHT
-from config.screens import GAME, MENU, TRANSITION_OUT,CREDITS,LOAD_GAME,CHARACTER_CREA
+from config.screens import GAME, MENU, TRANSITION_OUT, CREDITS, LOAD_GAME, CHARACTER_CREA
 import config.colors as couleur
 
 
