@@ -95,9 +95,7 @@ class Character_crea(_State):
         """Initialize data at scene start."""
         self.game_data = game_data
         self.dt = dt
-        self.background.fill((0, 255, 0))
         pg.init()
-        pg.display.set_mode((WIDTH,HEIGHT))
         super().setup_transition()
 
     def run(self, surface, keys, dt):
