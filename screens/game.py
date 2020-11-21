@@ -167,7 +167,8 @@ class Game(_State):
         
         #Choose action
         if(self.action=='ATK'):
-            logger.critical("on attack")
+            logger.combat("on attack")
+            #choose ennemy (click ou derouler)
             self.action=None
         
         
