@@ -5,7 +5,7 @@ import pygame as pg
 import sys
 import json
 from logger import logger
-from config.screens import TRANSITION_IN, TRANSITION_OUT
+from config.screens import TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
 from config.colors import BLACK
 from config.window import WIDTH, HEIGHT, FPS, TITLE
 
@@ -49,9 +49,12 @@ class Window():
         self.state_name = start_state
         self.state = self.states_dict[self.state_name]
 
-    def flip_state(self):
+    def flip_state(self, state=None):
         """Change state to a new state"""
-        previous, self.state_name = self.state_name, self.state.next
+        if not state:
+            previous, self.state_name = self.state_name, self.state.next
+        else:
+            previous, self.state_name = self.state_name, state
         logger.info("Flip state, from %s to %s", previous, self.state_name)
         self.persist = self.state.cleanup()
         self.state = self.states_dict[self.state_name]
@@ -83,6 +86,11 @@ class Window():
                 if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
                     pg.event.wait()
                     self.save()
+                if event.key == pg.K_k and pg.key.get_mods() & pg.KMOD_CTRL:
+                    state = self.state.previous if self.state.name == SHORTCUTS else SHORTCUTS
+                    self.flip_state(state)
+                    logger.info('Toggle shortcuts : %s', state)
+
             elif event.type == pg.KEYUP:
                 self.keys = pg.key.get_pressed()
                 self.state.get_events(event)
