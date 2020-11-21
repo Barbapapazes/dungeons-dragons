@@ -2,7 +2,7 @@
 import pygame as pg
 from config.colors import YELLOW
 from config.window import TILESIZE
-from config.sprites import PLAYER_SPEED
+from config.sprites import PLAYER_SPEED, PLAYER_MAX_HP
 from inventory.inventory import Inventory
 
 
@@ -22,7 +22,7 @@ class Player(pg.sprite.Sprite):
 
         # Stats
         self.HP = 100
-        self.max_HP = 100
+        self.max_HP = PLAYER_MAX_HP
         self.shield = 0
 
         # Inventory

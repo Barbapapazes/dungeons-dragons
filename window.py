@@ -24,7 +24,7 @@ class Window():
         self.clock = pg.time.Clock()
         self.dt = None
         self.keys = pg.key.get_pressed()
-        self.mouse =pg.mouse.get_pressed()
+        self.mouse = pg.mouse.get_pressed()
 
         self.done = False
         self.states_dict = {}
@@ -91,8 +91,6 @@ class Window():
             elif event.type == pg.MOUSEBUTTONUP:
                 self.mouse = pg.mouse.get_pressed()
                 self.state.get_events(event)
-
-
 
     def save(self):
         # pourquoi ne pas passer ça dans le state pour gérer la sauvegarde à plus précisément
@@ -171,6 +169,7 @@ class _State():
         self.saved_games = path.join(self.assets_folder, 'saved_games')
         self.fonts_folder = path.join(self.assets_folder, 'fonts')
         self.title_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
+        self.img_folder = path.join(self.assets_folder, 'img')
 
     def draw_text(self, text, font_name, size, color, x, y, align="nw", screen=None):
         """Used to draw text

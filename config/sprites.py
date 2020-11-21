@@ -1,12 +1,12 @@
 """Define settings for the sprites"""
 
 # player
-from inventory.inventory import Consumable
-
-
 PLAYER_SPEED = 150
+PLAYER_MAX_HP = 100
 
+#  ajouter les charastéristiques
 
+# equipables
 CONSUMABLE = {
     "potion red": {
         "image": "potionRed.png",
@@ -16,10 +16,18 @@ CONSUMABLE = {
 }
 
 WEAPONS = {
-    "sword": {
+    "sword wood": {
+        "image": "swordWood.png",
+        "weight": 10,
+        "slot": "weapon",
+        "type": "sword"
+    },
+    "sword steel": {
         "image": "sword.png",
         "weight": 20,
-        "slot": "weapon"
+        "slot": "weapon",
+        "type": "sword"
+
     }
 }
 

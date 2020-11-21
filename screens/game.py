@@ -8,7 +8,8 @@ from sprites.player import Player
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, BLACK, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
-from inventory.inventory import *
+from config.sprites import WEAPONS
+from inventory.inventory import Armor, Weapon
 
 
 class Game(_State):
@@ -28,25 +29,29 @@ class Game(_State):
         self.game_data = game_data
         self.all_sprites = pg.sprite.Group()
 
-        self.player1 = Player(self, 2, 4)
+        self.player = Player(self, 2, 4)
         super().setup_transition()
 
         # Temporaire
-        # faire une boucle avec un config
-        sword_steel = Weapon(path.join('img', 'sword.png'), 20, 'weapon', 'sword')
-        sword_wood = Weapon('img/swordWood.png', 10, 'weapon', 'sword')
-        hp_potion = Consumable('img/potionRed.png', 2, 30)
-        helmet_armor = Armor('img/helmet.png', 10, 20, 'head')
-        chest_armor = Armor('img/chest.png', 10, 40, 'chest')
-        upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
-        upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
-        self.player1.inventory.addItemInv(helmet_armor)
-        self.player1.inventory.addItemInv(hp_potion)
-        self.player1.inventory.addItemInv(sword_steel)
-        self.player1.inventory.addItemInv(sword_wood)
-        self.player1.inventory.addItemInv(chest_armor)
-        self.player1.inventory.addItemInv(upg_helmet_armor)
-        self.player1.inventory.addItemInv(upg_chest_armor)
+        # think how this will be used with the menu
+        items_folder = path.join(self.img_folder, 'items')
+        weapons = list()
+        for key, value in WEAPONS.items():
+            print(key)
+            data = Weapon(
+                key, path.join(items_folder, value['image']),
+                value['weight'],
+                value['slot'],
+                value['type'])
+            weapons.append(data)
+            self.player.inventory.add_item(data)
+
+        # hp_potion = Consumable('img/potionRed.png', 2, 30)
+        helmet_armor = Armor('helmet armor', 'assets/img/items/helmet.png', 10, 20, 'head')
+        # chest_armor = Armor('img/chest.png', 10, 40, 'chest')
+        # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
+        # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
+        self.player.inventory.add_item(helmet_armor)
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -72,7 +77,7 @@ class Game(_State):
                 self.next = CREDITS
                 super().set_state(TRANSITION_OUT)
             if event.key == pg.K_b:
-                self.player1.inventory.toggleInventory()
+                self.player.inventory.toggle_inventory()
 
         if event.type == pg.KEYUP:
             if event.key == pg.K_m:
@@ -82,16 +87,16 @@ class Game(_State):
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 3:
-                if self.player1.inventory.display_inventory:
+                if self.player.inventory.display_inventory:
                     mouse_pos = pg.mouse.get_pos()
-                    self.player1.inventory.checkSlot(self.screen, mouse_pos)
+                    self.player.inventory.check_slot(self.screen, mouse_pos)
             if event.button == 1:
-                if self.player1.inventory.display_inventory:
-                    self.player1.inventory.moveItem(self.screen)
+                if self.player.inventory.display_inventory:
+                    self.player.inventory.move_item(self.screen)
         if event.type == pg.MOUSEBUTTONUP:
             if event.button == 1:
-                if self.player1.inventory.display_inventory:
-                    self.player1.inventory.placeItem(self.screen)
+                if self.player.inventory.display_inventory:
+                    self.player.inventory.place_item(self.screen)
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -134,6 +139,6 @@ class Game(_State):
         self.screen.fill(BLACK)
         self.draw_grid(self.screen)
         self.all_sprites.draw(self.screen)
-        self.player1.inventory.draw(self.screen)
+        self.player.inventory.draw(self.screen)
 
         super().transtition_active(self.screen)
