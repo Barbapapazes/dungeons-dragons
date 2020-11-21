@@ -75,7 +75,7 @@ class Game(_State):
                        TRANSITION_OUT: self.transition_out,
                        'normal': self.normal_run,
                        'menu': self.menu_run,
-                       'inventory': self.inventory_run
+                       'inventory': self.inventory_run,
                        'mode_combat':self.mode_combat
                        }
 
@@ -155,7 +155,8 @@ class Game(_State):
 
     def mode_combat(self):
         self.draw_text("GO",self.title_font,35,CYAN,WIDTH // 2, HEIGHT // 2, 'top')
-
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        
         #Choose action
         if(self.action=='ATK'):
             logger.critical("cc")
