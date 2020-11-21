@@ -23,8 +23,12 @@ class Game(_State):
         self.next = None
 
         self.all_sprites = None
+        
+        #####For_versus######
         self.action = None
-
+        self.isVersus = False
+        #######END_Versus#####
+        
         self.states_dict = self.make_states_dict()
 
     def startup(self, dt, game_data):
