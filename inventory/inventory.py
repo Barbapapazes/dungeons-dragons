@@ -171,11 +171,7 @@ class Inventory():
                     self.remove_item(self.moving_item)
                     self.add_item(self.moving_item, slot)
                     break
-                if isinstance(
-                        self.moving_item_slot,
-                        EquipableSlot) and isinstance(
-                        slot.item,
-                        Equipable):
+                if isinstance(self.moving_item_slot, EquipableSlot) and isinstance(slot.item, Equipable):
                     if self.moving_item.slot == slot.item.slot:
                         self.unequip_item(self.moving_item)
                         self.equip_item(slot.item)

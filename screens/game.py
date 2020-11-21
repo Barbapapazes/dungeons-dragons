@@ -34,6 +34,7 @@ class Game(_State):
 
         # Temporaire
         # think how this will be used with the menu
+        # add a logger inside the inventory (for each keys or mouse move)
         items_folder = path.join(self.img_folder, 'items')
         weapons = list()
         for key, value in WEAPONS.items():
@@ -63,7 +64,8 @@ class Game(_State):
         states_dict = {TRANSITION_IN: self.transition_in,
                        TRANSITION_OUT: self.transition_out,
                        'normal': self.normal_run,
-                       'menu': self.menu_run
+                       'menu': self.menu_run,
+                       'inventory': self.inventory_run
                        }
 
         return states_dict
@@ -76,26 +78,30 @@ class Game(_State):
             if event.key == pg.K_RIGHT:
                 self.next = CREDITS
                 super().set_state(TRANSITION_OUT)
-            if event.key == pg.K_b:
-                self.player.inventory.toggle_inventory()
 
         if event.type == pg.KEYUP:
             if event.key == pg.K_m:
-                sub_state = 'normal' if self.state == 'menu' else 'menu'
-                logger.info('Start sub-state %s in %s', sub_state, self.name)
-                super().set_state(sub_state)
+                self.player.inventory.display_inventory = False
+                super().toggle_sub_state('menu')
+            if event.key == pg.K_b:
+                logger.info("Toggle inventory from player")
+                self.player.inventory.toggle_inventory()
+                super().toggle_sub_state('inventory')
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 3:
                 if self.player.inventory.display_inventory:
+                    logger.info("Auto move an item")
                     mouse_pos = pg.mouse.get_pos()
                     self.player.inventory.check_slot(self.screen, mouse_pos)
             if event.button == 1:
                 if self.player.inventory.display_inventory:
+                    logger.info("Select an item from the inventory")
                     self.player.inventory.move_item(self.screen)
         if event.type == pg.MOUSEBUTTONUP:
             if event.button == 1:
                 if self.player.inventory.display_inventory:
+                    logger.info("Place an item")
                     self.player.inventory.place_item(self.screen)
 
     def run(self, surface, keys, mouse, dt):
@@ -122,6 +128,13 @@ class Game(_State):
         self.draw_text("C'est un sub-state ! Un menu dans l'écran game",
                        self.title_font, 15, WHITE, WIDTH // 2, HEIGHT // 2, 'center')
 
+    def inventory_run(self):
+        self.draw()
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.screen.blit(self.dim_screen, (0, 0))
+        self.player.inventory.draw(self.screen)
+
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
 
@@ -139,6 +152,5 @@ class Game(_State):
         self.screen.fill(BLACK)
         self.draw_grid(self.screen)
         self.all_sprites.draw(self.screen)
-        self.player.inventory.draw(self.screen)
 
         super().transtition_active(self.screen)
