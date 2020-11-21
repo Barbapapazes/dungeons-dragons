@@ -24,14 +24,15 @@ class Player(pg.sprite.Sprite):
         self.HP = 100
         self.max_HP = PLAYER_MAX_HP
         self.shield = 0
+        self.MA = 50
 
         # Attribut
-        self.STR = STR      #strenght 
-        self.DEX = DEX      #dexterity
-        self.CON = CON      #constitution
-        self.INT = INT      #intelligence
-        self.WIS = WIS      #lucky
-        self.CHA = CHA      #charisme
+        self.STR = 30      #strenght 
+        self.DEX = 10      #dexterity
+        self.CON = 5      #constitution
+        self.INT = 10      #intelligence
+        self.WIS = 0      #lucky
+        self.CHA = 5      #charisme
         
         # Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
