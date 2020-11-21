@@ -325,7 +325,7 @@ class Equipable(Item):
     """Used add equipable ability"""
 
     def __init__(self, name, img, value):
-        super(Equipable, self).__init__(self, name, img, value)
+        super(Equipable, self).__init__(name, img, value)
         self.is_equipped = False
         self.equipped_to = None
 
@@ -384,7 +384,7 @@ class Weapon(Equipable):
     """Weapon"""
 
     def __init__(self, name, img, value, slot, wpn_type):
-        super(Weapon, self).__init__(self, name, img, value)
+        super(Weapon, self).__init__(name, img, value)
         self.slot = slot
         self.wpn_type = wpn_type
 
