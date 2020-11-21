@@ -287,3 +287,8 @@ class _State():
 
     def normal_run(self):
         """Update the normal state"""
+
+    def toggle_sub_state(self, state):
+        sub_state = 'normal' if self.state == state else state
+        logger.info('Start sub-state %s in %s', sub_state, self.name)
+        self.set_state(sub_state)
