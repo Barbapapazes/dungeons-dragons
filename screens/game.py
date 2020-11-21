@@ -38,7 +38,6 @@ class Game(_State):
         items_folder = path.join(self.img_folder, 'items')
         weapons = list()
         for key, value in WEAPONS.items():
-            print(key)
             data = Weapon(
                 key, path.join(items_folder, value['image']),
                 value['weight'],
