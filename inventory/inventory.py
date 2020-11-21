@@ -248,6 +248,7 @@ class Inventory():
 
 
 class InventorySlot:
+    """A slot from the inventory"""
 
     def __init__(self, x, y):
         self.x = x
@@ -293,6 +294,7 @@ class InventorySlot:
 
 
 class EquipableSlot(InventorySlot):
+    """A equipable slot"""
 
     def __init__(self, x, y, slot_type=None):
         InventorySlot.__init__(self, x, y)
@@ -300,6 +302,7 @@ class EquipableSlot(InventorySlot):
 
 
 class Consumable(Item):
+    """A consumable item"""
 
     def __init__(self, name,  img, value, hp_gain=0, shield_gain=0):
         Item.__init__(self, name, img, value)
@@ -319,9 +322,10 @@ class Consumable(Item):
 
 
 class Equipable(Item):
+    """Used add equipable ability"""
 
     def __init__(self, name, img, value):
-        Item.__init__(self, name, img, value)
+        super(Equipable, self).__init__(self, name, img, value)
         self.is_equipped = False
         self.equipped_to = None
 
@@ -335,51 +339,52 @@ class Equipable(Item):
         self.equipped_to = target
 
     def unequip(self):
-        """Unequip the Equipable Item
-        """
+        """Unequip the Equipable Item"""
         self.is_equipped = False
         self.equipped_to = None
 
 
 class Armor(Equipable):
+    """Armor"""
 
     def __init__(self, name, img, value, shield, slot):
-        Equipable.__init__(self, name, img, value)
+        super(Armor, self).__init__(name, img, value)
         self.shield = shield
         self.slot = slot
 
-    def equip(self, inv, target):
+    def equip(self, inventory, target):
         """Equip the Armor on the right player's armor slot,
         if an Armor is already in the needed slot, it is unequipped
 
 
         Args:
-            inv (Inventory)
+            inventory (Inventory)
             target (Player):
         """
-        if inv.get_equip_slot(self).item is not None:
-            inv.get_equip_slot(self).item.unequip(inv)
-        Equipable.equip(self, target)
+        if inventory.get_equip_slot(self).item is not None:
+            inventory.get_equip_slot(self).item.unequip(inventory)
+        super().equip(target)
         target.equip_armor(self)
-        inv.remove_item(self)
-        inv.get_equip_slot(self).item = self
+        inventory.remove_item(self)
+        inventory.get_equip_slot(self).item = self
 
-    def unequip(self, inv):
+    def unequip(self, inventory):
         """Unequip the armor and put it in the inventory inventory
 
         Args:
-            inv (Inventory)
+            inventory (Inventory)
         """
         self.equipped_to.unequip_armor(self.slot)
         Equipable.unequip(self)
-        inv.add_item(self)
-        inv.get_equip_slot(self).item = None
+        inventory.add_item(self)
+        inventory.get_equip_slot(self).item = None
 
 
 class Weapon(Equipable):
+    """Weapon"""
 
     def __init__(self, name, img, value, slot, wpn_type):
-        Equipable.__init__(self, name, img, value)
+        super(Weapon, self).__init__(self, name, img, value)
         self.slot = slot
         self.wpn_type = wpn_type
 
@@ -393,7 +398,7 @@ class Weapon(Equipable):
         """
         if inventory.get_equip_slot(self).item is not None:
             inventory.get_equip_slot(self).item.unequip(inventory)
-        Equipable.equip(self, target)
+        super().equip(target)
         target.equip_weapon(self)
         inventory.remove_item(self)
         inventory.get_equip_slot(self).item = self
@@ -405,6 +410,6 @@ class Weapon(Equipable):
             inventory (Inventory)
         """
         self.equipped_to.unequip_weapon()
-        Equipable.unequip(self)
+        super().unequip()
         inventory.add_item(self)
         inventory.get_equip_slot(self).item = None

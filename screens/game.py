@@ -129,6 +129,7 @@ class Game(_State):
                        self.title_font, 15, WHITE, WIDTH // 2, HEIGHT // 2, 'center')
 
     def inventory_run(self):
+        """Run the inventory state"""
         self.draw()
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
@@ -140,15 +141,18 @@ class Game(_State):
 
     @staticmethod
     def draw_grid(surface):
+        """Draw a grid in the background"""
         for x in range(0, WIDTH, TILESIZE):
             pg.draw.line(surface, LIGHTGREY, (x, 0), (x, HEIGHT))
         for y in range(0, HEIGHT, TILESIZE):
             pg.draw.line(surface, LIGHTGREY, (0, y), (WIDTH, y))
 
     def update(self):
+        """Update all"""
         self.all_sprites.update()
 
     def draw(self):
+        """Draw all"""
         self.screen.fill(BLACK)
         self.draw_grid(self.screen)
         self.all_sprites.draw(self.screen)
