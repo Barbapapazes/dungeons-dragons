@@ -83,7 +83,7 @@ class Game(_State):
             if event.key == pg.K_m:
                 self.player.inventory.display_inventory = False
                 super().toggle_sub_state('menu')
-            if event.key == pg.K_b:
+            if event.key == pg.K_i:
                 logger.info("Toggle inventory from player")
                 self.player.inventory.toggle_inventory()
                 super().toggle_sub_state('inventory')
