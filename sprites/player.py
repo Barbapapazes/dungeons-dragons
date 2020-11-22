@@ -7,6 +7,7 @@ from config.window import TILESIZE
 from config.sprites import PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT
 from inventory.inventory import Inventory
 from utils.tilemap import collide_with_walls
+from shop.shop import Shop
 vec = pg.math.Vector2
 
 
@@ -47,6 +48,9 @@ class Player(pg.sprite.Sprite):
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
         self.inventory = Inventory(self, 5, 8)
+
+        # shop, temporary here, to put in a seller
+        self.shop = Shop()
 
     def get_keys(self):
         self.rot_speed = 0

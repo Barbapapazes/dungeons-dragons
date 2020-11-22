@@ -12,7 +12,7 @@ from utils.tilemap import TiledMap, Camera, Minimap
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, BLACK, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
-from config.sprites import WEAPONS
+from config.sprites import WEAPONS, ARMOR
 from config.versus import MALUS_ARC, TOUCH_HAND
 from inventory.inventory import Armor, Weapon
 from utils.shortcuts import key_for
@@ -107,7 +107,8 @@ class Game(_State):
                        TRANSITION_OUT: self.transition_out,
                        'normal': self.normal_run,
                        'menu': self.menu_run,
-                       'inventory': self.inventory_run
+                       'inventory': self.inventory_run,
+                       'shop': self.shop_run
                        }
 
         return states_dict
@@ -129,6 +130,11 @@ class Game(_State):
                 logger.info("Toggle inventory from player")
                 self.player.inventory.toggle_inventory()
                 super().toggle_sub_state('inventory')
+            if event.key == pg.K_p:
+                logger.info("Toggle the shop")
+                self.player.shop.toggle_shop()
+                self.player.inventory.toggle_inventory()
+                super().toggle_sub_state('shop')
 
             if event.key == pg.K_l:
                 life = {'Player': self.player.HP, 'en1': self.en1.HP, 'en2': self.en2.HP}
@@ -203,6 +209,14 @@ class Game(_State):
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
         self.screen.blit(self.dim_screen, (0, 0))
+        self.player.inventory.draw(self.screen)
+
+    def shop_run(self):
+        self.draw
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.screen.blit(self.dim_screen, (0, 0))
+        self.player.shop.draw(self.screen)
         self.player.inventory.draw(self.screen)
 
     def versus_action(self):

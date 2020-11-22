@@ -27,6 +27,7 @@ class Credits(_State):
         """Run states"""
         self.screen = surface
         self.keys = keys
+        self.mouse = mouse
         self.dt = dt
         update_level = self.states_dict[self.state]
         if self.state != 'normal':

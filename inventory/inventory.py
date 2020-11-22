@@ -305,8 +305,8 @@ class EquipableSlot(InventorySlot):
 class Consumable(Item):
     """A consumable item"""
 
-    def __init__(self, name,  img, value, hp_gain=0, shield_gain=0):
-        Item.__init__(self, name, img, value)
+    def __init__(self, name,  img, price, weight, hp_gain=0, shield_gain=0):
+        Item.__init__(self, name, img, price, weight)
         self.hp_gain = hp_gain
         self.shield_gain = shield_gain
 
@@ -325,8 +325,8 @@ class Consumable(Item):
 class Equipable(Item):
     """Used add equipable ability"""
 
-    def __init__(self, name, img, value):
-        super(Equipable, self).__init__(name, img, value)
+    def __init__(self, name, img, price, weight):
+        super(Equipable, self).__init__(name, img, price, weight)
         self.is_equipped = False
         self.equipped_to = None
 
@@ -348,8 +348,8 @@ class Equipable(Item):
 class Armor(Equipable):
     """Armor"""
 
-    def __init__(self, name, img, value, shield, slot):
-        super(Armor, self).__init__(name, img, value)
+    def __init__(self, name, img, price, weight, shield, slot):
+        super(Armor, self).__init__(name, img, price, weight)
         self.shield = shield
         self.slot = slot
 
@@ -384,7 +384,7 @@ class Armor(Equipable):
 class Weapon(Equipable):
     """Weapon"""
 
-    def __init__(self, name, img, value, slot, wpn_type, nb_d=1, val_d=5,scope=2):
+    def __init__(self, name, img, value, slot, wpn_type, nb_d=1, val_d=5, scope=2):
         super(Weapon, self).__init__(name, img, value)
         self.slot = slot
         self.wpn_type = wpn_type
@@ -421,5 +421,5 @@ class Weapon(Equipable):
     def attack(self):
         dmg = 0
         for _ in range(self.nb_d):
-            dmg += randint(1,self.val_d)
+            dmg += randint(1, self.val_d)
         return dmg
