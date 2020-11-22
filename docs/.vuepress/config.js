@@ -55,8 +55,8 @@ module.exports = {
       '/presentation.md',
       '/config.md',
       '/window.md',
-      '/map_editor.md',
       '/save.md',
+      '/map_editor.md',
     ],
     // {
     //   '/presentation/': [
