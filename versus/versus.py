@@ -4,6 +4,9 @@ import pygame as pg
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import RED
 
+#temp
+from temp.enemy import Enemy
+
 
 class Versus():
 
@@ -18,3 +21,8 @@ class Versus():
     def isATK(self,mouse_pos):
         return self.BT_attck.collidepoint(mouse_pos[0],mouse_pos[1])
             
+    def selectEnemy(self,listEnemy,mouse_pos):
+        for enemy in listEnemy:
+            if enemy.rect.collidepoint(mouse_pos[0],mouse_pos[1]):
+                return enemy
+

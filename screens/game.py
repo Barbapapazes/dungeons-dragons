@@ -14,6 +14,8 @@ from inventory.inventory import Armor, Weapon
 from utils.shortcuts import key_for
 from versus.versus import Versus
 
+#temp 
+from temp.enemy import Enemy  
 
 class Game(_State):
     """Game screen"""
@@ -28,6 +30,9 @@ class Game(_State):
         #####For_versus######
         self.action = None
         self.versus = Versus()
+        self.selectEnemy = None
+
+        #temp
         #######END_Versus#####
         
         self.states_dict = self.make_states_dict()
@@ -38,6 +43,11 @@ class Game(_State):
         self.all_sprites = pg.sprite.Group()
 
         self.player = Player(self, 2, 4)
+
+        self.en1 = Enemy(self,10,5,"Boot n1")
+        self.en2 = Enemy(self,11,7,"Boot n2")
+        self.enemy=[self.en1,self.en2]
+
         super().setup_transition()
 
         # Temporaire
@@ -122,7 +132,11 @@ class Game(_State):
                     self.player.inventory.move_item(self.screen)
                 if self.state == 'versus':                                 ##################################################################cursor
                     mouse_pos =pg.mouse.get_pos()
-                    if self.versus.isATK(mouse_pos): self.action="ATK" 
+                    if self.versus.isATK(mouse_pos) and self.action==None: 
+                        self.action="ATK"
+                    if self.action=="select_enemy" :
+                        self.selectEnemy=self.versus.selectEnemy(self.enemy,mouse_pos)
+                        if self.selectEnemy != None : self.action= None
 
         if event.type == pg.MOUSEBUTTONUP:
             if event.button == 1:
@@ -167,9 +181,14 @@ class Game(_State):
         
         #Choose action
         if(self.action=='ATK'):
-            logger.combat("on attack")
-            #choose ennemy (click ou derouler)
-            self.action=None
+            logger.info("Your action is Attack")
+            self.action="select_enemy"
+        if self.selectEnemy != None:
+            logger.debug(self.selectEnemy.name)
+
+            self.selectEnemy=None
+
+            
         
         
         
