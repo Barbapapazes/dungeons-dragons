@@ -24,6 +24,8 @@ Each state can have sub-states. This is useful to create sub-menu inside a scree
 
 If _done_ is set to true, the `flip_state` function, from the `Window` class, will load a new state, startup and the `global run` loop will run the `state run` loop, which run the sub-state function each frame !
 
+Afin de générer les états d'un écran, alors on utilise la fonction `make_states_dict` de la classe `_State` pour nous générer un dictionnaire. Ainsi, on peut gérer très facilement ces derniers et switcher entre chaque sans perdre l'état de l'écran.
+
 ## Screens
 
 Les écrans sont gérés dans le dossier `screens` et ils représentent une vue de l'application.

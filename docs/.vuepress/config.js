@@ -57,6 +57,7 @@ module.exports = {
       '/window.md',
       '/save.md',
       '/map_editor.md',
+      '/game.md',
     ],
     // {
     //   '/presentation/': [
