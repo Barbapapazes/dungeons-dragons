@@ -33,6 +33,7 @@ class Game(_State):
         self.action = None
         self.versus = Versus()
         self.selectEnemy = None
+        self.isVersus= False
 
         #temp
         #######END_Versus#####
@@ -95,8 +96,7 @@ class Game(_State):
                        TRANSITION_OUT: self.transition_out,
                        'normal': self.normal_run,
                        'menu': self.menu_run,
-                       'inventory': self.inventory_run,
-                       'versus':self.versus_run
+                       'inventory': self.inventory_run
                        }
 
         return states_dict
@@ -126,7 +126,10 @@ class Game(_State):
             if event.key== pg.K_TAB:
                 """Simulate begin versus"""
                 logger.info("Begin Versus")
-                super().toggle_sub_state('versus')
+                if  not self.isVersus:
+                    self.isVersus = True  
+                else:
+                     self.isVersus = False
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 3:
@@ -141,7 +144,7 @@ class Game(_State):
                         logger.info("Select an item from the inventory")
                         self.player.inventory.move_item(self.screen)
                
-                if self.state == 'versus':                                 ##################################################################cursor
+                if self.isVersus:                                 ##################################################################cursor
                     mouse_pos =pg.mouse.get_pos()
                     if self.versus.isATK(mouse_pos) and self.action==None: 
                         self.action="ATK"
@@ -164,12 +167,16 @@ class Game(_State):
         if self.state != 'normal':
             self.draw()
         update_level()
+        
+
 
     def normal_run(self):
         """Run the normal state"""
         self.update()
         self.draw()
         self.check_for_menu()
+        if self.isVersus:
+            self.versus_action()
 
     def menu_run(self):
         """Run the menu state"""
@@ -188,7 +195,7 @@ class Game(_State):
         self.screen.blit(self.dim_screen, (0, 0))
         self.player.inventory.draw(self.screen)
 
-    def versus_run(self):
+    def versus_action(self):
         self.versus.draw(self.screen)
         
         #Choose action
@@ -200,13 +207,15 @@ class Game(_State):
         if self.selectEnemy != None:
             dmg = 0
             logger.debug(self.selectEnemy.name)
-            if self.player.weapon != None:
+            if self.player.weapon != None: #check if player had a weapon
+
                 if self.player.weapon.wpn_type=="sword" and self.player.weapon.scope >=   self.distance(self.player,self.selectEnemy):
                     logger.debug("arm sword")
                     if self.player.throwDice(self.player.STR):
                         dmg = self.player.weapon.attack()
                     else:
                         logger.info("You miss your cible")
+
 
                 elif self.player.weapon.wpn_type=="arc" :
                     dist=self.distance(self.player,self.selectEnemy)
