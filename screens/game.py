@@ -8,8 +8,9 @@ from sprites.player import Player
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, BLACK, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
-from config.sprites import WEAPONS
+from config.sprites import WEAPONS, ARMOR
 from inventory.inventory import Armor, Weapon
+
 
 
 class Game(_State):
@@ -35,23 +36,35 @@ class Game(_State):
         # Temporaire
         # think how this will be used with the menu
         # add a logger inside the inventory (for each keys or mouse move)
-        items_folder = path.join(self.img_folder, 'items')
-        weapons = list()
-        for key, value in WEAPONS.items():
-            data = Weapon(
-                key, path.join(items_folder, value['image']),
-                value['weight'],
-                value['slot'],
-                value['type'])
-            weapons.append(data)
-            self.player.inventory.add_item(data)
+        # items_folder = path.join(self.img_folder, 'items')
+        # weapons = list()
+        # for key, value in WEAPONS.items():
+        #     data = Weapon(
+        #         key, path.join(items_folder, value['image']),
+        #         value['weight'],
+        #         value['slot'],
+        #         value['type'])
+        #     weapons.append(data)
+        #     self.player.inventory.add_item(data)
 
-        # hp_potion = Consumable('img/potionRed.png', 2, 30)
-        helmet_armor = Armor('helmet armor', 'assets/img/items/helmet.png', 10, 20, 'head')
-        # chest_armor = Armor('img/chest.png', 10, 40, 'chest')
-        # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
-        # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
-        self.player.inventory.add_item(helmet_armor)
+        # armor = list()
+        # for key, value in ARMOR.items():
+        #     data = Armor(
+        #         key, path.join(items_folder, value['image']),
+        #         value['weight'],
+        #         value['armor'],
+        #         value['slot'])
+        #     armor.append(data)
+        #     self.player.inventory.add_item(data)
+
+        # # hp_potion = Consumable('img/potionRed.png', 2, 30)
+        # helmet_armor = Armor('helmet armor', 'assets/img/items/helmet.png', 10, 20, 'head')
+        # # chest_armor = Armor('img/chest.png', 10, 40, 'chest')
+        # # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
+        # # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
+        # self.player.inventory.add_item(helmet_armor)
+
+
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -64,7 +77,8 @@ class Game(_State):
                        TRANSITION_OUT: self.transition_out,
                        'normal': self.normal_run,
                        'menu': self.menu_run,
-                       'inventory': self.inventory_run
+                       'inventory': self.inventory_run,
+                       'shop': self.shop_run
                        }
 
         return states_dict
@@ -86,6 +100,12 @@ class Game(_State):
                 logger.info("Toggle inventory from player")
                 self.player.inventory.toggle_inventory()
                 super().toggle_sub_state('inventory')
+            if event.key == pg.K_p:
+                logger.info("Toggle the shop")
+                self.player.shop.toggle_shop()
+                self.player.inventory.toggle_inventory()
+                super().toggle_sub_state('shop')
+
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 3:
@@ -133,6 +153,14 @@ class Game(_State):
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
         self.screen.blit(self.dim_screen, (0, 0))
+        self.player.inventory.draw(self.screen)
+    
+    def shop_run(self):
+        self.draw
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.screen.blit(self.dim_screen, (0, 0))
+        self.player.shop.draw(self.screen)
         self.player.inventory.draw(self.screen)
 
     def check_for_menu(self):

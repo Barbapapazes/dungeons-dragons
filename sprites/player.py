@@ -4,6 +4,7 @@ from config.colors import YELLOW
 from config.window import TILESIZE
 from config.sprites import PLAYER_SPEED, PLAYER_MAX_HP
 from inventory.inventory import Inventory
+from shop.shop import Shop
 
 
 class Player(pg.sprite.Sprite):
@@ -29,6 +30,9 @@ class Player(pg.sprite.Sprite):
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
         self.inventory = Inventory(self, 5, 8)
+
+        #shop, temporary here, to put in a seller
+        self.shop = Shop()
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
