@@ -2,6 +2,7 @@
 
 import pygame as pg
 from os import path
+from math import sqrt
 from window import _State
 from logger import logger
 from sprites.player import Player
@@ -10,6 +11,7 @@ from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, BLACK, WHITE, CYAN, RED
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 from config.sprites import WEAPONS
+from config.versus import MALUS_ARC, TOUCH_HAND
 from inventory.inventory import Armor, Weapon
 from utils.shortcuts import key_for
 from versus.versus import Versus
@@ -23,7 +25,7 @@ class Game(_State):
     def __init__(self):
         self.name = GAME
         super(Game, self).__init__(self.name)
-        self.next = None
+        self.next = CREDITS
 
         self.all_sprites = None
         
@@ -60,7 +62,10 @@ class Game(_State):
                 key, path.join(items_folder, value['image']),
                 value['weight'],
                 value['slot'],
-                value['type'])
+                value['type'],
+                value['nb_d'],
+                value['val_d'],
+                value['scope'])
             weapons.append(data)
             self.player.inventory.add_item(data)
 
@@ -114,22 +119,28 @@ class Game(_State):
                 self.player.inventory.toggle_inventory()
                 super().toggle_sub_state('inventory')
 
+            if event.key == pg.K_l:
+                life= {'Player':self.player.HP,'en1':self.en1.HP,'en2':self.en2.HP}
+                logger.info(life)
+
             if event.key== pg.K_TAB:
                 """Simulate begin versus"""
                 logger.info("Begin Versus")
-                sub_state ='normal' if self.state == 'versus' else 'versus'
-                super().set_state(sub_state)
+                super().toggle_sub_state('versus')
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 3:
-                if self.player.inventory.display_inventory:
-                    logger.info("Auto move an item")
-                    mouse_pos = pg.mouse.get_pos()
-                    self.player.inventory.check_slot(self.screen, mouse_pos)
+                if self.state =='inventory':
+                    if self.player.inventory.display_inventory:
+                        logger.info("Auto move an item")
+                        mouse_pos = pg.mouse.get_pos()
+                        self.player.inventory.check_slot(self.screen, mouse_pos)
             if event.button == 1:
-                if self.player.inventory.display_inventory:
-                    logger.info("Select an item from the inventory")
-                    self.player.inventory.move_item(self.screen)
+                if self.state =='inventory':
+                    if self.player.inventory.display_inventory:
+                        logger.info("Select an item from the inventory")
+                        self.player.inventory.move_item(self.screen)
+               
                 if self.state == 'versus':                                 ##################################################################cursor
                     mouse_pos =pg.mouse.get_pos()
                     if self.versus.isATK(mouse_pos) and self.action==None: 
@@ -140,9 +151,10 @@ class Game(_State):
 
         if event.type == pg.MOUSEBUTTONUP:
             if event.button == 1:
-                if self.player.inventory.display_inventory:
-                    logger.info("Place an item")
-                    self.player.inventory.place_item(self.screen)
+                if self.state =='inventory':
+                    if self.player.inventory.display_inventory:
+                        logger.info("Place an item")
+                        self.player.inventory.place_item(self.screen)
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -183,8 +195,43 @@ class Game(_State):
         if(self.action=='ATK'):
             logger.info("Your action is Attack")
             self.action="select_enemy"
+            logger.info("Select your cible")
+
         if self.selectEnemy != None:
+            dmg = 0
             logger.debug(self.selectEnemy.name)
+            if self.player.weapon != None:
+                if self.player.weapon.wpn_type=="sword" and self.player.weapon.scope >=   self.distance(self.player,self.selectEnemy):
+                    logger.debug("arm sword")
+                    if self.player.throwDice(self.player.STR):
+                        dmg = self.player.weapon.attack()
+                    else:
+                        logger.info("You miss your cible")
+
+                elif self.player.weapon.wpn_type=="arc" :
+                    dist=self.distance(self.player,self.selectEnemy)
+                    scope=self.player.weapon.scope
+                    if scope < dist : 
+                        malus= -((dist-scope)//TILESIZE)*MALUS_ARC 
+                    else: 
+                        malus=0
+                    logger.debug("dist: %i scp: %i  malus: %i",dist,scope,malus)
+                    if self.player.throwDice(self.player.DEX,malus):
+                        dmg = self.player.weapon.attack()
+                    else:
+                        logger.info("You miss your cible")
+
+                else:
+                    logger.info("It's too far away ")
+            else:
+                if self.distance(self.player,self.selectEnemy)//TILESIZE <= TOUCH_HAND:
+                    dmg = 2 #attack with any weapon    
+                else:
+                    logger.info("It's too far away ")
+                
+            self.selectEnemy.HP -= dmg
+            if dmg !=0 : logger.info("The enemy %s lose %i HP",self.selectEnemy.name,dmg)
+            
 
             self.selectEnemy=None
 
@@ -221,3 +268,5 @@ class Game(_State):
 
         super().transtition_active(self.screen)
 
+    def distance(self,player,enemy):
+        return sqrt((enemy.x-player.x)**2 + (enemy.y-player.y)**2)

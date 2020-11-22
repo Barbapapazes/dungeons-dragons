@@ -1,7 +1,8 @@
 """Inventory"""
 
 import pygame as pg
-from config.window import HEIGHT, WIDTH
+from random import randint
+from config.window import HEIGHT, WIDTH, TILESIZE
 from config.colors import WHITE
 from config.inventory import ARMOR_SLOTS, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP
 from inventory.items import Item
@@ -383,10 +384,13 @@ class Armor(Equipable):
 class Weapon(Equipable):
     """Weapon"""
 
-    def __init__(self, name, img, value, slot, wpn_type):
+    def __init__(self, name, img, value, slot, wpn_type, nb_d=1, val_d=5,scope=2):
         super(Weapon, self).__init__(name, img, value)
         self.slot = slot
         self.wpn_type = wpn_type
+        self.nb_d = nb_d
+        self.val_d = val_d
+        self.scope = scope*TILESIZE
 
     def equip(self, inventory, target):
         """Equip the weapon in the target's weapon slot
@@ -413,3 +417,9 @@ class Weapon(Equipable):
         super().unequip()
         inventory.add_item(self)
         inventory.get_equip_slot(self).item = None
+
+    def attack(self):
+        dmg = 0
+        for _ in range(self.nb_d):
+            dmg += randint(1,self.val_d)
+        return dmg

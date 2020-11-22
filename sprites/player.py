@@ -1,5 +1,7 @@
 """Define a player"""
 import pygame as pg
+from random import randint
+from logger import logger
 from config.colors import YELLOW
 from config.window import TILESIZE
 from config.sprites import PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP
@@ -30,13 +32,13 @@ class Player(pg.sprite.Sprite):
         self.MA = 50
 
         # Attribut
-        self.STR = 30  # strenght
-        self.DEX = 10  # dexterity
-        self.CON = 5  # constitution
-        self.INT = 10  # intelligence
-        self.WIS = 0  # lucky
-        self.CHA = 5  # charisme
-
+        self.STR = 70     #strenght 
+        self.DEX = 60     #dexterity
+        self.CON = 40     #constitution
+        self.INT = 10      #intelligence
+        self.WIS = 10      #lucky
+        self.CHA = 60     #charisme
+        
         # Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
@@ -118,4 +120,9 @@ class Player(pg.sprite.Sprite):
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
-        self.pos += self.vel * self.game.dt
+
+    def throwDice(self,Val,modificateur=0):
+        score= randint(0,100) 
+        logger.info("Your dice is %i / 100 and the succes is under %i",score,Val+modificateur )
+        return score <= Val + modificateur  
+        

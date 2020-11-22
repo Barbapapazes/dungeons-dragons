@@ -21,13 +21,29 @@ WEAPONS = {
         "image": "swordWood.png",
         "weight": 10,
         "slot": "weapon",
-        "type": "sword"
+        "type": "sword",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope":2
     },
     "sword steel": {
         "image": "sword.png",
         "weight": 20,
         "slot": "weapon",
-        "type": "sword"
+        "type": "sword",
+        "nb_d": 4,
+        "val_d": 6,
+        "scope":3
+
+    },
+    "arc": {
+        "image": "arc.png",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope":5
 
     }
 }
