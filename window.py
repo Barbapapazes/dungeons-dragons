@@ -89,16 +89,15 @@ class Window():
                 self.done = True
             elif event.type == pg.KEYDOWN:
                 self.keys = pg.key.get_pressed()
-                if event.key == pg.K_EQUALS:
+                if key_for(self.shortcuts["window"]["fps"], event):
                     self.show_fps = not self.show_fps
                     logger.info('Show fps: %s', self.show_fps)
                     self.normal_caption()
                 self.state.get_events(event)
-                if key_for(self.shortcuts["save a game"], event):
+                if key_for(self.shortcuts["window"]["save"], event):
                     logger.debug("save a game")
-                    # if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
-                    #     pg.event.wait()
-                    #     self.save()
+                    pg.event.wait()
+                    self.save()
                 if event.key == pg.K_k and pg.key.get_mods() & pg.KMOD_CTRL:
                     state = self.state.previous if self.state.name == SHORTCUTS else SHORTCUTS
                     self.flip_state(state)
