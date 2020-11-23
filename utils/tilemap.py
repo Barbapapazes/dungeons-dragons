@@ -29,7 +29,6 @@ class TiledMap:
 
 class Camera:
     def __init__(self, width, height):
-        print(width)
         self.camera = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
