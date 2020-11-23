@@ -33,36 +33,6 @@ class Game(_State):
         self.player = Player(self, 2, 4)
         super().setup_transition()
 
-        # Temporaire
-        # think how this will be used with the menu
-        # add a logger inside the inventory (for each keys or mouse move)
-        # items_folder = path.join(self.img_folder, 'items')
-        # weapons = list()
-        # for key, value in WEAPONS.items():
-        #     data = Weapon(
-        #         key, path.join(items_folder, value['image']),
-        #         value['weight'],
-        #         value['slot'],
-        #         value['type'])
-        #     weapons.append(data)
-        #     self.player.inventory.add_item(data)
-
-        # armor = list()
-        # for key, value in ARMOR.items():
-        #     data = Armor(
-        #         key, path.join(items_folder, value['image']),
-        #         value['weight'],
-        #         value['armor'],
-        #         value['slot'])
-        #     armor.append(data)
-        #     self.player.inventory.add_item(data)
-
-        # # hp_potion = Consumable('img/potionRed.png', 2, 30)
-        # helmet_armor = Armor('helmet armor', 'assets/img/items/helmet.png', 10, 20, 'head')
-        # # chest_armor = Armor('img/chest.png', 10, 40, 'chest')
-        # # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
-        # # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
-        # self.player.inventory.add_item(helmet_armor)
 
 
 
@@ -110,9 +80,13 @@ class Game(_State):
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 3:
                 if self.player.inventory.display_inventory:
-                    logger.info("Auto move an item")
+                    
                     mouse_pos = pg.mouse.get_pos()
-                    self.player.inventory.check_slot(self.screen, mouse_pos)
+                    if self.state == 'inventory':
+                        self.player.inventory.check_slot(self.screen, mouse_pos)
+                        logger.info("Auto move an item")
+                    elif self.state == 'shop':
+                        self.player.shop.check_slot(self.screen, self.player, mouse_pos)
             if event.button == 1:
                 if self.player.inventory.display_inventory:
                     logger.info("Select an item from the inventory")
