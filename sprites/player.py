@@ -120,6 +120,7 @@ class Player(pg.sprite.Sprite):
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
+        self.pos += self.vel * self.game.dt
 
     def throwDice(self,Val,modificateur=0):
         score= randint(0,100) 
