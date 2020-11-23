@@ -6,7 +6,7 @@ from os import path
 from window import _State
 from logger import logger
 from config.window import WIDTH, HEIGHT
-from config.colors import BLACK, WHITE, RED
+from config.colors import BLACK, WHITE, LIGHTER_PURPLE, BLUE_GREY, BLUE_HORIZON, GLOOMY_PURPLE, DARKGREY, LIGHTGREY, GREY
 from config.screens import SHORTCUTS, TRANSITION_OUT
 from data.shortcuts import SHORTCUTS_DEFAULT, CUSTOM_SHORTCUTS_FILENAME
 
@@ -40,7 +40,7 @@ class Shortcuts(_State):
         """Initialize data at scene start."""
         self.game_data = game_data
         self.dt = dt
-        self.background.fill((255, 0, 255))
+        self.background.fill(GLOOMY_PURPLE)
         super().setup_transition()
 
     def run(self, surface, keys, mouse, dt):
@@ -105,9 +105,9 @@ class Shortcuts(_State):
 
         shortcuts_keys = list(self.shortcuts.keys())
         for index, key in enumerate(shortcuts_keys):
-            color = BLACK
+            color = GREY
             if index == self.selected:
-                color = RED
+                color = BLACK
             self.draw_text(key.upper(), self.title_font, 24, color, 12, 60 + 60 * index, align="nw")
         for index, (key, value) in enumerate(self.shortcuts[shortcuts_keys[self.selected]].items()):
             text = f"{key.upper()} : "

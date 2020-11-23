@@ -98,7 +98,7 @@ class Window():
                     logger.debug("save a game")
                     pg.event.wait()
                     self.save()
-                if event.key == pg.K_k and pg.key.get_mods() & pg.KMOD_CTRL:
+                if key_for(self.shortcuts["shortcuts"]["show"]["keys"], event):
                     state = self.state.previous if self.state.name == SHORTCUTS else SHORTCUTS
                     self.flip_state(state)
                     logger.info('Toggle shortcuts : %s', state)

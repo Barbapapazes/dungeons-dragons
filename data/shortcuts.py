@@ -12,6 +12,9 @@ SHORTCUTS_DEFAULT = {
         " turn left": {"keys": [False, False, pg.K_q], "help": "this is another help"},
         "turn right": {"keys": [False, False, pg.K_d], "help": "this is another help"}
     },
+    "shortcuts": {
+        "show": {"keys": [True, False, pg.K_k], "help": "this is another help"},
+    },
 }
 
 CUSTOM_SHORTCUTS_FILENAME = 'custom_shortcuts.json'
