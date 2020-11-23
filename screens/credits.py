@@ -23,7 +23,7 @@ class Credits(_State):
         self.background.fill((255, 0, 0))
         super().setup_transition()
 
-    def run(self, surface, keys, dt):
+    def run(self, surface, keys, mouse, dt):
         """Run states"""
         self.screen = surface
         self.keys = keys
