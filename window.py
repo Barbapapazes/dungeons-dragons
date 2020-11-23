@@ -89,12 +89,12 @@ class Window():
                 self.done = True
             elif event.type == pg.KEYDOWN:
                 self.keys = pg.key.get_pressed()
-                if key_for(self.shortcuts["window"]["fps"], event):
+                if key_for(self.shortcuts["window"]["fps"]["keys"], event):
                     self.show_fps = not self.show_fps
                     logger.info('Show fps: %s', self.show_fps)
                     self.normal_caption()
                 self.state.get_events(event)
-                if key_for(self.shortcuts["window"]["save"], event):
+                if key_for(self.shortcuts["window"]["save"]["keys"], event):
                     logger.debug("save a game")
                     pg.event.wait()
                     self.save()
