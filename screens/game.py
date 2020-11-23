@@ -278,4 +278,4 @@ class Game(_State):
         super().transtition_active(self.screen)
 
     def distance(self,player,enemy):
-        return sqrt((enemy.x-player.x)**2 + (enemy.y-player.y)**2)
+        return sqrt((enemy.x-player.rect.center[0])**2 + (enemy.y-player.rect.center[1])**2)
