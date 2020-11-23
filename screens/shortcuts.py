@@ -8,7 +8,7 @@ from logger import logger
 from config.window import WIDTH, HEIGHT
 from config.colors import BLACK, WHITE
 from config.screens import SHORTCUTS, TRANSITION_OUT
-from data.shortcuts import SHORTCUTS_DEFAULT
+from data.shortcuts import SHORTCUTS_DEFAULT, CUSTOM_SHORTCUTS_FILENAME
 
 
 class Shortcuts(_State):
@@ -85,9 +85,9 @@ class Shortcuts(_State):
 
     def save_shortcuts(self):
         """Save shortcuts to a custom file"""
-        with open(path.join(self.saved_shortcuts, 'custom_shortcuts.json'), 'w') as _f:
+        with open(path.join(self.saved_shortcuts, CUSTOM_SHORTCUTS_FILENAME), 'w') as _f:
             _f.write(json.dumps(self.shortcuts))
-            logger.info('Save shortcuts to %s', path.join(self.saved_shortcuts, 'custom_shortcuts.json'))
+            logger.info('Save shortcuts to %s', path.join(self.saved_shortcuts, CUSTOM_SHORTCUTS_FILENAME))
 
     def create_shortcut(self):
         return [self.ctrl, self.alt, self.key]

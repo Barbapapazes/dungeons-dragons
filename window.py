@@ -1,5 +1,5 @@
 """Create the main window and the base for all screens"""
-
+import os
 from os import path
 import pygame as pg
 import sys
@@ -8,6 +8,8 @@ from logger import logger
 from config.screens import TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
 from config.colors import BLACK
 from config.window import WIDTH, HEIGHT, FPS, TITLE
+from data.shortcuts import SHORTCUTS_DEFAULT, CUSTOM_SHORTCUTS_FILENAME
+from utils.shortcuts import key_for
 
 
 class Window():
@@ -41,6 +43,15 @@ class Window():
         self.assets_folder = path.join(game_folder, 'assets')
         self.saved_games = path.join(self.assets_folder, 'saved_games')
         self.saved_maps = path.join(self.assets_folder, 'saved_maps')
+        self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
+        shortcuts = [f for f in os.listdir(self.saved_shortcuts) if path.isfile(
+            path.join(self.saved_shortcuts, f)) and f.endswith('json')]
+        if len(shortcuts) == 0:
+            self.shortcuts = SHORTCUTS_DEFAULT
+        else:
+            with open(path.join(self.saved_shortcuts, CUSTOM_SHORTCUTS_FILENAME), 'r') as _f:
+                self.shortcuts = json.load(_f)
+        logger.debug("Shortcuts loaded : %s", self.shortcuts)
 
     def setup_states(self, states_dict, start_state):
         """Load all states"""
@@ -83,9 +94,11 @@ class Window():
                     logger.info('Show fps: %s', self.show_fps)
                     self.normal_caption()
                 self.state.get_events(event)
-                if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
-                    pg.event.wait()
-                    self.save()
+                if key_for(self.shortcuts["save a game"], event):
+                    logger.debug("save a game")
+                    # if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
+                    #     pg.event.wait()
+                    #     self.save()
                 if event.key == pg.K_k and pg.key.get_mods() & pg.KMOD_CTRL:
                     state = self.state.previous if self.state.name == SHORTCUTS else SHORTCUTS
                     self.flip_state(state)
