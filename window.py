@@ -176,11 +176,8 @@ class _State():
         game_folder = path.dirname('.')
         self.assets_folder = path.join(game_folder, 'assets')
         self.saved_games = path.join(self.assets_folder, 'saved_games')
-<<<<<<< HEAD
         self.saved_maps = path.join(self.assets_folder, 'saved_maps')
-=======
         self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
->>>>>>> feat(shortcuts): create a way to save new shortcuts
         self.fonts_folder = path.join(self.assets_folder, 'fonts')
         self.title_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
         self.img_folder = path.join(self.assets_folder, 'img')
