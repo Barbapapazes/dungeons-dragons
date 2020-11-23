@@ -6,12 +6,12 @@ from os import path
 from window import _State
 from logger import logger
 from config.window import WIDTH, HEIGHT
-from config.colors import BLACK, WHITE, LIGHTER_PURPLE, BLUE_GREY, BLUE_HORIZON, GLOOMY_PURPLE, DARKGREY, LIGHTGREY, GREY
-from config.screens import SHORTCUTS, TRANSITION_OUT
+from config.colors import BLACK, WHITE, GLOOMY_PURPLE, GREY
+from config.screens import SHORTCUTS
 from data.shortcuts import SHORTCUTS_DEFAULT, CUSTOM_SHORTCUTS_FILENAME
 
 
-# charger le bon fichier de shortcuts, comme avec la class window et pour pour ne pas le faire passer dans game data ? afin d'évite le rechargement
+#  faire un écran enregistré comme le saved
 
 
 class Shortcuts(_State):
@@ -26,7 +26,7 @@ class Shortcuts(_State):
 
         self.background = pg.Surface((WIDTH, HEIGHT))
 
-        self.shortcuts = SHORTCUTS_DEFAULT
+        self.shortcuts = None
         self.selected_menu = 0
         self.selected_shortcut = 0
         self.is_menu_selected = False
@@ -34,13 +34,14 @@ class Shortcuts(_State):
         self.key = 107
         self.ctrl = None
         self.alt = None
-        self.saved = False
-        self.alpha = 0
-        logger.debug(self.shortcuts)
+        self.saved_file = False
+        self.saved_memory = False
+        self.alpha_actions = 0
 
     def startup(self, dt, game_data):
         """Initialize data at scene start."""
         self.game_data = game_data
+        self.shortcuts = self.game_data["shortcuts"]
         self.dt = dt
         self.background.fill(GLOOMY_PURPLE)
         super().setup_transition()
@@ -61,14 +62,7 @@ class Shortcuts(_State):
 
     def get_events(self, event):
         """Events loop"""
-        if event.key is not pg.K_RETURN:
-            mod = pg.key.get_mods()
-            if mod & pg.KMOD_CTRL:
-                self.ctrl = not self.ctrl
-            elif mod & pg.KMOD_ALT:
-                self.alt = not self.alt
-            else:
-                self.key = event.key
+        self.capture_new_shortcuts(event)
 
         if event.type == pg.KEYUP:
             if event.key == pg.K_PAGEUP:
@@ -81,6 +75,7 @@ class Shortcuts(_State):
                         self.selected_menu -= 1
                         if self.selected_menu < 0:
                             self.selected_menu = 0
+                logger.info("Menu : %d, Shortcut : %d", self.selected_menu, self.selected_shortcut)
             elif event.key == pg.K_PAGEDOWN:
                 if not self.is_shortcut_selected:
                     if self.is_menu_selected:
@@ -93,26 +88,54 @@ class Shortcuts(_State):
                         self.selected_menu += 1
                         if self.selected_menu > len(self.shortcuts.keys()) - 1:
                             self.selected_menu = len(self.shortcuts.keys()) - 1
+                logger.info("Menu : %d, Shortcut : %d", self.selected_menu, self.selected_shortcut)
             elif event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_ALT:
+                self.game_data["shortcut"] = self.shortcuts
                 self.save_shortcuts()
-                self.saved = True
+                self.saved_file = True
             elif event.key == pg.K_RETURN:
                 if self.is_shortcut_selected:
+                    # saved the new shortcut in the program data
                     menu = self.menu_keys[self.selected_menu]
                     shortcut_keys = list(self.shortcuts[menu].keys())
                     shortcut = shortcut_keys[self.selected_shortcut]
                     self.shortcuts[menu][shortcut]["keys"] = self.create_shortcut()
-                    logger.info(f"Save {self.create_shortcut()} to {shortcut} in {menu}")
+                    logger.info(f"Save {self.create_shortcut()} to {shortcut} in {menu}, memory")
+                    self.saved_memory = True
+                # select from menu to shortcut and new shortcut
                 if self.is_menu_selected:
                     self.is_shortcut_selected = True
+                    logger.info("A shortcut is selected")
                 else:
                     self.is_menu_selected = True
+                    logger.info("A menu is selected")
+
             elif event.key == pg.K_ESCAPE:
+                # unselect all
                 if self.is_shortcut_selected:
                     self.is_shortcut_selected = False
+                    logger.info("A shortcut is unselected")
                 else:
                     self.is_menu_selected = False
-            logger.debug(self.selected_menu)
+                    logger.info("A menu is unselected")
+
+    def capture_new_shortcuts(self, event):
+        """Capture key to create a recort form a shortcut
+
+        Args:
+            event (Event)
+        """
+        if event.key is not pg.K_RETURN and self.is_shortcut_selected:
+            mod = pg.key.get_mods()
+            if mod & pg.KMOD_CTRL:
+                self.ctrl = not self.ctrl
+                logger.info("CTRL set to %s", self.ctrl)
+            elif mod & pg.KMOD_ALT:
+                self.alt = not self.alt
+                logger.info("ALT set to %s", self.alt)
+            else:
+                self.key = event.key
+                logger.info("KEY set to %s", self.key)
 
     def save_shortcuts(self):
         """Save shortcuts to a custom file"""
@@ -166,18 +189,24 @@ class Shortcuts(_State):
 
     def draw_saved(self):
         """Draw the saved page"""
-        if self.saved:
-            self.alpha += 15
-        if self.alpha >= 255:
-            self.saved = False
-        if self.alpha > 0 and not self.saved:
-            self.alpha -= 15
-        if self.saved or self.alpha > 0:
+        if self.saved_file or self.saved_memory:
+            self.alpha_actions += 15
+        if self.alpha_actions >= 255:
+            self.saved_file = False
+            self.saved_memory = False
+        if self.alpha_actions > 0 and not self.saved_file and not self.saved_memory:
+            self.alpha_actions -= 15
+        if self.saved_file or self.alpha_actions > 0 or self.saved_memory:
             transition = pg.Surface((WIDTH, HEIGHT))
             transition.fill(BLACK)
-            transition.set_alpha(self.alpha)
+            transition.set_alpha(self.alpha_actions)
             self.screen.blit(transition, (0, 0))
-            self.draw_text("Saved", self.title_font, 50, WHITE,
+            text = ''
+            if self.saved_file:
+                text = "Saved in a file"
+            if self.saved_memory:
+                text = "Saved in memory"
+            self.draw_text(text, self.title_font, 50, WHITE,
                            WIDTH // 2, HEIGHT / 2, align="center")
 
     @staticmethod

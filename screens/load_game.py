@@ -10,6 +10,7 @@ from window import _State
 from config.screens import MENU, LOAD_GAME, TRANSITION_OUT
 from config.colors import BURGUNDY, WHITE
 from config.window import WIDTH, HEIGHT
+from utils.shortcuts import load_shortcuts
 from data.game_data import create_game_data
 
 
@@ -33,7 +34,7 @@ class LoadGame(_State):
         self.games = [f for f in os.listdir(self.saved_games) if f.endswith('.json')]
         self.len_games = len(self.games)
 
-        self.startup(0, 0)
+        self.startup(0, load_shortcuts())
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -73,7 +74,7 @@ class LoadGame(_State):
                 now = datetime.now()
                 date = now.strftime("%Y-%b-%d")
                 timestamp = datetime.timestamp(now)
-                self.game_data = create_game_data()
+                self.game_data['game_data'] = create_game_data()
                 self.game_data['file_name'] = f"{date}-{int(timestamp)}.json"
                 logger.info("Start a new game")
                 super().set_state(TRANSITION_OUT)
@@ -87,7 +88,7 @@ class LoadGame(_State):
         """
         try:
             with open(path.join(self.saved_games, selected)) as f:
-                self.game_data = json.load(f)
+                self.game_data['game_data'] = json.load(f)
                 self.game_data['file_name'] = selected
                 super().set_state(TRANSITION_OUT)
                 logger.info('Load : %s', selected)

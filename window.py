@@ -9,7 +9,7 @@ from config.screens import TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
 from config.colors import BLACK
 from config.window import WIDTH, HEIGHT, FPS, TITLE
 from data.shortcuts import SHORTCUTS_DEFAULT, CUSTOM_SHORTCUTS_FILENAME
-from utils.shortcuts import key_for
+from utils.shortcuts import key_for, load_shortcuts
 
 
 class Window():
@@ -44,14 +44,9 @@ class Window():
         self.saved_games = path.join(self.assets_folder, 'saved_games')
         self.saved_maps = path.join(self.assets_folder, 'saved_maps')
         self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
-        shortcuts = [f for f in os.listdir(self.saved_shortcuts) if path.isfile(
-            path.join(self.saved_shortcuts, f)) and f.endswith('json')]
-        if len(shortcuts) == 0:
-            self.shortcuts = SHORTCUTS_DEFAULT
-        else:
-            with open(path.join(self.saved_shortcuts, CUSTOM_SHORTCUTS_FILENAME), 'r') as _f:
-                self.shortcuts = json.load(_f)
-        logger.debug("Shortcuts loaded : %s", self.shortcuts)
+
+        self.shortcuts = load_shortcuts()["shortcuts"]
+        logger.info("Shortcuts loaded in window: %s", self.shortcuts)
 
     def setup_states(self, states_dict, start_state):
         """Load all states"""
@@ -69,6 +64,7 @@ class Window():
         logger.info("Flip state, from %s to %s", previous, self.state_name)
         self.persist = self.state.cleanup()
         self.state = self.states_dict[self.state_name]
+        self.shortcuts = self.persist["shortcuts"]
         self.state.previous = previous
         logger.info("Startup %s", self.state_name)
         self.state.startup(self.dt, self.persist)
@@ -95,7 +91,6 @@ class Window():
                     self.normal_caption()
                 self.state.get_events(event)
                 if key_for(self.shortcuts["window"]["save"]["keys"], event):
-                    logger.debug("save a game")
                     pg.event.wait()
                     self.save()
                 if key_for(self.shortcuts["shortcuts"]["show"]["keys"], event):
@@ -118,10 +113,13 @@ class Window():
         try:
             with open(path.join(self.saved_games, self.persist['file_name']), "w") as outfile:
                 file_name = self.persist['file_name']
+                shortcuts = self.persist['shortcuts']
                 del self.persist['file_name']
+                del self.persist['shortcuts']
                 # Remove the file name to be able to change manually the file name
-                json.dump(self.persist, outfile)
+                json.dump(self.persist["game_data"], outfile)
                 self.persist['file_name'] = file_name
+                self.persist['shortcuts'] = shortcuts
                 logger.info('File %s saved', self.persist['file_name'])
         except EnvironmentError as e:
             logger.exception(e)
