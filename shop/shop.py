@@ -1,11 +1,12 @@
 """Shop"""
 
 import pygame as pg
+from logger import logger
 from config.window import HEIGHT, WIDTH
 from config.colors import WHITE
 from config.shop import SHOP_TILESIZE, SHOP_SLOT_GAP, SHOP_CATEGORIES
 from config.sprites import CONSUMABLE, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
-from inventory.inventory import Consumable, Weapon, Armor
+from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, InventorySlot
 from os import path
 
 class Shop():
@@ -28,7 +29,24 @@ class Shop():
 
         self.display_shop = False
 
-
+        
+        self.menu_data = (
+                'Main',
+                'Item 0',
+                'Item 1',
+                (
+                    'Things',
+                    'Item 0',
+                    'Item 1',
+                    'Item 2',
+                    (
+                        'More Things',
+                        'Item 0',
+                        'Item 1',
+                    ),
+                ),
+                'Quit',
+            )
 
     def create_slots(self):
         self.set_all_categories()
@@ -174,6 +192,44 @@ class Shop():
                     break
                 else :
                     continue
+
+    def check_slot(self, screen, player, mouse_pos):
+        """Use, equipe or unequip the item present in the slot colliding with the mouse_pos
+
+        Args:
+            screen (Surface)
+            mouse_pos (tuple):
+        """
+        for slot in self.get_all_slots():
+            if slot.item is not None:
+                if slot.draw(screen).collidepoint(mouse_pos):
+                    self.buy_item(slot.item, player)
+                    break
+        for slot in player.inventory.get_all_slots():
+            if isinstance(slot, InventorySlot):
+                if slot.draw(screen).collidepoint(mouse_pos):
+                    self.sell_item(slot.item, player)
+                    slot.item = None
+            if isinstance(slot, EquipableSlot):
+                if slot.draw(screen).collidepoint(mouse_pos):
+                    if slot.item is not None:
+                        player.inventory.unequip_item(slot.item)
+                        self.sell_item(slot.item, player)
+                        slot.item = None
+
+    def buy_item(self, item, player):
+        if item.price > player.gold :
+            print("You're homeless")
+        else :
+            player.gold -= item.price
+            player.inventory.add_item(item)
+            logger.info("%s bought", (item.name))
+
+    def sell_item(self, item, player):
+        if item is not None:
+            player.gold += item.price
+            logger.info("%s sold", (item.name))
+
 
 
 

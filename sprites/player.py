@@ -44,6 +44,8 @@ class Player(pg.sprite.Sprite):
         self.WIS = 10  # lucky
         self.CHA = 60  # charisme
 
+        self.gold = 100
+
         # Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None

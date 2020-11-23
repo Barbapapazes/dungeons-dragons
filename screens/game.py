@@ -150,11 +150,14 @@ class Game(_State):
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 3:
-                if self.state == 'inventory':
-                    if self.player.inventory.display_inventory:
-                        logger.info("Auto move an item")
-                        mouse_pos = pg.mouse.get_pos()
+                if self.player.inventory.display_inventory:
+
+                    mouse_pos = pg.mouse.get_pos()
+                    if self.state == 'inventory':
                         self.player.inventory.check_slot(self.screen, mouse_pos)
+                        logger.info("Auto move an item")
+                    elif self.state == 'shop':
+                        self.player.shop.check_slot(self.screen, self.player, mouse_pos)
             if event.button == 1:
                 if self.state == 'inventory':
                     if self.player.inventory.display_inventory:
