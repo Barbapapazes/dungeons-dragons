@@ -21,6 +21,6 @@ if __name__ == '__main__':
         CHARACTER_CREA : Character_crea()
     }
     W = Window()
-    W.setup_states(STATES,CHARACTER_CREA)
+    W.setup_states(STATES,MENU)
     W.main()
     W.quit()

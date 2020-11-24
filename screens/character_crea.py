@@ -7,7 +7,8 @@ from config.window import WIDTH, HEIGHT
 from config.screens import GAME, MENU, TRANSITION_OUT
 import config.colors as couleur
 
-
+WIDHT_CHAR=220
+HEIGHT_CHAR=340
 class Character_crea(_State):
     """Creation_player"""
 
@@ -20,28 +21,53 @@ class Character_crea(_State):
         self.background = pg.Surface((WIDTH, HEIGHT))
         self.startup(0, 0)
         #Backgroud image 
-        self.image=pg.image.load("./img/Character_crea/background.jpg").convert()
+        self.image=pg.image.load("./img/Character_crea/background3.jpg").convert()
         self.image=pg.transform.scale(self.image,(WIDTH,HEIGHT))
 
         #titre du jeu 
         self.police=pg.font.Font("./assets/fonts/Enchanted Land.otf",100)
         self.police_bis=pg.font.Font("./assets/fonts/Enchanted Land.otf",50)
+        self.police_biss=pg.font.Font("./assets/fonts/Roboto-Regular.ttf",20)
         self.titre=self.police.render("NewGame",True,couleur.YELLOW_LIGHT)
 
         #textbox
-        self.name= pw.TextBox(self.background, 100, 100, 800, 80, fontSize=50,
-                  borderColour=(255, 0, 0), textColour=(0, 200, 0),
-                  onSubmit=self.output, radius=10, borderThickness=5)
+        self.name= pw.TextBox(self.background, 20, 100, 400, 40, fontSize=50,
+                  borderColour=couleur.RED, textColour=(0, 200, 0),
+                  onSubmit=self.output, radius=10, borderThickness=4)
 
 
-        #selector personage
-        self.list_perso=["< MAGE >","< GUERRIER > ","<L'AUTRE >"]
-        self.item_text=self.police_bis.render(self.list_perso[self.index],True,couleur.BLACK)
+        #structure des persos
+        self.mage=["< MAGE >","./img/Character_crea/Mage.png","description"]
+        self.guerrier=["< FIGHTER >","./img/Character_crea/Guerrier.png","""Chevaliers menant une quête,seigneurs conquérants,champions royaux, fantassins d'élite,mercenaires endurcis et rois-bandits, tous partagent une maîtrise inégalée des armes et des armures ainsi qu'une connaissance approfondie des compétences de combat. Tous connaissent bien la mort, l'infligeant autant qu'ils lui font face."""]
+        self.list_perso=[self.mage,self.guerrier]
+    
+        #selector 
+        self.item_text=self.police_bis.render(self.list_perso[self.index][0],True,couleur.BLACK)
+        self.description=self.police_biss.render(self.list_perso[self.index][2],True,couleur.BLACK)
 
-        #selector image 
-        self.list_image=["./img/Character_crea/Mage.png","./img/Character_crea/Guerrier.png",""]
-        self.perso=pg.image.load(self.list_image[self.index]).convert()
+        self.perso=pg.image.load(self.list_perso[self.index][1]).convert_alpha()
+        self.perso=pg.transform.scale(self.perso,(WIDHT_CHAR,HEIGHT_CHAR))
 
+        #button et anim 
+        self.Validation = pw.Button(
+                self.background, 420, 700, 200, 30, text='Start ! ',
+                fontSize=20, margin=20,
+                inactiveColour=couleur.BEIGE,
+                hoverColour=couleur.YELLOW_LIGHT,
+                pressedColour=(9, 48, 22), radius=10,
+                onClick=self.start_anim,
+                textVAlign="centre",
+                textHAlign="centre")
+
+        self.anim=pw.Resize(self.Validation,4,200,30)
+        self.anim2=pw.Translate(self.Validation,3,200,200)
+    
+
+
+        self.slider = pw.Slider(self.background, 100, 100, 800, 40, min=0, max=99, step=1)
+        self.output = pw.TextBox(self.background, 475, 200, 50, 50, fontSize=30)
+    def start_anim(self):
+        self.anim2.start()
 
         
 
@@ -76,14 +102,16 @@ class Character_crea(_State):
             if event.key == pg.K_RIGHT:
                 #super().set_state(TRANSITION_OUT)
                 self.switch_perso("r")
-                self.item_text=self.police_bis.render(self.list_perso[self.index],True,couleur.BLACK)
-                self.perso=pg.image.load(self.list_image[self.index]).convert()
+                self.item_text=self.police_bis.render(self.list_perso[self.index][0],True,couleur.BLACK)
+                self.perso=pg.image.load(self.list_perso[self.index][1]).convert_alpha()
+                self.perso=pg.transform.scale(self.perso,(WIDHT_CHAR,HEIGHT_CHAR))
 
             if event.key == pg.K_LEFT:
                 #super().set_state(TRANSITION_OUT)
                 self.switch_perso("l")
-                self.item_text=self.police_bis.render(self.list_perso[self.index],True,couleur.BLACK)
-                self.perso=pg.image.load(self.list_image[self.index]).convert()
+                self.item_text=self.police_bis.render(self.list_perso[self.index][0],True,couleur.BLACK)
+                self.perso=pg.image.load(self.list_perso[self.index][1]).convert_alpha()
+                self.perso=pg.transform.scale(self.perso,(WIDHT_CHAR,HEIGHT_CHAR))
 
             if event.key == pg.K_p:
                 self.game_data['count'] += 1
@@ -91,7 +119,7 @@ class Character_crea(_State):
 
     def switch_perso(self,side):
         if(side=="r"):
-            if(self.index < 2):
+            if(self.index < len(self.list_perso)-1):
                 self.index=self.index+1
             else:
                 self.index=0
@@ -99,8 +127,7 @@ class Character_crea(_State):
             if(self.index > 0):
                 self.index=self.index-1
             else:
-                self.index=2
-
+                self.index=len(self.list_perso)-1
 
 
     def draw(self):
@@ -108,8 +135,83 @@ class Character_crea(_State):
         self.screen.blit(self.background, (0, 0))
         self.background.blit(self.image,(0,0))
         self.background.blit(self.titre,(375,0))
-        self.background.blit(self.item_text,(425,180))
-        self.background.blit(self.perso,(500,500))
+        self.background.blit(self.item_text,(425,165))
+        #self.background.blit(self.description,(0,220))
+        drawText(self.background,self.list_perso[self.index][2],couleur.BLACK,(10,225,WIDTH-10,70),self.police_biss)
+        self.background.blit(self.perso,(415,300))
 
         self.name.listen(events)
         self.name.draw()
+
+        self.Validation.listen(events)
+        self.Validation.draw()
+
+        self.slider.listen(events)
+        self.slider.draw()
+        self.output.setText(self.slider.getValue())
+
+        self.output.draw()
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# draw some text into an area of a surface
+# automatically wraps words
+# returns any text that didn't get blitted
+def drawText(surface, text, color, rect, font, aa=False, bkg=None):
+    rect = pg.Rect(rect)
+    y = rect.top
+    lineSpacing = -2
+
+    # get the height of the font
+    fontHeight = font.size("Tg")[1]
+
+    while text:
+        i = 1
+
+        # determine if the row of text will be outside our area
+        if y + fontHeight > rect.bottom:
+            break
+
+        # determine maximum width of line
+        while font.size(text[:i])[0] <rect.width and i < len(text):
+            i += 1
+
+        # if we've wrapped the text, then adjust the wrap to the last word      
+        if i <len(text): 
+            i = text.rfind(" ", 0, i) + 1
+
+        # render the line and blit it to the surface
+        if bkg:
+            image = font.render(text[:i], 1, color, bkg)
+            image.set_colorkey(bkg)
+        else:
+            image = font.render(text[:i], aa, color)
+
+        surface.blit(image, (rect.left, y))
+        y += fontHeight + lineSpacing
+
+        # remove the text we just blitted
+        text = text[i:]
+
+    return text

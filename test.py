@@ -1,5 +1,6 @@
 import pygame
 from pygame_widgets import TextBox
+import ptext
 
 def output():
     # Get text in the textbox
@@ -29,4 +30,4 @@ while run:
     textbox.listen(events)
     textbox.draw()
 
-    
+    pygame.display.update()
