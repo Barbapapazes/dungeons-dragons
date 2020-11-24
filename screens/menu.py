@@ -49,4 +49,5 @@ class Menu(_State):
                 self.game_data['game_data']['count'] += 1
 
     def draw(self):
+        """Draw content"""
         self.screen.blit(self.background, (0, 0))

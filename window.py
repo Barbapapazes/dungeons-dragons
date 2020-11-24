@@ -38,6 +38,7 @@ class Window():
         self.load_data()
 
     def load_data(self):
+        """Load custom ressouces"""
         logger.info('Load data in main window')
         game_folder = path.dirname('.')
         self.assets_folder = path.join(game_folder, 'assets')
@@ -109,7 +110,7 @@ class Window():
                 self.state.get_events(event)
 
     def save(self):
-        # pourquoi ne pas passer ça dans le state pour gérer la sauvegarde à plus précisément
+        """Save game_data"""
         try:
             with open(path.join(self.saved_games, self.persist['file_name']), "w") as outfile:
                 file_name = self.persist['file_name']
@@ -117,6 +118,7 @@ class Window():
                 del self.persist['file_name']
                 del self.persist['shortcuts']
                 # Remove the file name to be able to change manually the file name
+                # Remove shortcuts because they have their own file
                 json.dump(self.persist["game_data"], outfile)
                 self.persist['file_name'] = file_name
                 self.persist['shortcuts'] = shortcuts
@@ -310,6 +312,11 @@ class _State():
         """Update the normal state"""
 
     def toggle_sub_state(self, state):
+        """Toggle a substate from a state
+
+        Args:
+            state (str): the name of the substate
+        """
         sub_state = 'normal' if self.state == state else state
         logger.info('Start sub-state %s in %s', sub_state, self.name)
         self.set_state(sub_state)

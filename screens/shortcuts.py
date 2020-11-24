@@ -8,10 +8,7 @@ from logger import logger
 from config.window import WIDTH, HEIGHT
 from config.colors import BLACK, WHITE, GLOOMY_PURPLE, GREY
 from config.screens import SHORTCUTS
-from data.shortcuts import SHORTCUTS_DEFAULT, CUSTOM_SHORTCUTS_FILENAME
-
-
-#  faire un écran enregistré comme le saved
+from data.shortcuts import CUSTOM_SHORTCUTS_FILENAME
 
 
 class Shortcuts(_State):
@@ -144,9 +141,15 @@ class Shortcuts(_State):
             logger.info('Save shortcuts to %s', path.join(self.saved_shortcuts, CUSTOM_SHORTCUTS_FILENAME))
 
     def create_shortcut(self):
+        """Create the array for a shortcut
+
+        Returns:
+            list
+        """
         return [self.ctrl, self.alt, self.key]
 
     def draw(self):
+        """Draw content"""
         self.screen.blit(self.background, (0, 0))
         self.draw_text("shortcuts".upper(), self.title_font, 48, BLACK, WIDTH // 2, 0, align="n")
 
@@ -211,4 +214,14 @@ class Shortcuts(_State):
 
     @staticmethod
     def create_text_shortcut(ctrl, alt, key):
+        """Create the string the show the chosen shortcut
+
+        Args:
+            ctrl (int)
+            alt (int)
+            key (int)
+
+        Returns:
+            str
+        """
         return f"{'ctrl + ' if ctrl else ''}{'alt + ' if alt else ''}{pg.key.name(key) if key else ''}"

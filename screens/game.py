@@ -56,6 +56,7 @@ class Game(_State):
         self.new()
 
     def new(self):
+        """Create a new game"""
         self.map = TiledMap(path.join(self.saved_maps, 'level1.tmx'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
