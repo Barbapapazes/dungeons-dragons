@@ -37,8 +37,10 @@ class Character_crea(_State):
 
 
         #structure des persos
-        self.mage=["< MAGE >","./img/Character_crea/Mage.png","description"]
-        self.guerrier=["< FIGHTER >","./img/Character_crea/Guerrier.png","""Chevaliers menant une quête,seigneurs conquérants,champions royaux, fantassins d'élite,mercenaires endurcis et rois-bandits, tous partagent une maîtrise inégalée des armes et des armures ainsi qu'une connaissance approfondie des compétences de combat. Tous connaissent bien la mort, l'infligeant autant qu'ils lui font face."""]
+        self.mage=["< MAGE >","./img/Character_crea/Mage.png","description",("STR",0,10)]
+        self.guerrier=["< FIGHTER >","./img/Character_crea/Guerrier.png","""Chevaliers menant une quête,seigneurs conquérants,champions royaux, fantassins d'élite,mercenaires endurcis et rois-bandits, tous partagent une maîtrise inégalée des armes et des armures ainsi /
+        qu'une connaissance approfondie des compétences de combat./
+         Tous connaissent bien la mort, l'infligeant autant qu'ils lui font face.""",("STR",380,400)]
         self.list_perso=[self.mage,self.guerrier]
     
         #selector 
@@ -64,8 +66,10 @@ class Character_crea(_State):
     
 
 
-        self.slider = pw.Slider(self.background, 100, 100, 800, 40, min=0, max=99, step=1)
-        self.output = pw.TextBox(self.background, 475, 200, 50, 50, fontSize=30)
+        #curseur 
+        self.strong=Curseur("STR",750,350,200,20,self.background,self.list_perso[self.index][3][1],self.list_perso[self.index][3][2]-self.list_perso[self.index][3][1],1)
+        self.dex=Curseur("DEX",750,420,200,20,self.background,self.list_perso[self.index][3][1],self.list_perso[self.index][3][2]-self.list_perso[self.index][3][1],1)
+
     def start_anim(self):
         self.anim2.start()
 
@@ -102,21 +106,15 @@ class Character_crea(_State):
             if event.key == pg.K_RIGHT:
                 #super().set_state(TRANSITION_OUT)
                 self.switch_perso("r")
-                self.item_text=self.police_bis.render(self.list_perso[self.index][0],True,couleur.BLACK)
-                self.perso=pg.image.load(self.list_perso[self.index][1]).convert_alpha()
-                self.perso=pg.transform.scale(self.perso,(WIDHT_CHAR,HEIGHT_CHAR))
-
             if event.key == pg.K_LEFT:
                 #super().set_state(TRANSITION_OUT)
                 self.switch_perso("l")
-                self.item_text=self.police_bis.render(self.list_perso[self.index][0],True,couleur.BLACK)
-                self.perso=pg.image.load(self.list_perso[self.index][1]).convert_alpha()
-                self.perso=pg.transform.scale(self.perso,(WIDHT_CHAR,HEIGHT_CHAR))
-
             if event.key == pg.K_p:
                 self.game_data['count'] += 1
                 print(self.game_data["count"])
 
+    
+    
     def switch_perso(self,side):
         if(side=="r"):
             if(self.index < len(self.list_perso)-1):
@@ -128,6 +126,15 @@ class Character_crea(_State):
                 self.index=self.index-1
             else:
                 self.index=len(self.list_perso)-1
+        self.actualisation_item()
+        
+
+
+    def actualisation_item(self):
+        self.item_text=self.police_bis.render(self.list_perso[self.index][0],True,couleur.BLACK)
+        self.perso=pg.image.load(self.list_perso[self.index][1]).convert_alpha()
+        self.perso=pg.transform.scale(self.perso,(WIDHT_CHAR,HEIGHT_CHAR))
+        self.strong=Curseur("STR",750,350,200,20,self.background,self.list_perso[self.index][3][0],self.list_perso[self.index][3][1],1)
 
 
     def draw(self):
@@ -136,7 +143,6 @@ class Character_crea(_State):
         self.background.blit(self.image,(0,0))
         self.background.blit(self.titre,(375,0))
         self.background.blit(self.item_text,(425,165))
-        #self.background.blit(self.description,(0,220))
         drawText(self.background,self.list_perso[self.index][2],couleur.BLACK,(10,225,WIDTH-10,70),self.police_biss)
         self.background.blit(self.perso,(415,300))
 
@@ -146,12 +152,53 @@ class Character_crea(_State):
         self.Validation.listen(events)
         self.Validation.draw()
 
+        self.strong.draw(events)
+        self.dex.draw(events)
+        
+
+
+
+class Curseur():
+    def __init__(self,title,x,y,width,height,surface,min,max,step):
+        #police
+        self.police=pg.font.Font("./assets/fonts/Enchanted Land.otf",100)
+        self.police_bis=pg.font.Font("./assets/fonts/Enchanted Land.otf",50)
+        self.police_biss=pg.font.Font("./assets/fonts/Roboto-Regular.ttf",20)
+
+        #definition des tailles 
+        self.height=height
+        self.width=width
+        self.x=x
+        self.y=y
+        self.surface=surface
+        self.min=min
+
+        #label et point
+        self.titre=self.police_biss.render(title,True,couleur.YELLOW_LIGHT)
+        self.output = pw.TextBox(self.surface, self.x+self.width+20, self.y-5, 35, 30, fontSize=21)
+
+        
+
+        #selector
+        self.slider = pw.Slider(self.surface, x, y, width, height, min=0, max=max, step=step)
+       
+
+
+    def draw(self,events):
+        self.surface.blit(self.titre,(self.x+self.width/2-20,self.y-30))
         self.slider.listen(events)
         self.slider.draw()
-        self.output.setText(self.slider.getValue())
-
+        self.output.setText(self.slider.getValue()+self.min)
         self.output.draw()
-        
+
+
+
+
+
+
+
+
+
 
 
 
