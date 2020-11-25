@@ -11,6 +11,7 @@ from config.colors import LIGHTGREY, BLACK, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 from config.sprites import WEAPONS
 from inventory.inventory import Armor, Weapon
+from utils.shortcuts import key_for
 
 
 class Game(_State):
@@ -88,10 +89,10 @@ class Game(_State):
                 super().set_state(TRANSITION_OUT)
 
         if event.type == pg.KEYUP:
-            if event.key == pg.K_m:
+            if key_for(self.game_data["shortcuts"]["game"]["menu"]["keys"], event):
                 self.player.inventory.display_inventory = False
                 super().toggle_sub_state('menu')
-            if event.key == pg.K_i:
+            if key_for(self.game_data["shortcuts"]["game"]["inventory"]["keys"], event):
                 logger.info("Toggle inventory from player")
                 self.player.inventory.toggle_inventory()
                 super().toggle_sub_state('inventory')

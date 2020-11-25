@@ -13,10 +13,14 @@ SHORTCUTS_DEFAULT = {
         "new game": {"keys": [False, False, pg.K_k], "help": "Permet de créer une nouvelle partie"}
     },
     "game": {
-        "up": {"keys": [False, False, pg.K_z], "help": "this is another help"},
-        "down": {"keys": [False, False, pg.K_s], "help": "this is another help"},
-        " turn left": {"keys": [False, False, pg.K_q], "help": "this is another help"},
-        "turn right": {"keys": [False, False, pg.K_d], "help": "this is another help"}
+        "inventory": {"keys": [False, False, pg.K_i], "help": "Toggle the inventory"},
+        "menu": {"keys": [False, False, pg.K_m], "help": "Toggle the sub-state"}
+    },
+    "player": {
+        "up": {"keys": [False, False, pg.K_z], "help": "Move the player forward"},
+        "down": {"keys": [False, False, pg.K_s], "help": "Move the player backward"},
+        " turn left": {"keys": [False, False, pg.K_q], "help": "Turn the player to the left"},
+        "turn right": {"keys": [False, False, pg.K_d], "help": "Turn the player to the right"},
     },
     "shortcuts": {
         "show": {"keys": [True, False, pg.K_k], "help": "this is another help"},
