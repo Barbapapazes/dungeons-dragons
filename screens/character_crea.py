@@ -63,7 +63,7 @@ class Character_crea(_State):
 
         # button et anim
         self.Validation = pw.Button(
-            self.background, 420, 700, 200, 30, text='Start ! ',
+            self.background, 500, 717, 0, 0, text='Start ! ',
             fontSize=20, margin=20,
             inactiveColour=couleur.BEIGE,
             hoverColour=couleur.YELLOW_LIGHT,
@@ -72,11 +72,13 @@ class Character_crea(_State):
             textVAlign="centre",
             textHAlign="centre")
 
-        self.anim = pw.Resize(self.Validation, 4, 200, 30)
-        self.anim2 = pw.Translate(self.Validation, 3, 200, 200)
+        self.anim = pw.Resize(self.Validation, 1, 200, 30)
+        self.anim2=pw.Translate(self.Validation,1,400,700)
+
+        self.anim_inv = pw.Resize(self.Validation, 1, 0, 0)
+        self.anim2_inv=pw.Translate(self.Validation,1,500,717)
 
         # curseur
-        print(self.list_perso[self.index][3][1])
         self.str = Curseur(
             "STR", 700, 350, 200, 20, self.background, self.list_perso[self.index][3][1],
             self.list_perso[self.index][3][2] - self.list_perso[self.index][3][1],
@@ -106,13 +108,10 @@ class Character_crea(_State):
         self.list_selector = [self.str, self.dex, self.con, self.int, self.wis, self.cha]
 
         # nbpoint
-        self.nbpts = pw.TextBox(self.background, 100, 100, 100, 100, fontSize=30)
+        self.nbpts = pw.TextBox(self.background, 800, 50, 100, 100, fontSize=50,textVAlign="center",textHAlign="center")
 
-    def start_anim(self):
-        self.anim2.start()
 
     def sommepts(self):
-        print(sum(x.getvalue() for x in self.list_selector))
         return sum(x.getvalue() for x in self.list_selector)
 
     def output(self):
@@ -144,10 +143,8 @@ class Character_crea(_State):
         """Events loop"""
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_RIGHT:
-                # super().set_state(TRANSITION_OUT)
                 self.switch_perso("r")
             if event.key == pg.K_LEFT:
-                # super().set_state(TRANSITION_OUT)
                 self.switch_perso("l")
             if event.key == pg.K_p:
                 self.game_data['count'] += 1
@@ -228,6 +225,8 @@ class Character_crea(_State):
             self.int.draw(events, stopb=True, stopval=self.int.getvalue())
             self.wis.draw(events, stopb=True, stopval=self.wis.getvalue())
             self.cha.draw(events, stopb=True, stopval=self.cha.getvalue())
+            self.anim.start()
+            self.anim2.start()
         else:
             self.str.draw(events)
             self.dex.draw(events)
@@ -235,9 +234,20 @@ class Character_crea(_State):
             self.int.draw(events)
             self.wis.draw(events)
             self.cha.draw(events)
+            self.anim_inv.start()
+            self.anim2_inv.start()
 
         self.nbpts.setText(NB_POINT-self.sommepts())
         self.nbpts.draw()
+
+
+
+
+
+
+
+
+
 
 
 class Curseur():
@@ -276,6 +286,20 @@ class Curseur():
 
     def getvalue(self):
         return self.slider.getValue()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # draw some text into an area of a surface
