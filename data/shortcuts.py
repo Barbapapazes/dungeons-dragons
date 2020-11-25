@@ -6,6 +6,12 @@ SHORTCUTS_DEFAULT = {
         "save": {"keys": [True, False, pg.K_s], "help": "This is the help"},
         "fps": {"keys": [False, False, pg.K_EQUALS], "help": "this is another help"}
     },
+    "load_game":  {
+        "up": {"keys": [False, False, pg.K_UP], "help": "Permet de sélectionner une partie"},
+        "down": {"keys": [False, False, pg.K_DOWN], "help": "Permet de sélectionner une partie"},
+        "enter": {"keys": [False, False, pg.K_RETURN], "help": "Permet de charger une partie"},
+        "new game": {"keys": [False, False, pg.K_k], "help": "Permet de créer une nouvelle partie"}
+    },
     "game": {
         "up": {"keys": [False, False, pg.K_z], "help": "this is another help"},
         "down": {"keys": [False, False, pg.K_s], "help": "this is another help"},
