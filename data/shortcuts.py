@@ -3,14 +3,14 @@ import pygame as pg
 
 SHORTCUTS_DEFAULT = {
     "window": {
-        "save": {"keys": [True, False, pg.K_s], "help": "This is the help"},
-        "fps": {"keys": [False, False, pg.K_EQUALS], "help": "this is another help"}
+        "save": {"keys": [True, False, pg.K_s], "help": "Used to saved the game"},
+        "fps": {"keys": [False, False, pg.K_EQUALS], "help": "Toggle the fps counter"}
     },
     "load_game":  {
-        "up": {"keys": [False, False, pg.K_UP], "help": "Permet de sélectionner une partie"},
-        "down": {"keys": [False, False, pg.K_DOWN], "help": "Permet de sélectionner une partie"},
-        "enter": {"keys": [False, False, pg.K_RETURN], "help": "Permet de charger une partie"},
-        "new game": {"keys": [False, False, pg.K_k], "help": "Permet de créer une nouvelle partie"}
+        "up": {"keys": [False, False, pg.K_UP], "help": "Used to select a game"},
+        "down": {"keys": [False, False, pg.K_DOWN], "help": "Used to select a game"},
+        "enter": {"keys": [False, False, pg.K_RETURN], "help": "Used to load a game"},
+        "new game": {"keys": [False, False, pg.K_k], "help": "Used to create a new game"}
     },
     "game": {
         "inventory": {"keys": [False, False, pg.K_i], "help": "Toggle the inventory"},
@@ -23,7 +23,7 @@ SHORTCUTS_DEFAULT = {
         "right": {"keys": [False, False, pg.K_d], "help": "Turn the player to the right"},
     },
     "shortcuts": {
-        "show": {"keys": [True, False, pg.K_k], "help": "this is another help"},
+        "show": {"keys": [True, False, pg.K_k], "help": "Toggle the shortcuts pane"},
     },
 }
 
