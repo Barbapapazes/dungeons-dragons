@@ -6,6 +6,8 @@ from os import path
 from window import _State
 from config.window import WIDTH, HEIGHT
 from config.screens import GAME, MENU, TRANSITION_OUT, CREDITS, LOAD_GAME, CHARACTER_CREA
+from utils.shortcuts import load_shortcuts
+
 import config.colors as couleur
 
 
@@ -35,7 +37,7 @@ class Menu(_State):
         super(Menu, self).__init__(self.name)
         self.next = GAME
         self.background = pg.Surface((WIDTH, HEIGHT))
-        self.startup(0, 0)
+        self.startup(0, load_shortcuts())
 
         #Backgroud image 
         self.image=pg.image.load("./img/Menu/background2.jpg").convert()

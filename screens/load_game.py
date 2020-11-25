@@ -10,7 +10,6 @@ from window import _State
 from config.screens import MENU, LOAD_GAME, TRANSITION_OUT
 from config.colors import BURGUNDY, WHITE
 from config.window import WIDTH, HEIGHT
-from utils.shortcuts import load_shortcuts
 from data.game_data import create_game_data
 from utils.shortcuts import key_for
 
@@ -34,8 +33,6 @@ class LoadGame(_State):
         self.selected = 0
         self.games = [f for f in os.listdir(self.saved_games) if f.endswith('.json')]
         self.len_games = len(self.games)
-
-        self.startup(0, load_shortcuts())
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""

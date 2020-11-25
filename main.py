@@ -12,6 +12,7 @@ from logger import logger
 
 if __name__ == '__main__':
     logger.info("Create states")
+    W = Window()
     STATES = {
         LOAD_GAME: LoadGame(),
         MENU: Menu(),
@@ -20,7 +21,6 @@ if __name__ == '__main__':
         SHORTCUTS: Shortcuts(),
         CHARACTER_CREA : Character_crea()
     }
-    W = Window()
     W.setup_states(STATES, MENU)
     W.main()
     W.quit()
