@@ -210,7 +210,6 @@ class Game(_State):
             if self.player.weapon != None: #check if player had a weapon
 
                 if self.player.weapon.wpn_type=="sword" and self.player.weapon.scope >=   self.distance(self.player,self.selectEnemy):
-                    logger.debug("arm sword")
                     if self.player.throwDice(self.player.STR):
                         dmg = self.player.weapon.attack()
                     else:
