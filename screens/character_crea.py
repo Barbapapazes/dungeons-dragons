@@ -9,6 +9,7 @@ import config.colors as couleur
 
 WIDHT_CHAR=220
 HEIGHT_CHAR=340
+NB_POINT=12
 class Character_crea(_State):
     """Creation_player"""
 
@@ -37,10 +38,10 @@ class Character_crea(_State):
 
 
         #structure des persos
-        self.mage=["< MAGE >","./img/Character_crea/Mage.png","description",("STR",0,10)]
+        self.mage=["< MAGE >","./img/Character_crea/Mage.png","description",("STR",0,7),("DEX",2,12),("CON",2,12),("INT",2,12),("WIS",2,12),("CHA",2,12)]
         self.guerrier=["< FIGHTER >","./img/Character_crea/Guerrier.png","""Chevaliers menant une quête,seigneurs conquérants,champions royaux, fantassins d'élite,mercenaires endurcis et rois-bandits, tous partagent une maîtrise inégalée des armes et des armures ainsi /
         qu'une connaissance approfondie des compétences de combat./
-         Tous connaissent bien la mort, l'infligeant autant qu'ils lui font face.""",("STR",380,400)]
+         Tous connaissent bien la mort, l'infligeant autant qu'ils lui font face.""",("STR",3,12),("DEX",0,4),("CON",2,12),("INT",2,12),("WIS",2,12),("CHA",2,12)]
         self.list_perso=[self.mage,self.guerrier]
     
         #selector 
@@ -57,23 +58,34 @@ class Character_crea(_State):
                 inactiveColour=couleur.BEIGE,
                 hoverColour=couleur.YELLOW_LIGHT,
                 pressedColour=(9, 48, 22), radius=10,
-                onClick=self.start_anim,
+                onClick=self.next_action,
                 textVAlign="centre",
                 textHAlign="centre")
 
         self.anim=pw.Resize(self.Validation,4,200,30)
         self.anim2=pw.Translate(self.Validation,3,200,200)
     
-
-
         #curseur 
-        self.strong=Curseur("STR",750,350,200,20,self.background,self.list_perso[self.index][3][1],self.list_perso[self.index][3][2]-self.list_perso[self.index][3][1],1)
-        self.dex=Curseur("DEX",750,420,200,20,self.background,self.list_perso[self.index][3][1],self.list_perso[self.index][3][2]-self.list_perso[self.index][3][1],1)
+        print(self.list_perso[self.index][3][1])
+        self.str=Curseur("STR",700,350,200,20,self.background,self.list_perso[self.index][3][1],self.list_perso[self.index][3][2]-self.list_perso[self.index][3][1],1)
+        self.dex=Curseur("DEX",700,420,200,20,self.background,self.list_perso[self.index][4][1],self.list_perso[self.index][4][2]-self.list_perso[self.index][4][1],1)
+        self.con=Curseur("CON",700,490,200,20,self.background,self.list_perso[self.index][5][1],self.list_perso[self.index][5][2]-self.list_perso[self.index][5][1],1)
+        
+        self.int=Curseur("INT",20,350,200,20,self.background,self.list_perso[self.index][5][1],self.list_perso[self.index][5][2]-self.list_perso[self.index][5][1],1)
+        self.wis=Curseur("WIS",20,420,200,20,self.background,self.list_perso[self.index][5][1],self.list_perso[self.index][5][2]-self.list_perso[self.index][5][1],1)
+        self.cha=Curseur("CHA",20,490,200,20,self.background,self.list_perso[self.index][5][1],self.list_perso[self.index][5][2]-self.list_perso[self.index][5][1],1)
+
+        self.list_selector=[self.str,self.dex,self.con,self.int,self.wis,self.cha]
+
+        #nbpoint
+        self.nbpts = pw.TextBox(self.background, 100, 100, 100, 100, fontSize=30)
 
     def start_anim(self):
         self.anim2.start()
 
-        
+    def sommepts(self):
+        print(sum(x.getvalue() for x in self.list_selector))
+        return sum(x.getvalue() for x in self.list_selector)
 
     def output(self):
         # Get text in the textbox
@@ -126,6 +138,8 @@ class Character_crea(_State):
                 self.index=self.index-1
             else:
                 self.index=len(self.list_perso)-1
+        #remise à zero des points a attribuer et slider 
+        
         self.actualisation_item()
         
 
@@ -134,7 +148,22 @@ class Character_crea(_State):
         self.item_text=self.police_bis.render(self.list_perso[self.index][0],True,couleur.BLACK)
         self.perso=pg.image.load(self.list_perso[self.index][1]).convert_alpha()
         self.perso=pg.transform.scale(self.perso,(WIDHT_CHAR,HEIGHT_CHAR))
-        self.strong=Curseur("STR",750,350,200,20,self.background,self.list_perso[self.index][3][0],self.list_perso[self.index][3][1],1)
+
+        self.str=Curseur("STR",700,350,200,20,self.background,self.list_perso[self.index][3][1],self.list_perso[self.index][3][2]-self.list_perso[self.index][3][1],1)
+        self.dex=Curseur("DEX",700,420,200,20,self.background,self.list_perso[self.index][4][1],self.list_perso[self.index][4][2]-self.list_perso[self.index][4][1],1)
+        self.con=Curseur("CON",700,490,200,20,self.background,self.list_perso[self.index][5][1],self.list_perso[self.index][5][2]-self.list_perso[self.index][5][1],1)
+        
+        self.int=Curseur("INT",20,350,200,20,self.background,self.list_perso[self.index][5][1],self.list_perso[self.index][5][2]-self.list_perso[self.index][5][1],1)
+        self.wis=Curseur("WIS",20,420,200,20,self.background,self.list_perso[self.index][5][1],self.list_perso[self.index][5][2]-self.list_perso[self.index][5][1],1)
+        self.cha=Curseur("CHA",20,490,200,20,self.background,self.list_perso[self.index][5][1],self.list_perso[self.index][5][2]-self.list_perso[self.index][5][1],1)
+
+        self.list_selector=[self.str,self.dex,self.con,self.int,self.wis,self.cha]
+
+    def next_action(self):
+        super().set_state(TRANSITION_OUT)
+        #initialisation du personnage 
+        #creation de la sauvegarde 
+
 
 
     def draw(self):
@@ -146,20 +175,40 @@ class Character_crea(_State):
         drawText(self.background,self.list_perso[self.index][2],couleur.BLACK,(10,225,WIDTH-10,70),self.police_biss)
         self.background.blit(self.perso,(415,300))
 
-        self.name.listen(events)
-        self.name.draw()
+        #self.name.listen(events)
+        #self.name.draw()
 
         self.Validation.listen(events)
         self.Validation.draw()
+        if(NB_POINT-self.sommepts()<=0):
+            self.str.draw(events,stopb=True,stopval=self.str.getvalue())
+            self.dex.draw(events,stopb=True,stopval=self.dex.getvalue())
+            self.con.draw(events,stopb=True,stopval=self.con.getvalue())
+            self.int.draw(events,stopb=True,stopval=self.int.getvalue())
+            self.wis.draw(events,stopb=True,stopval=self.wis.getvalue())
+            self.cha.draw(events,stopb=True,stopval=self.cha.getvalue())
+        else:
+            self.str.draw(events)
+            self.dex.draw(events)
+            self.con.draw(events)
+            self.int.draw(events)
+            self.wis.draw(events)
+            self.cha.draw(events)
 
-        self.strong.draw(events)
-        self.dex.draw(events)
+
+        self.nbpts.setText(NB_POINT-self.sommepts())
+        self.nbpts.draw()
+    
+        
+
+
+
         
 
 
 
 class Curseur():
-    def __init__(self,title,x,y,width,height,surface,min,max,step):
+    def __init__(self,title,x,y,width,height,surface,min,max,step,ini=0):
         #police
         self.police=pg.font.Font("./assets/fonts/Enchanted Land.otf",100)
         self.police_bis=pg.font.Font("./assets/fonts/Enchanted Land.otf",50)
@@ -175,21 +224,28 @@ class Curseur():
 
         #label et point
         self.titre=self.police_biss.render(title,True,couleur.YELLOW_LIGHT)
-        self.output = pw.TextBox(self.surface, self.x+self.width+20, self.y-5, 35, 30, fontSize=21)
+        self.output = pw.TextBox(self.surface, self.x+self.width+20, self.y-5, 65, 30, fontSize=21)
 
         
 
         #selector
-        self.slider = pw.Slider(self.surface, x, y, width, height, min=0, max=max, step=step)
+        self.slider = pw.Slider(self.surface, x, y, width, height, min=0, max=max, step=step,initial=ini)
        
 
 
-    def draw(self,events):
+    def draw(self,events,stopb=False,stopval=2):
         self.surface.blit(self.titre,(self.x+self.width/2-20,self.y-30))
         self.slider.listen(events)
+        if(stopb==True and self.slider.getValue()>=stopval):
+            self.slider.value=stopval
         self.slider.draw()
-        self.output.setText(self.slider.getValue()+self.min)
+        self.output.setText(str(self.min)+" + "+str(self.slider.getValue()))
         self.output.draw()
+    
+    def getvalue_tot(self):
+        return self.slider.getValue()+self.min
+    def getvalue(self):
+        return self.slider.getValue()
 
 
 
