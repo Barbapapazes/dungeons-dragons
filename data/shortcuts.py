@@ -19,8 +19,8 @@ SHORTCUTS_DEFAULT = {
     "player": {
         "up": {"keys": [False, False, pg.K_z], "help": "Move the player forward"},
         "down": {"keys": [False, False, pg.K_s], "help": "Move the player backward"},
-        " turn left": {"keys": [False, False, pg.K_q], "help": "Turn the player to the left"},
-        "turn right": {"keys": [False, False, pg.K_d], "help": "Turn the player to the right"},
+        "left": {"keys": [False, False, pg.K_q], "help": "Turn the player to the left"},
+        "right": {"keys": [False, False, pg.K_d], "help": "Turn the player to the right"},
     },
     "shortcuts": {
         "show": {"keys": [True, False, pg.K_k], "help": "this is another help"},

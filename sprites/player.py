@@ -45,13 +45,13 @@ class Player(pg.sprite.Sprite):
         self.rot_speed = 0
         self.vel = vec(0, 0)
         keys = pg.key.get_pressed()
-        if keys[pg.K_LEFT] or keys[pg.K_q]:
+        if keys[self.game.game_data["shortcuts"]["player"]["left"]["keys"][2]]:
             self.rot_speed = PLAYER_ROT_SPEED
-        if keys[pg.K_RIGHT] or keys[pg.K_d]:
+        if keys[self.game.game_data["shortcuts"]["player"]["right"]["keys"][2]]:
             self.rot_speed = -PLAYER_ROT_SPEED
-        if keys[pg.K_UP] or keys[pg.K_z]:
+        if keys[self.game.game_data["shortcuts"]["player"]["up"]["keys"][2]]:
             self.vel = vec(PLAYER_SPEED, 0).rotate(-self.rot)
-        if keys[pg.K_DOWN] or keys[pg.K_s]:
+        if keys[self.game.game_data["shortcuts"]["player"]["down"]["keys"][2]]:
             self.vel = vec(-PLAYER_SPEED / 2, 0).rotate(-self.rot)
 
     def addHp(self, hp_gain):
