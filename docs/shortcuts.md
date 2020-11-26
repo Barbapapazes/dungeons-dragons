@@ -57,9 +57,11 @@ Le namespace window est global à l'ensemble des écrans. Ainsi, il ne faut pas 
 
 ### Shortcuts
 
-| Nom  | Raccourci | Aide                           |
-| :--: | :-------: | ------------------------------ |
-| show |  ctrl+k   | Toggle le panneau de shortcuts |
+|  Nom  | Raccourci | Aide                                  |
+| :---: | :-------: | ------------------------------------- |
+| show  |  ctrl+k   | Toggle le panneau de shortcuts        |
+| reset |   alt+r   | Permet de réinitialiser les shortcuts |
+| save  |   alt+s   | Sauvegarder les shortcuts             |
 
 ## Panneau de configuration des shortcuts
 

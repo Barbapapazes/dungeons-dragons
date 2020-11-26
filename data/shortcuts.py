@@ -24,6 +24,8 @@ SHORTCUTS_DEFAULT = {
     },
     "shortcuts": {
         "show": {"keys": [True, False, pg.K_k], "help": "Toggle the shortcuts pane"},
+        "save": {"keys": [False, True, pg.K_s], "help": "Used to save shortcuts"},
+        "reset": {"keys": [False, True, pg.K_r], "help": "Used to reset to default shortcuts"},
     },
 }
 
