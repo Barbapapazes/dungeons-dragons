@@ -6,8 +6,10 @@ from config.window import HEIGHT, WIDTH
 from config.colors import WHITE
 from config.shop import SHOP_TILESIZE, SHOP_SLOT_GAP, SHOP_CATEGORIES
 from config.sprites import CONSUMABLE, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
-from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, InventorySlot
+from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, InventorySlot, Equipable
 from os import path
+
+from popup_menu import NonBlockingPopupMenu, PopupMenu
 
 class Shop():
 
@@ -20,6 +22,10 @@ class Shop():
 
         self.categories = []
 
+        self.weapons = list()
+        self.armors = list()
+        self.consumables = list()
+
         self.weapon_slots = []
         self.armor_slots = []
         self.consumable_slots = []
@@ -30,23 +36,7 @@ class Shop():
         self.display_shop = False
 
         
-        self.menu_data = (
-                'Main',
-                'Item 0',
-                'Item 1',
-                (
-                    'Things',
-                    'Item 0',
-                    'Item 1',
-                    'Item 2',
-                    (
-                        'More Things',
-                        'Item 0',
-                        'Item 1',
-                    ),
-                ),
-                'Quit',
-            )
+        self.menu_data = ('Shop', 'Buy', 'Buy and equip', 'Buy and Use', 'Sell', 'Equip', 'Unequip', 'Use')
 
     def create_slots(self):
         self.set_all_categories()
@@ -193,42 +183,87 @@ class Shop():
                 else :
                     continue
 
-    def check_slot(self, screen, player, mouse_pos):
-        """Use, equipe or unequip the item present in the slot colliding with the mouse_pos
+    def check_slot(self, action, screen, player, mouse_pos):
+        """Execute a passed action if it's possible
 
         Args:
+            action(string)
             screen (Surface)
             mouse_pos (tuple):
         """
         for slot in self.get_all_slots():
             if slot.item is not None:
                 if slot.draw(screen).collidepoint(mouse_pos):
-                    self.buy_item(slot.item, player)
-                    break
+                    if action == 'Buy':
+                        logger.info('%s bought', slot.item.name)
+                        self.buy_item(slot.item, player)
+                    elif action == 'Buy and equip':
+                        if isinstance(slot.item, Equipable):
+                            self.buy_item(slot.item, player, 'Equip')
+                        else :
+                            logger.info('Action can not be done')
+                    elif action == 'Buy and Use':
+                        if isinstance(slot.item, Consumable):
+                            self.buy_item(slot.item, player, 'Use')
+                            player.inventory.check_slot('Use', screen, mouse_pos)
+                    else:
+                        logger.info('Action can not be done')
+
         for slot in player.inventory.get_all_slots():
             if isinstance(slot, InventorySlot):
                 if slot.draw(screen).collidepoint(mouse_pos):
-                    self.sell_item(slot.item, player)
-                    slot.item = None
-            if isinstance(slot, EquipableSlot):
-                if slot.draw(screen).collidepoint(mouse_pos):
-                    if slot.item is not None:
-                        player.inventory.unequip_item(slot.item)
+                    if action == 'Sell':
+                        logger.info('%s sold', slot.item.name)
                         self.sell_item(slot.item, player)
                         slot.item = None
-
-    def buy_item(self, item, player):
+                    elif action in ('Equip', 'Unequip', 'Use'):
+                        player.inventory.check_slot(action, screen, mouse_pos)
+                    else :
+                        logger.info('Action can not be done')
+            elif isinstance(slot, EquipableSlot):
+                if slot.draw(screen).collidepoint(mouse_pos):
+                    if slot.item is not None:
+                        if action == 'Sell':
+                            logger.info('%s sold', slot.item.name)
+                            player.inventory.unequip_item(slot.item)
+                            self.sell_item(slot.item, player)
+                            slot.item = None
+                    else :
+                        logger.info('Action can not be done')
+    def buy_item(self, item, player, action = None):
         if item.price > player.gold :
             print("You're homeless")
         else :
-            player.gold -= item.price
-            player.inventory.add_item(item)
-            logger.info("%s bought", (item.name))
+            if item in self.weapons:
+                data = Weapon(
+                            item.name, item.img,
+                            item.price,
+                            item.weight,
+                            item.slot,
+                            item.wpn_type)
+            elif item in self.armors:
+                data = Armor(
+                            item.name, item.img,
+                            item.price,
+                            item.weight,
+                            item.shield,
+                            item.slot)
+            elif item in self.consumables:
+                data = Consumable(
+                            item.name, item.img,
+                            item.price,
+                            item.weight)
+        player.inventory.add_item(data)
+        if action == 'Equip':
+            player.inventory.equip_item(player.inventory.find_item(data).item)
+        if action == 'Use':
+            player.inventory.equip_use(player.inventory.find_item(data).item)
+
+
 
     def sell_item(self, item, player):
         if item is not None:
             player.gold += item.price
-            logger.info("%s sold", (item.name))
 
 
 

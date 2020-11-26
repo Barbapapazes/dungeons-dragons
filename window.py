@@ -91,6 +91,8 @@ class Window():
             elif event.type == pg.MOUSEBUTTONUP:
                 self.mouse = pg.mouse.get_pressed()
                 self.state.get_events(event)
+            elif event.type == pg.USEREVENT:
+                self.state.get_events(event)
 
     def save(self):
         # pourquoi ne pas passer ça dans le state pour gérer la sauvegarde à plus précisément
