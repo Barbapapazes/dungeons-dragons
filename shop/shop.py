@@ -12,9 +12,12 @@ from os import path
 from popup_menu import NonBlockingPopupMenu, PopupMenu
 
 class Shop():
+    """Represent a shop"""
 
     def __init__(self):
-
+        """Create the shop
+        """
+        
         game_folder = path.dirname('.')
         assets_folder = path.join(game_folder, 'assets')
         img_folder = path.join(assets_folder, 'img')
@@ -39,6 +42,7 @@ class Shop():
         self.menu_data = ('Shop', 'Buy', 'Buy and equip', 'Buy and Use', 'Sell', 'Equip', 'Unequip', 'Use')
 
     def create_slots(self):
+        """create the shop slots"""
         self.set_all_categories()
         self.create_weapon_slots()
         self.create_armor_slots()
@@ -51,6 +55,7 @@ class Shop():
             self.categories.append(cat)
 
     def create_weapon_slots(self):
+        """Create slots for the Weapon category"""
         step = SHOP_TILESIZE + SHOP_SLOT_GAP
         print(WEAPONS_COLS, WEAPONS_ROWS)
         min_x = WIDTH // 4 - (step * WEAPONS_COLS) // 2 + SHOP_SLOT_GAP 
@@ -65,6 +70,7 @@ class Shop():
                 self.weapon_slots.append(ShopSlot(x, y))
 
     def create_armor_slots(self):
+        """Create slots for the Armor category"""
         step = SHOP_TILESIZE + SHOP_SLOT_GAP
         print(ARMOR_COLS, ARMOR_ROWS)
         min_x = WIDTH // 4 - (step * ARMOR_COLS) // 2 + SHOP_SLOT_GAP
@@ -79,6 +85,7 @@ class Shop():
                 self.armor_slots.append(ShopSlot(x, y))
 
     def create_consumable_slots(self):
+        """Create slots for the Consumable category"""
         step = SHOP_TILESIZE + SHOP_SLOT_GAP
         print(CONSUMABLE_COLS, CONSUMABLE_ROWS)
         min_x = WIDTH // 4 - (step * CONSUMABLE_COLS) // 2 + SHOP_SLOT_GAP 
@@ -118,12 +125,13 @@ class Shop():
         self.display_shop = not self.display_shop
 
     def add_all_items(self):
+        """Add all items all category"""
         self.add_all_weapons()
         self.add_all_armors()
         self.add_all_consumables()
 
     def add_all_weapons(self):
-        """Add all items to the related category
+        """Add all items to the weapon category
         """
         self.weapons = list()
         for key, value in WEAPONS.items():
@@ -144,7 +152,7 @@ class Shop():
                     continue
 
     def add_all_armors(self):
-        """Add all items to the related category
+        """Add all items to the armor category
         """
         self.armors = list()
         for key, value in ARMOR.items():
@@ -165,7 +173,7 @@ class Shop():
                     continue
 
     def add_all_consumables(self):
-        """Add all items to the related category
+        """Add all items to the consumable category
         """
         self.consumables = list()
         for key, value in CONSUMABLE.items():
@@ -230,7 +238,15 @@ class Shop():
                             slot.item = None
                     else :
                         logger.info('Action can not be done')
+
     def buy_item(self, item, player, action = None):
+        """Buy and item
+
+        Args:
+            item (Item)
+            player (Player)
+            action (String, optional): Defaults to None.
+        """
         if item.price > player.gold :
             print("You're homeless")
         else :
@@ -259,9 +275,13 @@ class Shop():
         if action == 'Use':
             player.inventory.equip_use(player.inventory.find_item(data).item)
 
-
-
     def sell_item(self, item, player):
+        """Sell an item
+
+        Args:
+            item (Item)
+            player (Player)
+        """
         if item is not None:
             player.gold += item.price
 
@@ -269,6 +289,7 @@ class Shop():
 
 
 class ShopSlot:
+    """A slot from the shop"""
 
     def __init__(self, x, y):
         self.x = x

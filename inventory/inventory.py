@@ -194,6 +194,7 @@ class Inventory():
         """Use, equipe or unequip the item present in the slot colliding with the mouse_pos
 
         Args:
+            action(String)
             screen (Surface)
             mouse_pos (tuple):
         """
@@ -237,23 +238,6 @@ class Inventory():
         for slot in self.armor_slots + self.weapon_slots:
             if slot.slot_type == item.slot:
                 return slot
-
-    def find_item(self, item):
-        """Return the slot contzining the passed item
-            Retrun none if the item is not in the inventory
-
-
-
-        Args:
-            item (Item)
-
-        Returns:
-            Slot
-        """
-        for slot in self.get_all_slots():
-            if slot.item == item:
-                return slot
-        return None
 
     def use_item(self, item):
         """Use a passed item if it's a Consumable
