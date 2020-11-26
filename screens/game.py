@@ -8,7 +8,7 @@ from math import sqrt
 from window import _State
 from logger import logger
 from sprites.player import Player
-from utils.tilemap import TiledMap, Camera
+from utils.tilemap import TiledMap, Camera, Minimap
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, BLACK, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
@@ -87,6 +87,7 @@ class Game(_State):
         self.map = TiledMap(path.join(self.saved_maps, 'level1.tmx'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
+        self.minimap = Minimap(self.map_img, 225, self.map_rect.width / self.map_rect.height)
         self.camera = Camera(self.map.width, self.map.height)
         for tile_object in self.map.tmxdata.objects:
             obj_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
@@ -276,6 +277,8 @@ class Game(_State):
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
+
+        self.screen.blit(self.minimap.draw(self.player), (WIDTH - self.minimap.width, HEIGHT - self.minimap.height))
 
         super().transtition_active(self.screen)
 

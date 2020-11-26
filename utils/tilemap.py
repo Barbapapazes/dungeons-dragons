@@ -75,3 +75,18 @@ class Camera:
         y = max(-(self.height - HEIGHT), y)
 
         self.camera = pg.Rect(x, y, self.width, self.height)
+
+
+class Minimap:
+    def __init__(self, img, w, map_ratio):
+        self.img = img
+        self.width = w
+        self.height = int(w // map_ratio)
+        self.img_ratio = w / img.get_width()
+
+    def draw(self, player):
+        [x, y] = player.pos
+        rect_player = pg.Rect(x * self.img_ratio, y * self.img_ratio, 10, 10)
+        resize_map = pg.transform.scale(self.img, (self.width, self.height))
+        pg.draw.rect(resize_map, (255, 0, 0), rect_player)
+        return resize_map
