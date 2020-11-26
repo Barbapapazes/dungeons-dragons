@@ -1,5 +1,7 @@
 """Game screen"""
 
+from sprites.obstacle import Obstacle
+from temp.enemy import Enemy
 import pygame as pg
 from os import path
 from math import sqrt
@@ -8,7 +10,7 @@ from logger import logger
 from sprites.player import Player
 from utils.tilemap import TiledMap, Camera
 from config.window import WIDTH, HEIGHT, TILESIZE
-from config.colors import LIGHTGREY, BLACK, WHITE, CYAN, RED
+from config.colors import LIGHTGREY, BLACK, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 from config.sprites import WEAPONS
 from config.versus import MALUS_ARC, TOUCH_HAND
@@ -16,8 +18,11 @@ from inventory.inventory import Armor, Weapon
 from utils.shortcuts import key_for
 from versus.versus import Versus
 
-#temp 
-from temp.enemy import Enemy  
+vec = pg.math.Vector2
+
+
+# temp
+
 
 class Game(_State):
     """Game screen"""
@@ -28,54 +33,53 @@ class Game(_State):
         self.next = CREDITS
 
         self.all_sprites = None
-        
+
         #####For_versus######
         self.action = None
         self.versus = Versus()
         self.selectEnemy = None
-        self.isVersus= False
+        self.isVersus = False
 
-        #temp
+        # temp
         #######END_Versus#####
-        
+
         self.states_dict = self.make_states_dict()
 
     def startup(self, dt, game_data):
         self.dt = dt
         self.game_data = game_data
+        self.walls = pg.sprite.Group()
         self.all_sprites = pg.sprite.Group()
 
-        self.player = Player(self, 2, 4)
-
-        self.en1 = Enemy(self,10,5,"Boot n1")
-        self.en2 = Enemy(self,11,7,"Boot n2")
-        self.enemy=[self.en1,self.en2]
+        self.en1 = Enemy(self, 10, 4, "Boot n1")
+        self.en2 = Enemy(self, 11, 7, "Boot n2")
+        self.enemy = [self.en1, self.en2]
 
         super().setup_transition()
 
         # Temporaire
         # think how this will be used with the menu
         # add a logger inside the inventory (for each keys or mouse move)
-        items_folder = path.join(self.img_folder, 'items')
-        weapons = list()
-        for key, value in WEAPONS.items():
-            data = Weapon(
-                key, path.join(items_folder, value['image']),
-                value['weight'],
-                value['slot'],
-                value['type'],
-                value['nb_d'],
-                value['val_d'],
-                value['scope'])
-            weapons.append(data)
-            self.player.inventory.add_item(data)
+        # items_folder = path.join(self.img_folder, 'items')
+        # weapons = list()
+        # for key, value in WEAPONS.items():
+        #     data = Weapon(
+        #         key, path.join(items_folder, value['image']),
+        #         value['weight'],
+        #         value['slot'],
+        #         value['type'],
+        #         value['nb_d'],
+        #         value['val_d'],
+        #         value['scope'])
+        #     weapons.append(data)
+        #     self.player.inventory.add_item(data)
 
         # hp_potion = Consumable('img/potionRed.png', 2, 30)
-        helmet_armor = Armor('helmet armor', 'assets/img/items/helmet.png', 10, 20, 'head')
+        # helmet_armor = Armor('helmet armor', 'assets/img/items/helmet.png', 10, 20, 'head')
         # chest_armor = Armor('img/chest.png', 10, 40, 'chest')
         # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
         # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
-        self.player.inventory.add_item(helmet_armor)
+        # self.player.inventory.add_item(helmet_armor)
         self.new()
 
     def new(self):
@@ -84,6 +88,12 @@ class Game(_State):
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.camera = Camera(self.map.width, self.map.height)
+        for tile_object in self.map.tmxdata.objects:
+            obj_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
+            if tile_object.name == 'player':
+                self.player = Player(self, obj_center.x, obj_center.y)
+            if tile_object.name == 'wall':
+                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -120,41 +130,42 @@ class Game(_State):
                 super().toggle_sub_state('inventory')
 
             if event.key == pg.K_l:
-                life= {'Player':self.player.HP,'en1':self.en1.HP,'en2':self.en2.HP}
+                life = {'Player': self.player.HP, 'en1': self.en1.HP, 'en2': self.en2.HP}
                 logger.info(life)
 
-            if event.key== pg.K_TAB:
+            if event.key == pg.K_TAB:
                 """Simulate begin versus"""
                 logger.info("Begin Versus")
-                if  not self.isVersus:
-                    self.isVersus = True  
+                if not self.isVersus:
+                    self.isVersus = True
                 else:
-                     self.isVersus = False
+                    self.isVersus = False
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 3:
-                if self.state =='inventory':
+                if self.state == 'inventory':
                     if self.player.inventory.display_inventory:
                         logger.info("Auto move an item")
                         mouse_pos = pg.mouse.get_pos()
                         self.player.inventory.check_slot(self.screen, mouse_pos)
             if event.button == 1:
-                if self.state =='inventory':
+                if self.state == 'inventory':
                     if self.player.inventory.display_inventory:
                         logger.info("Select an item from the inventory")
                         self.player.inventory.move_item(self.screen)
-               
-                if self.isVersus:                                 ##################################################################cursor
-                    mouse_pos =pg.mouse.get_pos()
-                    if self.versus.isATK(mouse_pos) and self.action==None: 
-                        self.action="ATK"
-                    if self.action=="select_enemy" :
-                        self.selectEnemy=self.versus.selectEnemy(self.enemy,mouse_pos)
-                        if self.selectEnemy != None : self.action= None
+
+                if self.isVersus:  # cursor
+                    mouse_pos = pg.mouse.get_pos()
+                    if self.versus.isATK(mouse_pos) and self.action == None:
+                        self.action = "ATK"
+                    if self.action == "select_enemy":
+                        self.selectEnemy = self.versus.selectEnemy(self.enemy, mouse_pos)
+                        if self.selectEnemy != None:
+                            self.action = None
 
         if event.type == pg.MOUSEBUTTONUP:
             if event.button == 1:
-                if self.state =='inventory':
+                if self.state == 'inventory':
                     if self.player.inventory.display_inventory:
                         logger.info("Place an item")
                         self.player.inventory.place_item(self.screen)
@@ -167,8 +178,6 @@ class Game(_State):
         if self.state != 'normal':
             self.draw()
         update_level()
-        
-
 
     def normal_run(self):
         """Run the normal state"""
@@ -197,34 +206,34 @@ class Game(_State):
 
     def versus_action(self):
         self.versus.draw(self.screen)
-        
-        #Choose action
-        if(self.action=='ATK'):
+
+        # Choose action
+        if(self.action == 'ATK'):
             logger.info("Your action is Attack")
-            self.action="select_enemy"
+            self.action = "select_enemy"
             logger.info("Select your cible")
 
         if self.selectEnemy != None:
             dmg = 0
             logger.debug(self.selectEnemy.name)
-            if self.player.weapon != None: #check if player had a weapon
+            if self.player.weapon != None:  # check if player had a weapon
 
-                if self.player.weapon.wpn_type=="sword" and self.player.weapon.scope >=   self.distance(self.player,self.selectEnemy):
+                if self.player.weapon.wpn_type == "sword" and self.player.weapon.scope >= self.distance(
+                        self.player, self.selectEnemy):
                     if self.player.throwDice(self.player.STR):
                         dmg = self.player.weapon.attack()
                     else:
                         logger.info("You miss your cible")
 
-
-                elif self.player.weapon.wpn_type=="arc" :
-                    dist=self.distance(self.player,self.selectEnemy)
-                    scope=self.player.weapon.scope
-                    if scope < dist : 
-                        malus= -((dist-scope)//TILESIZE)*MALUS_ARC 
-                    else: 
-                        malus=0
-                    logger.debug("dist: %i scp: %i  malus: %i",dist,scope,malus)
-                    if self.player.throwDice(self.player.DEX,malus):
+                elif self.player.weapon.wpn_type == "arc":
+                    dist = self.distance(self.player, self.selectEnemy)
+                    scope = self.player.weapon.scope
+                    if scope < dist:
+                        malus = -((dist-scope)//TILESIZE)*MALUS_ARC
+                    else:
+                        malus = 0
+                    logger.debug("dist: %i scp: %i  malus: %i", dist, scope, malus)
+                    if self.player.throwDice(self.player.DEX, malus):
                         dmg = self.player.weapon.attack()
                     else:
                         logger.info("You miss your cible")
@@ -232,22 +241,16 @@ class Game(_State):
                 else:
                     logger.info("It's too far away ")
             else:
-                if self.distance(self.player,self.selectEnemy)//TILESIZE <= TOUCH_HAND:
-                    dmg = 2 #attack with any weapon    
+                if self.distance(self.player, self.selectEnemy)//TILESIZE <= TOUCH_HAND:
+                    dmg = 2  # attack with any weapon
                 else:
                     logger.info("It's too far away ")
-                
+
             self.selectEnemy.HP -= dmg
-            if dmg !=0 : logger.info("The enemy %s lose %i HP",self.selectEnemy.name,dmg)
-            
+            if dmg != 0:
+                logger.info("The enemy %s lose %i HP", self.selectEnemy.name, dmg)
 
-            self.selectEnemy=None
-
-            
-        
-        
-        
-
+            self.selectEnemy = None
 
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
@@ -276,5 +279,5 @@ class Game(_State):
 
         super().transtition_active(self.screen)
 
-    def distance(self,player,enemy):
+    def distance(self, player, enemy):
         return sqrt((enemy.x-player.rect.center[0])**2 + (enemy.y-player.rect.center[1])**2)

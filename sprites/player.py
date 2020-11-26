@@ -4,12 +4,15 @@ from random import randint
 from logger import logger
 from config.colors import YELLOW
 from config.window import TILESIZE
-from config.sprites import PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP
+from config.sprites import PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT
 from inventory.inventory import Inventory
+from utils.tilemap import collide_with_walls
 vec = pg.math.Vector2
 
 
 class Player(pg.sprite.Sprite):
+    """Create a player"""
+
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -18,13 +21,14 @@ class Player(pg.sprite.Sprite):
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        # self.hit_rect = PLAYER_HIT_RECT
-        # self.hit_rect.center = self.rect.center
+        self.hit_rect = PLAYER_HIT_RECT
+        self.hit_rect.center = self.rect.center
         self.vel = vec(0, 0)
         self.pos = vec(x, y)
         self.rot = 0
-        self.nbAct = 0 
-        
+
+        self.nbAct = 0
+
         # Stats
         self.HP = 100
         self.max_HP = PLAYER_MAX_HP
@@ -32,13 +36,13 @@ class Player(pg.sprite.Sprite):
         self.MA = 50
 
         # Attribut
-        self.STR = 70     #strenght 
-        self.DEX = 60     #dexterity
-        self.CON = 40     #constitution
-        self.INT = 10      #intelligence
-        self.WIS = 10      #lucky
-        self.CHA = 60     #charisme
-        
+        self.STR = 70  # strenght
+        self.DEX = 60  # dexterity
+        self.CON = 40  # constitution
+        self.INT = 10  # intelligence
+        self.WIS = 10  # lucky
+        self.CHA = 60  # charisme
+
         # Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
@@ -121,9 +125,13 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.pos += self.vel * self.game.dt
+        self.hit_rect.centerx = self.pos.x
+        collide_with_walls(self, self.game.walls, 'x')
+        self.hit_rect.centery = self.pos.y
+        collide_with_walls(self, self.game.walls, 'y')
+        self.rect.center = self.hit_rect.center
 
-    def throwDice(self,Val,modificateur=0):
-        score= randint(0,100) 
-        logger.info("Your dice is %i / 100 and the succes is under %i",score,Val+modificateur )
-        return score <= Val + modificateur  
-        
+    def throwDice(self, Val, modificateur=0):
+        score = randint(0, 100)
+        logger.info("Your dice is %i / 100 and the succes is under %i", score, Val+modificateur)
+        return score <= Val + modificateur
