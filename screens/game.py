@@ -151,7 +151,6 @@ class Game(_State):
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 3:
                 if self.player.inventory.display_inventory:
-
                     mouse_pos = pg.mouse.get_pos()
                     if self.state == 'inventory':
                         self.player.inventory.check_slot(self.screen, mouse_pos)
@@ -212,6 +211,14 @@ class Game(_State):
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
         self.screen.blit(self.dim_screen, (0, 0))
+        self.player.inventory.draw(self.screen)
+
+    def shop_run(self):
+        self.draw
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.screen.blit(self.dim_screen, (0, 0))
+        self.player.shop.draw(self.screen)
         self.player.inventory.draw(self.screen)
 
     def shop_run(self):

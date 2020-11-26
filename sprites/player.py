@@ -46,6 +46,8 @@ class Player(pg.sprite.Sprite):
 
         self.gold = 100
 
+        self.gold = 100
+
         # Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
