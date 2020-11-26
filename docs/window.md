@@ -31,3 +31,27 @@ Afin de générer les états d'un écran, alors on utilise la fonction `make_sta
 Les écrans sont gérés dans le dossier `screens` et ils représentent une vue de l'application.
 
 Par exemple, on a l'écran de chargement du jeu, celui pour les crédits et même celui pour le jeu. Chacun d'eux est autonome et permet de gérer facilement et efficacement le développement de chacun des vue. En effet, la parallélisation des tâches est extrêmement simple, d'autant plus que la structure est classique avec pygame. Le seul ajout est celui des sub-state pour rester dans le même écran mais en y ajoutant des fonctionnalités.
+
+### Load Game
+
+#### Shortcuts
+
+[Pour voir l'ensemble des shortcuts](/shortcuts.html#load_game)
+
+### Menu
+
+#### Shortcuts
+
+[Pour voir l'ensemble des shortcuts](/shortcuts.html#menu)
+
+### Credit
+
+#### Shortcuts
+
+[Pour voir l'ensemble des shortcuts](/shortcuts.html#shortcuts)
+
+### Game
+
+### Shortcuts
+
+[Pour voir l'ensemble des shortcuts](/shortcuts.html#game)

@@ -10,7 +10,7 @@ SHORTCUTS_DEFAULT = {
         "up": {"keys": [False, False, pg.K_UP], "help": "Used to select a game"},
         "down": {"keys": [False, False, pg.K_DOWN], "help": "Used to select a game"},
         "enter": {"keys": [False, False, pg.K_RETURN], "help": "Used to load a game"},
-        "new game": {"keys": [False, False, pg.K_k], "help": "Used to create a new game"}
+        "new game": {"keys": [False, False, pg.K_SPACE], "help": "Used to create a new game"}
     },
     "game": {
         "inventory": {"keys": [False, False, pg.K_i], "help": "Toggle the inventory"},
