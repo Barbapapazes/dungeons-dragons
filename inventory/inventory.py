@@ -60,6 +60,18 @@ class Inventory():
         self.weapon_slots.append(EquipableSlot(min_x - step,
                                                max_y - step + INVENTORY_SLOT_GAP))
 
+    def find_item(self, item):
+        """Find the slot in which a passed item is contained,
+            None if no slot contains thi sitem
+
+        Args:
+            item(Item)
+        """
+        for slot in self.get_all_slots():
+            if slot.item == item:
+                return slot
+        return None
+
     def create_bag(self):
         """Create a bag to store item"""
         step = INVENTORY_TILESIZE + INVENTORY_SLOT_GAP

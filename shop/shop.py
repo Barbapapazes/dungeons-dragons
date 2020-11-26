@@ -11,13 +11,14 @@ from os import path
 
 from popup_menu import NonBlockingPopupMenu, PopupMenu
 
+
 class Shop():
     """Represent a shop"""
 
     def __init__(self):
         """Create the shop
         """
-        
+
         game_folder = path.dirname('.')
         assets_folder = path.join(game_folder, 'assets')
         img_folder = path.join(assets_folder, 'img')
@@ -38,7 +39,6 @@ class Shop():
 
         self.display_shop = False
 
-        
         self.menu_data = ('Shop', 'Buy', 'Buy and equip', 'Buy and Use', 'Sell', 'Equip', 'Unequip', 'Use')
 
     def create_slots(self):
@@ -58,8 +58,8 @@ class Shop():
         """Create slots for the Weapon category"""
         step = SHOP_TILESIZE + SHOP_SLOT_GAP
         print(WEAPONS_COLS, WEAPONS_ROWS)
-        min_x = WIDTH // 4 - (step * WEAPONS_COLS) // 2 + SHOP_SLOT_GAP 
-        max_x = WIDTH // 4 + (step * WEAPONS_COLS) // 2 
+        min_x = WIDTH // 4 - (step * WEAPONS_COLS) // 2 + SHOP_SLOT_GAP
+        max_x = WIDTH // 4 + (step * WEAPONS_COLS) // 2
         min_y = HEIGHT // 3 - (step * WEAPONS_ROWS) // 2 + SHOP_SLOT_GAP
         max_y = HEIGHT // 3 + (step * WEAPONS_ROWS) // 2
         # inventory is 1/4 in width
@@ -79,7 +79,7 @@ class Shop():
         max_y = HEIGHT // 3 + (step * ARMOR_ROWS) // 2 + 100
         # inventory is 1/4 in width
         print(min_x, max_x, min_y, max_y, step)
-        for x in range(min_x,max_x, step):
+        for x in range(min_x, max_x, step):
             # inventory is center in height
             for y in range(min_y, max_y, step):
                 self.armor_slots.append(ShopSlot(x, y))
@@ -88,7 +88,7 @@ class Shop():
         """Create slots for the Consumable category"""
         step = SHOP_TILESIZE + SHOP_SLOT_GAP
         print(CONSUMABLE_COLS, CONSUMABLE_ROWS)
-        min_x = WIDTH // 4 - (step * CONSUMABLE_COLS) // 2 + SHOP_SLOT_GAP 
+        min_x = WIDTH // 4 - (step * CONSUMABLE_COLS) // 2 + SHOP_SLOT_GAP
         max_x = WIDTH // 4 + (step * CONSUMABLE_COLS) // 2
         min_y = HEIGHT // 3 - (step * CONSUMABLE_ROWS) // 2 + SHOP_SLOT_GAP + 200
         max_y = HEIGHT // 3 + (step * CONSUMABLE_ROWS) // 2 + 200
@@ -98,7 +98,6 @@ class Shop():
             # inventory is center in height
             for y in range(min_y, max_y, step):
                 self.weapon_slots.append(ShopSlot(x, y))
-
 
     def get_all_slots(self):
         """Get all slots fro the shop
@@ -148,7 +147,7 @@ class Shop():
                 if slots.item is None:
                     slots.item = item
                     break
-                else :
+                else:
                     continue
 
     def add_all_armors(self):
@@ -169,7 +168,7 @@ class Shop():
                 if slots.item is None:
                     slots.item = item
                     break
-                else :
+                else:
                     continue
 
     def add_all_consumables(self):
@@ -188,7 +187,7 @@ class Shop():
                 if slots.item is None:
                     slots.item = item
                     break
-                else :
+                else:
                     continue
 
     def check_slot(self, action, screen, player, mouse_pos):
@@ -208,7 +207,7 @@ class Shop():
                     elif action == 'Buy and equip':
                         if isinstance(slot.item, Equipable):
                             self.buy_item(slot.item, player, 'Equip')
-                        else :
+                        else:
                             logger.info('Action can not be done')
                     elif action == 'Buy and Use':
                         if isinstance(slot.item, Consumable):
@@ -226,7 +225,7 @@ class Shop():
                         slot.item = None
                     elif action in ('Equip', 'Unequip', 'Use'):
                         player.inventory.check_slot(action, screen, mouse_pos)
-                    else :
+                    else:
                         logger.info('Action can not be done')
             elif isinstance(slot, EquipableSlot):
                 if slot.draw(screen).collidepoint(mouse_pos):
@@ -236,10 +235,10 @@ class Shop():
                             player.inventory.unequip_item(slot.item)
                             self.sell_item(slot.item, player)
                             slot.item = None
-                    else :
+                    else:
                         logger.info('Action can not be done')
 
-    def buy_item(self, item, player, action = None):
+    def buy_item(self, item, player, action=None):
         """Buy and item
 
         Args:
@@ -247,28 +246,28 @@ class Shop():
             player (Player)
             action (String, optional): Defaults to None.
         """
-        if item.price > player.gold :
+        if item.price > player.gold:
             print("You're homeless")
-        else :
+        else:
             if item in self.weapons:
                 data = Weapon(
-                            item.name, item.img,
-                            item.price,
-                            item.weight,
-                            item.slot,
-                            item.wpn_type)
+                    item.name, item.img,
+                    item.price,
+                    item.weight,
+                    item.slot,
+                    item.wpn_type)
             elif item in self.armors:
                 data = Armor(
-                            item.name, item.img,
-                            item.price,
-                            item.weight,
-                            item.shield,
-                            item.slot)
+                    item.name, item.img,
+                    item.price,
+                    item.weight,
+                    item.shield,
+                    item.slot)
             elif item in self.consumables:
                 data = Consumable(
-                            item.name, item.img,
-                            item.price,
-                            item.weight)
+                    item.name, item.img,
+                    item.price,
+                    item.weight)
         player.inventory.add_item(data)
         if action == 'Equip':
             player.inventory.equip_item(player.inventory.find_item(data).item)
@@ -285,7 +284,17 @@ class Shop():
         if item is not None:
             player.gold += item.price
 
+    def find_item(self, item):
+        """Find the slot in which a passed item is contained,
+            None if no slot contains thi sitem
 
+        Args:
+            item(Item)
+        """
+        for slot in self.get_all_slots():
+            if slot.item == item:
+                return slot
+        return None
 
 
 class ShopSlot:
@@ -323,4 +332,3 @@ class ShopSlot:
             pg.draw.rect(screen, (0, 255, 0), pg.Rect(self.x, self.y, image_x, image_y), 1)
 
             screen.blit(image, (self.x, self.y))
-

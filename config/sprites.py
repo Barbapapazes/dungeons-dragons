@@ -40,6 +40,7 @@ WEAPONS = {
         "nb_d": 4,
         "val_d": 6,
         "scope": 3
+
     },
     "arc": {
         "image": "arc.png",
@@ -48,7 +49,9 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5
+        "scope": 5,
+        "price": 10,
+
     },
     "dagger": {
         "image": "upg_dagger.png",
