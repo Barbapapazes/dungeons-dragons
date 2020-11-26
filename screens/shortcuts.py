@@ -8,7 +8,7 @@ from logger import logger
 from config.window import WIDTH, HEIGHT
 from config.colors import BLACK, WHITE, GLOOMY_PURPLE, GREY
 from config.screens import SHORTCUTS
-from data.shortcuts import CUSTOM_SHORTCUTS_FILENAME
+from data.shortcuts import CUSTOM_SHORTCUTS_FILENAME, SHORTCUTS_DEFAULT
 
 
 class Shortcuts(_State):
@@ -33,6 +33,7 @@ class Shortcuts(_State):
         self.alt = None
         self.saved_file = False
         self.saved_memory = False
+        self.reset_memory = False
         self.alpha_actions = 0
 
     def startup(self, dt, game_data):
@@ -90,6 +91,10 @@ class Shortcuts(_State):
                 self.game_data["shortcut"] = self.shortcuts
                 self.save_shortcuts()
                 self.saved_file = True
+            elif event.key == pg.K_r and pg.key.get_mods() & pg.KMOD_ALT:
+                self.game_data["shortcut"] = SHORTCUTS_DEFAULT
+                self.shortcuts = SHORTCUTS_DEFAULT
+                self.reset_memory = True
             elif event.key == pg.K_RETURN:
                 if self.is_shortcut_selected:
                     # saved the new shortcut in the program data
@@ -192,14 +197,15 @@ class Shortcuts(_State):
 
     def draw_saved(self):
         """Draw the saved page"""
-        if self.saved_file or self.saved_memory:
+        if self.saved_file or self.saved_memory or self.reset_memory:
             self.alpha_actions += 15
         if self.alpha_actions >= 255:
             self.saved_file = False
             self.saved_memory = False
-        if self.alpha_actions > 0 and not self.saved_file and not self.saved_memory:
+            self.reset_memory = False
+        if self.alpha_actions > 0 and not self.saved_file and not self.saved_memory and not self.reset_memory:
             self.alpha_actions -= 15
-        if self.saved_file or self.alpha_actions > 0 or self.saved_memory:
+        if self.saved_file or self.alpha_actions > 0 or self.saved_memory or self.reset_memory:
             transition = pg.Surface((WIDTH, HEIGHT))
             transition.fill(BLACK)
             transition.set_alpha(self.alpha_actions)
@@ -207,8 +213,10 @@ class Shortcuts(_State):
             text = ''
             if self.saved_file:
                 text = "Saved in a file"
-            if self.saved_memory:
+            elif self.saved_memory:
                 text = "Saved in memory"
+            elif self.reset_memory:
+                text = "Reset in memory"
             self.draw_text(text, self.title_font, 50, WHITE,
                            WIDTH // 2, HEIGHT / 2, align="center")
 
