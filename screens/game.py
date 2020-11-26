@@ -1,5 +1,6 @@
 """Game screen"""
 
+from popup_menu import PopupMenu, NonBlockingPopupMenu
 from sprites.obstacle import Obstacle
 from temp.enemy import Enemy
 import pygame as pg
@@ -128,56 +129,60 @@ class Game(_State):
                 super().toggle_sub_state('menu')
             if key_for(self.game_data["shortcuts"]["game"]["inventory"]["keys"], event):
                 logger.info("Toggle inventory from player")
+                self.player.shop.display_shop = False
+                self.player.inventory.display_inventory = False
                 self.player.inventory.toggle_inventory()
                 super().toggle_sub_state('inventory')
             if event.key == pg.K_p:
                 logger.info("Toggle the shop")
+                self.player.inventory.display_inventory = False
                 self.player.shop.toggle_shop()
                 self.player.inventory.toggle_inventory()
                 super().toggle_sub_state('shop')
 
-            if event.key == pg.K_l:
-                life = {'Player': self.player.HP, 'en1': self.en1.HP, 'en2': self.en2.HP}
-                logger.info(life)
+        """When the inventory state is running"""
+        if self.state == 'inventory':
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    logger.info("Select an item from the inventory")
+                    self.player.inventory.move_item(self.screen)
+            elif event.type == pg.MOUSEBUTTONUP:
+                if event.button == 1:
+                    logger.info("Place an item")
+                    self.player.inventory.place_item(self.screen)
+                elif event.button == 3:
+                    self.mouse_pos = pg.mouse.get_pos()
+                    PopupMenu(self.player.inventory.menu_data)
+            elif event.type == pg.USEREVENT:
+                # print ('menu event: %s.%d: %s' % (event.name,event.item_id,event.text))
+                if event.code == 'MENU':
+                    if (event.name, event.text) == ('Inventory', 'Equip'):
+                        self.player.inventory.check_slot('Equip', self.screen, self.mouse_pos)
+                    if (event.name, event.text) == ('Inventory', 'Unequip'):
+                        self.player.inventory.check_slot('Unequip', self.screen, self.mouse_pos)
+                    if (event.name, event.text) == ('Inventory', 'Use'):
+                        self.player.inventory.check_slot('Use', self.screen, self.mouse_pos)
+                    if (event.name, event.text) == ('Inventory', 'Throw'):
+                        self.player.inventory.check_slot('Throw', self.screen, self.mouse_pos)
 
-            if event.key == pg.K_TAB:
-                """Simulate begin versus"""
-                logger.info("Begin Versus")
-                if not self.isVersus:
-                    self.isVersus = True
-                else:
-                    self.isVersus = False
-
-        if event.type == pg.MOUSEBUTTONDOWN:
-            if event.button == 3:
-                if self.player.inventory.display_inventory:
-                    mouse_pos = pg.mouse.get_pos()
-                    if self.state == 'inventory':
-                        self.player.inventory.check_slot(self.screen, mouse_pos)
-                        logger.info("Auto move an item")
-                    elif self.state == 'shop':
-                        self.player.shop.check_slot(self.screen, self.player, mouse_pos)
-            if event.button == 1:
-                if self.state == 'inventory':
-                    if self.player.inventory.display_inventory:
-                        logger.info("Select an item from the inventory")
-                        self.player.inventory.move_item(self.screen)
-
-                if self.isVersus:  # cursor
-                    mouse_pos = pg.mouse.get_pos()
-                    if self.versus.isATK(mouse_pos) and self.action == None:
-                        self.action = "ATK"
-                    if self.action == "select_enemy":
-                        self.selectEnemy = self.versus.selectEnemy(self.enemy, mouse_pos)
-                        if self.selectEnemy != None:
-                            self.action = None
-
-        if event.type == pg.MOUSEBUTTONUP:
-            if event.button == 1:
-                if self.state == 'inventory':
-                    if self.player.inventory.display_inventory:
-                        logger.info("Place an item")
-                        self.player.inventory.place_item(self.screen)
+        """When the shop state is running"""
+        if self.state == 'shop':
+            if event.type == pg.MOUSEBUTTONUP:
+                if event.button == 3:
+                    self.mouse_pos = pg.mouse.get_pos()
+                    PopupMenu(self.player.shop.menu_data)
+                elif event.button == 1:
+                    logger.info("Place an item")
+                    self.player.inventory.place_item(self.screen)
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    logger.info("Select an item from the inventory")
+                    self.player.inventory.move_item(self.screen)
+            elif event.type == pg.USEREVENT:
+                # print ('menu event: %s.%d: %s' % (event.name,event.item_id,event.text))
+                if event.code == 'MENU':
+                    if event.name == 'Shop' and event.text in self.player.shop.menu_data:
+                        self.player.shop.check_slot(event.text, self.screen, self.player, self.mouse_pos)
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -214,14 +219,7 @@ class Game(_State):
         self.player.inventory.draw(self.screen)
 
     def shop_run(self):
-        self.draw
-        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
-        self.dim_screen.fill((0, 0, 0, 180))
-        self.screen.blit(self.dim_screen, (0, 0))
-        self.player.shop.draw(self.screen)
-        self.player.inventory.draw(self.screen)
-
-    def shop_run(self):
+        """Run the shop state"""
         self.draw
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
