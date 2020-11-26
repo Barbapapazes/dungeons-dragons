@@ -45,4 +45,5 @@ class Credits(_State):
                 super().set_state(TRANSITION_OUT)
 
     def draw(self):
+        """Draw content"""
         self.screen.blit(self.background, (0, 0))

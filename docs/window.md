@@ -23,3 +23,35 @@ The `run` function from the `Window` class run the `run` function from the state
 Each state can have sub-states. This is useful to create sub-menu inside a screen or smooth transition between screens. Because of the function `run` which choose the correct run function, from the `state_dict`, each frame, you've just to change the state name to change the loop.
 
 If _done_ is set to true, the `flip_state` function, from the `Window` class, will load a new state, startup and the `global run` loop will run the `state run` loop, which run the sub-state function each frame !
+
+Afin de générer les états d'un écran, alors on utilise la fonction `make_states_dict` de la classe `_State` pour nous générer un dictionnaire. Ainsi, on peut gérer très facilement ces derniers et switcher entre chaque sans perdre l'état de l'écran.
+
+## Screens
+
+Les écrans sont gérés dans le dossier `screens` et ils représentent une vue de l'application.
+
+Par exemple, on a l'écran de chargement du jeu, celui pour les crédits et même celui pour le jeu. Chacun d'eux est autonome et permet de gérer facilement et efficacement le développement de chacun des vue. En effet, la parallélisation des tâches est extrêmement simple, d'autant plus que la structure est classique avec pygame. Le seul ajout est celui des sub-state pour rester dans le même écran mais en y ajoutant des fonctionnalités.
+
+### Load Game
+
+#### Shortcuts
+
+[Pour voir l'ensemble des shortcuts](/shortcuts.html#load_game)
+
+### Menu
+
+#### Shortcuts
+
+[Pour voir l'ensemble des shortcuts](/shortcuts.html#menu)
+
+### Credit
+
+#### Shortcuts
+
+[Pour voir l'ensemble des shortcuts](/shortcuts.html#shortcuts)
+
+### Game
+
+### Shortcuts
+
+[Pour voir l'ensemble des shortcuts](/shortcuts.html#game)

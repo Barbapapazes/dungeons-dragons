@@ -46,8 +46,8 @@ class Menu(_State):
             if event.key == pg.K_RIGHT:
                 super().set_state(TRANSITION_OUT)
             if event.key == pg.K_p:
-                self.game_data['count'] += 1
-                print(self.game_data["count"])
+                self.game_data['game_data']['count'] += 1
 
     def draw(self):
+        """Draw content"""
         self.screen.blit(self.background, (0, 0))

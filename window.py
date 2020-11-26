@@ -1,13 +1,15 @@
 """Create the main window and the base for all screens"""
-
+import os
 from os import path
 import pygame as pg
 import sys
 import json
 from logger import logger
-from config.screens import TRANSITION_IN, TRANSITION_OUT
+from config.screens import TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
 from config.colors import BLACK
 from config.window import WIDTH, HEIGHT, FPS, TITLE
+from data.shortcuts import SHORTCUTS_DEFAULT, CUSTOM_SHORTCUTS_FILENAME
+from utils.shortcuts import key_for, load_shortcuts
 
 
 class Window():
@@ -36,10 +38,16 @@ class Window():
         self.load_data()
 
     def load_data(self):
+        """Load custom ressouces"""
         logger.info('Load data in main window')
         game_folder = path.dirname('.')
         self.assets_folder = path.join(game_folder, 'assets')
         self.saved_games = path.join(self.assets_folder, 'saved_games')
+        self.saved_maps = path.join(self.assets_folder, 'saved_maps')
+        self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
+
+        self.shortcuts = load_shortcuts()["shortcuts"]
+        logger.info("Shortcuts loaded in window: %s", self.shortcuts)
 
     def setup_states(self, states_dict, start_state):
         """Load all states"""
@@ -48,12 +56,16 @@ class Window():
         self.state_name = start_state
         self.state = self.states_dict[self.state_name]
 
-    def flip_state(self):
+    def flip_state(self, state=None):
         """Change state to a new state"""
-        previous, self.state_name = self.state_name, self.state.next
+        if not state:
+            previous, self.state_name = self.state_name, self.state.next
+        else:
+            previous, self.state_name = self.state_name, state
         logger.info("Flip state, from %s to %s", previous, self.state_name)
         self.persist = self.state.cleanup()
         self.state = self.states_dict[self.state_name]
+        self.shortcuts = self.persist["shortcuts"]
         self.state.previous = previous
         logger.info("Startup %s", self.state_name)
         self.state.startup(self.dt, self.persist)
@@ -74,14 +86,19 @@ class Window():
                 self.done = True
             elif event.type == pg.KEYDOWN:
                 self.keys = pg.key.get_pressed()
-                if event.key == pg.K_EQUALS:
+                if key_for(self.shortcuts["window"]["fps"]["keys"], event):
                     self.show_fps = not self.show_fps
                     logger.info('Show fps: %s', self.show_fps)
                     self.normal_caption()
                 self.state.get_events(event)
-                if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
+                if key_for(self.shortcuts["window"]["save"]["keys"], event):
                     pg.event.wait()
                     self.save()
+                if key_for(self.shortcuts["shortcuts"]["show"]["keys"], event):
+                    state = self.state.previous if self.state.name == SHORTCUTS else SHORTCUTS
+                    self.flip_state(state)
+                    logger.info('Toggle shortcuts : %s', state)
+
             elif event.type == pg.KEYUP:
                 self.keys = pg.key.get_pressed()
                 self.state.get_events(event)
@@ -95,14 +112,18 @@ class Window():
                 self.state.get_events(event)
 
     def save(self):
-        # pourquoi ne pas passer ça dans le state pour gérer la sauvegarde à plus précisément
+        """Save game_data"""
         try:
             with open(path.join(self.saved_games, self.persist['file_name']), "w") as outfile:
                 file_name = self.persist['file_name']
+                shortcuts = self.persist['shortcuts']
                 del self.persist['file_name']
+                del self.persist['shortcuts']
                 # Remove the file name to be able to change manually the file name
-                json.dump(self.persist, outfile)
+                # Remove shortcuts because they have their own file
+                json.dump(self.persist["game_data"], outfile)
                 self.persist['file_name'] = file_name
+                self.persist['shortcuts'] = shortcuts
                 logger.info('File %s saved', self.persist['file_name'])
         except EnvironmentError as e:
             logger.exception(e)
@@ -169,6 +190,8 @@ class _State():
         game_folder = path.dirname('.')
         self.assets_folder = path.join(game_folder, 'assets')
         self.saved_games = path.join(self.assets_folder, 'saved_games')
+        self.saved_maps = path.join(self.assets_folder, 'saved_maps')
+        self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
         self.fonts_folder = path.join(self.assets_folder, 'fonts')
         self.title_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
         self.img_folder = path.join(self.assets_folder, 'img')
@@ -291,6 +314,11 @@ class _State():
         """Update the normal state"""
 
     def toggle_sub_state(self, state):
+        """Toggle a substate from a state
+
+        Args:
+            state (str): the name of the substate
+        """
         sub_state = 'normal' if self.state == state else state
         logger.info('Start sub-state %s in %s', sub_state, self.name)
         self.set_state(sub_state)

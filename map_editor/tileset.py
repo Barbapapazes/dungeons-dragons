@@ -47,11 +47,11 @@ class Tileset():
     def get_keys(self):
         """Use the key to move the tileset"""
         keys = pg.key.get_pressed()
-        if keys[pg.K_a]:
+        if keys[pg.K_q]:
             pass
         if keys[pg.K_d]:
             pass
-        if keys[pg.K_w] and self.move_y < 0:
+        if keys[pg.K_z] and self.move_y < 0:
             self.move_y += 1
         if keys[pg.K_s] and self.move_y > - (self.tileset_height - HEIGHT) // TILESIZE:
             self.move_y -= 1

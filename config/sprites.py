@@ -1,8 +1,12 @@
 """Define settings for the sprites"""
+import pygame as pg
 
 # player
-PLAYER_SPEED = 150
+PLAYER_SPEED = 280
+PLAYER_ROT_SPEED = 200
 PLAYER_MAX_HP = 100
+PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
+
 
 #  ajouter les charastéristiques
 
@@ -22,14 +26,29 @@ WEAPONS = {
         "price": 10,
         "weight": 10,
         "slot": "weapon",
-        "type": "sword"
+        "type": "sword",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
     },
     "sword steel": {
         "image": "sword.png",
         "price": 10,
         "weight": 20,
         "slot": "weapon",
-        "type": "sword"
+        "type": "sword",
+        "nb_d": 4,
+        "val_d": 6,
+        "scope": 3
+    },
+    "arc": {
+        "image": "arc.png",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5
     },
     "dagger": {
         "image": "upg_dagger.png",

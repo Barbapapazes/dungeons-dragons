@@ -52,11 +52,14 @@ module.exports = {
     //   },
     // ],
     sidebar: [
+      // voir pour faire une partie avec les écrans (en ajoutant un lien dans le header)
       '/presentation.md',
       '/config.md',
       '/window.md',
+      '/save_load.md',
+      '/game.md',
+      '/shortcuts.md',
       '/map_editor.md',
-      '/save.md',
     ],
     // {
     //   '/presentation/': [
