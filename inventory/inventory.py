@@ -283,6 +283,7 @@ class Inventory():
         if isinstance(item, Equipable):
             item.unequip(self)
 
+
 class InventorySlot:
     """A slot from the inventory"""
 
@@ -419,8 +420,8 @@ class Armor(Equipable):
 class Weapon(Equipable):
     """Weapon"""
 
-    def __init__(self, name, img, value, slot, wpn_type, nb_d=1, val_d=5, scope=2):
-        super(Weapon, self).__init__(name, img, value)
+    def __init__(self, name, img, value, slot, wpn_type, weight, nb_d=1, val_d=5, scope=2):
+        super(Weapon, self).__init__(name, img, value, weight)
         self.slot = slot
         self.wpn_type = wpn_type
         self.nb_d = nb_d
