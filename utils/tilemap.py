@@ -3,6 +3,7 @@
 import pygame as pg
 import pytmx
 from config.window import WIDTH, HEIGHT
+from logger import logger
 
 
 def collide_with_walls(sprite, group, dir):
@@ -49,6 +50,7 @@ class TiledMap:
     def make_map(self):
         temp_surface = pg.Surface((self.width, self.height))
         self.render(temp_surface)
+        logger.info("Create the map")
         return temp_surface
 
 
@@ -78,6 +80,8 @@ class Camera:
 
 
 class Minimap:
+    """Create a minimap"""
+
     def __init__(self, img, w, map_ratio):
         self.img = img
         self.width = w
@@ -85,6 +89,14 @@ class Minimap:
         self.img_ratio = w / img.get_width()
 
     def draw(self, player):
+        """Create the minimap as a surface 
+
+        Args:
+            player (Player)
+
+        Returns:
+            Surface
+        """
         [x, y] = player.pos
         rect_player = pg.Rect(x * self.img_ratio, y * self.img_ratio, 10, 10)
         resize_map = pg.transform.scale(self.img, (self.width, self.height))
