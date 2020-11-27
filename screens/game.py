@@ -159,12 +159,10 @@ class Game(_State):
         if self.state == 'inventory':
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    logger.info("Select an item from the inventory")
-                    self.player.inventory.move_item(self.screen)
+                    self.player.inventory.move_item()
             elif event.type == pg.MOUSEBUTTONUP:
                 if event.button == 1:
-                    logger.info("Place an item")
-                    self.player.inventory.place_item(self.screen)
+                    self.player.inventory.place_item()
                 elif event.button == 3:
                     self.mouse_pos = pg.mouse.get_pos()
                     PopupMenu(self.player.inventory.menu_data)
@@ -175,18 +173,9 @@ class Game(_State):
     def inventory_events(self, event):
         """Used to manage all event"""
         if event.name == "inventory":
-            self.player.inventory.check_slot(event.text, self.screen, self.mouse_pos)
+            self.player.inventory.check_slot(event.text, self.mouse_pos)
             if event.text in ["sell"]:
                 self.player.shop.check_slot(event.text, self.screen, self.player, self.mouse_pos)
-
-        # if (event.name, event.text) == ('inventory', 'equip'):
-        #     self.player.inventory.check_slot('equip', self.screen, self.mouse_pos)
-        # if (event.name, event.text) == ('inventory', 'unequip'):
-        #     self.player.inventory.check_slot('unequip', self.screen, self.mouse_pos)
-        # if (event.name, event.text) == ('inventory', 'use'):
-        #     self.player.inventory.check_slot('use', self.screen, self.mouse_pos)
-        # if (event.name, event.text) == ('inventory', 'throw'):
-        #     self.player.inventory.check_slot('throw', self.screen, self.mouse_pos)
 
     def events_shop(self, event):
         """When the shop state is running"""
@@ -199,14 +188,12 @@ class Game(_State):
                     elif self.player.inventory.is_clicked(self.mouse_pos):
                         PopupMenu(self.player.inventory.menu_data)
                 elif event.button == 1:
-                    logger.info("Place an item")
-                    self.player.shop.place_item(self.player.inventory, self.screen)
+                    self.player.shop.place_item(self.player.inventory)
                     # self.player.inventory.place_item(self.screen)
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    logger.info("Select an item from the inventory")
-                    self.player.shop.move_item(self.screen)
-                    self.player.inventory.move_item(self.screen)
+                    self.player.shop.move_item()
+                    self.player.inventory.move_item()
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
                     if event.name == 'shop' and event.text in self.player.shop.menu_data:
@@ -216,6 +203,7 @@ class Game(_State):
     def toggle_states(self, event):
         """Use to toggle the state of all states"""
         if key_for(self.game_data["shortcuts"]["game"]["menu"]["keys"], event):
+            logger.info("Toggle the sub-menu")
             self.player.inventory.display_inventory = False
             self.player.shop.display_shop = False
             super().toggle_sub_state('menu')

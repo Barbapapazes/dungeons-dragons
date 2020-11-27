@@ -101,7 +101,6 @@ class Shop():
         """
         self.weapons = list()
         for key, value in WEAPONS.items():
-            print(value['slot'])
             data = Weapon(
                 key,
                 path.join(self.items_folder, value['image']),
@@ -172,7 +171,7 @@ class Shop():
             for slot in self.get_all_slots():
                 slot.draw_items(screen)
 
-    def move_item(self, screen):
+    def move_item(self):
         """Drag function, makes an item following the mouse
 
         Args:
@@ -181,16 +180,18 @@ class Shop():
         mouse_pos = pg.mouse.get_pos()
 
         for slot in self.get_all_slots():
-            if slot.draw(screen).collidepoint(
+            if slot.rect.collidepoint(
                     mouse_pos) and slot.item is not None and self.moving_item is None:
+                logger.info("Move %s from the shop", slot.item)
                 slot.item.is_moving = True
                 self.moving_item = slot.item
                 self.moving_item_slot = slot
                 break
 
-    def place_item(self, inventory, screen):
-        inventory.place_item(screen, deepcopy(self.moving_item))
-        print("shop: place inventory")
+    def place_item(self, inventory):
+        """Place a item in the inventory"""
+        logger.info("Place %s from the store in the inventory", self.moving_item)
+        inventory.place_item(deepcopy(self.moving_item))
         if self.moving_item is not None:
             self.moving_item.is_moving = False
             self.moving_item = None
@@ -206,23 +207,20 @@ class Shop():
         """
         for slot in self.get_all_slots():
             if slot.item is not None:
-                if slot.draw(screen).collidepoint(mouse_pos):
-                    print(slot)
+                if slot.rect.collidepoint(mouse_pos):
                     if action == ACTIONS['buy']:
                         logger.info('%s bought', slot.item.name)
                         data = self.buy_item(slot.item, player)
                         player.inventory.add_item(data)
                     elif action == ACTIONS['buy_equip']:
-                        print("buy-equip")
                         if isinstance(slot.item, Equipable):
-                            data = self.buy_item(slot.item, player, INVENTORY_ACTIONS['equip'])
+                            data = self.buy_item(slot.item, player)
                             player.inventory.equip_item(data)
                         else:
                             logger.info('Action can not be done')
                     elif action == ACTIONS['buy_use']:
                         if isinstance(slot.item, Consumable):
-                            data = self.buy_item(slot.item, player, INVENTORY_ACTIONS['use'])
-                            # player.inventory.add_item(data)
+                            data = self.buy_item(slot.item, player)
                             player.inventory.use_item(data)
                         else:
                             logger.info('Action can not be done')
@@ -231,7 +229,7 @@ class Shop():
 
         for slot in player.inventory.get_all_slots():
             if isinstance(slot, InventorySlot):
-                if slot.draw(screen).collidepoint(mouse_pos):
+                if slot.rect.collidepoint(mouse_pos):
                     if action == INVENTORY_ACTIONS['sell']:
                         logger.info('%s sold', slot.item.name)
                         self.sell_item(slot.item, player)
@@ -241,7 +239,7 @@ class Shop():
                     else:
                         logger.info('Action can not be done')
             elif isinstance(slot, EquipableSlot):
-                if slot.draw(screen).collidepoint(mouse_pos):
+                if slot.rect.collidepoint(mouse_pos):
                     if slot.item is not None:
                         if action == INVENTORY_ACTIONS['sell']:
                             logger.info('%s sold', slot.item.name)
@@ -251,25 +249,20 @@ class Shop():
                     else:
                         logger.info('Action can not be done')
 
-    def buy_item(self, item, player, second_action=None):
+    def buy_item(self, item, player):
         """Buy an item
 
         Args:
             item (Item)
             player (Player)
-            second_action (String, optional): Defaults to None.
         """
         if item.price > player.gold:
-            print("You're homeless")
+            logger.info("You have not enough money")
             return
         else:
+            logger.info("Buy %s from shop", item)
             data = deepcopy(item)
         return data
-        # if second_action == INVENTORY_ACTIONS['equip']:
-        #     print(player.inventory.find_item(data).item)
-        #     player.inventory.equip_item(player.inventory.find_item(data).item)
-        # if second_action == INVENTORY_ACTIONS['use']:
-        #     player.inventory.use_item(player.inventory.find_item(data).item)
 
     def sell_item(self, item, player):
         """Sell an item
@@ -279,6 +272,7 @@ class Shop():
             player (Player)
         """
         if item is not None:
+            logger.info("Sell %s", item)
             player.gold += item.price
 
     def find_item(self, item):
@@ -292,6 +286,12 @@ class Shop():
             if slot.item == item:
                 return slot
         return None
+
+    def is_clicked(self, mouse_pos):
+        """Check if the shop is clicked"""
+        for slot in self.get_all_slots():
+            if slot.rect.collidepoint(mouse_pos):
+                return True
 
     @staticmethod
     def create_slots(cols, rows, offset_y):
@@ -311,11 +311,6 @@ class Shop():
         min_y = HEIGHT // 3 - (step * rows) // 2 + SHOP_SLOT_GAP + offset_y
         max_y = HEIGHT // 3 + (step * rows) // 2 + offset_y
         return (step, min_x, max_x, min_y, max_y)
-
-    def is_clicked(self, mouse_pos):
-        for slot in self.get_all_slots():
-            if slot.rect.collidepoint(mouse_pos):
-                return True
 
 
 class ShopSlot(Container):

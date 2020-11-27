@@ -1,16 +1,16 @@
 """Inventory"""
 
-from utils.container import Container
-import pygame as pg
 from random import randint
+import pygame as pg
+from logger import logger
+from utils.container import Container
+from inventory.items import Item
 from config.window import HEIGHT, WIDTH, TILESIZE
 from config.colors import WHITE
 from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP
-from inventory.items import Item
-from logger import logger
 
 
-class Inventory():
+class Inventory:
     """Represent a inventory"""
 
     def __init__(self, player, cols, rows):
@@ -45,7 +45,7 @@ class Inventory():
         self.create_equipments()
 
     def create_equipments(self):
-        """Create slots to equipe from a bag"""
+        """Create slots to equip from a bag"""
         step = INVENTORY_TILESIZE + INVENTORY_SLOT_GAP
 
         cols = EQUIPMENT_COLS
@@ -54,24 +54,12 @@ class Inventory():
         max_x = 2 * WIDTH // 4 + (step * cols) // 2
         min_y = HEIGHT // 2 - (step * rows) // 2 + INVENTORY_SLOT_GAP
         max_y = HEIGHT // 2 + (step * rows) // 2
-        for x in range(min_x, max_x, step):
-            for y in range(min_y, max_y, step):
-                self.armor_slots.append(EquipableSlot(x, y, INVENTORY_TILESIZE, WHITE))
+        for _x in range(min_x, max_x, step):
+            for _y in range(min_y, max_y, step):
+                self.armor_slots.append(EquipableSlot(_x, _y, INVENTORY_TILESIZE, WHITE))
 
         self.weapon_slots.append(EquipableSlot(min_x - step,
                                                max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, WHITE))
-
-    def find_item(self, item):
-        """Find the slot in which a passed item is contained,
-            None if no slot contains thi sitem
-
-        Args:
-            item(Item)
-        """
-        for slot in self.get_all_slots():
-            if slot.item == item:
-                return slot
-        return None
 
     def create_bag(self):
         """Create a bag to store item"""
@@ -82,10 +70,10 @@ class Inventory():
         min_y = HEIGHT // 2 - (step * self.rows) // 2 + INVENTORY_SLOT_GAP
         max_y = HEIGHT // 2 + (step * self.rows) // 2
         # inventory is 3/4 in width
-        for x in range(min_x, max_x, step):
+        for _x in range(min_x, max_x, step):
             # inventory is center in height
-            for y in range(min_y, max_y, step):
-                self.slots.append(InventorySlot(x, y, INVENTORY_TILESIZE, WHITE))
+            for _y in range(min_y, max_y, step):
+                self.slots.append(InventorySlot(_x, _y, INVENTORY_TILESIZE, WHITE))
 
     def set_slot_types(self):
         """Used to define slot's type"""
@@ -102,83 +90,55 @@ class Inventory():
         """
         return self.slots + self.weapon_slots + self.armor_slots
 
-    def draw(self, screen):
-        """Used to draw the inventory
-
-        Args:
-            screen (Surface)
-        """
-        if self.display_inventory:
-            for slot in self.get_all_slots():
-                slot.draw(screen)
-            for slot in self.get_all_slots():
-                slot.draw_items(screen)
-
-    def toggle_inventory(self):
-        """Set dispay_inventory to True it if was False and vice versa"""
-        self.display_inventory = not self.display_inventory
-
-    def add_item(self, item, slot=None):
-        """Add a passed item to the inventory
+    def get_equip_slot(self, item):
+        """Return the slot related to the Item if it's an Equipable
 
         Args:
             item (Item)
-            slot (InventorySlot, optional): when we want a specific slot. Defaults to None.
-        """
-        if slot is None:
-            for slots in self.slots:
-                if slots.item is None:
-                    print(item)
-                    item.is_moving = False
-                    slots.item = item
-                    break
-        if slot is not None:
-            if slot.item is not None:
-                self.moving_item_slot.item = slot.item
-                slot.item = item
-            else:
-                slot.item = item
-        print(self.moving_item)
 
-    def remove_item(self, item):
-        """Remove a passed item from the inventory
+        Returns:
+            EquipableSlot
+        """
+        for slot in self.armor_slots + self.weapon_slots:
+            if slot.slot_type == item.slot:
+                return slot
+
+    def find_item(self, item):
+        """Find the slot in which a passed item is contained,
+            None if no slot contains this item
 
         Args:
-            item (Item)
+            item(Item)
         """
-        for slot in self.slots:
+        for slot in self.get_all_slots():
             if slot.item == item:
-                slot.item = None
-                break
+                return slot
+        return None
 
-    def move_item(self, screen):
-        """Drag function, makes an item following the mouse
-
-        Args:
-            screen (Surface)
-        """
+    def move_item(self):
+        """Drag function, makes an item following the mouse"""
         mouse_pos = pg.mouse.get_pos()
 
         for slot in self.get_all_slots():
-            if slot.draw(screen).collidepoint(
+            if slot.rect.collidepoint(
                     mouse_pos) and slot.item is not None and self.moving_item is None:
+                logger.info("Select %s from inventory", slot.item)
                 slot.item.is_moving = True
                 self.moving_item = slot.item
-                print(slot.item.slot)
                 self.moving_item_slot = slot
                 break
 
-    def place_item(self, screen, shop_item=None):
+    def place_item(self, shop_item=None):
         """Place a item
 
         Args:
-            screen (Surface)
+            shop_item (Item, optional) Defaults to None.
         """
         mouse_pos = pg.mouse.get_pos()
 
         for slot in self.get_all_slots():
 
-            if slot.draw(screen).collidepoint(
+            if slot.rect.collidepoint(
                     mouse_pos) and (self.moving_item is not None or shop_item):
                 if shop_item:
                     self.add_item(shop_item)
@@ -204,7 +164,6 @@ class Inventory():
                     if isinstance(
                             slot, EquipableSlot) and isinstance(
                             self.moving_item, Equipable):
-                        print(slot.slot_type, self.moving_item.slot)
                         if slot.slot_type == self.moving_item.slot:
                             self.equip_item(self.moving_item)
                             break
@@ -213,54 +172,70 @@ class Inventory():
             self.moving_item = None
             self.moving_item_slot = None
 
-    def check_slot(self, action, screen, mouse_pos):
+    def check_slot(self, action, mouse_pos):
         """Use, equipe or unequip the item present in the slot colliding with the mouse_pos
 
         Args:
             action(String)
-            screen (Surface)
             mouse_pos (tuple):
         """
         for slot in self.get_all_slots():
             if action == ACTIONS['throw']:
-                if slot.draw(screen).collidepoint(mouse_pos):
-                    logger.info('%s Thrown', slot.item.name)
+                if slot.rect.collidepoint(mouse_pos):
                     self.remove_item(slot.item)
             if isinstance(slot, InventorySlot):
-                if slot.draw(screen).collidepoint(mouse_pos):
+                if slot.rect.collidepoint(mouse_pos):
                     if isinstance(slot.item, Equipable):
                         if action == ACTIONS['equip']:
-                            logger.info('%s Equiped', slot.item.name)
                             self.equip_item(slot.item)
                         else:
                             logger.info('Action can not be done')
                     if isinstance(slot.item, Consumable):
                         if action == ACTIONS['use']:
-                            logger.info('%s Used', slot.item.name)
                             self.use_item(slot.item)
                         else:
                             logger.info('Action can not be done')
             if isinstance(slot, EquipableSlot):
-                if slot.draw(screen).collidepoint(mouse_pos):
+                if slot.rect.collidepoint(mouse_pos):
                     if slot.item is not None:
                         if action == ACTIONS['unequip']:
-                            logger.info('%s Unequiped', slot.item.name)
                             self.unequip_item(slot.item)
                         else:
                             logger.info('Action can not be done')
 
-    def get_equip_slot(self, item):
-        """Return the slot related to the Item if it's an Equipable
+    def add_item(self, item, slot=None):
+        """Add a passed item to the inventory
 
         Args:
             item (Item)
-
-        Returns:
-            EquipableSlot
+            slot (InventorySlot, optional): when we want a specific slot. Defaults to None.
         """
-        for slot in self.armor_slots + self.weapon_slots:
-            if slot.slot_type == item.slot:
-                return slot
+        if slot is None:
+            for slots in self.slots:
+                if slots.item is None:
+                    item.is_moving = False
+                    slots.item = item
+                    logger.info("Add %s to inventory", item)
+                    break
+        if slot is not None:
+            if slot.item is not None:
+                logger.info("Add %s to inventory", item)
+                self.moving_item_slot.item = slot.item
+                slot.item = item
+            else:
+                slot.item = item
+
+    def remove_item(self, item):
+        """Remove a passed item from the inventory
+
+        Args:
+            item (Item)
+        """
+        for slot in self.slots:
+            if slot.item == item:
+                logger.info("Remove %s from inventory", item)
+                slot.item = None
+                break
 
     def use_item(self, item):
         """Use a passed item if it's a Consumable
@@ -269,6 +244,7 @@ class Inventory():
             item (Item)
         """
         if isinstance(item, Consumable):
+            logger.info("Use %s from inventory", item)
             item.use(self, self.player)
 
     def equip_item(self, item):
@@ -278,6 +254,7 @@ class Inventory():
             item (Item)
         """
         if isinstance(item, Equipable):
+            logger.info("Equip %s from inventory", item)
             item.equip(self, self.player)
 
     def unequip_item(self, item):
@@ -287,12 +264,26 @@ class Inventory():
             item (Item): [description]
         """
         if isinstance(item, Equipable):
+            logger.info("Unequip %s from inventory", item)
             item.unequip(self)
 
     def is_clicked(self, mouse_pos):
+        """Check if the inventory is clicked"""
         for slot in self.get_all_slots():
             if slot.rect.collidepoint(mouse_pos):
                 return True
+
+    def draw(self, screen):
+        """Used to draw the inventory
+
+        Args:
+            screen (Surface)
+        """
+        if self.display_inventory:
+            for slot in self.get_all_slots():
+                slot.draw(screen)
+            for slot in self.get_all_slots():
+                slot.draw_items(screen)
 
 
 class InventorySlot(Container):
@@ -302,7 +293,7 @@ class InventorySlot(Container):
         """Draw an image on an inventory slot if the image is not moving else on the mouse position
 
         Args:
-            screen (Surface)
+            screen(Surface)
         """
         if self.item is not None and not self.item.is_moving:
             image = pg.image.load(self.item.img).convert_alpha()
@@ -315,7 +306,6 @@ class InventorySlot(Container):
             screen.blit(image, (self.x, self.y))
 
         if self.item is not None and self.item.is_moving:
-            print("drag")
             mouse_pos = pg.mouse.get_pos()
             image = pg.image.load(self.item.img).convert_alpha()
             image = pg.transform.scale(image, (self.size + 10, self.size + 10))
@@ -345,8 +335,8 @@ class Consumable(Item):
         """remove the consumable from the inventory inv and uses it on the target player
 
         Args:
-            inventory (Inventory)
-            target (player)
+            inventory(Inventory)
+            target(player)
         """
         inventory.remove_item(self)
         target.addHp(self.hp_gain)
@@ -365,7 +355,7 @@ class Equipable(Item):
         """equip the Equipable Item on the target
 
         Args:
-            target (player)
+            target(player)
         """
         self.is_equipped = True
         self.equipped_to = target
@@ -388,10 +378,9 @@ class Armor(Equipable):
         """Equip the Armor on the right player's armor slot,
         if an Armor is already in the needed slot, it is unequipped
 
-
         Args:
-            inventory (Inventory)
-            target (Player):
+            inventory(Inventory)
+            target(Player):
         """
         if inventory.get_equip_slot(self).item is not None:
             inventory.get_equip_slot(self).item.unequip(inventory)
@@ -404,7 +393,7 @@ class Armor(Equipable):
         """Unequip the armor and put it in the inventory inventory
 
         Args:
-            inventory (Inventory)
+            inventory(Inventory)
         """
         self.equipped_to.unequip_armor(self.slot)
         Equipable.unequip(self)
@@ -417,7 +406,6 @@ class Weapon(Equipable):
 
     def __init__(self, name, img, value, slot, wpn_type, weight, nb_d=1, val_d=5, scope=2):
         super(Weapon, self).__init__(name, img, value, weight)
-        print("inside weapoin", slot)
         self.slot = slot
         self.wpn_type = wpn_type
         self.nb_d = nb_d
@@ -429,8 +417,8 @@ class Weapon(Equipable):
         and removes it from the inventory inventory
 
         Args:
-            inventory (Inventory)
-            target (Player)
+            inventory(Inventory)
+            target(Player)
         """
         if inventory.get_equip_slot(self).item is not None:
             inventory.get_equip_slot(self).item.unequip(inventory)
@@ -440,10 +428,10 @@ class Weapon(Equipable):
         inventory.get_equip_slot(self).item = self
 
     def unequip(self, inventory):
-        """Unequip the weapon and add it to the Inventory 
+        """Unequip the weapon and add it to the Inventory
 
         Args:
-            inventory (Inventory)
+            inventory(Inventory)
         """
         self.equipped_to.unequip_weapon()
         super().unequip()
