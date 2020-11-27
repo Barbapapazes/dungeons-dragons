@@ -141,6 +141,29 @@ class Game(_State):
                 self.player.inventory.toggle_inventory()
                 super().toggle_sub_state('shop')
 
+            if event.key == pg.K_l:
+                life = {'Player': self.player.HP, 'en1': self.en1.HP, 'en2': self.en2.HP}
+                logger.info(life)
+
+            if event.key == pg.K_TAB:
+                """Simulate begin versus"""
+                logger.info("Begin Versus")
+                if not self.isVersus:
+                    self.isVersus = True
+                else:
+                    self.isVersus = False
+
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                if self.isVersus:  # cursor
+                    mouse_pos = pg.mouse.get_pos()
+                    if self.versus.isATK(mouse_pos) and self.action == None:
+                        self.action = "ATK"
+                    if self.action == "select_enemy":
+                        self.selectEnemy = self.versus.selectEnemy(self.enemy, mouse_pos)
+                        if self.selectEnemy != None:
+                            self.action = None
+
         """When the inventory state is running"""
         if self.state == 'inventory':
             if event.type == pg.MOUSEBUTTONDOWN:
@@ -174,10 +197,12 @@ class Game(_State):
                     PopupMenu(self.player.shop.menu_data)
                 elif event.button == 1:
                     logger.info("Place an item")
+                    self.player.shop.place_item(self.player.inventory, self.screen)
                     self.player.inventory.place_item(self.screen)
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     logger.info("Select an item from the inventory")
+                    self.player.shop.move_item(self.screen)
                     self.player.inventory.move_item(self.screen)
             elif event.type == pg.USEREVENT:
                 # print ('menu event: %s.%d: %s' % (event.name,event.item_id,event.text))

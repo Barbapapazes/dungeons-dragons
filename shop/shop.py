@@ -1,6 +1,7 @@
 """Shop"""
 
 from os import path
+from utils.container import Container
 import pygame as pg
 from logger import logger
 from config.window import HEIGHT, WIDTH
@@ -8,6 +9,7 @@ from config.colors import WHITE
 from config.shop import SHOP_TILESIZE, SHOP_SLOT_GAP, SHOP_CATEGORIES, ACTIONS, MENU_DATA
 from config.sprites import CONSUMABLE, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
 from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, InventorySlot, Equipable
+from copy import deepcopy
 
 
 class Shop():
@@ -31,6 +33,9 @@ class Shop():
         self.weapon_slots = []
         self.armor_slots = []
         self.consumable_slots = []
+
+        self.moving_item = None
+        self.moving_item_slot = None
 
         self.create_all_slots()
         self.add_all_items()
@@ -76,21 +81,21 @@ class Shop():
         step, min_x, max_x, min_y, max_y = self.create_slots(WEAPONS_COLS, WEAPONS_ROWS, 0)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
-                self.weapon_slots.append(ShopSlot(x, y))
+                self.weapon_slots.append(ShopSlot(x, y, SHOP_TILESIZE, WHITE))
 
     def create_armor_slots(self):
         """Create slots for the Armor category"""
         step, min_x, max_x, min_y, max_y = self.create_slots(ARMOR_COLS, ARMOR_ROWS, 100)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
-                self.armor_slots.append(ShopSlot(x, y))
+                self.armor_slots.append(ShopSlot(x, y, SHOP_TILESIZE, WHITE))
 
     def create_consumable_slots(self):
         """Create slots for the Consumable category"""
         step, min_x, max_x, min_y, max_y = self.create_slots(CONSUMABLE_COLS, CONSUMABLE_ROWS, 200)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
-                self.weapon_slots.append(ShopSlot(x, y))
+                self.weapon_slots.append(ShopSlot(x, y, SHOP_TILESIZE, WHITE))
 
     def get_all_slots(self):
         """Get all slots fro the shop
@@ -112,6 +117,23 @@ class Shop():
             for slot in self.get_all_slots():
                 slot.draw_items(screen)
 
+    def move_item(self, screen):
+        """Drag function, makes an item following the mouse
+
+        Args:
+            screen (Surface)
+        """
+        mouse_pos = pg.mouse.get_pos()
+
+        for slot in self.get_all_slots():
+            if slot.draw(screen).collidepoint(
+                    mouse_pos) and slot.item is not None and self.moving_item is None:
+                slot.item.is_moving = True
+                self.moving_item = slot.item
+                print(slot.item.slot)
+                self.moving_item_slot = slot
+                break
+
     def toggle_shop(self):
         """Set display_shop to True it if was False and vice versa"""
         self.display_shop = not self.display_shop
@@ -127,12 +149,15 @@ class Shop():
         """
         self.weapons = list()
         for key, value in WEAPONS.items():
+            print(value['slot'])
             data = Weapon(
-                key, path.join(self.items_folder, value['image']),
+                key,
+                path.join(self.items_folder, value['image']),
                 value['price'],
-                value['weight'],
                 value['slot'],
-                value['type'])
+                value['type'],
+                value['weight'],
+            )
             self.weapons.append(data)
 
         for item in self.weapons:
@@ -148,7 +173,8 @@ class Shop():
         self.armors = list()
         for key, value in ARMOR.items():
             data = Armor(
-                key, path.join(self.items_folder, value['image']),
+                key,
+                path.join(self.items_folder, value['image']),
                 value['price'],
                 value['weight'],
                 value['armor'],
@@ -242,11 +268,12 @@ class Shop():
         else:
             if item in self.weapons:
                 data = Weapon(
-                    item.name, item.img,
+                    item.name,
+                    item.img,
                     item.price,
-                    item.weight,
                     item.slot,
-                    item.wpn_type)
+                    item.wpn_type,
+                    item.weight)
             elif item in self.armors:
                 data = Armor(
                     item.name, item.img,
@@ -287,26 +314,16 @@ class Shop():
                 return slot
         return None
 
+    def place_item(self, inventory, screen):
+        inventory.place_item(screen, deepcopy(self.moving_item))
+        if self.moving_item is not None:
+            self.moving_item.is_moving = False
+            self.moving_item = None
+            self.moving_item_slot = None
 
-class ShopSlot:
+
+class ShopSlot(Container):
     """A slot from the shop"""
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.item = None
-
-    def draw(self, screen):
-        """Return the drawing of a shopslot
-
-        Args:
-            screen (surface)
-
-        Returns:
-            Rect: the slot
-        """
-        return pg.draw.rect(
-            screen, WHITE, (self.x, self.y, SHOP_TILESIZE, SHOP_TILESIZE))
 
     def draw_items(self, screen):
         """Draw an image on a shop slot
@@ -316,10 +333,19 @@ class ShopSlot:
         """
         if self.item is not None:
             image = pg.image.load(self.item.img).convert_alpha()
-            image = pg.transform.scale(image, (SHOP_TILESIZE, SHOP_TILESIZE))
+            image = pg.transform.scale(image, (self.size, self.size))
             image_x = image.get_width()
             image_y = image.get_height()
 
             pg.draw.rect(screen, (0, 255, 0), pg.Rect(self.x, self.y, image_x, image_y), 1)
 
             screen.blit(image, (self.x, self.y))
+
+        if self.item is not None and self.item.is_moving:
+            mouse_pos = pg.mouse.get_pos()
+            image = pg.image.load(self.item.img).convert_alpha()
+            image = pg.transform.scale(image, (self.size + 10, self.size + 10))
+            image_x = image.get_width()
+            image_y = image.get_height()
+
+            screen.blit(image, (mouse_pos[0] - image_x // 2, mouse_pos[1] - image_y // 2))

@@ -1,5 +1,6 @@
 """Inventory"""
 
+from utils.container import Container
 import pygame as pg
 from random import randint
 from config.window import HEIGHT, WIDTH, TILESIZE
@@ -55,10 +56,10 @@ class Inventory():
         max_y = HEIGHT // 2 + (step * rows) // 2
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
-                self.armor_slots.append(EquipableSlot(x, y))
+                self.armor_slots.append(EquipableSlot(x, y, INVENTORY_TILESIZE, WHITE))
 
         self.weapon_slots.append(EquipableSlot(min_x - step,
-                                               max_y - step + INVENTORY_SLOT_GAP))
+                                               max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, WHITE))
 
     def find_item(self, item):
         """Find the slot in which a passed item is contained,
@@ -84,7 +85,7 @@ class Inventory():
         for x in range(min_x, max_x, step):
             # inventory is center in height
             for y in range(min_y, max_y, step):
-                self.slots.append(InventorySlot(x, y))
+                self.slots.append(InventorySlot(x, y, INVENTORY_TILESIZE, WHITE))
 
     def set_slot_types(self):
         """Used to define slot's type"""
@@ -160,10 +161,11 @@ class Inventory():
                     mouse_pos) and slot.item is not None and self.moving_item is None:
                 slot.item.is_moving = True
                 self.moving_item = slot.item
+                print(slot.item.slot)
                 self.moving_item_slot = slot
                 break
 
-    def place_item(self, screen):
+    def place_item(self, screen, shop_item=None):
         """Place a item
 
         Args:
@@ -172,32 +174,41 @@ class Inventory():
         mouse_pos = pg.mouse.get_pos()
 
         for slot in self.get_all_slots():
+
             if slot.draw(screen).collidepoint(
-                    mouse_pos) and self.moving_item is not None:
-                if isinstance(
-                        self.moving_item_slot, EquipableSlot) and isinstance(
-                        slot, InventorySlot) and not isinstance(
-                        slot, EquipableSlot) and slot.item is None:
-                    self.unequip_item(self.moving_item)
-                    break
-                if isinstance(
-                        slot, InventorySlot) and not isinstance(
-                        slot, EquipableSlot) and not isinstance(
-                        self.moving_item_slot, EquipableSlot):
-                    self.remove_item(self.moving_item)
-                    self.add_item(self.moving_item, slot)
-                    break
-                if isinstance(self.moving_item_slot, EquipableSlot) and isinstance(slot.item, Equipable):
-                    if self.moving_item.slot == slot.item.slot:
+                    mouse_pos) and (self.moving_item is not None or shop_item):
+                if shop_item:
+                    print("0")
+                    self.add_item(shop_item)
+                else:
+                    if isinstance(
+                            self.moving_item_slot, EquipableSlot) and isinstance(
+                            slot, InventorySlot) and not isinstance(
+                            slot, EquipableSlot) and slot.item is None:
+                        print("1")
                         self.unequip_item(self.moving_item)
-                        self.equip_item(slot.item)
                         break
-                if isinstance(
-                        slot, EquipableSlot) and isinstance(
-                        self.moving_item, Equipable):
-                    if slot.slot_type == self.moving_item.slot:
-                        self.equip_item(self.moving_item)
+                    if isinstance(
+                            slot, InventorySlot) and not isinstance(
+                            slot, EquipableSlot) and not isinstance(
+                            self.moving_item_slot, EquipableSlot):
+                        self.remove_item(self.moving_item)
+                        self.add_item(self.moving_item, slot)
+                        print("2")
                         break
+                    if isinstance(self.moving_item_slot, EquipableSlot) and isinstance(slot.item, Equipable):
+                        print("3")
+                        if self.moving_item.slot == slot.item.slot:
+                            self.unequip_item(self.moving_item)
+                            self.equip_item(slot.item)
+                            break
+                    if isinstance(
+                            slot, EquipableSlot) and isinstance(
+                            self.moving_item, Equipable):
+                        print(slot.slot_type, self.moving_item.slot)
+                        if slot.slot_type == self.moving_item.slot:
+                            self.equip_item(self.moving_item)
+                            break
         if self.moving_item is not None:
             self.moving_item.is_moving = False
             self.moving_item = None
@@ -280,25 +291,8 @@ class Inventory():
             item.unequip(self)
 
 
-class InventorySlot:
+class InventorySlot(Container):
     """A slot from the inventory"""
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.item = None
-
-    def draw(self, screen):
-        """Return the drawing of an inventoryslot
-
-        Args:
-            screen (surface)
-
-        Returns:
-            Rect: the slot
-        """
-        return pg.draw.rect(
-            screen, WHITE, (self.x, self.y, INVENTORY_TILESIZE, INVENTORY_TILESIZE))
 
     def draw_items(self, screen):
         """Draw an image on an inventory slot if the image is not moving else on the mouse position
@@ -308,7 +302,7 @@ class InventorySlot:
         """
         if self.item is not None and not self.item.is_moving:
             image = pg.image.load(self.item.img).convert_alpha()
-            image = pg.transform.scale(image, (INVENTORY_TILESIZE, INVENTORY_TILESIZE))
+            image = pg.transform.scale(image, (self.size, self.size))
             image_x = image.get_width()
             image_y = image.get_height()
 
@@ -319,7 +313,7 @@ class InventorySlot:
         if self.item is not None and self.item.is_moving:
             mouse_pos = pg.mouse.get_pos()
             image = pg.image.load(self.item.img).convert_alpha()
-            image = pg.transform.scale(image, (INVENTORY_TILESIZE + 10, INVENTORY_TILESIZE + 10))
+            image = pg.transform.scale(image, (self.size + 10, self.size + 10))
             image_x = image.get_width()
             image_y = image.get_height()
 
@@ -329,8 +323,8 @@ class InventorySlot:
 class EquipableSlot(InventorySlot):
     """A equipable slot"""
 
-    def __init__(self, x, y, slot_type=None):
-        InventorySlot.__init__(self, x, y)
+    def __init__(self, x, y, size, bg_color, slot_type=None):
+        super(EquipableSlot, self).__init__(x, y, size, bg_color)
         self.slot_type = slot_type
 
 
@@ -418,6 +412,7 @@ class Weapon(Equipable):
 
     def __init__(self, name, img, value, slot, wpn_type, weight, nb_d=1, val_d=5, scope=2):
         super(Weapon, self).__init__(name, img, value, weight)
+        print("inside weapoin", slot)
         self.slot = slot
         self.wpn_type = wpn_type
         self.nb_d = nb_d
