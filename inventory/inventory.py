@@ -243,7 +243,7 @@ class Inventory():
             if isinstance(slot, EquipableSlot):
                 if slot.draw(screen).collidepoint(mouse_pos):
                     if slot.item is not None:
-                        if action == ACTIONS['equip']:
+                        if action == ACTIONS['unequip']:
                             logger.info('%s Unequiped', slot.item.name)
                             self.unequip_item(slot.item)
                         else:

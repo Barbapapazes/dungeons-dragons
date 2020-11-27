@@ -170,14 +170,23 @@ class Game(_State):
                     PopupMenu(self.player.inventory.menu_data)
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
-                    if (event.name, event.text) == ('inventory', 'equip'):
-                        self.player.inventory.check_slot('equip', self.screen, self.mouse_pos)
-                    if (event.name, event.text) == ('inventory', 'unequip'):
-                        self.player.inventory.check_slot('unequip', self.screen, self.mouse_pos)
-                    if (event.name, event.text) == ('inventory', 'use'):
-                        self.player.inventory.check_slot('use', self.screen, self.mouse_pos)
-                    if (event.name, event.text) == ('inventory', 'throw'):
-                        self.player.inventory.check_slot('throw', self.screen, self.mouse_pos)
+                    self.inventory_events(event)
+
+    def inventory_events(self, event):
+        """Used to manage all event"""
+        if event.name == "inventory":
+            self.player.inventory.check_slot(event.text, self.screen, self.mouse_pos)
+            if event.text in ["sell"]:
+                self.player.shop.check_slot(event.text, self.screen, self.player, self.mouse_pos)
+
+        # if (event.name, event.text) == ('inventory', 'equip'):
+        #     self.player.inventory.check_slot('equip', self.screen, self.mouse_pos)
+        # if (event.name, event.text) == ('inventory', 'unequip'):
+        #     self.player.inventory.check_slot('unequip', self.screen, self.mouse_pos)
+        # if (event.name, event.text) == ('inventory', 'use'):
+        #     self.player.inventory.check_slot('use', self.screen, self.mouse_pos)
+        # if (event.name, event.text) == ('inventory', 'throw'):
+        #     self.player.inventory.check_slot('throw', self.screen, self.mouse_pos)
 
     def events_shop(self, event):
         """When the shop state is running"""
@@ -201,8 +210,8 @@ class Game(_State):
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
                     if event.name == 'shop' and event.text in self.player.shop.menu_data:
-                        print(event)
                         self.player.shop.check_slot(event.text, self.screen, self.player, self.mouse_pos)
+                    self.inventory_events(event)
 
     def toggle_states(self, event):
         """Use to toggle the state of all states"""

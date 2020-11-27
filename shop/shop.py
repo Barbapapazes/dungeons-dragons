@@ -228,7 +228,7 @@ class Shop():
         for slot in player.inventory.get_all_slots():
             if isinstance(slot, InventorySlot):
                 if slot.draw(screen).collidepoint(mouse_pos):
-                    if action == ACTIONS['sell']:
+                    if action == INVENTORY_ACTIONS['sell']:
                         logger.info('%s sold', slot.item.name)
                         self.sell_item(slot.item, player)
                         slot.item = None
@@ -239,7 +239,7 @@ class Shop():
             elif isinstance(slot, EquipableSlot):
                 if slot.draw(screen).collidepoint(mouse_pos):
                     if slot.item is not None:
-                        if action == ACTIONS['sell']:
+                        if action == INVENTORY_ACTIONS['sell']:
                             logger.info('%s sold', slot.item.name)
                             player.inventory.unequip_item(slot.item)
                             self.sell_item(slot.item, player)
