@@ -210,16 +210,20 @@ class Shop():
                     print(slot)
                     if action == ACTIONS['buy']:
                         logger.info('%s bought', slot.item.name)
-                        self.buy_item(slot.item, player)
+                        data = self.buy_item(slot.item, player)
+                        player.inventory.add_item(data)
                     elif action == ACTIONS['buy_equip']:
                         print("buy-equip")
                         if isinstance(slot.item, Equipable):
-                            self.buy_item(slot.item, player, INVENTORY_ACTIONS['equip'])
+                            data = self.buy_item(slot.item, player, INVENTORY_ACTIONS['equip'])
+                            player.inventory.equip_item(data)
                         else:
                             logger.info('Action can not be done')
                     elif action == ACTIONS['buy_use']:
                         if isinstance(slot.item, Consumable):
-                            self.buy_item(slot.item, player, INVENTORY_ACTIONS['use'])
+                            data = self.buy_item(slot.item, player, INVENTORY_ACTIONS['use'])
+                            # player.inventory.add_item(data)
+                            player.inventory.use_item(data)
                         else:
                             logger.info('Action can not be done')
                     else:
@@ -260,12 +264,12 @@ class Shop():
             return
         else:
             data = deepcopy(item)
-        player.inventory.add_item(data)
-        if second_action == INVENTORY_ACTIONS['equip']:
-            print(player.inventory.find_item(data).item)
-            player.inventory.equip_item(player.inventory.find_item(data).item)
-        if second_action == INVENTORY_ACTIONS['use']:
-            player.inventory.use_item(player.inventory.find_item(data).item)
+        return data
+        # if second_action == INVENTORY_ACTIONS['equip']:
+        #     print(player.inventory.find_item(data).item)
+        #     player.inventory.equip_item(player.inventory.find_item(data).item)
+        # if second_action == INVENTORY_ACTIONS['use']:
+        #     player.inventory.use_item(player.inventory.find_item(data).item)
 
     def sell_item(self, item, player):
         """Sell an item
