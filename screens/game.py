@@ -91,6 +91,7 @@ class Game(_State):
         self.map_rect = self.map_img.get_rect()
         self.minimap = Minimap(self.map_img, 225, self.map_rect.width / self.map_rect.height)
         self.camera = Camera(self.map.width, self.map.height)
+
         for tile_object in self.map.tmxdata.objects:
             obj_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
             if tile_object.name == 'player':
@@ -125,21 +126,7 @@ class Game(_State):
                 super().set_state(TRANSITION_OUT)
 
         if event.type == pg.KEYUP:
-            if key_for(self.game_data["shortcuts"]["game"]["menu"]["keys"], event):
-                self.player.inventory.display_inventory = False
-                super().toggle_sub_state('menu')
-            if key_for(self.game_data["shortcuts"]["game"]["inventory"]["keys"], event):
-                logger.info("Toggle inventory from player")
-                self.player.shop.display_shop = False
-                self.player.inventory.display_inventory = False
-                self.player.inventory.toggle_inventory()
-                super().toggle_sub_state('inventory')
-            if event.key == pg.K_p:
-                logger.info("Toggle the shop")
-                self.player.inventory.display_inventory = False
-                self.player.shop.toggle_shop()
-                self.player.inventory.toggle_inventory()
-                super().toggle_sub_state('shop')
+            self.toggle_states(event)
 
             if event.key == pg.K_l:
                 life = {'Player': self.player.HP, 'en1': self.en1.HP, 'en2': self.en2.HP}
@@ -164,7 +151,11 @@ class Game(_State):
                         if self.selectEnemy != None:
                             self.action = None
 
-        """When the inventory state is running"""
+        self.events_inventory(event)
+        self.events_shop(event)
+
+    def events_inventory(self, event):
+        """When the shop state is running"""
         if self.state == 'inventory':
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -178,7 +169,6 @@ class Game(_State):
                     self.mouse_pos = pg.mouse.get_pos()
                     PopupMenu(self.player.inventory.menu_data)
             elif event.type == pg.USEREVENT:
-                # print ('menu event: %s.%d: %s' % (event.name,event.item_id,event.text))
                 if event.code == 'MENU':
                     if (event.name, event.text) == ('inventory', 'equip'):
                         self.player.inventory.check_slot('equip', self.screen, self.mouse_pos)
@@ -189,26 +179,47 @@ class Game(_State):
                     if (event.name, event.text) == ('inventory', 'throw'):
                         self.player.inventory.check_slot('throw', self.screen, self.mouse_pos)
 
+    def events_shop(self, event):
         """When the shop state is running"""
         if self.state == 'shop':
             if event.type == pg.MOUSEBUTTONUP:
                 if event.button == 3:
                     self.mouse_pos = pg.mouse.get_pos()
-                    PopupMenu(self.player.shop.menu_data)
+                    if self.player.shop.is_clicked(self.mouse_pos):
+                        PopupMenu(self.player.shop.menu_data)
+                    elif self.player.inventory.is_clicked(self.mouse_pos):
+                        PopupMenu(self.player.inventory.menu_data)
                 elif event.button == 1:
                     logger.info("Place an item")
                     self.player.shop.place_item(self.player.inventory, self.screen)
-                    self.player.inventory.place_item(self.screen)
+                    # self.player.inventory.place_item(self.screen)
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     logger.info("Select an item from the inventory")
                     self.player.shop.move_item(self.screen)
                     self.player.inventory.move_item(self.screen)
             elif event.type == pg.USEREVENT:
-                # print ('menu event: %s.%d: %s' % (event.name,event.item_id,event.text))
                 if event.code == 'MENU':
                     if event.name == 'shop' and event.text in self.player.shop.menu_data:
+                        print(event)
                         self.player.shop.check_slot(event.text, self.screen, self.player, self.mouse_pos)
+
+    def toggle_states(self, event):
+        """Use to toggle the state of all states"""
+        if key_for(self.game_data["shortcuts"]["game"]["menu"]["keys"], event):
+            self.player.inventory.display_inventory = False
+            self.player.shop.display_shop = False
+            super().toggle_sub_state('menu')
+        if key_for(self.game_data["shortcuts"]["game"]["inventory"]["keys"], event):
+            logger.info("Toggle inventory from player")
+            self.player.shop.display_shop = False
+            self.player.inventory.display_inventory = True
+            super().toggle_sub_state('inventory')
+        if event.key == pg.K_p:
+            logger.info("Toggle the shop")
+            self.player.shop.display_shop = True
+            self.player.inventory.display_inventory = True
+            super().toggle_sub_state('shop')
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""

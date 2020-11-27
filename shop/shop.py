@@ -9,6 +9,7 @@ from config.colors import WHITE
 from config.shop import SHOP_TILESIZE, SHOP_SLOT_GAP, SHOP_CATEGORIES, ACTIONS, MENU_DATA
 from config.sprites import CONSUMABLE, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
 from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, InventorySlot, Equipable
+from config.inventory import ACTIONS as INVENTORY_ACTIONS
 from copy import deepcopy
 
 
@@ -44,37 +45,29 @@ class Shop():
 
         self.menu_data = MENU_DATA
 
+    def set_all_categories(self):
+        """Used to define the different categories of items"""
+        for categorie in SHOP_CATEGORIES:
+            self.categories.append(categorie)
+
+    def get_all_slots(self):
+        """Get all slots fro the shop
+
+        Returns:
+            list: All slots from an shop
+        """
+        return self.weapon_slots + self.armor_slots + self.consumable_slots
+
+    def toggle_shop(self):
+        """Set display_shop to True it if was False and vice versa"""
+        self.display_shop = not self.display_shop
+
     def create_all_slots(self):
         """create the shop slots"""
         self.set_all_categories()
         self.create_weapon_slots()
         self.create_armor_slots()
         self.create_consumable_slots()
-
-    def set_all_categories(self):
-        """Used to define the different categories of items
-        """
-        for cat in SHOP_CATEGORIES:
-            self.categories.append(cat)
-
-    @staticmethod
-    def create_slots(cols, rows, offset_y):
-        """Create value to place data
-
-        Args:
-            cols (int)
-            rows (int)
-            offset_y (int)
-
-        Returns:
-            tuple: step, min_x, max_x, min_y, max_y
-        """
-        step = SHOP_TILESIZE + SHOP_SLOT_GAP
-        min_x = WIDTH // 4 - (step * cols) // 2 + SHOP_SLOT_GAP
-        max_x = WIDTH // 4 + (step * cols) // 2
-        min_y = HEIGHT // 3 - (step * rows) // 2 + SHOP_SLOT_GAP + offset_y
-        max_y = HEIGHT // 3 + (step * rows) // 2 + offset_y
-        return (step, min_x, max_x, min_y, max_y)
 
     def create_weapon_slots(self):
         """Create slots for the Weapon category"""
@@ -95,48 +88,7 @@ class Shop():
         step, min_x, max_x, min_y, max_y = self.create_slots(CONSUMABLE_COLS, CONSUMABLE_ROWS, 200)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
-                self.weapon_slots.append(ShopSlot(x, y, SHOP_TILESIZE, WHITE))
-
-    def get_all_slots(self):
-        """Get all slots fro the shop
-
-        Returns:
-            list: All slots from an shop
-        """
-        return self.weapon_slots + self.armor_slots + self.consumable_slots
-
-    def draw(self, screen):
-        """Used to draw the shop
-
-        Args:
-            screen (Surface)
-        """
-        if self.display_shop:
-            for slot in self.get_all_slots():
-                slot.draw(screen)
-            for slot in self.get_all_slots():
-                slot.draw_items(screen)
-
-    def move_item(self, screen):
-        """Drag function, makes an item following the mouse
-
-        Args:
-            screen (Surface)
-        """
-        mouse_pos = pg.mouse.get_pos()
-
-        for slot in self.get_all_slots():
-            if slot.draw(screen).collidepoint(
-                    mouse_pos) and slot.item is not None and self.moving_item is None:
-                slot.item.is_moving = True
-                self.moving_item = slot.item
-                print(slot.item.slot)
-                self.moving_item_slot = slot
-                break
-
-    def toggle_shop(self):
-        """Set display_shop to True it if was False and vice versa"""
-        self.display_shop = not self.display_shop
+                self.consumable_slots.append(ShopSlot(x, y, SHOP_TILESIZE, WHITE))
 
     def add_all_items(self):
         """Add all items all category"""
@@ -194,7 +146,8 @@ class Shop():
         self.consumables = list()
         for key, value in CONSUMABLE.items():
             data = Consumable(
-                key, path.join(self.items_folder, value['image']),
+                key,
+                path.join(self.items_folder, value['image']),
                 value['price'],
                 value['weight'])
             self.consumables.append(data)
@@ -207,6 +160,42 @@ class Shop():
                 else:
                     continue
 
+    def draw(self, screen):
+        """Used to draw the shop
+
+        Args:
+            screen (Surface)
+        """
+        if self.display_shop:
+            for slot in self.get_all_slots():
+                slot.draw(screen)
+            for slot in self.get_all_slots():
+                slot.draw_items(screen)
+
+    def move_item(self, screen):
+        """Drag function, makes an item following the mouse
+
+        Args:
+            screen (Surface)
+        """
+        mouse_pos = pg.mouse.get_pos()
+
+        for slot in self.get_all_slots():
+            if slot.draw(screen).collidepoint(
+                    mouse_pos) and slot.item is not None and self.moving_item is None:
+                slot.item.is_moving = True
+                self.moving_item = slot.item
+                self.moving_item_slot = slot
+                break
+
+    def place_item(self, inventory, screen):
+        inventory.place_item(screen, deepcopy(self.moving_item))
+        print("shop: place inventory")
+        if self.moving_item is not None:
+            self.moving_item.is_moving = False
+            self.moving_item = None
+            self.moving_item_slot = None
+
     def check_slot(self, action, screen, player, mouse_pos):
         """Execute a passed action if it's possible
 
@@ -218,18 +207,21 @@ class Shop():
         for slot in self.get_all_slots():
             if slot.item is not None:
                 if slot.draw(screen).collidepoint(mouse_pos):
+                    print(slot)
                     if action == ACTIONS['buy']:
                         logger.info('%s bought', slot.item.name)
                         self.buy_item(slot.item, player)
                     elif action == ACTIONS['buy_equip']:
+                        print("buy-equip")
                         if isinstance(slot.item, Equipable):
-                            self.buy_item(slot.item, player, ACTIONS['equip'])
+                            self.buy_item(slot.item, player, INVENTORY_ACTIONS['equip'])
                         else:
                             logger.info('Action can not be done')
                     elif action == ACTIONS['buy_use']:
                         if isinstance(slot.item, Consumable):
-                            self.buy_item(slot.item, player, ACTIONS['use'])
-                            player.inventory.check_slot(ACTIONS['use'], screen, mouse_pos)
+                            self.buy_item(slot.item, player, INVENTORY_ACTIONS['use'])
+                        else:
+                            logger.info('Action can not be done')
                     else:
                         logger.info('Action can not be done')
 
@@ -255,42 +247,25 @@ class Shop():
                     else:
                         logger.info('Action can not be done')
 
-    def buy_item(self, item, player, action=None):
-        """Buy and item
+    def buy_item(self, item, player, second_action=None):
+        """Buy an item
 
         Args:
             item (Item)
             player (Player)
-            action (String, optional): Defaults to None.
+            second_action (String, optional): Defaults to None.
         """
         if item.price > player.gold:
             print("You're homeless")
+            return
         else:
-            if item in self.weapons:
-                data = Weapon(
-                    item.name,
-                    item.img,
-                    item.price,
-                    item.slot,
-                    item.wpn_type,
-                    item.weight)
-            elif item in self.armors:
-                data = Armor(
-                    item.name, item.img,
-                    item.price,
-                    item.weight,
-                    item.shield,
-                    item.slot)
-            elif item in self.consumables:
-                data = Consumable(
-                    item.name, item.img,
-                    item.price,
-                    item.weight)
+            data = deepcopy(item)
         player.inventory.add_item(data)
-        if action == 'Equip':
+        if second_action == INVENTORY_ACTIONS['equip']:
+            print(player.inventory.find_item(data).item)
             player.inventory.equip_item(player.inventory.find_item(data).item)
-        if action == 'Use':
-            player.inventory.equip_use(player.inventory.find_item(data).item)
+        if second_action == INVENTORY_ACTIONS['use']:
+            player.inventory.use_item(player.inventory.find_item(data).item)
 
     def sell_item(self, item, player):
         """Sell an item
@@ -314,12 +289,29 @@ class Shop():
                 return slot
         return None
 
-    def place_item(self, inventory, screen):
-        inventory.place_item(screen, deepcopy(self.moving_item))
-        if self.moving_item is not None:
-            self.moving_item.is_moving = False
-            self.moving_item = None
-            self.moving_item_slot = None
+    @staticmethod
+    def create_slots(cols, rows, offset_y):
+        """Create value to place data
+
+        Args:
+            cols (int)
+            rows (int)
+            offset_y (int)
+
+        Returns:
+            tuple: step, min_x, max_x, min_y, max_y
+        """
+        step = SHOP_TILESIZE + SHOP_SLOT_GAP
+        min_x = WIDTH // 4 - (step * cols) // 2 + SHOP_SLOT_GAP
+        max_x = WIDTH // 4 + (step * cols) // 2
+        min_y = HEIGHT // 3 - (step * rows) // 2 + SHOP_SLOT_GAP + offset_y
+        max_y = HEIGHT // 3 + (step * rows) // 2 + offset_y
+        return (step, min_x, max_x, min_y, max_y)
+
+    def is_clicked(self, mouse_pos):
+        for slot in self.get_all_slots():
+            if slot.rect.collidepoint(mouse_pos):
+                return True
 
 
 class ShopSlot(Container):

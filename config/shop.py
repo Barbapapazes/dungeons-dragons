@@ -10,10 +10,6 @@ ACTIONS = {
     "buy": "buy",
     "buy_equip": "buy and equip",
     "buy_use": "buy and use",
-    "sell": "sell",
-    "equip": "equip",
-    "unequip": "unequip",
-    "use": "use",
 }
 
 MENU_DATA = ["shop"] + list(ACTIONS.values())

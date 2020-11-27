@@ -11,6 +11,7 @@ class Container:
         self.bg_color = bg_color
         self.size = size
         self.item = None
+        self.rect = pg.Rect(self.x, self.y, self.size, self.size)
 
     def draw(self, screen):
         """Return the drawing of an inventoryslot
@@ -22,7 +23,7 @@ class Container:
             Rect: the slot
         """
         return pg.draw.rect(
-            screen, self.bg_color, (self.x, self.y, self.size, self.size))
+            screen, self.bg_color, self.rect)
 
     def draw_items(self, screen):
         """Used to draw a item in the container"""

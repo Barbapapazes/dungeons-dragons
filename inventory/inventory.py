@@ -128,6 +128,8 @@ class Inventory():
         if slot is None:
             for slots in self.slots:
                 if slots.item is None:
+                    print(item)
+                    item.is_moving = False
                     slots.item = item
                     break
         if slot is not None:
@@ -136,6 +138,7 @@ class Inventory():
                 slot.item = item
             else:
                 slot.item = item
+        print(self.moving_item)
 
     def remove_item(self, item):
         """Remove a passed item from the inventory
@@ -178,14 +181,12 @@ class Inventory():
             if slot.draw(screen).collidepoint(
                     mouse_pos) and (self.moving_item is not None or shop_item):
                 if shop_item:
-                    print("0")
                     self.add_item(shop_item)
                 else:
                     if isinstance(
                             self.moving_item_slot, EquipableSlot) and isinstance(
                             slot, InventorySlot) and not isinstance(
                             slot, EquipableSlot) and slot.item is None:
-                        print("1")
                         self.unequip_item(self.moving_item)
                         break
                     if isinstance(
@@ -194,10 +195,8 @@ class Inventory():
                             self.moving_item_slot, EquipableSlot):
                         self.remove_item(self.moving_item)
                         self.add_item(self.moving_item, slot)
-                        print("2")
                         break
                     if isinstance(self.moving_item_slot, EquipableSlot) and isinstance(slot.item, Equipable):
-                        print("3")
                         if self.moving_item.slot == slot.item.slot:
                             self.unequip_item(self.moving_item)
                             self.equip_item(slot.item)
@@ -290,6 +289,11 @@ class Inventory():
         if isinstance(item, Equipable):
             item.unequip(self)
 
+    def is_clicked(self, mouse_pos):
+        for slot in self.get_all_slots():
+            if slot.rect.collidepoint(mouse_pos):
+                return True
+
 
 class InventorySlot(Container):
     """A slot from the inventory"""
@@ -311,6 +315,7 @@ class InventorySlot(Container):
             screen.blit(image, (self.x, self.y))
 
         if self.item is not None and self.item.is_moving:
+            print("drag")
             mouse_pos = pg.mouse.get_pos()
             image = pg.image.load(self.item.img).convert_alpha()
             image = pg.transform.scale(image, (self.size + 10, self.size + 10))

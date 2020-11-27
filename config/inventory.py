@@ -11,7 +11,7 @@ EQUIPMENT_COLS = len(WEAPON_SLOTS)
 EQUIPMENT_ROWS = len(ARMOR_SLOTS)
 
 ACTIONS = {
-    "buy": "buy",
+    "sell": "sell",
     "equip": "equip",
     "unequip": "unequip",
     "use": "use",
