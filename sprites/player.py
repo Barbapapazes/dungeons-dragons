@@ -28,7 +28,7 @@ class Player(pg.sprite.Sprite):
         self.pos = vec(x, y)
         self.rot = 0
 
-        self.nbAct = 0
+        self.numberOfAction= 0
 
         # Stats
         self.HP = 100

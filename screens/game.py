@@ -41,6 +41,7 @@ class Game(_State):
         self.versus = Versus()
         self.selectEnemy = None
         self.isVersus = False
+        self.circleATK = None
 
         # temp
         #######END_Versus#####
@@ -59,29 +60,7 @@ class Game(_State):
 
         super().setup_transition()
 
-        # Temporaire
-        # think how this will be used with the menu
-        # add a logger inside the inventory (for each keys or mouse move)
-        # items_folder = path.join(self.img_folder, 'items')
-        # weapons = list()
-        # for key, value in WEAPONS.items():
-        #     data = Weapon(
-        #         key, path.join(items_folder, value['image']),
-        #         value['weight'],
-        #         value['slot'],
-        #         value['type'],
-        #         value['nb_d'],
-        #         value['val_d'],
-        #         value['scope'])
-        #     weapons.append(data)
-        #     self.player.inventory.add_item(data)
 
-        # hp_potion = Consumable('img/potionRed.png', 2, 30)
-        # helmet_armor = Armor('helmet armor', 'assets/img/items/helmet.png', 10, 20, 'head')
-        # chest_armor = Armor('img/chest.png', 10, 40, 'chest')
-        # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
-        # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
-        # self.player.inventory.add_item(helmet_armor)
         self.new()
 
     def new(self):
@@ -109,6 +88,31 @@ class Game(_State):
                     tile_object.y,
                     tile_object.width,
                     tile_object.height)
+
+
+        # Temporaire
+        # think how this will be used with the menu
+        # add a logger inside the inventory (for each keys or mouse move)
+        items_folder = path.join(self.img_folder, 'items')
+        weapons = list()
+        for key, value in WEAPONS.items():
+            data = Weapon(
+                key, path.join(items_folder, value['image']),
+                value['weight'],
+                value['slot'],
+                value['type'],
+                value['nb_d'],
+                value['val_d'],
+                value['scope'])
+            weapons.append(data)
+            self.player.inventory.add_item(data)
+
+        # hp_potion = Consumable('img/potionRed.png', 2, 30)
+        # helmet_armor = Armor('helmet armor', 'assets/img/items/helmet.png', 10, 20, 'head')
+        # chest_armor = Armor('img/chest.png', 10, 40, 'chest')
+        # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
+        # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
+        # self.player.inventory.add_item(helmet_armor)
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -157,6 +161,12 @@ class Game(_State):
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if self.isVersus:  # cursor
+                if self.state == 'inventory':
+                    if self.player.inventory.display_inventory:
+                        logger.info("Select an item from the inventory")
+                        self.player.inventory.move_item(self.screen)
+
+                if self.isVersus:  
                     mouse_pos = pg.mouse.get_pos()
                     if self.versus.isATK(mouse_pos) and self.action is None:
                         self.action = "ATK"
@@ -291,8 +301,13 @@ class Game(_State):
         # Choose action
         if(self.action == 'ATK'):
             logger.info("Your action is Attack")
-            self.action = "select_enemy"
+            self.action = 'select_enemy'
             logger.info("Select your cible")
+            
+        
+        if(self.action=='select_enemy'):
+            self.circleATK =self.versus.rangeATK(self.screen,self.player)
+            
 
         if self.selectEnemy is not None:
             dmg = 0
@@ -353,6 +368,8 @@ class Game(_State):
         """Update all"""
         self.all_sprites.update()
         self.camera.update(self.player)
+      
+      
 
     def draw(self):
         """Draw all"""

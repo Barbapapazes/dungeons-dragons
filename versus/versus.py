@@ -3,6 +3,8 @@
 import pygame as pg
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import RED
+from config.versus import TOUCH_HAND
+from logger import logger
 
 # temp
 from temp.enemy import Enemy
@@ -24,3 +26,11 @@ class Versus():
         for enemy in listEnemy:
             if enemy.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 return enemy
+
+    def rangeATK(self,surface,player):
+        if player.weapon != None:
+            logger.debug(player.weapon.scope)
+            pg.draw.circle(surface,RED,player.pos,player.weapon.scope*TILESIZE,2)
+        else:
+            pg.draw.circle(surface,RED,player.pos,(TOUCH_HAND+1)*TILESIZE,2)
+
