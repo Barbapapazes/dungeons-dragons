@@ -1,22 +1,23 @@
 """Game screen"""
 
-from popup_menu import PopupMenu, NonBlockingPopupMenu
-from sprites.obstacle import Obstacle
-from temp.enemy import Enemy
-import pygame as pg
-from os import path
 from math import sqrt
+from os import path
+import pygame as pg
+from popup_menu import PopupMenu
 from window import _State
 from logger import logger
 from sprites.player import Player
+from sprites.obstacle import Obstacle
 from utils.tilemap import TiledMap, Camera, Minimap
-from config.window import WIDTH, HEIGHT, TILESIZE
-from config.colors import LIGHTGREY, BLACK, WHITE
-from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
-from config.sprites import WEAPONS, ARMOR
-from config.versus import MALUS_ARC, TOUCH_HAND
-from inventory.inventory import Armor, Weapon
 from utils.shortcuts import key_for
+from config.window import WIDTH, HEIGHT, TILESIZE
+from config.colors import LIGHTGREY, WHITE
+from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
+from config.shop import ACTIONS
+# from config.sprites import WEAPONS, ARMOR
+from config.versus import MALUS_ARC, TOUCH_HAND
+# from inventory.inventory import Armor, Weapon
+from temp.enemy import Enemy
 from versus.versus import Versus
 
 vec = pg.math.Vector2
@@ -156,14 +157,14 @@ class Game(_State):
             elif event.type == pg.USEREVENT:
                 # print ('menu event: %s.%d: %s' % (event.name,event.item_id,event.text))
                 if event.code == 'MENU':
-                    if (event.name, event.text) == ('Inventory', 'Equip'):
-                        self.player.inventory.check_slot('Equip', self.screen, self.mouse_pos)
-                    if (event.name, event.text) == ('Inventory', 'Unequip'):
-                        self.player.inventory.check_slot('Unequip', self.screen, self.mouse_pos)
-                    if (event.name, event.text) == ('Inventory', 'Use'):
-                        self.player.inventory.check_slot('Use', self.screen, self.mouse_pos)
-                    if (event.name, event.text) == ('Inventory', 'Throw'):
-                        self.player.inventory.check_slot('Throw', self.screen, self.mouse_pos)
+                    if (event.name, event.text) == ('inventory', 'equip'):
+                        self.player.inventory.check_slot('equip', self.screen, self.mouse_pos)
+                    if (event.name, event.text) == ('inventory', 'unequip'):
+                        self.player.inventory.check_slot('unequip', self.screen, self.mouse_pos)
+                    if (event.name, event.text) == ('inventory', 'use'):
+                        self.player.inventory.check_slot('use', self.screen, self.mouse_pos)
+                    if (event.name, event.text) == ('inventory', 'throw'):
+                        self.player.inventory.check_slot('throw', self.screen, self.mouse_pos)
 
         """When the shop state is running"""
         if self.state == 'shop':
@@ -181,7 +182,7 @@ class Game(_State):
             elif event.type == pg.USEREVENT:
                 # print ('menu event: %s.%d: %s' % (event.name,event.item_id,event.text))
                 if event.code == 'MENU':
-                    if event.name == 'Shop' and event.text in self.player.shop.menu_data:
+                    if event.name == 'shop' and event.text in self.player.shop.menu_data:
                         self.player.shop.check_slot(event.text, self.screen, self.player, self.mouse_pos)
 
     def run(self, surface, keys, mouse, dt):

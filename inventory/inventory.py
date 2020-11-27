@@ -4,7 +4,7 @@ import pygame as pg
 from random import randint
 from config.window import HEIGHT, WIDTH, TILESIZE
 from config.colors import WHITE
-from config.inventory import ARMOR_SLOTS, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP
+from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP
 from inventory.items import Item
 from logger import logger
 
@@ -36,7 +36,7 @@ class Inventory():
         self.create_slots()
         self.set_slot_types()
 
-        self.menu_data = ['Inventory', 'Equip', 'Unequip', 'Use', 'Throw']
+        self.menu_data = MENU_DATA
 
     def create_slots(self):
         """Create the inventory slots"""
@@ -212,20 +212,20 @@ class Inventory():
             mouse_pos (tuple):
         """
         for slot in self.get_all_slots():
-            if action == 'Throw':
+            if action == ACTIONS['throw']:
                 if slot.draw(screen).collidepoint(mouse_pos):
                     logger.info('%s Thrown', slot.item.name)
                     self.remove_item(slot.item)
             if isinstance(slot, InventorySlot):
                 if slot.draw(screen).collidepoint(mouse_pos):
                     if isinstance(slot.item, Equipable):
-                        if action == 'Equip':
+                        if action == ACTIONS['equip']:
                             logger.info('%s Equiped', slot.item.name)
                             self.equip_item(slot.item)
                         else:
                             logger.info('Action can not be done')
                     if isinstance(slot.item, Consumable):
-                        if action == 'Use':
+                        if action == ACTIONS['use']:
                             logger.info('%s Used', slot.item.name)
                             self.use_item(slot.item)
                         else:
@@ -233,7 +233,7 @@ class Inventory():
             if isinstance(slot, EquipableSlot):
                 if slot.draw(screen).collidepoint(mouse_pos):
                     if slot.item is not None:
-                        if action == 'Unequip':
+                        if action == ACTIONS['equip']:
                             logger.info('%s Unequiped', slot.item.name)
                             self.unequip_item(slot.item)
                         else:

@@ -9,3 +9,13 @@ INVENTORY_SLOT_GAP = 2
 
 EQUIPMENT_COLS = len(WEAPON_SLOTS)
 EQUIPMENT_ROWS = len(ARMOR_SLOTS)
+
+ACTIONS = {
+    "buy": "buy",
+    "equip": "equip",
+    "unequip": "unequip",
+    "use": "use",
+    "throw": "throw",
+}
+
+MENU_DATA = ["inventory"] + list(ACTIONS.values())

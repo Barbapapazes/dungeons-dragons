@@ -1,15 +1,13 @@
 """Shop"""
 
+from os import path
 import pygame as pg
 from logger import logger
 from config.window import HEIGHT, WIDTH
 from config.colors import WHITE
-from config.shop import SHOP_TILESIZE, SHOP_SLOT_GAP, SHOP_CATEGORIES
+from config.shop import SHOP_TILESIZE, SHOP_SLOT_GAP, SHOP_CATEGORIES, ACTIONS, MENU_DATA
 from config.sprites import CONSUMABLE, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
 from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, InventorySlot, Equipable
-from os import path
-
-from popup_menu import NonBlockingPopupMenu, PopupMenu
 
 
 class Shop():
@@ -34,14 +32,14 @@ class Shop():
         self.armor_slots = []
         self.consumable_slots = []
 
-        self.create_slots()
+        self.create_all_slots()
         self.add_all_items()
 
         self.display_shop = False
 
-        self.menu_data = ('Shop', 'Buy', 'Buy and equip', 'Buy and Use', 'Sell', 'Equip', 'Unequip', 'Use')
+        self.menu_data = MENU_DATA
 
-    def create_slots(self):
+    def create_all_slots(self):
         """create the shop slots"""
         self.set_all_categories()
         self.create_weapon_slots()
@@ -54,48 +52,43 @@ class Shop():
         for cat in SHOP_CATEGORIES:
             self.categories.append(cat)
 
+    @staticmethod
+    def create_slots(cols, rows, offset_y):
+        """Create value to place data
+
+        Args:
+            cols (int)
+            rows (int)
+            offset_y (int)
+
+        Returns:
+            tuple: step, min_x, max_x, min_y, max_y
+        """
+        step = SHOP_TILESIZE + SHOP_SLOT_GAP
+        min_x = WIDTH // 4 - (step * cols) // 2 + SHOP_SLOT_GAP
+        max_x = WIDTH // 4 + (step * cols) // 2
+        min_y = HEIGHT // 3 - (step * rows) // 2 + SHOP_SLOT_GAP + offset_y
+        max_y = HEIGHT // 3 + (step * rows) // 2 + offset_y
+        return (step, min_x, max_x, min_y, max_y)
+
     def create_weapon_slots(self):
         """Create slots for the Weapon category"""
-        step = SHOP_TILESIZE + SHOP_SLOT_GAP
-        print(WEAPONS_COLS, WEAPONS_ROWS)
-        min_x = WIDTH // 4 - (step * WEAPONS_COLS) // 2 + SHOP_SLOT_GAP
-        max_x = WIDTH // 4 + (step * WEAPONS_COLS) // 2
-        min_y = HEIGHT // 3 - (step * WEAPONS_ROWS) // 2 + SHOP_SLOT_GAP
-        max_y = HEIGHT // 3 + (step * WEAPONS_ROWS) // 2
-        # inventory is 1/4 in width
-        print(min_x, max_x, min_y, max_y, step)
+        step, min_x, max_x, min_y, max_y = self.create_slots(WEAPONS_COLS, WEAPONS_ROWS, 0)
         for x in range(min_x, max_x, step):
-            # inventory is center in height
             for y in range(min_y, max_y, step):
                 self.weapon_slots.append(ShopSlot(x, y))
 
     def create_armor_slots(self):
         """Create slots for the Armor category"""
-        step = SHOP_TILESIZE + SHOP_SLOT_GAP
-        print(ARMOR_COLS, ARMOR_ROWS)
-        min_x = WIDTH // 4 - (step * ARMOR_COLS) // 2 + SHOP_SLOT_GAP
-        max_x = WIDTH // 4 + (step * ARMOR_COLS) // 2
-        min_y = HEIGHT // 3 - (step * ARMOR_ROWS) // 2 + SHOP_SLOT_GAP + 100
-        max_y = HEIGHT // 3 + (step * ARMOR_ROWS) // 2 + 100
-        # inventory is 1/4 in width
-        print(min_x, max_x, min_y, max_y, step)
+        step, min_x, max_x, min_y, max_y = self.create_slots(ARMOR_COLS, ARMOR_ROWS, 100)
         for x in range(min_x, max_x, step):
-            # inventory is center in height
             for y in range(min_y, max_y, step):
                 self.armor_slots.append(ShopSlot(x, y))
 
     def create_consumable_slots(self):
         """Create slots for the Consumable category"""
-        step = SHOP_TILESIZE + SHOP_SLOT_GAP
-        print(CONSUMABLE_COLS, CONSUMABLE_ROWS)
-        min_x = WIDTH // 4 - (step * CONSUMABLE_COLS) // 2 + SHOP_SLOT_GAP
-        max_x = WIDTH // 4 + (step * CONSUMABLE_COLS) // 2
-        min_y = HEIGHT // 3 - (step * CONSUMABLE_ROWS) // 2 + SHOP_SLOT_GAP + 200
-        max_y = HEIGHT // 3 + (step * CONSUMABLE_ROWS) // 2 + 200
-        # inventory is 1/4 in width
-        print(min_x, max_x, min_y, max_y, step)
+        step, min_x, max_x, min_y, max_y = self.create_slots(CONSUMABLE_COLS, CONSUMABLE_ROWS, 200)
         for x in range(min_x, max_x, step):
-            # inventory is center in height
             for y in range(min_y, max_y, step):
                 self.weapon_slots.append(ShopSlot(x, y))
 
@@ -151,8 +144,7 @@ class Shop():
                     continue
 
     def add_all_armors(self):
-        """Add all items to the armor category
-        """
+        """Add all items to the armor category"""
         self.armors = list()
         for key, value in ARMOR.items():
             data = Armor(
@@ -172,8 +164,7 @@ class Shop():
                     continue
 
     def add_all_consumables(self):
-        """Add all items to the consumable category
-        """
+        """Add all items to the consumable category"""
         self.consumables = list()
         for key, value in CONSUMABLE.items():
             data = Consumable(
@@ -201,36 +192,36 @@ class Shop():
         for slot in self.get_all_slots():
             if slot.item is not None:
                 if slot.draw(screen).collidepoint(mouse_pos):
-                    if action == 'Buy':
+                    if action == ACTIONS['buy']:
                         logger.info('%s bought', slot.item.name)
                         self.buy_item(slot.item, player)
-                    elif action == 'Buy and equip':
+                    elif action == ACTIONS['buy_equip']:
                         if isinstance(slot.item, Equipable):
-                            self.buy_item(slot.item, player, 'Equip')
+                            self.buy_item(slot.item, player, ACTIONS['equip'])
                         else:
                             logger.info('Action can not be done')
-                    elif action == 'Buy and Use':
+                    elif action == ACTIONS['buy_use']:
                         if isinstance(slot.item, Consumable):
-                            self.buy_item(slot.item, player, 'Use')
-                            player.inventory.check_slot('Use', screen, mouse_pos)
+                            self.buy_item(slot.item, player, ACTIONS['use'])
+                            player.inventory.check_slot(ACTIONS['use'], screen, mouse_pos)
                     else:
                         logger.info('Action can not be done')
 
         for slot in player.inventory.get_all_slots():
             if isinstance(slot, InventorySlot):
                 if slot.draw(screen).collidepoint(mouse_pos):
-                    if action == 'Sell':
+                    if action == ACTIONS['sell']:
                         logger.info('%s sold', slot.item.name)
                         self.sell_item(slot.item, player)
                         slot.item = None
-                    elif action in ('Equip', 'Unequip', 'Use'):
+                    elif action in list(ACTIONS['equip']) + list(ACTIONS['unequip'])+list(ACTIONS['use']):
                         player.inventory.check_slot(action, screen, mouse_pos)
                     else:
                         logger.info('Action can not be done')
             elif isinstance(slot, EquipableSlot):
                 if slot.draw(screen).collidepoint(mouse_pos):
                     if slot.item is not None:
-                        if action == 'Sell':
+                        if action == ACTIONS['sell']:
                             logger.info('%s sold', slot.item.name)
                             player.inventory.unequip_item(slot.item)
                             self.sell_item(slot.item, player)
