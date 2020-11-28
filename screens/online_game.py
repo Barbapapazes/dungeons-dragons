@@ -25,9 +25,11 @@ class OnlineGame(_State):
         self.dt = dt
         self.game_data = game_data
         self.all_sprites = pg.sprite.Group()
+        self.walls = pg.sprite.Group()
 
         self.n = Network()
-        self.player = self.n.get_p()
+        (x, y) = self.n.get_p()
+        self.player = Player(self, x, y)
         logger.info(self.player)
         super().setup_transition()
 
@@ -40,7 +42,7 @@ class OnlineGame(_State):
                 self.next = 'online_game'
                 super().set_state(TRANSITION_OUT)
 
-    def run(self, surface, keys, dt):
+    def run(self, surface, keys, mouse, dt):
         """Run states"""
         self.screen = surface
         self.keys = keys
@@ -53,7 +55,7 @@ class OnlineGame(_State):
     def normal_run(self):
         """Run the normal state"""
         try:
-            self.n.send("get")
+            self.n.send(self.player.pos)
         except BaseException as e:
             self.next = MENU
             super().set_state(TRANSITION_OUT)

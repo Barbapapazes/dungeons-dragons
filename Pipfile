@@ -19,7 +19,7 @@ pytweening = "*"
 python_version = "3.9"
 
 [scripts]
-server = "python server"
+server = "python server.py"
 dev = "python main.py"
 lint_fix = "autopep8 --aggressive --aggressive --in-place -r -v ."
 lint = "pylint"

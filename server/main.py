@@ -1,7 +1,6 @@
 import socket
 import pickle
-from _thread import *
-from settings import SERVER_IP, SERVER_PORT
+from server.settings import SERVER_IP, SERVER_PORT
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -21,18 +20,21 @@ def close():
     print("closed")
 
 
+player = (2, 3)
+
+
 def threaded_client(conn):
-    conn.send(str.encode('connected to the server'))
+    conn.send(pickle.dumps(player))
+    reply = ""
 
     while True:
         try:
-            data = conn.recv(2048).decode()
+            data = pickle.loads(conn.recv(2048))
 
             if not data:
                 break
             else:
-                if data == "get":
-                    print(data)
+                # print(data)
 
                 conn.sendall(pickle.dumps(data))
         except BaseException:
@@ -41,18 +43,3 @@ def threaded_client(conn):
     print("Lost connection")
     print("Closing Game")
     conn.close()
-
-
-if __name__ == '__main__':
-    while True:
-        # close()
-        try:
-            conn, addr = s.accept()
-            print(conn, addr)
-
-            start_new_thread(threaded_client, (conn, ))
-
-        except KeyboardInterrupt:
-            print("[!] Keyboard Interrupted!")
-            close()
-            break
