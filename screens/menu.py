@@ -21,7 +21,10 @@ class Menu(_State):
         self.next = GAME
 
         # Background image
-        image = pg.image.load(path.join(self.img_folder,"background.jpg")).convert()
+        image = pg.image.load(
+            path.join(
+                self.img_folder,
+                "background.jpg")).convert()
         self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
 
         # Buttons
@@ -79,7 +82,7 @@ class Menu(_State):
                 YELLOW_LIGHT,
                 GREEN_DARK,
                 value["on_click"],
-                value["on_click_params"],
+                value["on_click_params"]
             ))
 
     def load_next_state(self, *next_state):
