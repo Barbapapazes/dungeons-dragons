@@ -254,12 +254,12 @@ class Game(_State):
 
     def shop_run(self):
         """Run the shop state"""
-        self.draw
+        self.draw()
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
         self.screen.blit(self.dim_screen, (0, 0))
-        self.player.shop.draw(self.screen)
         self.player.inventory.draw(self.screen)
+        self.player.shop.draw(self.screen)
 
     def versus_action(self):
         self.versus.draw(self.screen)
