@@ -175,7 +175,8 @@ class Game(_State):
                             self.enemy, mouse_pos)
                         if self.selectEnemy is not None:
                             self.action = None
-
+                    if self.versus.isMove(mouse_pos) and self.action == None:
+                        self.action="Move"
         self.events_inventory(event)
         self.events_shop(event)
 
@@ -352,6 +353,12 @@ class Game(_State):
                     dmg)
 
             self.selectEnemy = None
+
+
+        if self.action == 'Move':
+            logger.debug("autoriser le mvt")
+            self.action = None 
+
 
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
