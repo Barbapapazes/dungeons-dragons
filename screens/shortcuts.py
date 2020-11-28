@@ -73,7 +73,10 @@ class Shortcuts(_State):
                         self.selected_menu -= 1
                         if self.selected_menu < 0:
                             self.selected_menu = 0
-                logger.info("Menu : %d, Shortcut : %d", self.selected_menu, self.selected_shortcut)
+                logger.info(
+                    "Menu : %d, Shortcut : %d",
+                    self.selected_menu,
+                    self.selected_shortcut)
             elif event.key == pg.K_PAGEDOWN:
                 if not self.is_shortcut_selected:
                     if self.is_menu_selected:
@@ -86,7 +89,10 @@ class Shortcuts(_State):
                         self.selected_menu += 1
                         if self.selected_menu > len(self.shortcuts.keys()) - 1:
                             self.selected_menu = len(self.shortcuts.keys()) - 1
-                logger.info("Menu : %d, Shortcut : %d", self.selected_menu, self.selected_shortcut)
+                logger.info(
+                    "Menu : %d, Shortcut : %d",
+                    self.selected_menu,
+                    self.selected_shortcut)
             elif event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_ALT:
                 self.game_data["shortcut"] = self.shortcuts
                 self.save_shortcuts()
@@ -102,7 +108,8 @@ class Shortcuts(_State):
                     shortcut_keys = list(self.shortcuts[menu].keys())
                     shortcut = shortcut_keys[self.selected_shortcut]
                     self.shortcuts[menu][shortcut]["keys"] = self.create_shortcut()
-                    logger.info(f"Save {self.create_shortcut()} to {shortcut} in {menu}, memory")
+                    logger.info(
+                        f"Save {self.create_shortcut()} to {shortcut} in {menu}, memory")
                     self.saved_memory = True
                 # select from menu to shortcut and new shortcut
                 if self.is_menu_selected:
@@ -143,7 +150,11 @@ class Shortcuts(_State):
         """Save shortcuts to a custom file"""
         with open(path.join(self.saved_shortcuts, CUSTOM_SHORTCUTS_FILENAME), 'w') as _f:
             _f.write(json.dumps(self.shortcuts))
-            logger.info('Save shortcuts to %s', path.join(self.saved_shortcuts, CUSTOM_SHORTCUTS_FILENAME))
+            logger.info(
+                'Save shortcuts to %s',
+                path.join(
+                    self.saved_shortcuts,
+                    CUSTOM_SHORTCUTS_FILENAME))
 
     def create_shortcut(self):
         """Create the array for a shortcut
@@ -156,7 +167,14 @@ class Shortcuts(_State):
     def draw(self):
         """Draw content"""
         self.screen.blit(self.background, (0, 0))
-        self.draw_text("shortcuts".upper(), self.title_font, 48, BLACK, WIDTH // 2, 0, align="n")
+        self.draw_text(
+            "shortcuts".upper(),
+            self.title_font,
+            48,
+            BLACK,
+            WIDTH // 2,
+            0,
+            align="n")
 
         self.menu_keys = list(self.shortcuts.keys())
         self.draw_table()
@@ -164,8 +182,14 @@ class Shortcuts(_State):
 
         if self.is_shortcut_selected:
             self.draw_text(
-                f"Shortcut à enregistrer : {self.create_text_shortcut(self.ctrl, self.alt, self.key)}", self.title_font,
-                24, BLACK, WIDTH // 2, HEIGHT, align="s")
+                f"Shortcut à enregistrer : {self.create_text_shortcut(self.ctrl, self.alt, self.key)}",
+                self.title_font,
+                24,
+                BLACK,
+                WIDTH //
+                2,
+                HEIGHT,
+                align="s")
 
         self.draw_saved()
 
@@ -175,11 +199,19 @@ class Shortcuts(_State):
             color = GREY
             if index == self.selected_menu:
                 color = BLACK
-            self.draw_text(key.upper(), self.title_font, 24, color, 12, 60 + 60 * index, align="nw")
+            self.draw_text(
+                key.upper(),
+                self.title_font,
+                24,
+                color,
+                12,
+                60 + 60 * index,
+                align="nw")
 
     def draw_content(self):
         """Draw all content from the selected_menu value"""
-        for index, (key, value) in enumerate(self.shortcuts[self.menu_keys[self.selected_menu]].items()):
+        for index, (key, value) in enumerate(
+                self.shortcuts[self.menu_keys[self.selected_menu]].items()):
             color = GREY
             if index == self.selected_shortcut and self.is_menu_selected:
                 color = BLACK
@@ -187,13 +219,26 @@ class Shortcuts(_State):
             help = ""
             for key_2, value_2 in value.items():
                 if key_2 == 'keys':
-                    text += self.create_text_shortcut(value_2[0], value_2[1], value_2[2])
+                    text += self.create_text_shortcut(
+                        value_2[0], value_2[1], value_2[2])
                 elif key_2 == 'help':
                     help = f"{value_2}"
-            self.draw_text(text,
-                           self.title_font, 16, color, WIDTH // 4, 60 + 60 * index, align="nw")
-            self.draw_text(help,
-                           self.title_font, 12, color, WIDTH // 4 + 12, 80 + 60 * index, align="nw")
+            self.draw_text(
+                text,
+                self.title_font,
+                16,
+                color,
+                WIDTH // 4,
+                60 + 60 * index,
+                align="nw")
+            self.draw_text(
+                help,
+                self.title_font,
+                12,
+                color,
+                WIDTH // 4 + 12,
+                80 + 60 * index,
+                align="nw")
 
     def draw_saved(self):
         """Draw the saved page"""

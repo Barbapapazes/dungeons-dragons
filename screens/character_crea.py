@@ -24,23 +24,57 @@ class Character_crea(_State):
         self.background = pg.Surface((WIDTH, HEIGHT))
         self.startup(0, 0)
         # Backgroud image
-        self.image = pg.image.load("./img/Character_crea/background3.jpg").convert()
+        self.image = pg.image.load(
+            "./img/Character_crea/background3.jpg").convert()
         self.image = pg.transform.scale(self.image, (WIDTH, HEIGHT))
 
         # titre du jeu
         self.police = pg.font.Font("./assets/fonts/Enchanted Land.otf", 100)
         self.police_bis = pg.font.Font("./assets/fonts/Enchanted Land.otf", 50)
-        self.police_biss = pg.font.Font("./assets/fonts/Roboto-Regular.ttf", 20)
+        self.police_biss = pg.font.Font(
+            "./assets/fonts/Roboto-Regular.ttf", 20)
         self.titre = self.police.render("NewGame", True, couleur.YELLOW_LIGHT)
 
         # textbox
-        self.name = pw.TextBox(self.background, 20, 100, 400, 40, fontSize=50,
-                               borderColour=couleur.RED, textColour=(0, 200, 0),
-                               onSubmit=self.output, radius=10, borderThickness=4)
+        self.name = pw.TextBox(
+            self.background,
+            20,
+            100,
+            400,
+            40,
+            fontSize=50,
+            borderColour=couleur.RED,
+            textColour=(
+                0,
+                200,
+                0),
+            onSubmit=self.output,
+            radius=10,
+            borderThickness=4)
 
         # structure des persos
-        self.mage = ["< MAGE >", "./img/Character_crea/Mage.png", "description",
-                     ("STR", 0, 7), ("DEX", 2, 12), ("CON", 2, 12), ("INT", 2, 12), ("WIS", 2, 12), ("CHA", 2, 12)]
+        self.mage = [
+            "< MAGE >",
+            "./img/Character_crea/Mage.png",
+            "description",
+            ("STR",
+             0,
+             7),
+            ("DEX",
+             2,
+             12),
+            ("CON",
+             2,
+             12),
+            ("INT",
+             2,
+             12),
+            ("WIS",
+             2,
+             12),
+            ("CHA",
+             2,
+             12)]
         self.guerrier = [
             "< FIGHTER >", "./img/Character_crea/Guerrier.png",
             """Chevaliers menant une quête,seigneurs conquérants,champions royaux, fantassins d'élite,mercenaires endurcis et rois-bandits, tous partagent une maîtrise inégalée des armes et des armures ainsi /
@@ -55,10 +89,13 @@ class Character_crea(_State):
         self.list_perso = [self.mage, self.guerrier]
 
         # selector
-        self.item_text = self.police_bis.render(self.list_perso[self.index][0], True, couleur.BLACK)
-        self.description = self.police_biss.render(self.list_perso[self.index][2], True, couleur.BLACK)
+        self.item_text = self.police_bis.render(
+            self.list_perso[self.index][0], True, couleur.BLACK)
+        self.description = self.police_biss.render(
+            self.list_perso[self.index][2], True, couleur.BLACK)
 
-        self.perso = pg.image.load(self.list_perso[self.index][1]).convert_alpha()
+        self.perso = pg.image.load(
+            self.list_perso[self.index][1]).convert_alpha()
         self.perso = pg.transform.scale(self.perso, (WIDHT_CHAR, HEIGHT_CHAR))
 
         # button et anim
@@ -73,10 +110,10 @@ class Character_crea(_State):
             textHAlign="centre")
 
         self.anim = pw.Resize(self.Validation, 1, 200, 30)
-        self.anim2=pw.Translate(self.Validation,1,400,700)
+        self.anim2 = pw.Translate(self.Validation, 1, 400, 700)
 
         self.anim_inv = pw.Resize(self.Validation, 1, 0, 0)
-        self.anim2_inv=pw.Translate(self.Validation,1,500,717)
+        self.anim2_inv = pw.Translate(self.Validation, 1, 500, 717)
 
         # curseur
         self.str = Curseur(
@@ -105,11 +142,24 @@ class Character_crea(_State):
             self.list_perso[self.index][5][2] - self.list_perso[self.index][5][1],
             1)
 
-        self.list_selector = [self.str, self.dex, self.con, self.int, self.wis, self.cha]
+        self.list_selector = [
+            self.str,
+            self.dex,
+            self.con,
+            self.int,
+            self.wis,
+            self.cha]
 
         # nbpoint
-        self.nbpts = pw.TextBox(self.background, 800, 50, 100, 100, fontSize=50,textVAlign="center",textHAlign="center")
-
+        self.nbpts = pw.TextBox(
+            self.background,
+            800,
+            50,
+            100,
+            100,
+            fontSize=50,
+            textVAlign="center",
+            textHAlign="center")
 
     def sommepts(self):
         return sum(x.getvalue() for x in self.list_selector)
@@ -152,22 +202,24 @@ class Character_crea(_State):
 
     def switch_perso(self, side):
         if(side == "r"):
-            if(self.index < len(self.list_perso)-1):
-                self.index = self.index+1
+            if(self.index < len(self.list_perso) - 1):
+                self.index = self.index + 1
             else:
                 self.index = 0
         if(side == "l"):
             if(self.index > 0):
-                self.index = self.index-1
+                self.index = self.index - 1
             else:
-                self.index = len(self.list_perso)-1
+                self.index = len(self.list_perso) - 1
         # remise à zero des points a attribuer et slider
 
         self.actualisation_item()
 
     def actualisation_item(self):
-        self.item_text = self.police_bis.render(self.list_perso[self.index][0], True, couleur.BLACK)
-        self.perso = pg.image.load(self.list_perso[self.index][1]).convert_alpha()
+        self.item_text = self.police_bis.render(
+            self.list_perso[self.index][0], True, couleur.BLACK)
+        self.perso = pg.image.load(
+            self.list_perso[self.index][1]).convert_alpha()
         self.perso = pg.transform.scale(self.perso, (WIDHT_CHAR, HEIGHT_CHAR))
 
         self.str = Curseur(
@@ -196,7 +248,13 @@ class Character_crea(_State):
             self.list_perso[self.index][5][2] - self.list_perso[self.index][5][1],
             1)
 
-        self.list_selector = [self.str, self.dex, self.con, self.int, self.wis, self.cha]
+        self.list_selector = [
+            self.str,
+            self.dex,
+            self.con,
+            self.int,
+            self.wis,
+            self.cha]
 
     def next_action(self):
         super().set_state(TRANSITION_OUT)
@@ -210,7 +268,7 @@ class Character_crea(_State):
         self.background.blit(self.titre, (375, 0))
         self.background.blit(self.item_text, (425, 165))
         drawText(self.background, self.list_perso[self.index][2],
-                 couleur.BLACK, (10, 225, WIDTH-10, 70), self.police_biss)
+                 couleur.BLACK, (10, 225, WIDTH - 10, 70), self.police_biss)
         self.background.blit(self.perso, (415, 300))
 
         # self.name.listen(events)
@@ -218,7 +276,7 @@ class Character_crea(_State):
 
         self.Validation.listen(events)
         self.Validation.draw()
-        if(NB_POINT-self.sommepts() <= 0):
+        if(NB_POINT - self.sommepts() <= 0):
             self.str.draw(events, stopb=True, stopval=self.str.getvalue())
             self.dex.draw(events, stopb=True, stopval=self.dex.getvalue())
             self.con.draw(events, stopb=True, stopval=self.con.getvalue())
@@ -237,25 +295,28 @@ class Character_crea(_State):
             self.anim_inv.start()
             self.anim2_inv.start()
 
-        self.nbpts.setText(NB_POINT-self.sommepts())
+        self.nbpts.setText(NB_POINT - self.sommepts())
         self.nbpts.draw()
 
 
-
-
-
-
-
-
-
-
-
 class Curseur():
-    def __init__(self, title, x, y, width, height, surface, min, max, step, ini=0):
+    def __init__(
+            self,
+            title,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            ini=0):
         # police
         self.police = pg.font.Font("./assets/fonts/Enchanted Land.otf", 100)
         self.police_bis = pg.font.Font("./assets/fonts/Enchanted Land.otf", 50)
-        self.police_biss = pg.font.Font("./assets/fonts/Roboto-Regular.ttf", 20)
+        self.police_biss = pg.font.Font(
+            "./assets/fonts/Roboto-Regular.ttf", 20)
 
         # definition des tailles
         self.height = height
@@ -267,39 +328,45 @@ class Curseur():
 
         # label et point
         self.titre = self.police_biss.render(title, True, couleur.YELLOW_LIGHT)
-        self.output = pw.TextBox(self.surface, self.x+self.width+20, self.y-5, 65, 30, fontSize=21)
+        self.output = pw.TextBox(
+            self.surface,
+            self.x +
+            self.width +
+            20,
+            self.y -
+            5,
+            65,
+            30,
+            fontSize=21)
 
         # selector
-        self.slider = pw.Slider(self.surface, x, y, width, height, min=0, max=max, step=step, initial=ini)
+        self.slider = pw.Slider(
+            self.surface,
+            x,
+            y,
+            width,
+            height,
+            min=0,
+            max=max,
+            step=step,
+            initial=ini)
 
     def draw(self, events, stopb=False, stopval=2):
-        self.surface.blit(self.titre, (self.x+self.width/2-20, self.y-30))
+        self.surface.blit(
+            self.titre, (self.x + self.width / 2 - 20, self.y - 30))
         self.slider.listen(events)
-        if(stopb == True and self.slider.getValue() >= stopval):
+        if(stopb and self.slider.getValue() >= stopval):
             self.slider.value = stopval
         self.slider.draw()
-        self.output.setText(str(self.min)+" + "+str(self.slider.getValue()))
+        self.output.setText(str(self.min) + " + " +
+                            str(self.slider.getValue()))
         self.output.draw()
 
     def getvalue_tot(self):
-        return self.slider.getValue()+self.min
+        return self.slider.getValue() + self.min
 
     def getvalue(self):
         return self.slider.getValue()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # draw some text into an area of a surface

@@ -31,7 +31,9 @@ class LoadGame(_State):
         # else:
         #     self.startup(0, create_game_data())
         self.selected = 0
-        self.games = [f for f in os.listdir(self.saved_games) if f.endswith('.json')]
+        self.games = [
+            f for f in os.listdir(
+                self.saved_games) if f.endswith('.json')]
         self.len_games = len(self.games)
 
     def run(self, surface, keys, mouse, dt):
@@ -54,21 +56,31 @@ class LoadGame(_State):
         """
         if event.type == pg.KEYDOWN:
             if len(self.games):
-                if key_for(self.game_data["shortcuts"]["load_game"]["down"]["keys"], event):
+                if key_for(
+                        self.game_data["shortcuts"]["load_game"]["down"]["keys"],
+                        event):
                     self.selected += 1
                     if self.selected >= self.len_games:
                         self.selected = self.len_games - 1
-                    logger.info('Game selected : %s', self.games[self.selected])
-                if key_for(self.game_data["shortcuts"]["load_game"]["up"]["keys"], event):
+                    logger.info('Game selected : %s',
+                                self.games[self.selected])
+                if key_for(
+                        self.game_data["shortcuts"]["load_game"]["up"]["keys"],
+                        event):
                     self.selected -= 1
                     if self.selected < 0:
                         self.selected = 0
-                    logger.info('Game selected : %s', self.games[self.selected])
+                    logger.info('Game selected : %s',
+                                self.games[self.selected])
         if event.type == pg.KEYUP:
             if len(self.games):
-                if key_for(self.game_data["shortcuts"]["load_game"]["enter"]["keys"], event):
+                if key_for(
+                        self.game_data["shortcuts"]["load_game"]["enter"]["keys"],
+                        event):
                     self.load(self.games[self.selected])
-            if key_for(self.game_data["shortcuts"]["load_game"]["new game"]["keys"], event):
+            if key_for(
+                    self.game_data["shortcuts"]["load_game"]["new game"]["keys"],
+                    event):
                 now = datetime.now()
                 date = now.strftime("%Y-%b-%d")
                 timestamp = datetime.timestamp(now)
@@ -97,11 +109,24 @@ class LoadGame(_State):
         """Draw loading page"""
         self.background.fill((0, 0, 0))
         self.screen.blit(self.background, (0, 0))
-        self.draw_text("Load a game", self.title_font, 30, WHITE, WIDTH // 2, HEIGHT // 2, "center")
+        self.draw_text(
+            "Load a game",
+            self.title_font,
+            30,
+            WHITE,
+            WIDTH // 2,
+            HEIGHT // 2,
+            "center")
         self.draw_files()
         self.draw_text(
             f'Press {pg.key.name(self.game_data["shortcuts"]["load_game"]["new game"]["keys"][2])} to create a new file',
-            self.title_font, 25, WHITE, WIDTH // 2, HEIGHT, align="s")
+            self.title_font,
+            25,
+            WHITE,
+            WIDTH //
+            2,
+            HEIGHT,
+            align="s")
 
     def draw_files(self):
         """Print game data file name"""
