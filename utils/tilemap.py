@@ -97,8 +97,8 @@ class Minimap:
         Returns:
             Surface
         """
-        [x, y] = player.pos
-        rect_player = pg.Rect(x * self.img_ratio, y * self.img_ratio, 10, 10)
+        pos = player.pos * self.img_ratio
+        size = 5
         resize_map = pg.transform.scale(self.img, (self.width, self.height))
-        pg.draw.rect(resize_map, (255, 0, 0), rect_player)
+        pg.draw.circle(resize_map, (0, 255, 0), pos, size, width=2)
         return resize_map
