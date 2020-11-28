@@ -93,19 +93,19 @@ class Game(_State):
         # Temporaire
         # think how this will be used with the menu
         # add a logger inside the inventory (for each keys or mouse move)
-        items_folder = path.join(self.img_folder, 'items')
-        weapons = list()
-        for key, value in WEAPONS.items():
-            data = Weapon(
-                key, path.join(items_folder, value['image']),
-                value['weight'],
-                value['slot'],
-                value['type'],
-                value['nb_d'],
-                value['val_d'],
-                value['scope'])
-            weapons.append(data)
-            self.player.inventory.add_item(data)
+        # items_folder = path.join(self.img_folder, 'items')
+        # weapons = list()
+        # for key, value in WEAPONS.items():
+        #     data = Weapon(
+        #         key, path.join(items_folder, value['image']),
+        #         value['weight'],
+        #         value['slot'],
+        #         value['type'],
+        #         value['nb_d'],
+        #         value['val_d'],
+        #         value['scope'])
+        #     weapons.append(data)
+        #     self.player.inventory.add_item(data)
 
         # hp_potion = Consumable('img/potionRed.png', 2, 30)
         # helmet_armor = Armor('helmet armor', 'assets/img/items/helmet.png', 10, 20, 'head')
@@ -160,7 +160,7 @@ class Game(_State):
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
-                if self.isVersus:  # cursor
+                
                 if self.state == 'inventory':
                     if self.player.inventory.display_inventory:
                         logger.info("Select an item from the inventory")
