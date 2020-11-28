@@ -5,6 +5,7 @@
   "cSpell.words": [
     "KEYUP",
     "blit",
+    "btns",
     "pylint"
   ],
   "python.linting.pylintEnabled": true,
