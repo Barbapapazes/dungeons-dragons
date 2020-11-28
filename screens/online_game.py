@@ -29,8 +29,7 @@ class OnlineGame(_State):
 
         self.n = Network()
         (x, y) = self.n.get_p()
-        self.player = Player(self, x, y)
-        logger.info(self.player)
+        self.player = Player(self, x * TILESIZE - TILESIZE // 2, y * TILESIZE - TILESIZE // 2)
         super().setup_transition()
 
     def get_events(self, event):
