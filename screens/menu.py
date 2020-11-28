@@ -1,32 +1,15 @@
 """Menu screen"""
 
-import pygame as pg
-import pygame_widgets as pw
 from os import path
+from pygame_widgets import Button
+import pygame as pg
 from window import _State
+from logger import logger
 from config.window import WIDTH, HEIGHT
 from config.screens import GAME, MENU, TRANSITION_OUT, CREDITS, LOAD_GAME, CHARACTER_CREA
 from utils.shortcuts import load_shortcuts
-
-import config.colors as couleur
-
-
-HAUTEUR_BOUTON = 50
-LARGEUR_BOUTON = 350
-COLOR_INACTIVE = pg.Color('lightskyblue3')
-COLOR_ACTIVE = pg.Color('dodgerblue2')
-
-
-HAUTEUR_BOUTON = 50
-LARGEUR_BOUTON = 350
-COLOR_INACTIVE = pg.Color('lightskyblue3')
-COLOR_ACTIVE = pg.Color('dodgerblue2')
-
-
-HAUTEUR_BOUTON = 50
-LARGEUR_BOUTON = 350
-COLOR_INACTIVE = pg.Color('lightskyblue3')
-COLOR_ACTIVE = pg.Color('dodgerblue2')
+from config.colors import YELLOW_LIGHT, BEIGE, GREEN_DARK
+from config.buttons import HEIGHT_BUTTON, WIDTH_BUTTON, RADIUS_BUTTON, MARGIN_BUTTON
 
 
 class Menu(_State):
@@ -36,125 +19,72 @@ class Menu(_State):
         self.name = MENU
         super(Menu, self).__init__(self.name)
         self.next = GAME
-        self.background = pg.Surface((WIDTH, HEIGHT))
-        self.startup(0, load_shortcuts())
 
-        # Backgroud image
-        self.image = pg.image.load("./img/Menu/background2.jpg").convert()
-        self.image = pg.transform.scale(self.image, (WIDTH, HEIGHT))
-
-        # titre du jeu
-        self.police = pg.font.Font("./assets/fonts/Enchanted Land.otf", 150)
-        self.titre = self.police.render(
-            "Le Titre Du Jeu  ", True, couleur.YELLOW_LIGHT)
+        # Background image
+        image = pg.image.load(path.join(self.img_folder,"background.jpg")).convert()
+        self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
 
         # Buttons
-        self.police_button = pg.font.Font(
-            "./assets/fonts/Enchanted Land.otf", 50)
-        self.New_Game = pw.Button(
-            self.background,
-            337,
-            250,
-            LARGEUR_BOUTON,
-            HAUTEUR_BOUTON,
-            text='New Game',
-            fontSize=20,
-            margin=20,
-            inactiveColour=couleur.BEIGE,
-            hoverColour=couleur.YELLOW_LIGHT,
-            pressedColour=(
-                9,
-                48,
-                22),
-            radius=10,
-            onClick=self.Change_state,
-            onClickParams=[CHARACTER_CREA],
-            font=self.police_button,
-            textVAlign="centre",
-            textHAlign="centre")
-        self.Charge_game = pw.Button(
-            self.background,
-            337,
-            350,
-            LARGEUR_BOUTON,
-            HAUTEUR_BOUTON,
-            text='Charge Game ',
-            fontSize=20,
-            margin=20,
-            inactiveColour=couleur.BEIGE,
-            hoverColour=couleur.YELLOW_LIGHT,
-            pressedColour=(
-                9,
-                48,
-                22),
-            radius=10,
-            onClick=self.Change_state,
-            onClickParams=[LOAD_GAME],
-            font=self.police_button,
-            textVAlign="centre",
-            textHAlign="centre")
+        self.police_button = pg.font.Font(self.button_font, 50)
+        self.fontsize = 20
 
-        self.Options = pw.Button(
-            self.background,
-            337,
-            450,
-            LARGEUR_BOUTON,
-            HAUTEUR_BOUTON,
-            text='Options',
-            fontSize=20,
-            margin=20,
-            inactiveColour=couleur.BEIGE,
-            hoverColour=couleur.YELLOW_LIGHT,
-            pressedColour=(
-                9,
-                48,
-                22),
-            radius=10,
-            onClick=self.Change_state,
-            onClickParams=[CREDITS],
-            font=self.police_button,
-            textVAlign="centre",
-            textHAlign="centre")
+        self.create_buttons()
 
-        self.Quiter = pw.Button(
-            self.background,
-            337,
-            550,
-            LARGEUR_BOUTON,
-            HAUTEUR_BOUTON,
-            text='Leave to desktop',
-            fontSize=20,
-            margin=20,
-            inactiveColour=couleur.BEIGE,
-            hoverColour=couleur.YELLOW_LIGHT,
-            pressedColour=(
-                9,
-                48,
-                22),
-            radius=10,
-            onClick=self.Stop,
-            font=self.police_button,
-            textVAlign="centre",
-            textHAlign="centre")
+        self.startup(0, load_shortcuts())
 
-    def Change_state(self, *etat):
-        # changement etat
-        print(etat[0])
-        self.next = etat[0]
+    def create_buttons_dict(self):
+        return {
+            "new_game": {
+                "text": "New Game",
+                "on_click": self.load_next_state,
+                "on_click_params": [CHARACTER_CREA],
+            },
+            "load_game": {
+                "text": "Load a game",
+                "on_click": self.load_next_state,
+                "on_click_params": [LOAD_GAME],
+            },
+            "options": {
+                "text": "Options",
+                "on_click": self.load_next_state,
+                "on_click_params": [CREDITS],
+            },
+            "quit": {
+                "text": "Quit",
+                "on_click": self.stop_window,
+                "on_click_params": [],
+            }
+        }
+
+    def create_buttons(self):
+        x = WIDTH // 2 - WIDTH_BUTTON // 2
+        y = 250
+        y_base = 250
+        self.btns = list()
+        logger.info("Create all buttons from menu")
+        for index, (key, value) in enumerate(
+                self.create_buttons_dict().items()):
+            self.btns.append(self.create_button(
+                self.image,
+                x,
+                y_base + index * 100,
+                WIDTH_BUTTON,
+                HEIGHT_BUTTON,
+                value["text"],
+                self.police_button,
+                self.fontsize,
+                MARGIN_BUTTON,
+                RADIUS_BUTTON,
+                BEIGE,
+                YELLOW_LIGHT,
+                GREEN_DARK,
+                value["on_click"],
+                value["on_click_params"],
+            ))
+
+    def load_next_state(self, *next_state):
+        self.next = next_state[0]
         super().set_state(TRANSITION_OUT)
-
-    def Stop(self):
-        pg.quit()
-        quit()
-
-    def startup(self, dt, game_data):
-        """Initialize data at scene start."""
-        self.game_data = game_data
-        self.dt = dt
-        self.background.fill((0, 255, 0))
-        pg.init()
-        pg.display.set_mode((WIDTH, HEIGHT))
-        super().setup_transition()
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -169,34 +99,75 @@ class Menu(_State):
 
     def normal_run(self):
         """Run the normal state"""
+        self.events_buttons()
         self.draw()
 
-    def get_events(self, event):
-        """Events loop"""
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_RIGHT:
-                super().set_state(TRANSITION_OUT)
-            if event.key == pg.K_p:
-                self.game_data['game_data']['count'] += 1
-
-    def affiche(self):
-        print('coucou')
+    def events_buttons(self):
+        events = pg.event.get()
+        for btn in self.btns:
+            btn.listen(events)
 
     def draw(self):
         """Draw content"""
-        events = pg.event.get()
-        self.screen.blit(self.background, (0, 0))
-        self.background.blit(self.image, (0, 0))
-        self.background.blit(self.titre, (220, 50))
+        self.draw_background()
+        self.draw_title()
+        self.draw_buttons()
 
-        self.New_Game.listen(events)
-        self.New_Game.draw()
+    def draw_background(self):
+        """Draw the background"""
+        self.screen.blit(self.image, (0, 0))
 
-        self.Charge_game.listen(events)
-        self.Charge_game.draw()
+    def draw_title(self):
+        """Draw the title"""
+        self.draw_text(
+            "Dungeons and Dragons",
+            self.title_font,
+            150,
+            YELLOW_LIGHT,
+            WIDTH // 2,
+            15,
+            align="n")
 
-        self.Options.listen(events)
-        self.Options.draw()
+    def draw_buttons(self):
+        """Draw all buttons"""
+        for btn in self.btns:
+            btn.draw()
 
-        self.Quiter.listen(events)
-        self.Quiter.draw()
+    @staticmethod
+    def stop_window():
+        quit_event = pg.event.Event(pg.USEREVENT, code="_State", name="quit")
+        pg.event.post(quit_event)
+
+    @staticmethod
+    def create_button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text,
+            font,
+            fontsize,
+            margin,
+            radius,
+            inactive_color,
+            hover_color,
+            pressed_color,
+            on_click,
+            on_click_params):
+        return Button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text=text,
+            font=font,
+            fontSize=fontsize,
+            margin=margin,
+            radius=radius,
+            inactiveColour=inactive_color,
+            hoverColour=hover_color,
+            pressedColour=pressed_color,
+            onClick=on_click,
+            onClickParams=on_click_params)

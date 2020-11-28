@@ -8,8 +8,8 @@ police=pygame.font.Font("None",40)
 police2=pygame.font.Font("Sindentosa.ttf",40)
 police_small=pygame.font.Font("Pixeled.ttf",20)
 
-HAUTEUR_BOUTON=50
-LARGEUR_BOUTON=350
+HEIGHT_BUTTON=50
+WIDTH_BUTTON=350
 COLOR_INACTIVE = pygame.Color('lightskyblue3')
 COLOR_ACTIVE = pygame.Color('dodgerblue2')
 FONT = pygame.font.Font(None, 32)
@@ -19,7 +19,7 @@ class classe_Menu_prin():
 
     def __init__(self):
         self.New_Game = pw.Button(
-                surface, 337, 250, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='New Game',
+                surface, 337, 250, WIDTH_BUTTON, HEIGHT_BUTTON, text='New Game',
                 fontSize=50, margin=20,
                 inactiveColour=(13, 71, 32),
                 hoverColour=(9,48,22),
@@ -31,7 +31,7 @@ class classe_Menu_prin():
             )
 
         self.Charge_game = pw.Button(
-                surface, 337, 350, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='Charge Game ',
+                surface, 337, 350, WIDTH_BUTTON, HEIGHT_BUTTON, text='Charge Game ',
                 fontSize=50, margin=20,
                 inactiveColour=(13, 71, 32),
                 hoverColour=(9,48,22),
@@ -43,7 +43,7 @@ class classe_Menu_prin():
             )
 
         self.Options= pw.Button(
-                surface, 337, 450,LARGEUR_BOUTON , HAUTEUR_BOUTON, text='Options',
+                surface, 337, 450,WIDTH_BUTTON , HEIGHT_BUTTON, text='Options',
                 fontSize=50, margin=20,
                 inactiveColour=(13, 71, 32),
                 hoverColour=(9,48,22),
@@ -55,7 +55,7 @@ class classe_Menu_prin():
             )
 
         self.Quiter= pw.Button(
-                surface, 337, 550, LARGEUR_BOUTON, HAUTEUR_BOUTON, text='Leave to desktop',
+                surface, 337, 550, WIDTH_BUTTON, HEIGHT_BUTTON, text='Leave to desktop',
                 fontSize=50, margin=20,
                 inactiveColour=(13, 71, 32),
                 hoverColour=(9,48,22),

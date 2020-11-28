@@ -1,0 +1,6 @@
+"""Define buttons values"""
+
+HEIGHT_BUTTON = 50
+WIDTH_BUTTON = 350
+MARGIN_BUTTON = 20
+RADIUS_BUTTON = 10

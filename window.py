@@ -42,6 +42,7 @@ class Window():
         logger.info('Load data in main window')
         game_folder = path.dirname('.')
         self.assets_folder = path.join(game_folder, 'assets')
+        self.img_folder = path.join(self.assets_folder, 'img')
         self.saved_games = path.join(self.assets_folder, 'saved_games')
         self.saved_maps = path.join(self.assets_folder, 'saved_maps')
         self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
@@ -111,6 +112,12 @@ class Window():
                 self.state.get_events(event)
             elif event.type == pg.USEREVENT:
                 self.state.get_events(event)
+            
+            if event.type == pg.USEREVENT:
+                if event.code =="_State":
+                    if event.name == "quit":
+                        logger.info("User event : quit")
+                        self.done = True
 
     def save(self):
         """Save game_data"""
@@ -194,7 +201,9 @@ class _State():
         self.saved_maps = path.join(self.assets_folder, 'saved_maps')
         self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
         self.fonts_folder = path.join(self.assets_folder, 'fonts')
-        self.title_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
+        self.title_font = path.join(self.fonts_folder, 'Enchanted Land.otf')
+        self.text_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
+        self.button_font = path.join(self.fonts_folder, 'Enchanted Land.otf')
         self.img_folder = path.join(self.assets_folder, 'img')
 
     def draw_text(self, text, font_name, size, color, x, y, align="nw", screen=None):
