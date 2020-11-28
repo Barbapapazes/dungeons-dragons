@@ -1,7 +1,7 @@
 """Item"""
 
 
-class Item():
+class Item:
     """Item"""
 
     def __init__(self, name, img, price, weight):
@@ -17,3 +17,6 @@ class Item():
         self.price = price
         self.weight = weight
         self.is_moving = False
+
+    def __str__(self):
+        return self.name
