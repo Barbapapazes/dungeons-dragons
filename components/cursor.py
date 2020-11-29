@@ -15,7 +15,7 @@ class Cursor(Slider):
             min,
             max,
             step,
-            start, font, draw_text):
+            start, font, draw_text, color, handle_color):
         super(
             Cursor,
             self).__init__(
@@ -27,7 +27,8 @@ class Cursor(Slider):
             min=min,
             max=max,
             step=step,
-            initial=start)
+            initial=start,
+            colour=color, handleColour=handle_color)
 
         self.name = name
         self.screen = surface
