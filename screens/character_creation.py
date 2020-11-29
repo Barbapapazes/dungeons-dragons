@@ -1,16 +1,16 @@
 """"""
 
+from os import path
 import pygame as pg
 from pygame_widgets import Button, Slider, TextBox, Resize, Translate
-from components.cursor import Cursor
 from window import _State
-from os import path
+from logger import logger
+from components.cursor import Cursor
 from config.window import WIDTH, HEIGHT
 from config.screens import GAME, MENU, TRANSITION_OUT
-from config.colors import BLUE_HORIZON, GREY, LIGHTGREY, YELLOW_LIGHT, RED, BLACK, BEIGE, GREEN_DARK, WHITE
+from config.colors import LIGHTGREY, YELLOW_LIGHT, BLACK, BEIGE, GREEN_DARK, WHITE
 from config.sprites import WIDTH_CHARACTER, HEIGHT_CHARACTER, USABLE_POINTS
 from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
-from logger import logger
 
 
 class CharacterCreation(_State):
@@ -58,10 +58,12 @@ class CharacterCreation(_State):
         #     borderThickness=4)
 
     def new(self):
+        """Create new variables"""
         self.selected = 0
         self.selected_character = self.get_selected_characters()
 
     def create_buttons(self):
+        """Create buttons from this screen"""
         self.confirm_creation_btn = Button(
             self.background,
             20 * WIDTH // 20 - WIDTH_BUTTON // 2 - 20,
@@ -78,7 +80,7 @@ class CharacterCreation(_State):
             onClick=self.next_action)
 
     def create_animations(self):
-        pass
+        """Used to create animations"""
         # too many time for not a real result
         # self.resize_confirm_creation_btn = Resize(
         #     self.confirm_creation_btn, 1, WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2)
@@ -87,6 +89,11 @@ class CharacterCreation(_State):
         # 20 * HEIGHT // 20 - HEIGHT_BUTTON // 2 - 20)
 
     def create_sliders_dict(self):
+        """Create the dict for all sliders
+
+        Returns:
+            dict
+        """
         return {
             "strength": {
                 "max": self.get_selected_characters()["characteristics"]["str"]["max"],
@@ -115,6 +122,7 @@ class CharacterCreation(_State):
         }
 
     def create_sliders(self):
+        """Create sliders"""
         self.sliders = list()
         logger.info("Create all sliders from character creation")
         for index, (key, value) in enumerate(
@@ -142,44 +150,31 @@ class CharacterCreation(_State):
 
                 ))
 
-    @staticmethod
-    def create_slider(
-            name,
-            x,
-            y,
-            width,
-            height,
-            surface,
-            min,
-            max,
-            step,
-            start,
-            font,
-            draw_text, color, handle_color):
-        return Cursor(
-            name,
-            x,
-            y,
-            width,
-            height,
-            surface,
-            min,
-            max,
-            step,
-            start,
-            font,
-            draw_text, color, handle_color)
-
     def get_selected_characters(self):
+        """Get the selected character
+
+        Returns:
+            dict: the character
+        """
         name = list(self.get_characters().keys())[self.selected]
         return self.get_characters()[name]
 
     def get_default_points(self):
+        """Get the default number of points
+
+        Returns:
+            int
+        """
         return sum(
             value["base"] for key,
             value in self.get_selected_characters()["characteristics"].items())
 
     def get_characters(self):
+        """Dict with all characters
+
+        Returns:
+            dict
+        """
         return {
             "fighter": {
                 "name": "fighter",
@@ -245,11 +240,12 @@ class CharacterCreation(_State):
                    for x in self.sliders) - self.get_default_points()
 
     def remaining_points(self):
-        return USABLE_POINTS - self.sum_points()
+        """Get the remaining point
 
-    def output(self):
-        # Get text in the textbox
-        print("ok")
+        Returns:
+            int
+        """
+        return USABLE_POINTS - self.sum_points()
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -277,11 +273,13 @@ class CharacterCreation(_State):
                 slider.update()
 
     def events_buttons(self):
+        """Events for buttons"""
         if self.remaining_points() <= 0:
             events = pg.event.get()
             self.confirm_creation_btn.listen(events)
 
     def events_sliders(self):
+        """Events for sliders"""
         events = pg.event.get()
         for slider in self.sliders:
             slider.listen(events)
@@ -302,11 +300,8 @@ class CharacterCreation(_State):
                 self.selected_character = self.get_selected_characters()
                 self.create_sliders()
 
-    def next_action(self):
-        super().set_state(TRANSITION_OUT)
-        logger.debug("Save data")
-
     def draw(self):
+        """Draw all contents"""
         self.draw_background()
         self.draw_title()
         self.draw_characteristic()
@@ -320,6 +315,7 @@ class CharacterCreation(_State):
             self.draw_buttons()
 
     def draw_points(self):
+        """Draw the remaining points"""
         self.draw_text(
             f"Remaining points to attributs : {self.remaining_points()}",
             self.text_font,
@@ -393,6 +389,64 @@ class CharacterCreation(_State):
                        WIDTH // 2,
                        15,
                        align="n")
+
+    def next_action(self):
+        """Pass to the next screen"""
+        super().set_state(TRANSITION_OUT)
+        logger.debug("Save data")
+
+    def output(self):
+        # Get text in the textbox
+        print("ok")
+
+    @staticmethod
+    def create_slider(
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color):
+        """Create a slider
+
+        Args:
+            name (str)
+            x (int)
+            y (int)
+            width (int)
+            height (int)
+            surface (Surface)
+            min (int)
+            max (int)
+            step (int)
+            start (int)
+            font (str)
+            draw_text (func)
+            color (tuple)
+            handle_color (tuple)
+
+        Returns:
+            Cursor
+        """
+        return Cursor(
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color)
 
 
 # draw some text into an area of a surface
