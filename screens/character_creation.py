@@ -1,12 +1,13 @@
-""""""
+"""Create a character screen"""
 
-from data.game_data import create_game_data
 from os import path
+from datetime import datetime
 import pygame as pg
-from pygame_widgets import Button, Slider, TextBox, Resize, Translate
+from pygame_widgets import Button
 from window import _State
 from logger import logger
 from components.cursor import Cursor
+from data.game_data import create_game_data
 from config.window import WIDTH, HEIGHT
 from config.screens import CHARACTER_CREATION, GAME, TRANSITION_OUT
 from config.colors import LIGHTGREY, YELLOW_LIGHT, BLACK, BEIGE, GREEN_DARK, WHITE
@@ -400,14 +401,29 @@ class CharacterCreation(_State):
                        15,
                        align="n")
 
+    def create_file_name(self):
+        """Create the file name
+
+        Returns:
+            str: the file name
+        """
+        now = datetime.now()
+        date = now.strftime("%Y-%b-%d")
+        timestamp = datetime.timestamp(now)
+        return f"{date}-{int(timestamp)}.json"
+
     def next_action(self):
         """Pass to the next screen"""
+        logger.info("Save data to game_data")
+        self.game_data['file_name'] = self.create_file_name()
+
         self.game_data["game_data"] = create_game_data()
-        print(self.game_data)
+
         for slider in self.sliders:
             self.game_data["game_data"]["hero"]["characteristics"][slider.name] = slider.getValue()
-        self.game_data["game_data"]["hero"]["characteristics"]["class"] = self.get_selected_character()["name"]
-        logger.debug("Save data to game_data")
+        self.game_data["game_data"]["hero"]["class"] = self.get_selected_character()["name"]
+
+        logger.info("Start a new game")
         super().set_state(TRANSITION_OUT)
 
     def output(self):
