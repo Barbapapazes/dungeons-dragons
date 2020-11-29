@@ -7,7 +7,7 @@ from window import _State
 from logger import logger
 from components.cursor import Cursor
 from config.window import WIDTH, HEIGHT
-from config.screens import GAME, MENU, TRANSITION_OUT
+from config.screens import CHARACTER_CREATION, GAME, TRANSITION_OUT
 from config.colors import LIGHTGREY, YELLOW_LIGHT, BLACK, BEIGE, GREEN_DARK, WHITE
 from config.sprites import WIDTH_CHARACTER, HEIGHT_CHARACTER, USABLE_POINTS
 from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
@@ -17,7 +17,7 @@ class CharacterCreation(_State):
     """Creation_player"""
 
     def __init__(self):
-        self.name = MENU
+        self.name = CHARACTER_CREATION
         super(CharacterCreation, self).__init__(self.name)
         self.next = GAME
 
@@ -292,12 +292,14 @@ class CharacterCreation(_State):
                 if self.selected > len(list(self.get_characters().keys())) - 1:
                     self.selected = len(list(self.get_characters().keys())) - 1
                 self.selected_character = self.get_selected_characters()
+                logger.info("Select the %s in the %s", self.selected_character["name"], CHARACTER_CREATION)
                 self.create_sliders()
             if event.key == pg.K_LEFT:
                 self.selected -= 1
                 if self.selected < 0:
                     self.selected = 0
                 self.selected_character = self.get_selected_characters()
+                logger.info("Select the %s in the %s", self.selected_character["name"], CHARACTER_CREATION)
                 self.create_sliders()
 
     def draw(self):
