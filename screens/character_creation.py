@@ -1,5 +1,6 @@
 """"""
 
+from data.game_data import create_game_data
 from os import path
 import pygame as pg
 from pygame_widgets import Button, Slider, TextBox, Resize, Translate
@@ -60,7 +61,7 @@ class CharacterCreation(_State):
     def new(self):
         """Create new variables"""
         self.selected = 0
-        self.selected_character = self.get_selected_characters()
+        self.selected_character = self.get_selected_character()
 
     def create_buttons(self):
         """Create buttons from this screen"""
@@ -96,28 +97,34 @@ class CharacterCreation(_State):
         """
         return {
             "strength": {
-                "max": self.get_selected_characters()["characteristics"]["str"]["max"],
-                "start": self.get_selected_characters()["characteristics"]["str"]["base"],
+                "name": "str",
+                "max": self.get_selected_character()["characteristics"]["str"]["max"],
+                "start": self.get_selected_character()["characteristics"]["str"]["base"],
             },
             "dexterity": {
-                "max": self.get_selected_characters()["characteristics"]["dex"]["max"],
-                "start": self.get_selected_characters()["characteristics"]["dex"]["base"],
+                "name": "dex",
+                "max": self.get_selected_character()["characteristics"]["dex"]["max"],
+                "start": self.get_selected_character()["characteristics"]["dex"]["base"],
             },
             "constitution": {
-                "max": self.get_selected_characters()["characteristics"]["con"]["max"],
-                "start": self.get_selected_characters()["characteristics"]["con"]["base"],
+                "name": "con",
+                "max": self.get_selected_character()["characteristics"]["con"]["max"],
+                "start": self.get_selected_character()["characteristics"]["con"]["base"],
             },
             "intelligence": {
-                "max": self.get_selected_characters()["characteristics"]["int"]["max"],
-                "start": self.get_selected_characters()["characteristics"]["int"]["base"],
+                "name": "int",
+                "max": self.get_selected_character()["characteristics"]["int"]["max"],
+                "start": self.get_selected_character()["characteristics"]["int"]["base"],
             },
             "wisdom": {
-                "max": self.get_selected_characters()["characteristics"]["wis"]["max"],
-                "start": self.get_selected_characters()["characteristics"]["wis"]["base"],
+                "name": "wis",
+                "max": self.get_selected_character()["characteristics"]["wis"]["max"],
+                "start": self.get_selected_character()["characteristics"]["wis"]["base"],
             },
             "charisme": {
-                "max": self.get_selected_characters()["characteristics"]["cha"]["max"],
-                "start": self.get_selected_characters()["characteristics"]["cha"]["base"],
+                "name": "cha",
+                "max": self.get_selected_character()["characteristics"]["cha"]["max"],
+                "start": self.get_selected_character()["characteristics"]["cha"]["base"],
             },
         }
 
@@ -136,6 +143,7 @@ class CharacterCreation(_State):
             self.sliders.append(
                 self.create_slider(
                     key.upper(),
+                    value["name"],
                     x,
                     y,
                     WIDTH_SLIDER,
@@ -150,7 +158,7 @@ class CharacterCreation(_State):
 
                 ))
 
-    def get_selected_characters(self):
+    def get_selected_character(self):
         """Get the selected character
 
         Returns:
@@ -167,7 +175,7 @@ class CharacterCreation(_State):
         """
         return sum(
             value["base"] for key,
-            value in self.get_selected_characters()["characteristics"].items())
+            value in self.get_selected_character()["characteristics"].items())
 
     def get_characters(self):
         """Dict with all characters
@@ -291,14 +299,14 @@ class CharacterCreation(_State):
                 self.selected += 1
                 if self.selected > len(list(self.get_characters().keys())) - 1:
                     self.selected = len(list(self.get_characters().keys())) - 1
-                self.selected_character = self.get_selected_characters()
+                self.selected_character = self.get_selected_character()
                 logger.info("Select the %s in the %s", self.selected_character["name"], CHARACTER_CREATION)
                 self.create_sliders()
             if event.key == pg.K_LEFT:
                 self.selected -= 1
                 if self.selected < 0:
                     self.selected = 0
-                self.selected_character = self.get_selected_characters()
+                self.selected_character = self.get_selected_character()
                 logger.info("Select the %s in the %s", self.selected_character["name"], CHARACTER_CREATION)
                 self.create_sliders()
 
@@ -353,7 +361,7 @@ class CharacterCreation(_State):
                            15,
                            WHITE,
                            WIDTH // 2,
-                           7 * HEIGHT // 20 + 20 * index ,
+                           7 * HEIGHT // 20 + 20 * index,
                            align="n")
 
         image = pg.image.load(self.selected_character["image"]).convert_alpha()
@@ -394,8 +402,13 @@ class CharacterCreation(_State):
 
     def next_action(self):
         """Pass to the next screen"""
+        self.game_data["game_data"] = create_game_data()
+        print(self.game_data)
+        for slider in self.sliders:
+            self.game_data["game_data"]["hero"]["characteristics"][slider.name] = slider.getValue()
+        self.game_data["game_data"]["hero"]["characteristics"]["class"] = self.get_selected_character()["name"]
+        logger.debug("Save data to game_data")
         super().set_state(TRANSITION_OUT)
-        logger.debug("Save data")
 
     def output(self):
         # Get text in the textbox
@@ -403,6 +416,7 @@ class CharacterCreation(_State):
 
     @staticmethod
     def create_slider(
+            title,
             name,
             x,
             y,
@@ -418,6 +432,7 @@ class CharacterCreation(_State):
         """Create a slider
 
         Args:
+            title (str)
             name (str)
             x (int)
             y (int)
@@ -437,6 +452,7 @@ class CharacterCreation(_State):
             Cursor
         """
         return Cursor(
+            title,
             name,
             x,
             y,

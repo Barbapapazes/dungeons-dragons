@@ -6,6 +6,7 @@ from pygame_widgets import Slider
 class Cursor(Slider):
     def __init__(
             self,
+            title,
             name,
             x,
             y,
@@ -30,6 +31,7 @@ class Cursor(Slider):
             initial=start,
             colour=color, handleColour=handle_color)
 
+        self.title = title
         self.name = name
         self.screen = surface
         self.start = start
@@ -54,7 +56,7 @@ class Cursor(Slider):
             self.y + self.height // 2,
             align="w")
         self.draw_text(
-            self.name.upper(),
+            self.title.upper(),
             self.font,
             20,
             YELLOW_LIGHT,
