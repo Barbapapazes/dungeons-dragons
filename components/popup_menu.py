@@ -1,20 +1,20 @@
 """popup_menu.py - A low-fuss, infinitely nested popup menu with simple blocking
 behavior, and more advanced non-blocking behavior.
 Classes:
-    
+
     PopupMenu -> A blocking menu.
-    
+
     NonBlockingPopupMenu -> A non-blocking menu.
-    
+
     Menu -> The graphics and geometry for a menu panel. Note: You'll typically
         want to use PopupMenu or NonBlockingPopupMenu instead.
-    
+
     MenuItem -> The graphics and geometry for a menu item. Note: You'll
         typically want to use PopupMenu or NonBlockingPopupMenu instead.
     SubmenuLabel -> A helper class for strong-typing of submenu labels. Note:
         You'll typically want to use PopupMenu or NonBlockingPopupMenu instead.
 Module data (can be changed after importing the module):
-    
+
     font -> pygame.font.Font object used to render menus.
     bg_color -> pygame.Color object used for the menu panel background.
     hi_color -> pygame.Color object used for the highlighted item background.
@@ -23,7 +23,7 @@ Module data (can be changed after importing the module):
     shadow_color -> pygame.Color object used for dark beveled edge.
     margin -> int used for menu and item padding.
 Example blocking menu:
-    
+
     menu_data = ['Main', 'Item 0', ['Submenu', 'Item 0'], 'Quit']
     while 1:
         # game stuff...
@@ -38,7 +38,7 @@ Example blocking menu:
                 # handle all game events normally
                 pass
 Example non-blocking menu:
-    
+
     menu_data = ['Main', 'Item 0', ['Submenu', 'Item 0'], 'Quit']
     menu = NonBlockingPopupMenu(menu_data)
     while 1:
@@ -78,20 +78,20 @@ try:
     # "data.py" is a skellington-ism. The included custom version supports
     # subdirectories by type.
     import data
-except:
-    print ('warning: no data.py in module path: proceeding without it')
+except BaseException:
+    print('warning: no data.py in module path: proceeding without it')
 finally:
     try:
         font = pygame.font.Font(data.filepath('font', 'Vera.ttf'), 14)
-    except:
-        print ('warning: cannot load font Vera.ttf: using system default')
+    except BaseException:
+        print('warning: cannot load font Vera.ttf: using system default')
         font = pygame.font.SysFont(None, 20)
 
 bg_color = Color('grey')
-hi_color = Color(155,155,155)
+hi_color = Color(155, 155, 155)
 text_color = Color('black')
-glint_color = Color(220,220,220)
-shadow_color = Color(105,105,105)
+glint_color = Color(220, 220, 220)
+shadow_color = Color(105, 105, 105)
 
 margin = 2
 
@@ -99,7 +99,7 @@ margin = 2
 class PopupMenu(object):
     """popup_menu.PopupMenu
     PopupMenu(data, block=True) : return menu
-    
+
     data -> list; the list of strings and nested lists.
     pos -> tuple; the xy screen coordinate for the topleft of the main menu; if
         None, the mouse position is used.
@@ -107,24 +107,24 @@ class PopupMenu(object):
         your main loop until it exits; when False popup_menu.get_events() will
         intercept events it cares about and return unhandled events to the
         caller.
-    
+
     Note: For a non-blocking menu, use the NonBlockingPopupMenu instead. This
     class supports non-blocking, but it is more cumbersome to use than the
     NonBlockingPopupMenu class.
-    
+
     The first string in the data list is taken as the menu title. The remaining
     strings are menu items. A nested list becomes a submenu. Submenu lists must
     also contain strings for menu title and menu items. Submenus can be
     theoretically infinitely nested.
-    
+
     The menu runs a mini event loop. This will block the caller until it exits.
     Upon exiting, the screen is restored to its prior state.
-    
+
     Left-clicking outside the topmost menu will quit the entire menu. Right-
     clicking anywhere will close the topmost submenu; if only the main menu
     remains the menu will exit. Left-clicking a menu item in the topmost menu
     will post a USEREVENT for the caller to process.
-    
+
     The USEREVENT will have attributes: code='MENU', name=popup_menu.name,
     item_id=menu_item.item_id, text=menu_item.text. name is first element in a
     menu data list. item_id corresponds to the Nth element in a menu data list,
@@ -132,9 +132,9 @@ class PopupMenu(object):
     never posted in an event. text is the string value of the Nth element in the
     menu data list. Thus, combinations of name and menu_id or name and text can
     be used to uniquely identify menu selections.
-    
+
     Example menu data and resulting event data:
-        
+
         ['Main',            # main menu title
          'Item 0',          # name='Main', menu_id=0, text='Item 0'
             ['Submenu',     # submenu title
@@ -143,7 +143,7 @@ class PopupMenu(object):
             ],
          'Item 2',          # name='Main', menu_id=2, text='Item 2'
         ]
-    
+
     High-level steps for a blocking menu:
     1.  Fashion a nested list of strings for the PopupMenu constructor.
     2.  Upon creation, the menu runs its own loop.
@@ -151,9 +151,9 @@ class PopupMenu(object):
     4.  Handle the resulting USEREVENT event in the caller where
         event.name=='your menu title', event.item_id holds the selected item
         number, and event.text holds the item label.
-    
+
     High-level steps for a non-blocking menu:
-    
+
     Note: This usage exists to support the NonBlockingPopupMenu class and
     custom non-blocking implementations; for typical use NonBlockingPopupMenu
     is recommended.
@@ -178,24 +178,24 @@ class PopupMenu(object):
     7.  Destroying the menu is not necessary. But creating and destroying it may
         be a convenient means to manage the menu state (i.e. to post it or not).
     """
-    
+
     def __init__(self, data, pos=None, block=True):
         # list of open Menu() objects
         self.menus = []
         # key to main menu data
         self.top = data[0]
         # dict of menus, keyed by menu title
-        self.data = {self.top:[]}
+        self.data = {self.top: []}
         # walk the nested list, creating the data dict for easy lookup
         self._walk(self.top, list(data))
-        
+
         # make the main menu
         self._make_menu(self.data[self.top], pos)
-        
+
         # Save the display surface; use to clear screen
         self.screen = pygame.display.get_surface()
         self.clear_screen = self.screen.copy()
-        
+
         if block:
             self._run(block)
 
@@ -236,29 +236,33 @@ class PopupMenu(object):
             else:
                 unhandled.append(e)
         return unhandled
-    
+
     def draw(self):
         for menu in self.menus:
             menu.draw()
-    
+
     def _pick_event(self, menu, item):
-        event = pygame.event.Event(pygame.USEREVENT, code='MENU',
-            name=menu.name, item_id=item.item_id, text=item.text)
+        event = pygame.event.Event(
+            pygame.USEREVENT,
+            code='MENU',
+            name=menu.name,
+            item_id=item.item_id,
+            text=item.text)
         # print(event.name, event.text, event.type)
         return event
-    
+
     def _quit_event(self):
         event = pygame.event.Event(USEREVENT, code='MENU',
-            name=None, item_id=-1, text='_MENU_EXIT_')
+                                   name=None, item_id=-1, text='_MENU_EXIT_')
         return event
-    
+
     def _run(self, block=True):
         screen = self.screen
         clock = pygame.time.Clock()
         self.mouse_pos = pygame.mouse.get_pos()
         self.running = True
         while self.running:
-            self.screen.blit(self.clear_screen, (0,0))
+            self.screen.blit(self.clear_screen, (0, 0))
             self.draw()
             pygame.display.flip()
             self.handle_events(pygame.event.get())
@@ -267,7 +271,7 @@ class PopupMenu(object):
     def _walk(self, key, data):
         # Recursively walk the nested data lists, building the data dict for
         # easy lookup.
-        for i,ent in enumerate(data):
+        for i, ent in enumerate(data):
             if isinstance(ent, str):
                 self.data[key].append(ent)
             else:
@@ -277,14 +281,14 @@ class PopupMenu(object):
                 self.data[key].append(ent[0])
                 self.data[new_key] = []
                 self._walk(new_key, list(ent))
-    
+
     def _make_menu(self, data, pos=None):
         # Make a menu from data list and add it to the menu stack.
         if self.menus:
             # position submenu relative to parent
             parent = self.menus[-1]
             rect = parent.menu_item.rect
-            pos = rect.right,rect.top
+            pos = rect.right, rect.top
             # unset the parent's menu_item (for appearance)
             parent.menu_item = None
         else:
@@ -302,7 +306,7 @@ class PopupMenu(object):
     def _quit(self, block):
         # Put the original screen contents back.
         if block:
-            self.screen.blit(self.clear_screen, (0,0))
+            self.screen.blit(self.clear_screen, (0, 0))
             pygame.display.flip()
         self.running = False
 
@@ -310,7 +314,7 @@ class PopupMenu(object):
 class NonBlockingPopupMenu(PopupMenu):
     """popup_menu.NonBlockingPopupMenu
     NonBlockingPopupMenu(data, pos=None, show=False) : return menu
-    
+
     data -> list; the list of strings and nested lists.
     pos -> tuple; the xy screen coordinate for the topleft of the main menu; if
         None, the mouse position is used.
@@ -346,7 +350,7 @@ class NonBlockingPopupMenu(PopupMenu):
         original list variable, will result in a modified menu the next time
         menu.show() is called (or menu.visible is set to True).
 """
-    
+
     def __init__(self, data, pos=None, show=False):
         self.init_data = data
         self._init_pos = pos
@@ -354,13 +358,13 @@ class NonBlockingPopupMenu(PopupMenu):
             self.show()
         else:
             self.hide()
-    
+
     def show(self):
         """generate the menu geometry and graphics, and makes the menu visible"""
         super(NonBlockingPopupMenu, self).__init__(
             self.init_data, pos=self._init_pos, block=False)
         self._show = True
-    
+
     def hide(self):
         """destroy the menu geometry and grpahics, and hides the menu"""
         if hasattr(self, 'menus'):
@@ -370,6 +374,7 @@ class NonBlockingPopupMenu(PopupMenu):
     @property
     def visible(self):
         return self._show
+
     @visible.setter
     def visible(self, val):
         if val:
@@ -397,17 +402,17 @@ class NonBlockingPopupMenu(PopupMenu):
 class SubmenuLabel(str):
     """popup_menu.SubmenuLabel
     SubmenuLabel(s) : return label
-    
+
     s -> str; the label text
-    
+
     This is a helper class for strong-typing of submenu labels.
-    
+
     This class is not intended to be used directly. See PopupMenu or
     NonBlockingPopupMenu.
     """
-    
+
     def __new__(cls, s):
-        return str.__new__(cls, s+'...')
+        return str.__new__(cls, s + '...')
 
 
 class MenuItem(object):
@@ -416,11 +421,11 @@ class MenuItem(object):
     text -> str; the display text.
     item_id -> int; the numeric ID; also the item_id attribute returned in the
         pygame event.
-    
+
     This class is not intended to be used directly. Use PopupMenu or
     NonBlockingPopupMenu instead, unless designing your own subclass.
     """
-    
+
     def __init__(self, text, item_id):
         self.text = text
         self.item_id = item_id
@@ -437,7 +442,7 @@ class Menu(object):
     This class is not intended to be used directly. Use PopupMenu or
     NonBlockingPopupMenu instead, unless designing your own subclass.
     """
-    
+
     def __init__(self, pos, name, items):
         screen = pygame.display.get_surface()
         screen_rect = screen.get_rect()
@@ -445,46 +450,49 @@ class Menu(object):
         self.items = []
         self.menu_item = None
         # Make the frame rect
-        x,y = pos
-        self.rect = Rect(x,y,0,0)
+        x, y = pos
+        self.rect = Rect(x, y, 0, 0)
         self.rect.width += margin * 2
         self.rect.height += margin * 2
         # Make the title image and rect, and grow the frame rect
         self.title_image = font.render(name, True, text_color)
-        self.title_rect = self.title_image.get_rect(topleft=(x+margin,y+margin))
-        self.rect.width = margin*2 + self.title_rect.width
+        self.title_rect = self.title_image.get_rect(
+            topleft=(x + margin, y + margin))
+        self.rect.width = margin * 2 + self.title_rect.width
         self.rect.height = margin + self.title_rect.height
         # Make the item highlight rect
-        self.hi_rect = Rect(0,0,0,0)
+        self.hi_rect = Rect(0, 0, 0, 0)
 
         # Make menu items
         n = 0
         for item in items:
             menu_item = MenuItem(item, n)
             self.items.append(menu_item)
-            self.rect.width = max(self.rect.width, menu_item.rect.width+margin*2)
+            self.rect.width = max(
+                self.rect.width,
+                menu_item.rect.width + margin * 2)
             self.rect.height += menu_item.rect.height + margin
             n += 1
         self.rect.height += margin
-        
+
         # Position menu fully within view
         if not screen_rect.contains(self.rect):
-            savex,savey = self.rect.topleft
+            savex, savey = self.rect.topleft
             self.rect.clamp_ip(screen_rect)
             self.title_rect.top = self.rect.top + margin
             self.title_rect.left = self.rect.left + margin
-        
+
         # Position menu items within menu frame
         y = self.title_rect.bottom + margin
         for item in self.items:
             item.rect.x = self.rect.x + margin
             item.rect.y = y
             y = item.rect.bottom + margin
-            item.rect.width = self.rect.width - margin*2
-        
+            item.rect.width = self.rect.width - margin * 2
+
         # Calculate highlight rect's left-alignment and size
         self.hi_rect.left = menu_item.rect.left
-        self.hi_rect.width = self.rect.width - margin*2
+        self.hi_rect.width = self.rect.width - margin * 2
         self.hi_rect.height = menu_item.rect.height
 
         # Create the menu frame and highlight frame images
@@ -495,14 +503,16 @@ class Menu(object):
         # Draw menu border
         rect = self.bg_image.get_rect()
         pygame.draw.rect(self.bg_image, glint_color, rect, 1)
-        t,l,b,r = rect.top,rect.left,rect.bottom,rect.right
-        pygame.draw.line(self.bg_image, shadow_color, (l,b-1), (r,b-1), 1)
-        pygame.draw.line(self.bg_image, shadow_color, (r-1,t), (r-1,b), 1)
+        t, l, b, r = rect.top, rect.left, rect.bottom, rect.right
+        pygame.draw.line(self.bg_image, shadow_color,
+                         (l, b - 1), (r, b - 1), 1)
+        pygame.draw.line(self.bg_image, shadow_color,
+                         (r - 1, t), (r - 1, b), 1)
         # Draw title divider in menu frame
         left = margin
-        right = self.rect.width - margin*2
+        right = self.rect.width - margin * 2
         y = self.title_rect.height + 1
-        pygame.draw.line(self.bg_image, shadow_color, (left,y), (right,y))
+        pygame.draw.line(self.bg_image, shadow_color, (left, y), (right, y))
 
     def draw(self):
         # Draw the menu on the main display.

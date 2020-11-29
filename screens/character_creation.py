@@ -2,6 +2,7 @@
 
 import pygame as pg
 from pygame_widgets import Button, Slider, TextBox, Resize, Translate
+from components.cursor import Cursor
 from window import _State
 from os import path
 from config.window import WIDTH, HEIGHT
@@ -21,6 +22,7 @@ class CharacterCreation(_State):
         self.next = GAME
 
         # Background image
+        self.background = pg.Surface((WIDTH, HEIGHT)) # used to avoid a persistence on the screen with the slider
         image = pg.image.load(
             path.join(
                 self.img_folder,
@@ -36,8 +38,6 @@ class CharacterCreation(_State):
         self.create_buttons()
         self.create_animations()
         self.create_sliders()
-
-        self.slider_x = Slider(self.image, 100, 100, 800, 40, min=0, max=99, step=1)
 
         # textbox
         # self.name = TextBox(
@@ -66,7 +66,7 @@ class CharacterCreation(_State):
 
     def create_buttons(self):
         self.confirm_creation_btn = Button(
-            self.image, 500, 717, 0, 0, text='Start !',
+            self.background, 500, 717, 0, 0, text='Start !',
             fontSize=20, margin=MARGIN_BUTTON,
             inactiveColour=BEIGE,
             hoverColour=YELLOW_LIGHT,
@@ -120,9 +120,9 @@ class CharacterCreation(_State):
             x = 0
             y = 350 + (index % 3) * 70
             if index in [0, 1, 2]:
-                x = 700
+                x = 13 * WIDTH // 20
             else:
-                x = 20
+                x =  1 * WIDTH // 20
             self.sliders.append(
                 self.create_slider(
                     key.upper(),
@@ -130,22 +130,27 @@ class CharacterCreation(_State):
                     y,
                     WIDTH_SLIDER,
                     HEIGHT_SLIDER,
-                    self.image,
+                    self.background,
                     0,
                     value["max"],
                     1,
-                    value["start"]
+                    value["start"],
+                    self.text_font,
+                    self.draw_text
                     ))
 
     @staticmethod
-    def create_slider(name, x, y, width, height, surface, min, max, step,start):
-        return Curseur(
-            name, x, y, width, height, surface, min, max, step, start
+    def create_slider(name, x, y, width, height, surface, min, max, step,start, font,draw_text):
+        return Cursor(
+            name, x, y, width, height, surface, min, max, step, start, font, draw_text
         )
 
     def get_selected_characters(self):
         name = list(self.get_characters().keys())[self.selected]
         return self.get_characters()[name]
+    
+    def get_default_points(self):
+        return sum(value["base"] for key, value in self.get_selected_characters()["characteristics"].items())
 
     def get_characters(self):
         return {
@@ -212,7 +217,13 @@ class CharacterCreation(_State):
         }
 
     def sum_points(self):
-        return sum(x.getvalue() for x in self.sliders)
+        """Sum off the added points, remove the offset (start points)
+
+
+        Returns:
+            int
+        """
+        return sum(x.getValue() for x in self.sliders) - self.get_default_points()
 
     def remaining_points(self):
         return USABLE_POINTS - self.sum_points()
@@ -235,7 +246,17 @@ class CharacterCreation(_State):
         """Run the normal state"""
         self.events_buttons()
         self.events_sliders()
+        self.update()
         self.draw()
+
+    def update(self):
+        """Update the content"""
+        for slider in self.sliders:
+            if self.remaining_points() < 0:
+                slider.update(stop_count=True)
+            else:
+                slider.update()
+
 
     def events_buttons(self):
         events = pg.event.get()
@@ -245,8 +266,6 @@ class CharacterCreation(_State):
         events = pg.event.get()
         for slider in self.sliders:
             slider.listen(events)
-
-        self.slider_x.listen(events)
 
     def get_events(self, event):
         """Events loop"""
@@ -266,8 +285,7 @@ class CharacterCreation(_State):
 
     def next_action(self):
         super().set_state(TRANSITION_OUT)
-        # initialisation du personnage
-        # creation de la sauvegarde
+        logger.debug("Save data")
 
     def draw(self):
         self.draw_background()
@@ -279,7 +297,7 @@ class CharacterCreation(_State):
         # # self.name.listen(events)
         # # self.name.draw()
 
-        if self.remaining_points() == 0:
+        if self.remaining_points() <= 0:
             self.draw_buttons()
             self.resize_confirm_creation_btn.start()
             self.translate_confirm_creation_btn.start()
@@ -306,7 +324,7 @@ class CharacterCreation(_State):
 
     def draw_points(self):
         self.draw_text(
-            f"remaining points : {USABLE_POINTS - self.sum_points()}",
+            f"remaining points : {self.remaining_points()}",
             self.title_font,
             50,
             WHITE,
@@ -317,9 +335,7 @@ class CharacterCreation(_State):
     def draw_sliders(self):
         """Draw sliders"""
         for slider in self.sliders:
-            slider.draw()
-
-        self.slider_x.draw()
+                slider.draw()
 
     def draw_buttons(self):
         """Draw buttons"""
@@ -351,7 +367,8 @@ class CharacterCreation(_State):
 
     def draw_background(self):
         """Draw the background"""
-        self.screen.blit(self.image, (0, 0))
+        self.screen.blit(self.background, (0, 0))
+        self.background.blit(self.image, (0,0))
 
     def draw_title(self):
         """Draw title"""
