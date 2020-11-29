@@ -1,6 +1,11 @@
 """Define buttons values"""
 
+# Buttons
 HEIGHT_BUTTON = 50
 WIDTH_BUTTON = 350
 MARGIN_BUTTON = 20
 RADIUS_BUTTON = 10
+
+# Sliders
+HEIGHT_SLIDER = 20
+WIDTH_SLIDER = 200

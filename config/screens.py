@@ -6,7 +6,7 @@ MENU = 'menu'
 GAME = 'game'
 CREDITS = 'credits'
 SHORTCUTS = 'shortcuts'
-CHARACTER_CREA = "character_crea"
+CHARACTER_CREATION = "character_creation"
 
 # states
 TRANSITION_IN = 'transition in'

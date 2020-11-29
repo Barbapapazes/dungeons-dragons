@@ -6,7 +6,7 @@ import pygame as pg
 from window import _State
 from logger import logger
 from config.window import WIDTH, HEIGHT
-from config.screens import GAME, MENU, TRANSITION_OUT, CREDITS, LOAD_GAME, CHARACTER_CREA
+from config.screens import GAME, MENU, TRANSITION_OUT, CREDITS, LOAD_GAME, CHARACTER_CREATION
 from utils.shortcuts import load_shortcuts
 from config.colors import YELLOW_LIGHT, BEIGE, GREEN_DARK
 from config.buttons import HEIGHT_BUTTON, WIDTH_BUTTON, RADIUS_BUTTON, MARGIN_BUTTON
@@ -23,12 +23,12 @@ class Menu(_State):
         # Background image
         image = pg.image.load(
             path.join(
-                self.img_folder,
+                self.img_folder, 'menu',
                 "background.jpg")).convert()
         self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
 
         # Buttons
-        self.police_button = pg.font.Font(self.button_font, 50)
+        self.font_button = pg.font.Font(self.button_font, 50)
         self.fontsize = 20
 
         self.create_buttons()
@@ -40,7 +40,7 @@ class Menu(_State):
             "new_game": {
                 "text": "New Game",
                 "on_click": self.load_next_state,
-                "on_click_params": [CHARACTER_CREA],
+                "on_click_params": [CHARACTER_CREATION],
             },
             "load_game": {
                 "text": "Load a game",
@@ -74,7 +74,7 @@ class Menu(_State):
                 WIDTH_BUTTON,
                 HEIGHT_BUTTON,
                 value["text"],
-                self.police_button,
+                self.font_button,
                 self.fontsize,
                 MARGIN_BUTTON,
                 RADIUS_BUTTON,
