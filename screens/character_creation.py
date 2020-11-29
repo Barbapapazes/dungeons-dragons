@@ -22,7 +22,8 @@ class CharacterCreation(_State):
         self.next = GAME
 
         # Background image
-        self.background = pg.Surface((WIDTH, HEIGHT)) # used to avoid a persistence on the screen with the slider
+        # used to avoid a persistence on the screen with the slider
+        self.background = pg.Surface((WIDTH, HEIGHT))
         image = pg.image.load(
             path.join(
                 self.img_folder,
@@ -122,7 +123,7 @@ class CharacterCreation(_State):
             if index in [0, 1, 2]:
                 x = 13 * WIDTH // 20
             else:
-                x =  1 * WIDTH // 20
+                x = 1 * WIDTH // 20
             self.sliders.append(
                 self.create_slider(
                     key.upper(),
@@ -137,20 +138,44 @@ class CharacterCreation(_State):
                     value["start"],
                     self.text_font,
                     self.draw_text
-                    ))
+                ))
 
     @staticmethod
-    def create_slider(name, x, y, width, height, surface, min, max, step,start, font,draw_text):
+    def create_slider(
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text):
         return Cursor(
-            name, x, y, width, height, surface, min, max, step, start, font, draw_text
-        )
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text)
 
     def get_selected_characters(self):
         name = list(self.get_characters().keys())[self.selected]
         return self.get_characters()[name]
-    
+
     def get_default_points(self):
-        return sum(value["base"] for key, value in self.get_selected_characters()["characteristics"].items())
+        return sum(
+            value["base"] for key,
+            value in self.get_selected_characters()["characteristics"].items())
 
     def get_characters(self):
         return {
@@ -223,7 +248,8 @@ class CharacterCreation(_State):
         Returns:
             int
         """
-        return sum(x.getValue() for x in self.sliders) - self.get_default_points()
+        return sum(x.getValue()
+                   for x in self.sliders) - self.get_default_points()
 
     def remaining_points(self):
         return USABLE_POINTS - self.sum_points()
@@ -256,7 +282,6 @@ class CharacterCreation(_State):
                 slider.update(stop_count=True)
             else:
                 slider.update()
-
 
     def events_buttons(self):
         events = pg.event.get()
@@ -335,7 +360,7 @@ class CharacterCreation(_State):
     def draw_sliders(self):
         """Draw sliders"""
         for slider in self.sliders:
-                slider.draw()
+            slider.draw()
 
     def draw_buttons(self):
         """Draw buttons"""
@@ -368,7 +393,7 @@ class CharacterCreation(_State):
     def draw_background(self):
         """Draw the background"""
         self.screen.blit(self.background, (0, 0))
-        self.background.blit(self.image, (0,0))
+        self.background.blit(self.image, (0, 0))
 
     def draw_title(self):
         """Draw title"""
@@ -440,7 +465,6 @@ class Curseur():
 
         # if(stopb and self.slider.getValue() >= stopval):
         #     self.slider.value = stopval
-
 
         self.slider.draw()
         # self.output.setText(str(self.min) + " + " +
