@@ -49,5 +49,4 @@ def load_shortcuts():
         with open(path.join(saved_shortcuts, CUSTOM_SHORTCUTS_FILENAME), 'r') as _f:
             shortcuts = json.load(_f)
     data = {"shortcuts": shortcuts}
-    logger.info("Shortcuts loaded in screens: %s", data)
     return data
