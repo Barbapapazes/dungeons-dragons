@@ -200,12 +200,14 @@ class Shortcuts(_State):
         """Draw the table of contents"""
         for index, key in enumerate(self.menu_keys):
             color = BEIGE
+            font_size = 36
             if index == self.selected_menu:
                 color = YELLOW_LIGHT
+                font_size = 37
                 self.draw_text(
                     "->",
                     self.text_font,
-                    36,
+                    font_size,
                     color,
                     1 * WIDTH / 10 - 36,
                     200 + 90 * index,
@@ -213,7 +215,7 @@ class Shortcuts(_State):
             self.draw_text(
                 key.upper(),
                 self.text_font,
-                36,
+                font_size,
                 color,
                 1 * WIDTH / 10,
                 200 + 90 * index,
@@ -224,12 +226,14 @@ class Shortcuts(_State):
         for index, (key, value) in enumerate(
                 self.shortcuts[self.menu_keys[self.selected_menu]].items()):
             color = BEIGE
+            font_size = 16
             if index == self.selected_shortcut and self.is_menu_selected:
                 color = YELLOW_LIGHT
+                font_size = 17
                 self.draw_text(
                     "->",
                     self.text_font,
-                    16,
+                    font_size,
                     color,
                     4 * WIDTH // 10 - 16,
                     200 + 60 * index,
@@ -245,7 +249,7 @@ class Shortcuts(_State):
             self.draw_text(
                 text,
                 self.text_font,
-                16,
+                font_size,
                 color,
                 4 * WIDTH // 10,
                 200 + 60 * index,
