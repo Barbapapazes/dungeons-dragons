@@ -6,7 +6,7 @@ from os import path
 from window import _State
 from logger import logger
 from config.window import WIDTH, HEIGHT
-from config.colors import BLACK, WHITE, GLOOMY_PURPLE, GREY
+from config.colors import BEIGE, BLACK, BROWN, GREEN_DARK, LIGHTGREY, WHITE, GLOOMY_PURPLE, GREY, YELLOW_LIGHT
 from config.screens import SHORTCUTS
 from data.shortcuts import CUSTOM_SHORTCUTS_FILENAME, SHORTCUTS_DEFAULT
 
@@ -21,7 +21,11 @@ class Shortcuts(_State):
 
         self.key = None
 
-        self.background = pg.Surface((WIDTH, HEIGHT))
+        image = pg.image.load(
+            path.join(
+                self.img_folder, 'shortcuts',
+                "background.jpg")).convert()
+        self.background = pg.transform.scale(image, (WIDTH, HEIGHT))
 
         self.shortcuts = None
         self.selected_menu = 0
@@ -41,7 +45,6 @@ class Shortcuts(_State):
         self.game_data = game_data
         self.shortcuts = self.game_data["shortcuts"]
         self.dt = dt
-        self.background.fill(GLOOMY_PURPLE)
         super().setup_transition()
 
     def run(self, surface, keys, mouse, dt):
@@ -168,12 +171,12 @@ class Shortcuts(_State):
         """Draw content"""
         self.screen.blit(self.background, (0, 0))
         self.draw_text(
-            "shortcuts".upper(),
+            "shortcuts".capitalize(),
             self.title_font,
-            48,
-            BLACK,
+            150,
+            YELLOW_LIGHT,
             WIDTH // 2,
-            0,
+            15,
             align="n")
 
         self.menu_keys = list(self.shortcuts.keys())
@@ -183,9 +186,9 @@ class Shortcuts(_State):
         if self.is_shortcut_selected:
             self.draw_text(
                 f"Shortcut à enregistrer : {self.create_text_shortcut(self.ctrl, self.alt, self.key)}",
-                self.title_font,
+                self.text_font,
                 24,
-                BLACK,
+                YELLOW_LIGHT,
                 WIDTH //
                 2,
                 HEIGHT,
@@ -196,25 +199,41 @@ class Shortcuts(_State):
     def draw_table(self):
         """Draw the table of contents"""
         for index, key in enumerate(self.menu_keys):
-            color = GREY
+            color = BEIGE
             if index == self.selected_menu:
-                color = BLACK
+                color = YELLOW_LIGHT
+                self.draw_text(
+                    "->",
+                    self.text_font,
+                    36,
+                    color,
+                    1 * WIDTH / 10 - 36,
+                    200 + 90 * index,
+                    align="nw")
             self.draw_text(
                 key.upper(),
-                self.title_font,
-                24,
+                self.text_font,
+                36,
                 color,
-                12,
-                60 + 60 * index,
+                1 * WIDTH / 10,
+                200 + 90 * index,
                 align="nw")
 
     def draw_content(self):
         """Draw all content from the selected_menu value"""
         for index, (key, value) in enumerate(
                 self.shortcuts[self.menu_keys[self.selected_menu]].items()):
-            color = GREY
+            color = BEIGE
             if index == self.selected_shortcut and self.is_menu_selected:
-                color = BLACK
+                color = YELLOW_LIGHT
+                self.draw_text(
+                    "->",
+                    self.text_font,
+                    16,
+                    color,
+                    4 * WIDTH // 10 - 16,
+                    200 + 60 * index,
+                    align="nw")
             text = f"{key.upper()} : "
             help = ""
             for key_2, value_2 in value.items():
@@ -225,31 +244,31 @@ class Shortcuts(_State):
                     help = f"{value_2}"
             self.draw_text(
                 text,
-                self.title_font,
+                self.text_font,
                 16,
                 color,
-                WIDTH // 4,
-                60 + 60 * index,
+                4 * WIDTH // 10,
+                200 + 60 * index,
                 align="nw")
             self.draw_text(
                 help,
-                self.title_font,
+                self.text_font,
                 12,
                 color,
-                WIDTH // 4 + 12,
-                80 + 60 * index,
+                4 * WIDTH // 10 + 12,
+                220 + 60 * index,
                 align="nw")
 
     def draw_saved(self):
         """Draw the saved page"""
         if self.saved_file or self.saved_memory or self.reset_memory:
-            self.alpha_actions += 15
+            self.alpha_actions += 8
         if self.alpha_actions >= 255:
             self.saved_file = False
             self.saved_memory = False
             self.reset_memory = False
         if self.alpha_actions > 0 and not self.saved_file and not self.saved_memory and not self.reset_memory:
-            self.alpha_actions -= 15
+            self.alpha_actions -= 16
         if self.saved_file or self.alpha_actions > 0 or self.saved_memory or self.reset_memory:
             transition = pg.Surface((WIDTH, HEIGHT))
             transition.fill(BLACK)
@@ -262,8 +281,8 @@ class Shortcuts(_State):
                 text = "Saved in memory"
             elif self.reset_memory:
                 text = "Reset in memory"
-            self.draw_text(text, self.title_font, 50, WHITE,
-                           WIDTH // 2, HEIGHT / 2, align="center")
+            self.draw_text(text, self.title_font, 150, WHITE,
+                           WIDTH // 2, HEIGHT // 2, align="center")
 
     @staticmethod
     def create_text_shortcut(ctrl, alt, key):
