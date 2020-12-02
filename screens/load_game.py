@@ -8,7 +8,7 @@ from datetime import datetime
 from logger import logger
 from window import _State
 from config.screens import MENU, LOAD_GAME, TRANSITION_OUT
-from config.colors import BURGUNDY, WHITE
+from config.colors import BEIGE, BURGUNDY, WHITE, YELLOW_LIGHT
 from config.window import WIDTH, HEIGHT
 from data.game_data import create_game_data
 from utils.shortcuts import key_for
@@ -23,13 +23,12 @@ class LoadGame(_State):
         self.next = MENU
         self.state = 'normal'
 
-        self.background = pg.Surface((WIDTH, HEIGHT))
+        image = pg.image.load(
+            path.join(
+                self.img_folder, 'load_game',
+                "background.jpg")).convert()
+        self.background = pg.transform.scale(image, (WIDTH, HEIGHT))
 
-        # if (len(games) == 1):
-        #     with open(path.join(self.saved_games, games[0])) as f:
-        #         self.startup(0, json.load(f))
-        # else:
-        #     self.startup(0, create_game_data())
         self.selected = 0
         self.games = [
             f for f in os.listdir(
@@ -107,22 +106,21 @@ class LoadGame(_State):
 
     def draw(self):
         """Draw loading page"""
-        self.background.fill((0, 0, 0))
         self.screen.blit(self.background, (0, 0))
         self.draw_text(
             "Load a game",
             self.title_font,
-            30,
-            WHITE,
+            150,
+            YELLOW_LIGHT,
             WIDTH // 2,
-            HEIGHT // 2,
-            "center")
+            15,
+            "n")
         self.draw_files()
         self.draw_text(
             f'Press {pg.key.name(self.game_data["shortcuts"]["load_game"]["new game"]["keys"][2])} to create a new file',
             self.title_font,
-            25,
-            WHITE,
+            56,
+            BEIGE,
             WIDTH //
             2,
             HEIGHT,
@@ -131,11 +129,11 @@ class LoadGame(_State):
     def draw_files(self):
         """Print game data file name"""
         for index, name in enumerate(self.games):
-            color = WHITE
+            color = BEIGE
             font_size = 25
             if index == self.selected:
-                color = BURGUNDY
+                color = YELLOW_LIGHT
                 font_size = 26
 
-            self.draw_text(name, self.title_font, font_size, color, WIDTH //
-                           2, HEIGHT * 6 / 10 + 35 * index, align="center")
+            self.draw_text(name, self.text_font, font_size, color, WIDTH //
+                           2, 250 + 35 * index, align="center")
