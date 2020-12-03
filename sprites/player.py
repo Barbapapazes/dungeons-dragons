@@ -44,7 +44,6 @@ class Player(pg.sprite.Sprite):
         self.WIS = 10  # lucky
         self.CHA = 60  # charisme
 
-        self.gold = 100
 
         self.gold = 100
 

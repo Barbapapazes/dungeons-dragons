@@ -15,7 +15,7 @@ from config.colors import LIGHTGREY, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 from config.shop import ACTIONS
 # from config.sprites import WEAPONS, ARMOR
-from config.versus import MALUS_ARC, TOUCH_HAND
+from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON
 # from inventory.inventory import Armor, Weapon
 from temp.enemy import Enemy
 from versus.versus import Versus
@@ -74,6 +74,7 @@ class Game(_State):
             self.map_rect.width /
             self.map_rect.height)
         self.camera = Camera(self.map.width, self.map.height)
+        self.versus.setCamera(self.camera)
 
         for tile_object in self.map.tmxdata.objects:
             obj_center = vec(
@@ -177,6 +178,8 @@ class Game(_State):
                             self.action = None
                     if self.versus.isMove(mouse_pos) and self.action == None:
                         self.action="Move"
+                    if self.versus.CheckMove(mouse_pos,self.player) and self.action == 'Move':
+                        self.action="Move_autorised"
         self.events_inventory(event)
         self.events_shop(event)
 
@@ -258,11 +261,16 @@ class Game(_State):
 
     def normal_run(self):
         """Run the normal state"""
-        self.update()
-        self.draw()
-        self.check_for_menu()
         if self.isVersus:
+            self.draw()
             self.versus_action()
+            if (self.action == "Move_autorised"):
+                self.update()
+        else:
+            self.update()
+            self.draw()
+
+        self.check_for_menu()
 
     def menu_run(self):
         """Run the menu state"""
@@ -339,9 +347,8 @@ class Game(_State):
                 else:
                     logger.info("It's too far away ")
             else:
-                if self.distance(self.player,
-                                 self.selectEnemy) // TILESIZE <= TOUCH_HAND:
-                    dmg = 2  # attack with any weapon
+                if self.distance(self.player, self.selectEnemy)//TILESIZE <= TOUCH_HAND:
+                    dmg = DMG_ANY_WEAPON  
                 else:
                     logger.info("It's too far away ")
 
@@ -355,9 +362,14 @@ class Game(_State):
             self.selectEnemy = None
 
 
-        if self.action == 'Move':
-            logger.debug("autoriser le mvt")
-            self.action = None 
+        if self.action =='Move':
+            self.versus.rangeMOV(self.screen,self.player)
+            
+        
+        if self.action=='Move_autorised':
+            #player pathfinding
+            logger.debug("personnage moved")
+            self.action=None
 
 
     def check_for_menu(self):
