@@ -260,7 +260,11 @@ class _State():
         self.transition_surface.set_alpha(self.alpha)
 
     def get_events(self, event):
-        """Manage the event for this screen"""
+        """Manage event
+
+        Args:
+            event (Event)
+        """
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
