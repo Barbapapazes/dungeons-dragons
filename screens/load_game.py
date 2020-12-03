@@ -98,34 +98,12 @@ class LoadGame(_State):
             WIDTH // 2,
             15,
             "n")
-        # self.draw_files()
         self.draw_buttons()
-        self.draw_text(
-            f'Press {pg.key.name(self.game_data["shortcuts"]["load_game"]["new game"]["keys"][2])} to create a new file',
-            self.title_font,
-            56,
-            BEIGE,
-            WIDTH //
-            2,
-            HEIGHT,
-            align="s")
 
     def draw_buttons(self):
         """draw all buttons"""
         for btn in self.btns:
             btn.draw()
-
-    def draw_files(self):
-        """Print game data file name"""
-        for index, name in enumerate(self.games):
-            color = BEIGE
-            font_size = 25
-            if index == self.selected:
-                color = YELLOW_LIGHT
-                font_size = 26
-
-            self.draw_text(name, self.text_font, font_size, color, WIDTH //
-                           2, 250 + 35 * index, align="center")
 
     @staticmethod
     def create_button(
