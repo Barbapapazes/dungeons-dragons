@@ -65,7 +65,7 @@ class Window():
         logger.info("Flip state, from %s to %s", previous, self.state_name)
         self.persist = self.state.cleanup()
         self.state = self.states_dict[self.state_name]
-        print(self.persist)
+        logger.debug("Game data : %s", self.persist)
         self.shortcuts = self.persist["shortcuts"]
         self.state.previous = previous
         logger.info("Startup %s", self.state_name)

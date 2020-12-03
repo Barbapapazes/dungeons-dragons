@@ -61,7 +61,6 @@ class Menu(_State):
 
     def create_buttons(self):
         x = WIDTH // 2 - WIDTH_BUTTON // 2
-        y = 250
         y_base = 250
         self.btns = list()
         logger.info("Create all buttons from menu")
@@ -106,6 +105,7 @@ class Menu(_State):
         self.draw()
 
     def events_buttons(self):
+        """Used to manage the event for buttons"""
         events = pg.event.get()
         for btn in self.btns:
             btn.listen(events)

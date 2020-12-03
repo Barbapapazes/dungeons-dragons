@@ -1,14 +1,16 @@
 """Load game screen"""
 
-import pygame as pg
+from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
 import os
 import json
 from os import path
 from datetime import datetime
+from pygame_widgets import Button
+import pygame as pg
 from logger import logger
 from window import _State
-from config.screens import MENU, LOAD_GAME, TRANSITION_OUT
-from config.colors import BEIGE, BURGUNDY, WHITE, YELLOW_LIGHT
+from config.screens import GAME, LOAD_GAME, TRANSITION_OUT
+from config.colors import BEIGE, GREEN_DARK, YELLOW_LIGHT
 from config.window import WIDTH, HEIGHT
 from data.game_data import create_game_data
 from utils.shortcuts import key_for
@@ -20,7 +22,7 @@ class LoadGame(_State):
     def __init__(self):
         self.name = LOAD_GAME
         super(LoadGame, self).__init__(self.name)
-        self.next = MENU
+        self.next = GAME
         self.state = 'normal'
 
         image = pg.image.load(
@@ -29,11 +31,28 @@ class LoadGame(_State):
                 "background.jpg")).convert()
         self.background = pg.transform.scale(image, (WIDTH, HEIGHT))
 
+        self.font_button = pg.font.Font(self.button_font, 50)
+        self.fontsize = 20
+
         self.selected = 0
         self.games = [
             f for f in os.listdir(
                 self.saved_games) if f.endswith('.json')]
         self.len_games = len(self.games)
+
+        self.create_buttons()
+
+    def create_buttons(self):
+        x = WIDTH // 2 - (WIDTH_BUTTON + 70) // 2
+        y_base = 200
+        self.btns = list()
+        logger.info("Create all buttons from load_game")
+        for index, game in enumerate(self.games):
+            self.btns.append(
+                self.create_button(
+                    self.background, x, y_base + 70 * index, WIDTH_BUTTON + 50, HEIGHT_BUTTON, game.split(".")[0],
+                    self.font_button, self.fontsize, MARGIN_BUTTON, RADIUS_BUTTON, BEIGE, YELLOW_LIGHT, GREEN_DARK,
+                    self.load, [index]))
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -45,7 +64,14 @@ class LoadGame(_State):
 
     def normal_run(self):
         """Run the normal state"""
+        self.events_buttons()
         self.draw()
+
+    def events_buttons(self):
+        """Used to manage the event for buttons"""
+        events = pg.event.get()
+        for btn in self.btns:
+            btn.listen(events)
 
     def get_events(self, event):
         """Manage event
@@ -89,12 +115,13 @@ class LoadGame(_State):
                 super().set_state(TRANSITION_OUT)
         pg.event.clear()
 
-    def load(self, selected):
+    def load(self, index):
         """Load the selected files
 
         Args:
             selected (string): name of the file
         """
+        selected = self.games[index]
         try:
             with open(path.join(self.saved_games, selected)) as f:
                 self.game_data['game_data'] = json.load(f)
@@ -115,7 +142,8 @@ class LoadGame(_State):
             WIDTH // 2,
             15,
             "n")
-        self.draw_files()
+        # self.draw_files()
+        self.draw_buttons()
         self.draw_text(
             f'Press {pg.key.name(self.game_data["shortcuts"]["load_game"]["new game"]["keys"][2])} to create a new file',
             self.title_font,
@@ -125,6 +153,11 @@ class LoadGame(_State):
             2,
             HEIGHT,
             align="s")
+
+    def draw_buttons(self):
+        """draw all buttons"""
+        for btn in self.btns:
+            btn.draw()
 
     def draw_files(self):
         """Print game data file name"""
@@ -137,3 +170,37 @@ class LoadGame(_State):
 
             self.draw_text(name, self.text_font, font_size, color, WIDTH //
                            2, 250 + 35 * index, align="center")
+
+    @staticmethod
+    def create_button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text,
+            font,
+            fontsize,
+            margin,
+            radius,
+            inactive_color,
+            hover_color,
+            pressed_color,
+            on_click,
+            on_click_params):
+        return Button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text=text,
+            font=font,
+            fontSize=fontsize,
+            margin=margin,
+            radius=radius,
+            inactiveColour=inactive_color,
+            hoverColour=hover_color,
+            pressedColour=pressed_color,
+            onClick=on_click,
+            onClickParams=on_click_params)
