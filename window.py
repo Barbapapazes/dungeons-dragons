@@ -48,7 +48,6 @@ class Window():
         self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
 
         self.shortcuts = load_shortcuts()["shortcuts"]
-        logger.info("Shortcuts loaded in window: %s", self.shortcuts)
 
     def setup_states(self, states_dict, start_state):
         """Load all states"""
@@ -112,9 +111,9 @@ class Window():
                 self.state.get_events(event)
             elif event.type == pg.USEREVENT:
                 self.state.get_events(event)
-            
+
             if event.type == pg.USEREVENT:
-                if event.code =="_State":
+                if event.code == "_State":
                     if event.name == "quit":
                         logger.info("User event : quit")
                         self.done = True
