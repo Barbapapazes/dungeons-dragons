@@ -216,7 +216,7 @@ class Game(_State):
                         PopupMenu(self.player.inventory.menu_data)
                 elif event.button == 1:
                     self.player.shop.place_item(self.player.inventory)
-                    # self.player.inventory.place_item(self.screen)
+                    self.player.inventory.place_item()
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.player.shop.move_item()
