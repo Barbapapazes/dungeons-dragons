@@ -18,11 +18,28 @@ class Versus():
 
         self.BT_attck = pg.Rect((0, HEIGHT - TILESIZE), (TILESIZE, HEIGHT))
         self.BT_move = pg.Rect((2*TILESIZE, HEIGHT - TILESIZE), (TILESIZE, HEIGHT))
+        self.action=None
+        self.selectEnemy=None
+        self.isVersus = False
     
+
 
     def setCamera(self,camera):
         self.camera=camera
+
+
+    def isProgress(self):
+        """return True if thre are one action"""
+        return  not self.action is None
+
+    def setAction(self,msg):
+        self.action= msg
+
+    def begin(self):
+        self.isVersus = True
        
+    def end(self):
+        self.isVersus = False
 
     def draw(self, surface):
         pg.draw.rect(surface, RED, self.BT_attck.copy())
@@ -34,10 +51,10 @@ class Versus():
     def isATK(self, mouse_pos):
         return self.BT_attck.collidepoint(mouse_pos[0], mouse_pos[1])
 
-    def selectEnemy(self, listEnemy, mouse_pos):
+    def selectedEnemy(self, listEnemy, mouse_pos):
         for enemy in listEnemy:
             if enemy.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
-                return enemy
+                self.selectEnemy = enemy
 
     def rangeATK(self,surface,player):
         if player.weapon != None:
@@ -55,3 +72,73 @@ class Versus():
         return  (DISTANCE_MOVE*TILESIZE >= abs(sqrt((player.pos.x-mouse_pos[0])**2 + (player.pos.y-mouse_pos[1])**2)))
 
 
+
+    def ONE_action(self,player,screen):
+
+        if(self.action == 'ATK'):
+            logger.info("Your action is Attack")
+            self.action = 'select_enemy'
+            logger.info("Select your cible")
+            
+        
+        if(self.action=='select_enemy'):
+            self.rangeATK(screen,player)
+            
+
+        if self.selectEnemy is not None:
+            dmg = 0
+            logger.debug(self.selectEnemy.name)
+            if player.weapon is not None:  # check if player had a weapon
+
+                if player.weapon.wpn_type == "sword" and player.weapon.scope >= self.distance(
+                        player, self.selectEnemy):
+                    if player.throwDice(player.STR):
+                        dmg = player.weapon.attack()
+                    else:
+                        logger.info("You miss your cible")
+
+                elif player.weapon.wpn_type == "arc":
+                    dist = self.distance(player, self.selectEnemy)
+                    scope = player.weapon.scope
+                    if scope < dist:
+                        malus = -((dist - scope) // TILESIZE) * MALUS_ARC
+                    else:
+                        malus = 0
+                    logger.debug(
+                        "dist: %i scp: %i  malus: %i", dist, scope, malus)
+                    if player.throwDice(player.DEX, malus):
+                        dmg = player.weapon.attack()
+                    else:
+                        logger.info("You miss your cible")
+
+                else:
+                    logger.info("It's too far away ")
+            else:
+                if self.distance(player, self.selectEnemy)//TILESIZE <= TOUCH_HAND:
+                    dmg = DMG_ANY_WEAPON  
+                else:
+                    logger.info("It's too far away ")
+
+            self.selectEnemy.HP -= dmg
+            if dmg != 0:
+                logger.info(
+                    "The enemy %s lose %i HP",
+                    self.selectEnemy.name,
+                    dmg)
+
+            self.selectEnemy = None
+
+
+        if self.action =='Move':
+            self.rangeMOV(screen,player)
+            
+        
+        if self.action=='Move_autorised':
+            #player pathfinding
+            logger.debug("personnage moved wait fct pathfinding")
+            self.action=None
+
+
+    def distance(self, player, enemy):
+        return sqrt(
+            (enemy.x - player.pos.x)**2 + (enemy.y - player.pos.y)**2)

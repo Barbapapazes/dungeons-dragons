@@ -35,16 +35,7 @@ class Game(_State):
         self.next = CREDITS
 
         self.all_sprites = None
-
-        #####For_versus######
-        self.action = None
         self.versus = Versus()
-        self.selectEnemy = None
-        self.isVersus = False
-        self.circleATK = None
-
-        # temp
-        #######END_Versus#####
 
         self.states_dict = self.make_states_dict()
 
@@ -144,6 +135,23 @@ class Game(_State):
         if event.type == pg.KEYUP:
             self.toggle_states(event)
 
+
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                
+                if self.state == 'inventory':
+                    if self.player.inventory.display_inventory:
+                        logger.info("Select an item from the inventory")
+                        self.player.inventory.move_item(self.screen)
+
+        self.event_versus(event)
+        self.events_inventory(event)
+        self.events_shop(event)
+
+
+    def event_versus(self,event):
+
+        if event.type == pg.KEYUP:
             if event.key == pg.K_l:
                 life = {
                     'Player': self.player.HP,
@@ -154,34 +162,29 @@ class Game(_State):
             if event.key == pg.K_TAB:
                 """Simulate begin versus"""
                 logger.info("Begin Versus")
-                if not self.isVersus:
-                    self.isVersus = True
+                
+                if not self.versus.isVersus:
+                    self.versus.begin()
                 else:
-                    self.isVersus = False
+                    self.versus.end()
+
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
-                
-                if self.state == 'inventory':
-                    if self.player.inventory.display_inventory:
-                        logger.info("Select an item from the inventory")
-                        self.player.inventory.move_item(self.screen)
 
-                if self.isVersus:  
+                if self.versus.isVersus:  
                     mouse_pos = pg.mouse.get_pos()
-                    if self.versus.isATK(mouse_pos) and self.action is None:
-                        self.action = "ATK"
-                    if self.action == "select_enemy":
-                        self.selectEnemy = self.versus.selectEnemy(
-                            self.enemy, mouse_pos)
-                        if self.selectEnemy is not None:
-                            self.action = None
-                    if self.versus.isMove(mouse_pos) and self.action == None:
-                        self.action="Move"
-                    if self.versus.CheckMove(mouse_pos,self.player) and self.action == 'Move':
-                        self.action="Move_autorised"
-        self.events_inventory(event)
-        self.events_shop(event)
+                    if self.versus.isATK(mouse_pos) and not self.versus.isProgress():
+                        self.versus.setAction("ATK")
+                    if self.versus.action == "select_enemy":
+                        self.versus.selectedEnemy(self.enemy, mouse_pos)
+                        if self.versus.selectEnemy is not None:
+                            self.versus.setAction(None)
+                    if self.versus.isMove(mouse_pos) and not self.versus.isProgress():
+                        self.versus.setAction("Move")
+                    if self.versus.CheckMove(mouse_pos,self.player) and self.versus.action == 'Move':
+                        self.versus.setAction("Move_autorised")
+
 
     def events_inventory(self, event):
         """When the shop state is running"""
@@ -261,10 +264,10 @@ class Game(_State):
 
     def normal_run(self):
         """Run the normal state"""
-        if self.isVersus:
+        if self.versus.isVersus:
             self.draw()
             self.versus_action()
-            if (self.action == "Move_autorised"):
+            if (self.versus.action == "Move_autorised"):
                 self.update()
         else:
             self.update()
@@ -308,68 +311,8 @@ class Game(_State):
         self.versus.draw(self.screen)
 
         # Choose action
-        if(self.action == 'ATK'):
-            logger.info("Your action is Attack")
-            self.action = 'select_enemy'
-            logger.info("Select your cible")
-            
-        
-        if(self.action=='select_enemy'):
-            self.circleATK =self.versus.rangeATK(self.screen,self.player)
-            
+        self.versus.ONE_action(self.player,self.screen)
 
-        if self.selectEnemy is not None:
-            dmg = 0
-            logger.debug(self.selectEnemy.name)
-            if self.player.weapon is not None:  # check if player had a weapon
-
-                if self.player.weapon.wpn_type == "sword" and self.player.weapon.scope >= self.distance(
-                        self.player, self.selectEnemy):
-                    if self.player.throwDice(self.player.STR):
-                        dmg = self.player.weapon.attack()
-                    else:
-                        logger.info("You miss your cible")
-
-                elif self.player.weapon.wpn_type == "arc":
-                    dist = self.distance(self.player, self.selectEnemy)
-                    scope = self.player.weapon.scope
-                    if scope < dist:
-                        malus = -((dist - scope) // TILESIZE) * MALUS_ARC
-                    else:
-                        malus = 0
-                    logger.debug(
-                        "dist: %i scp: %i  malus: %i", dist, scope, malus)
-                    if self.player.throwDice(self.player.DEX, malus):
-                        dmg = self.player.weapon.attack()
-                    else:
-                        logger.info("You miss your cible")
-
-                else:
-                    logger.info("It's too far away ")
-            else:
-                if self.distance(self.player, self.selectEnemy)//TILESIZE <= TOUCH_HAND:
-                    dmg = DMG_ANY_WEAPON  
-                else:
-                    logger.info("It's too far away ")
-
-            self.selectEnemy.HP -= dmg
-            if dmg != 0:
-                logger.info(
-                    "The enemy %s lose %i HP",
-                    self.selectEnemy.name,
-                    dmg)
-
-            self.selectEnemy = None
-
-
-        if self.action =='Move':
-            self.versus.rangeMOV(self.screen,self.player)
-            
-        
-        if self.action=='Move_autorised':
-            #player pathfinding
-            logger.debug("personnage moved")
-            self.action=None
 
 
     def check_for_menu(self):
@@ -409,6 +352,4 @@ class Game(_State):
 
         super().transtition_active(self.screen)
 
-    def distance(self, player, enemy):
-        return sqrt(
-            (enemy.x - player.rect.center[0])**2 + (enemy.y - player.rect.center[1])**2)
+    
