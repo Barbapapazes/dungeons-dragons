@@ -191,11 +191,18 @@ class Shop():
     def place_item(self, inventory):
         """Place a item in the inventory"""
         logger.info("Place %s from the store in the inventory", self.moving_item)
-        inventory.place_item(deepcopy(self.moving_item))
+        data = None
+
         if self.moving_item is not None:
+            data = self.buy_item(self.moving_item, inventory.player)
+            inventory.place_item(data)
             self.moving_item.is_moving = False
             self.moving_item = None
             self.moving_item_slot = None
+        else :
+            pass
+        if inventory.find_item(data) == None and data:
+            inventory.player.gold += data.price
 
     def check_slot(self, action, screen, player, mouse_pos):
         """Execute a passed action if it's possible
@@ -260,6 +267,7 @@ class Shop():
             logger.info("You have not enough money")
             return
         else:
+            player.gold -= item.price
             logger.info("Buy %s from shop", item)
             data = deepcopy(item)
         return data

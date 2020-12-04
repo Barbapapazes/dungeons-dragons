@@ -6,7 +6,7 @@ from logger import logger
 from utils.container import Container
 from inventory.items import Item
 from config.window import HEIGHT, WIDTH, TILESIZE
-from config.colors import WHITE
+from config.colors import WHITE, GOLD
 from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP
 
 
@@ -136,37 +136,40 @@ class Inventory:
         """
         mouse_pos = pg.mouse.get_pos()
 
+        if shop_item:
+            self.moving_item = shop_item
+            self.moving_item.is_moving = True
+
         for slot in self.get_all_slots():
 
             if slot.rect.collidepoint(
                     mouse_pos) and (self.moving_item is not None or shop_item):
-                if shop_item:
-                    self.add_item(shop_item)
-                else:
-                    if isinstance(
-                            self.moving_item_slot, EquipableSlot) and isinstance(
-                            slot, InventorySlot) and not isinstance(
-                            slot, EquipableSlot) and slot.item is None:
+                
+                
+                if isinstance(
+                        self.moving_item_slot, EquipableSlot) and isinstance(
+                        slot, InventorySlot) and not isinstance(
+                        slot, EquipableSlot) and slot.item is None:
+                    self.unequip_item(self.moving_item)
+                    break
+                if isinstance(
+                        slot, InventorySlot) and not isinstance(
+                        slot, EquipableSlot) and not isinstance(
+                        self.moving_item_slot, EquipableSlot):
+                    self.remove_item(self.moving_item)
+                    self.add_item(self.moving_item, slot)
+                    break
+                if isinstance(self.moving_item_slot, EquipableSlot) and isinstance(slot.item, Equipable):
+                    if self.moving_item.slot == slot.item.slot:
                         self.unequip_item(self.moving_item)
+                        self.equip_item(slot.item)
                         break
-                    if isinstance(
-                            slot, InventorySlot) and not isinstance(
-                            slot, EquipableSlot) and not isinstance(
-                            self.moving_item_slot, EquipableSlot):
-                        self.remove_item(self.moving_item)
-                        self.add_item(self.moving_item, slot)
+                if isinstance(
+                        slot, EquipableSlot) and isinstance(
+                        self.moving_item, Equipable):
+                    if slot.slot_type == self.moving_item.slot:
+                        self.equip_item(self.moving_item)
                         break
-                    if isinstance(self.moving_item_slot, EquipableSlot) and isinstance(slot.item, Equipable):
-                        if self.moving_item.slot == slot.item.slot:
-                            self.unequip_item(self.moving_item)
-                            self.equip_item(slot.item)
-                            break
-                    if isinstance(
-                            slot, EquipableSlot) and isinstance(
-                            self.moving_item, Equipable):
-                        if slot.slot_type == self.moving_item.slot:
-                            self.equip_item(self.moving_item)
-                            break
         if self.moving_item is not None:
             self.moving_item.is_moving = False
             self.moving_item = None
@@ -284,7 +287,16 @@ class Inventory:
                 slot.draw(screen)
             for slot in self.get_all_slots():
                 slot.draw_items(screen)
+            self.draw_player_money()
 
+    def draw_player_money(self):
+        """Used to draw the player's money
+        """
+        myfont = pg.font.SysFont('Calibri', 25)
+        self.coins = myfont.render(f"{self.player.gold}" , False, GOLD)
+        self.coinimg = pg.image.load('assets/img/coin1.png').convert_alpha()
+        self.player.game.screen.blit(self.coins,(50, 175))
+        self.player.game.screen.blit(self.coinimg,(0,155))
 
 class InventorySlot(Container):
     """A slot from the inventory"""
