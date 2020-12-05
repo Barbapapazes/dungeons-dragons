@@ -87,9 +87,31 @@ class Minimap:
         self.width = w
         self.height = int(w // map_ratio)
         self.img_ratio = w / img.get_width()
+        self.size = (WIDTH * self.img_ratio) // 2
 
-    def draw(self, player):
-        """Create the minimap as a surface 
+        self.resized_map = pg.transform.scale(self.img, (self.width, self.height))
+
+        # Black screen
+        self.cover = pg.Surface(self.resized_map.get_size()).convert_alpha()
+        self.cover.fill((7, 7, 10))
+        # Fog (to see the under map)
+        self.fog = pg.Surface(self.resized_map.get_size()).convert_alpha()
+        self.fog_color = (0, 0, 0, 150)
+        self.fog.fill(self.fog_color)
+
+    def update(self, player):
+        """Update the frog using a pos
+
+        Args:
+            pos (list): the x and y of the player
+        """
+        pos = player.pos * self.img_ratio
+        pg.draw.circle(self.cover, pg.Color(0, 0, 0, 0), pos, self.size)
+        self.fog.fill(self.fog_color)
+        pg.draw.circle(self.fog, pg.Color(0, 0, 0, 0), pos, self.size)
+
+    def create(self, player):
+        """Create the minimap as a surface
 
         Args:
             player (Player)
@@ -98,7 +120,8 @@ class Minimap:
             Surface
         """
         pos = player.pos * self.img_ratio
-        size = 5
-        resize_map = pg.transform.scale(self.img, (self.width, self.height))
-        pg.draw.circle(resize_map, (0, 255, 0), pos, size, width=2)
-        return resize_map
+        temp_map = self.resized_map.copy()
+        pg.draw.circle(temp_map, (0, 255, 0), pos, 3, width=2)
+        temp_map.blit(self.fog, (0, 0))
+        temp_map.blit(self.cover, (0, 0))
+        return temp_map

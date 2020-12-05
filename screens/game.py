@@ -51,7 +51,6 @@ class Game(_State):
 
         super().setup_transition()
 
-
         self.new()
 
     def new(self):
@@ -80,7 +79,6 @@ class Game(_State):
                     tile_object.y,
                     tile_object.width,
                     tile_object.height)
-
 
         # Temporaire
         # think how this will be used with the menu
@@ -135,10 +133,9 @@ class Game(_State):
         if event.type == pg.KEYUP:
             self.toggle_states(event)
 
-
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
-                
+
                 if self.state == 'inventory':
                     if self.player.inventory.display_inventory:
                         logger.info("Select an item from the inventory")
@@ -148,8 +145,7 @@ class Game(_State):
         self.events_inventory(event)
         self.events_shop(event)
 
-
-    def event_versus(self,event):
+    def event_versus(self, event):
 
         if event.type == pg.KEYUP:
             if event.key == pg.K_l:
@@ -162,17 +158,16 @@ class Game(_State):
             if event.key == pg.K_TAB:
                 """Simulate begin versus"""
                 logger.info("Begin Versus")
-                
+
                 if not self.versus.isVersus:
                     self.versus.begin()
                 else:
                     self.versus.end()
 
-
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
 
-                if self.versus.isVersus:  
+                if self.versus.isVersus:
                     mouse_pos = pg.mouse.get_pos()
                     if self.versus.isATK(mouse_pos) and not self.versus.isProgress():
                         self.versus.setAction("ATK")
@@ -182,9 +177,8 @@ class Game(_State):
                             self.versus.setAction(None)
                     if self.versus.isMove(mouse_pos) and not self.versus.isProgress():
                         self.versus.setAction("Move")
-                    if self.versus.CheckMove(mouse_pos,self.player) and self.versus.action == 'Move':
+                    if self.versus.CheckMove(mouse_pos, self.player) and self.versus.action == 'Move':
                         self.versus.setAction("Move_autorised")
-
 
     def events_inventory(self, event):
         """When the shop state is running"""
@@ -311,9 +305,7 @@ class Game(_State):
         self.versus.draw(self.screen)
 
         # Choose action
-        self.versus.ONE_action(self.player,self.screen)
-
-
+        self.versus.ONE_action(self.player, self.screen)
 
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
@@ -330,8 +322,7 @@ class Game(_State):
         """Update all"""
         self.all_sprites.update()
         self.camera.update(self.player)
-      
-      
+        self.minimap.update(self.player)
 
     def draw(self):
         """Draw all"""
@@ -343,7 +334,7 @@ class Game(_State):
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
         self.screen.blit(
-            self.minimap.draw(
+            self.minimap.create(
                 self.player),
             (WIDTH -
              self.minimap.width,
@@ -351,5 +342,3 @@ class Game(_State):
              self.minimap.height))
 
         super().transtition_active(self.screen)
-
-    
