@@ -65,9 +65,7 @@ class Window():
             previous, self.state_name = self.state_name, state
         logger.info("Flip state, from %s to %s", previous, self.state_name)
         self.persist = self.state.cleanup()
-        logger.debug(self.persist)
         self.state = self.states_dict[self.state_name]
-        logger.debug("Game data : %s", self.persist)
         self.shortcuts = self.persist["shortcuts"]
         self.state.previous = previous
         logger.info("Startup %s", self.state_name)
@@ -128,16 +126,14 @@ class Window():
         """Save the fog and the cover from game_data"""
         minimap_data = self.persist["minimap"]
         filename = self.persist["file_name"].split(".json")[0]
-        try:
-            path_cover = path.join(self.saved_minimap, f"{filename}-cover.png")
-            pg.image.save(minimap_data["cover"], path_cover)
-            logger.info('File %s saved', path_cover)
-
-            path_fog = path.join(self.saved_minimap, f"{filename}-fog.png")
-            pg.image.save(minimap_data["fog"], path_fog)
-            logger.info('File %s saved', path_fog)
-        except EnvironmentError as e:
-            logger.exception(e)
+        minimap_types = ["cover", "fog"]
+        for type in minimap_types:
+            try:
+                path_cover = path.join(self.saved_minimap, f"{filename}-{type}.png")
+                pg.image.save(minimap_data[type], path_cover)
+                logger.info('File %s saved in %s', f"{filename}-{type}.png", path.abspath(self.saved_minimap))
+            except EnvironmentError as e:
+                logger.exception(e)
 
     def save_game_data(self):
         """Save game_data"""
