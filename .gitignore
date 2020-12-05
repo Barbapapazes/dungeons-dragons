@@ -11,6 +11,7 @@ basement_dist
 assets/saved_maps/*.tmx
 assets/saved_games/*.json
 assets/saved_shortcuts/*.json
+assets/saved_minimap/*.png
 
 
 # Byte-compiled / optimized / DLL files

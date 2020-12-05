@@ -82,7 +82,7 @@ class Camera:
 class Minimap:
     """Create a minimap"""
 
-    def __init__(self, img, w, map_ratio):
+    def __init__(self, img, w, map_ratio, fog=None, cover=None):
         self.img = img
         self.width = w
         self.height = int(w // map_ratio)
@@ -94,8 +94,13 @@ class Minimap:
         # Black screen
         self.cover = pg.Surface(self.resized_map.get_size()).convert_alpha()
         self.cover.fill((7, 7, 10))
+        if cover:
+            self.cover = cover
+
         # Fog (to see the under map)
         self.fog = pg.Surface(self.resized_map.get_size()).convert_alpha()
+        if fog:
+            self.fog = fog
         self.fog_color = (0, 0, 0, 150)
         self.fog.fill(self.fog_color)
 
@@ -109,6 +114,17 @@ class Minimap:
         pg.draw.circle(self.cover, pg.Color(0, 0, 0, 0), pos, self.size)
         self.fog.fill(self.fog_color)
         pg.draw.circle(self.fog, pg.Color(0, 0, 0, 0), pos, self.size)
+
+    def create_minimap_data(self):
+        """Create a dict to save minimap data
+
+        Returns:
+           dict
+        """
+        return {
+            "fog": self.fog,
+            "cover": self.cover
+        }
 
     def create(self, player):
         """Create the minimap as a surface

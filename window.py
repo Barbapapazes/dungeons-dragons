@@ -45,6 +45,7 @@ class Window():
         self.img_folder = path.join(self.assets_folder, 'img')
         self.saved_games = path.join(self.assets_folder, 'saved_games')
         self.saved_maps = path.join(self.assets_folder, 'saved_maps')
+        self.saved_minimap = path.join(self.assets_folder, 'saved_minimap')
         self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
 
         self.shortcuts = load_shortcuts()["shortcuts"]
@@ -64,6 +65,7 @@ class Window():
             previous, self.state_name = self.state_name, state
         logger.info("Flip state, from %s to %s", previous, self.state_name)
         self.persist = self.state.cleanup()
+        logger.debug(self.persist)
         self.state = self.states_dict[self.state_name]
         logger.debug("Game data : %s", self.persist)
         self.shortcuts = self.persist["shortcuts"]
@@ -119,6 +121,25 @@ class Window():
                         self.done = True
 
     def save(self):
+        self.save_game_data()
+        self.save_minimap_data()
+
+    def save_minimap_data(self):
+        """Save the fog and the cover from game_data"""
+        minimap_data = self.persist["minimap"]
+        filename = self.persist["file_name"].split(".json")[0]
+        try:
+            path_cover = path.join(self.saved_minimap, f"{filename}-cover.png")
+            pg.image.save(minimap_data["cover"], path_cover)
+            logger.info('File %s saved', path_cover)
+
+            path_fog = path.join(self.saved_minimap, f"{filename}-fog.png")
+            pg.image.save(minimap_data["fog"], path_fog)
+            logger.info('File %s saved', path_fog)
+        except EnvironmentError as e:
+            logger.exception(e)
+
+    def save_game_data(self):
         """Save game_data"""
         try:
             with open(path.join(self.saved_games, self.persist['file_name']), "w") as outfile:
@@ -198,6 +219,7 @@ class _State():
         self.assets_folder = path.join(game_folder, 'assets')
         self.saved_games = path.join(self.assets_folder, 'saved_games')
         self.saved_maps = path.join(self.assets_folder, 'saved_maps')
+        self.saved_minimap = path.join(self.assets_folder, 'saved_minimap')
         self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
         self.fonts_folder = path.join(self.assets_folder, 'fonts')
         self.title_font = path.join(self.fonts_folder, 'Enchanted Land.otf')

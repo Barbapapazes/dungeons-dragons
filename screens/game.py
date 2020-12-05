@@ -62,7 +62,7 @@ class Game(_State):
             self.map_img,
             225,
             self.map_rect.width /
-            self.map_rect.height)
+            self.map_rect.height, self.game_data["minimap"]["fog"], self.game_data["minimap"]["cover"])
         self.camera = Camera(self.map.width, self.map.height)
         self.versus.setCamera(self.camera)
 
@@ -323,6 +323,7 @@ class Game(_State):
         self.all_sprites.update()
         self.camera.update(self.player)
         self.minimap.update(self.player)
+        self.game_data["minimap"] = self.minimap.create_minimap_data()
 
     def draw(self):
         """Draw all"""

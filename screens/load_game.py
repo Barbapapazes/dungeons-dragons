@@ -87,6 +87,20 @@ class LoadGame(_State):
         except EnvironmentError as e:
             logger.exception(e)
 
+        try:
+            self.load_minimap()
+        except EnvironmentError as e:
+            logger.exception(e)
+
+    def load_minimap(self):
+        """Load images to create the fog of war"""
+        minimap_types = ['cover', 'fog']
+        self.game_data["minimap"] = {}
+        file_name = self.game_data["file_name"].split(".json")[0]
+        for type in minimap_types:
+            self.game_data["minimap"][type] = pg.image.load(
+                path.join(self.saved_minimap, f"{file_name}-{type}.png")).convert_alpha()
+
     def draw(self):
         """Draw loading page"""
         self.screen.blit(self.background, (0, 0))

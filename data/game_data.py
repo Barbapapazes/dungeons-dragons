@@ -15,5 +15,5 @@ def create_game_data():
                 "wis": 0,
                 "cha": 0
             }
-        }
+        },
     }
