@@ -95,7 +95,7 @@ class LoadGame(_State):
     def load_minimap(self):
         """Load images to create the fog of war"""
         minimap_types = ['cover', 'fog']
-        self.game_data["minimap"] = {}
+        self.game_data["minimap"] = {"fog": None, "cover": None}
         file_name = self.game_data["file_name"].split(".json")[0]
         for type in minimap_types:
             self.game_data["minimap"][type] = pg.image.load(
