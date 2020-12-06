@@ -1,9 +1,10 @@
 """Create the main window and the base for all screens"""
 import os
 from os import path
-import pygame as pg
 import sys
 import json
+import pygame as pg
+from pygame_widgets import Button
 from logger import logger
 from config.screens import TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
 from config.colors import BLACK
@@ -353,3 +354,37 @@ class _State():
         sub_state = 'normal' if self.state == state else state
         logger.info('Start sub-state %s in %s', sub_state, self.name)
         self.set_state(sub_state)
+
+    @staticmethod
+    def create_button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text,
+            font,
+            fontsize,
+            margin,
+            radius,
+            inactive_color,
+            hover_color,
+            pressed_color,
+            on_click,
+            on_click_params):
+        return Button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text=text,
+            font=pg.font.Font(font, fontsize),
+            fontSize=fontsize,
+            margin=margin,
+            radius=radius,
+            inactiveColour=inactive_color,
+            hoverColour=hover_color,
+            pressedColour=pressed_color,
+            onClick=on_click,
+            onClickParams=on_click_params)

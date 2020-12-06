@@ -1,15 +1,14 @@
 """Menu screen"""
 
 from os import path
-from pygame_widgets import Button
 import pygame as pg
 from window import _State
 from logger import logger
 from config.window import WIDTH, HEIGHT
 from config.screens import GAME, MENU, TRANSITION_OUT, CREDITS, LOAD_GAME, CHARACTER_CREATION
-from utils.shortcuts import load_shortcuts
 from config.colors import YELLOW_LIGHT, BEIGE, GREEN_DARK
 from config.buttons import HEIGHT_BUTTON, WIDTH_BUTTON, RADIUS_BUTTON, MARGIN_BUTTON
+from utils.shortcuts import load_shortcuts
 
 
 class Menu(_State):
@@ -28,14 +27,14 @@ class Menu(_State):
         self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
 
         # Buttons
-        self.font_button = pg.font.Font(self.button_font, 50)
-        self.fontsize = 20
+        self.fontsize = 50
 
         self.create_buttons()
 
         self.startup(0, load_shortcuts())
 
     def create_buttons_dict(self):
+        """Create the dict for all buttons"""
         return {
             "new_game": {
                 "text": "New Game",
@@ -60,20 +59,21 @@ class Menu(_State):
         }
 
     def create_buttons(self):
-        x = WIDTH // 2 - WIDTH_BUTTON // 2
+        """Create buttons"""
+        _x = WIDTH // 2 - WIDTH_BUTTON // 2
         y_base = 250
         self.btns = list()
         logger.info("Create all buttons from menu")
-        for index, (key, value) in enumerate(
+        for index, (_, value) in enumerate(
                 self.create_buttons_dict().items()):
             self.btns.append(self.create_button(
                 self.image,
-                x,
+                _x,
                 y_base + index * 100,
                 WIDTH_BUTTON,
                 HEIGHT_BUTTON,
                 value["text"],
-                self.font_button,
+                self.button_font,
                 self.fontsize,
                 MARGIN_BUTTON,
                 RADIUS_BUTTON,
@@ -85,6 +85,7 @@ class Menu(_State):
             ))
 
     def load_next_state(self, *next_state):
+        """Load the new state"""
         self.next = next_state[0]
         super().set_state(TRANSITION_OUT)
 
@@ -138,39 +139,6 @@ class Menu(_State):
 
     @staticmethod
     def stop_window():
+        """Quit the window using a user event"""
         quit_event = pg.event.Event(pg.USEREVENT, code="_State", name="quit")
         pg.event.post(quit_event)
-
-    @staticmethod
-    def create_button(
-            background,
-            x,
-            y,
-            width,
-            height,
-            text,
-            font,
-            fontsize,
-            margin,
-            radius,
-            inactive_color,
-            hover_color,
-            pressed_color,
-            on_click,
-            on_click_params):
-        return Button(
-            background,
-            x,
-            y,
-            width,
-            height,
-            text=text,
-            font=font,
-            fontSize=fontsize,
-            margin=margin,
-            radius=radius,
-            inactiveColour=inactive_color,
-            hoverColour=hover_color,
-            pressedColour=pressed_color,
-            onClick=on_click,
-            onClickParams=on_click_params)

@@ -3,7 +3,6 @@
 import os
 import json
 from os import path
-from datetime import datetime
 from pygame_widgets import Button
 import pygame as pg
 from logger import logger
@@ -97,9 +96,9 @@ class LoadGame(_State):
         minimap_types = ['cover', 'fog']
         self.game_data["minimap"] = {"fog": None, "cover": None}
         file_name = self.game_data["file_name"].split(".json")[0]
-        for type in minimap_types:
-            self.game_data["minimap"][type] = pg.image.load(
-                path.join(self.saved_minimap, f"{file_name}-{type}.png")).convert_alpha()
+        for minimap_type in minimap_types:
+            self.game_data["minimap"][minimap_type] = pg.image.load(
+                path.join(self.saved_minimap, f"{file_name}-{minimap_type}.png")).convert_alpha()
 
     def draw(self):
         """Draw loading page"""
