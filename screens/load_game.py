@@ -1,6 +1,5 @@
 """Load game screen"""
 
-from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
 import os
 import json
 from os import path
@@ -9,6 +8,7 @@ from pygame_widgets import Button
 import pygame as pg
 from logger import logger
 from window import _State
+from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
 from config.screens import GAME, LOAD_GAME, TRANSITION_OUT
 from config.colors import BEIGE, GREEN_DARK, YELLOW_LIGHT
 from config.window import WIDTH, HEIGHT

@@ -3,10 +3,12 @@
 import pygame as pg
 import json
 from os import path
+from pygame_widgets import Button
 from window import _State
 from logger import logger
 from config.window import WIDTH, HEIGHT
-from config.colors import BEIGE, BLACK, BROWN, GREEN_DARK, LIGHTGREY, WHITE, GLOOMY_PURPLE, GREY, YELLOW_LIGHT
+from config.colors import BEIGE, BLACK, WHITE, YELLOW_LIGHT, GREEN_DARK
+from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
 from config.screens import SHORTCUTS
 from data.shortcuts import CUSTOM_SHORTCUTS_FILENAME, SHORTCUTS_DEFAULT
 
@@ -26,6 +28,11 @@ class Shortcuts(_State):
                 self.img_folder, 'shortcuts',
                 "background.jpg")).convert()
         self.background = pg.transform.scale(image, (WIDTH, HEIGHT))
+        self.screen_menu = self.background.copy()
+        self.screen_shortcuts = self.background.copy()
+
+        self.font_button = pg.font.Font(self.button_font, 50)
+        self.fontsize = 20
 
         self.shortcuts = None
         self.selected_menu = 0
@@ -40,12 +47,100 @@ class Shortcuts(_State):
         self.reset_memory = False
         self.alpha_actions = 0
 
+        self.create_validate_btn()
+
     def startup(self, dt, game_data):
         """Initialize data at scene start."""
         self.game_data = game_data
         self.shortcuts = self.game_data["shortcuts"]
+        self.menu_keys = list(self.shortcuts.keys())
+        self.create_menu_shortcuts()
+        self.create_shortcuts()
+        self.create_return_btn()
         self.dt = dt
         super().setup_transition()
+
+    def create_validate_btn(self):
+        self.validate_btn = self.create_button(
+            self.background, WIDTH - (WIDTH_BUTTON //
+                                      2 + HEIGHT_BUTTON), HEIGHT - HEIGHT_BUTTON, WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2,
+            "validate",
+            pg.font.Font(self.button_font, 20), 20, MARGIN_BUTTON, RADIUS_BUTTON, BEIGE,
+            YELLOW_LIGHT, GREEN_DARK, self.set_validate, [])
+
+    def create_return_btn(self):
+        self.back_btn = self.create_button(
+            self.background, HEIGHT_BUTTON,
+            HEIGHT_BUTTON, WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2, "back", pg.font.Font(self.button_font, 20),
+            20, MARGIN_BUTTON, RADIUS_BUTTON, BEIGE, YELLOW_LIGHT, GREEN_DARK, self.set_back, [])
+
+    def set_back(self):
+        if self.is_shortcut_selected:
+            self.is_shortcut_selected = False
+            logger.info("A shortcut is unselected")
+        else:
+            self.is_menu_selected = False
+            logger.info("A menu is unselected")
+
+    def create_shortcuts(self):
+        x = WIDTH // 2 - (WIDTH_BUTTON) // 4
+        y_base = 250
+        self.shortcuts_btns = list()
+        logger.info("Create all buttons from load_game")
+        for index, (key, value) in enumerate(self.get_selected_shortcuts()):
+            self.shortcuts_btns.append(self.create_button(
+                self.screen_shortcuts, x, y_base + 60 * index, WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2,
+                key.upper() + " : " + self.create_text_shortcut(
+                    value["keys"][0], value["keys"][1], value["keys"][2]),
+                pg.font.Font(self.button_font, 20), 20, MARGIN_BUTTON, RADIUS_BUTTON, BEIGE,
+                YELLOW_LIGHT, GREEN_DARK, self.set_selected_shortcut, [index]))
+
+    def create_menu_shortcuts(self):
+        x = WIDTH // 2 - (WIDTH_BUTTON) // 4
+        y_base = 200
+        self.menu_btns = list()
+        logger.info("Create all buttons from load_game")
+        for index, text in enumerate(self.menu_keys):
+            self.menu_btns.append(self.create_button(
+                self.screen_menu, x, y_base + 70 * index, WIDTH_BUTTON // 2, HEIGHT_BUTTON,
+                text.capitalize(),
+                self.font_button, self.fontsize, MARGIN_BUTTON, RADIUS_BUTTON, BEIGE,
+                YELLOW_LIGHT, GREEN_DARK, self.set_selected_menu, [index]))
+
+    def set_validate(self):
+        if self.is_shortcut_selected:
+            # saved the new shortcut in the program data
+            menu = self.menu_keys[self.selected_menu]
+            shortcut_keys = list(self.shortcuts[menu].keys())
+            shortcut = shortcut_keys[self.selected_shortcut]
+            self.shortcuts[menu][shortcut]["keys"] = self.create_shortcut()
+            logger.info(
+                f"Save {self.create_shortcut()} to {shortcut} in {menu}, memory")
+            self.create_shortcuts()
+            self.saved_memory = True
+
+    def set_selected_menu(self, index):
+        if self.is_menu_selected:
+            self.is_shortcut_selected = False
+            self.selected_shortcut = 0
+        else:
+            self.is_menu_selected = True
+        self.selected_menu = index
+        self.screen_shortcuts = self.background.copy()
+        self.create_shortcuts()
+        logger.info("Menu : %d, Shortcut : %d",
+                    self.selected_menu,
+                    self.selected_shortcut)
+
+    def set_selected_shortcut(self, index):
+        self.is_shortcut_selected = True
+        self.selected_shortcut = index
+        logger.info("Menu : %d, Shortcut : %d",
+                    self.selected_menu,
+                    self.selected_shortcut)
+
+    def get_selected_shortcuts(self):
+        return self.shortcuts[self.menu_keys[self.selected_menu]].items()
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -59,7 +154,21 @@ class Shortcuts(_State):
 
     def normal_run(self):
         """Run the normal state"""
+        self.events_buttons()
         self.draw()
+
+    def events_buttons(self):
+        """Used to manage the event for buttons"""
+        events = pg.event.get()
+        self.back_btn.listen(events)
+        if self.is_shortcut_selected:
+            self.validate_btn.listen(events)
+        if not self.is_menu_selected:
+            for btn in self.menu_btns:
+                btn.listen(events)
+        if self.is_menu_selected:
+            for btn in self.shortcuts_btns:
+                btn.listen(events)
 
     def get_events(self, event):
         """Events loop"""
@@ -137,17 +246,18 @@ class Shortcuts(_State):
         Args:
             event (Event)
         """
-        if event.key is not pg.K_RETURN and self.is_shortcut_selected:
-            mod = pg.key.get_mods()
-            if mod & pg.KMOD_CTRL:
-                self.ctrl = not self.ctrl
-                logger.info("CTRL set to %s", self.ctrl)
-            elif mod & pg.KMOD_ALT:
-                self.alt = not self.alt
-                logger.info("ALT set to %s", self.alt)
-            else:
-                self.key = event.key
-                logger.info("KEY set to %s", self.key)
+        if event.type == pg.KEYUP:
+            if event.key is not pg.K_RETURN and self.is_shortcut_selected:
+                mod = pg.key.get_mods()
+                if mod & pg.KMOD_CTRL:
+                    self.ctrl = not self.ctrl
+                    logger.info("CTRL set to %s", self.ctrl)
+                elif mod & pg.KMOD_ALT:
+                    self.alt = not self.alt
+                    logger.info("ALT set to %s", self.alt)
+                else:
+                    self.key = event.key
+                    logger.info("KEY set to %s", self.key)
 
     def save_shortcuts(self):
         """Save shortcuts to a custom file"""
@@ -169,7 +279,24 @@ class Shortcuts(_State):
 
     def draw(self):
         """Draw content"""
-        self.screen.blit(self.background, (0, 0))
+        if not self.is_menu_selected:
+            self.screen.blit(self.screen_menu, (0, 0))
+            self.draw_table_btns()
+        else:
+            self.screen.blit(self.screen_shortcuts, (0, 0))
+            self.draw_content_btns()
+            self.draw_text(
+                self.menu_keys[self.selected_menu].upper(),
+                self.title_font,
+                48,
+                YELLOW_LIGHT,
+                WIDTH // 2,
+                180,
+                align="n")
+        if self.is_shortcut_selected:
+            self.validate_btn.draw()
+        self.back_btn.draw()
+
         self.draw_text(
             "shortcuts".capitalize(),
             self.title_font,
@@ -178,10 +305,8 @@ class Shortcuts(_State):
             WIDTH // 2,
             15,
             align="n")
-
-        self.menu_keys = list(self.shortcuts.keys())
-        self.draw_table()
-        self.draw_content()
+        # self.draw_table()
+        # self.draw_content()
 
         if self.is_shortcut_selected:
             self.draw_text(
@@ -196,30 +321,21 @@ class Shortcuts(_State):
 
         self.draw_saved()
 
-    def draw_table(self):
-        """Draw the table of contents"""
-        for index, key in enumerate(self.menu_keys):
-            color = BEIGE
-            font_size = 36
-            if index == self.selected_menu:
-                color = YELLOW_LIGHT
-                font_size = 37
-                self.draw_text(
-                    "->",
-                    self.text_font,
-                    font_size,
-                    color,
-                    1 * WIDTH / 10 - 36,
-                    200 + 90 * index,
-                    align="nw")
-            self.draw_text(
-                key.upper(),
-                self.text_font,
-                font_size,
-                color,
-                1 * WIDTH / 10,
-                200 + 90 * index,
-                align="nw")
+    def draw_content_btns(self):
+        for index, btn in enumerate(self.shortcuts_btns):
+            if self.is_shortcut_selected and self.selected_shortcut == index:
+                btn.inactiveColour = YELLOW_LIGHT
+            else:
+                btn.inactiveColour = BEIGE
+            btn.draw()
+
+    def draw_table_btns(self):
+        for index, btn in enumerate(self.menu_btns):
+            if self.is_menu_selected and self.selected_menu == index:
+                btn.inactiveColour = YELLOW_LIGHT
+            else:
+                btn.inactiveColour = BEIGE
+            btn.draw()
 
     def draw_content(self):
         """Draw all content from the selected_menu value"""
@@ -301,3 +417,37 @@ class Shortcuts(_State):
             str
         """
         return f"{'ctrl + ' if ctrl else ''}{'alt + ' if alt else ''}{pg.key.name(key) if key else ''}"
+
+    @staticmethod
+    def create_button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text,
+            font,
+            fontsize,
+            margin,
+            radius,
+            inactive_color,
+            hover_color,
+            pressed_color,
+            on_click,
+            on_click_params):
+        return Button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text=text,
+            font=font,
+            fontSize=fontsize,
+            margin=margin,
+            radius=radius,
+            inactiveColour=inactive_color,
+            hoverColour=hover_color,
+            pressedColour=pressed_color,
+            onClick=on_click,
+            onClickParams=on_click_params)
