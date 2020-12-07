@@ -1,28 +1,27 @@
-"""Menu screen"""
+"""Options screen"""
 
+from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
+from config.colors import BEIGE, GREEN_DARK, YELLOW_LIGHT
 from os import path
 import pygame as pg
 from window import _State
 from logger import logger
 from config.window import WIDTH, HEIGHT
-from config.screens import GAME, MENU, OPTIONS, TRANSITION_OUT, CREDITS, LOAD_GAME, CHARACTER_CREATION
-from config.colors import YELLOW_LIGHT, BEIGE, GREEN_DARK
-from config.buttons import HEIGHT_BUTTON, WIDTH_BUTTON, RADIUS_BUTTON, MARGIN_BUTTON
-from utils.shortcuts import load_shortcuts
+from config.screens import OPTIONS, SHORTCUTS, TRANSITION_OUT
 
 
-class Menu(_State):
-    """Menu screen"""
+class Options(_State):
+    """Options screen"""
 
     def __init__(self):
-        self.name = MENU
-        super(Menu, self).__init__(self.name)
-        self.next = GAME
+        self.name = OPTIONS
+        super(Options, self).__init__(self.name)
+        self.next = None
 
         # Background image
         image = pg.image.load(
             path.join(
-                self.img_folder, 'menu',
+                self.img_folder, 'options',
                 "background.jpg")).convert()
         self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
 
@@ -31,31 +30,14 @@ class Menu(_State):
 
         self.create_buttons()
 
-        self.startup(0, load_shortcuts())
-
     def create_buttons_dict(self):
         """Create the dict for all buttons"""
         return {
-            "new_game": {
-                "text": "New Game",
+            "shortcuts": {
+                "text": "Shortcuts",
                 "on_click": self.load_next_state,
-                "on_click_params": [CHARACTER_CREATION],
+                "on_click_params": [SHORTCUTS],
             },
-            "load_game": {
-                "text": "Load a game",
-                "on_click": self.load_next_state,
-                "on_click_params": [LOAD_GAME],
-            },
-            "options": {
-                "text": "Options",
-                "on_click": self.load_next_state,
-                "on_click_params": [OPTIONS],
-            },
-            "quit": {
-                "text": "Quit",
-                "on_click": self.stop_window,
-                "on_click_params": [],
-            }
         }
 
     def create_buttons(self):
@@ -105,6 +87,9 @@ class Menu(_State):
         self.events_buttons()
         self.draw()
 
+    def get_events(self, event):
+        """Events loop"""
+
     def events_buttons(self):
         """Used to manage the event for buttons"""
         events = pg.event.get()
@@ -124,7 +109,7 @@ class Menu(_State):
     def draw_title(self):
         """Draw the title"""
         self.draw_text(
-            "Dungeons and Dragons",
+            "Options",
             self.title_font,
             150,
             YELLOW_LIGHT,
@@ -136,9 +121,3 @@ class Menu(_State):
         """Draw all buttons"""
         for btn in self.btns:
             btn.draw()
-
-    @staticmethod
-    def stop_window():
-        """Quit the window using a user event"""
-        quit_event = pg.event.Event(pg.USEREVENT, code="_State", name="quit")
-        pg.event.post(quit_event)
