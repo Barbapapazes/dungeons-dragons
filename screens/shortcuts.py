@@ -3,6 +3,7 @@
 import json
 from os import path
 import pygame as pg
+from pygame_widgets import Button
 from window import _State
 from logger import logger
 from config.window import WIDTH, HEIGHT
@@ -377,3 +378,59 @@ class Shortcuts(_State):
             str
         """
         return f"{'ctrl + ' if ctrl else ''}{'alt + ' if alt else ''}{pg.key.name(key) if key else ''}"
+
+    @staticmethod
+    def create_button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text,
+            font,
+            fontsize,
+            margin,
+            radius,
+            inactive_color,
+            hover_color,
+            pressed_color,
+            on_click,
+            on_click_params):
+        """Create button
+
+        Args:
+            background (Surface)
+            x (int)
+            y (int)
+            width (int)
+            height (int)
+            text (str)
+            font (Font)
+            fontsize (int)
+            margin (int)
+            radius (int)
+            inactive_color (tuple)
+            hover_color (tuple)
+            pressed_color (tuple)
+            on_click (fn)
+            on_click_params (list)
+
+        Returns:
+            Button
+        """
+        return Button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text=text,
+            font=pg.font.Font(font, fontsize),
+            fontSize=fontsize,
+            margin=margin,
+            radius=radius,
+            inactiveColour=inactive_color,
+            hoverColour=hover_color,
+            pressedColour=pressed_color,
+            onClick=on_click,
+            onClickParams=on_click_params)
