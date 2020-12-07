@@ -356,45 +356,11 @@ class _State():
         logger.info('Start sub-state %s in %s', sub_state, self.name)
         self.set_state(sub_state)
 
-    @staticmethod
-    def create_button(
-            background,
-            x,
-            y,
-            width,
-            height,
-            text,
-            font,
-            fontsize,
-            margin,
-            radius,
-            inactive_color,
-            hover_color,
-            pressed_color,
-            on_click,
-            on_click_params):
-        return Button(
-            background,
-            x,
-            y,
-            width,
-            height,
-            text=text,
-            font=pg.font.Font(font, fontsize),
-            fontSize=fontsize,
-            margin=margin,
-            radius=radius,
-            inactiveColour=inactive_color,
-            hoverColour=hover_color,
-            pressedColour=pressed_color,
-            onClick=on_click,
-            onClickParams=on_click_params)
-
 
 class _Elements(_State):
     """Used to create a absctract layer to add a backround and simple buttons over a state and under a screen"""
 
-    def __init__(self, name, _next, folder_name, img_name, btns_dict):
+    def __init__(self, name, _next, folder_name, img_name, btns_dict, **kwargs):
         logger.info('Start elements %s', name)
         self.name = name
         super(_Elements, self).__init__(name)
@@ -410,9 +376,11 @@ class _Elements(_State):
         # button
         self.fontsize = 50
 
-        self.create_buttons()
+        offset = kwargs.get('btns_offset', 100)
+        width = kwargs.get('btns_width', WIDTH_BUTTON)
+        self.create_buttons(offset, width)
 
-    def create_buttons(self):
+    def create_buttons(self, offset, width):
         """Create buttons"""
         _x = WIDTH // 2 - WIDTH_BUTTON // 2
         y_base = 250
@@ -423,8 +391,8 @@ class _Elements(_State):
             self.btns.append(self.create_button(
                 self.image,
                 _x,
-                y_base + index * 100,
-                WIDTH_BUTTON,
+                y_base + index * offset,
+                width,
                 HEIGHT_BUTTON,
                 value["text"],
                 self.button_font,
