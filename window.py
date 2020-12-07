@@ -1,5 +1,4 @@
 """Create the main window and the base for all screens"""
-import os
 from os import path
 import sys
 import json
@@ -9,7 +8,6 @@ from logger import logger
 from config.screens import TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
 from config.colors import BLACK, BEIGE, GREEN_DARK, YELLOW_LIGHT
 from config.window import WIDTH, HEIGHT, FPS, TITLE
-from data.shortcuts import SHORTCUTS_DEFAULT, CUSTOM_SHORTCUTS_FILENAME
 from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
 from utils.shortcuts import key_for, load_shortcuts
 
@@ -219,6 +217,7 @@ class _State():
         self.saved_maps = path.join(self.assets_folder, 'saved_maps')
         self.saved_minimap = path.join(self.assets_folder, 'saved_minimap')
         self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
+        self.saved_settings = path.join(self.assets_folder, 'saved_settings')
         self.fonts_folder = path.join(self.assets_folder, 'fonts')
         self.title_font = path.join(self.fonts_folder, 'Enchanted Land.otf')
         self.text_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
@@ -372,15 +371,16 @@ class _Elements(_State):
         image = pg.image.load(
             path.join(self.img_folder, folder_name, img_name)).convert()
         self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
+        self.background = self.image.copy()
 
         # button
         self.fontsize = 50
 
         offset = kwargs.get('btns_offset', 100)
         width = kwargs.get('btns_width', WIDTH_BUTTON)
-        self.create_buttons(offset, width)
+        self.create_buttons(self.background, offset=offset, width=width)
 
-    def create_buttons(self, offset, width):
+    def create_buttons(self, background, offset=100, width=WIDTH_BUTTON):
         """Create buttons"""
         _x = WIDTH // 2 - WIDTH_BUTTON // 2
         y_base = 250
@@ -389,7 +389,7 @@ class _Elements(_State):
         for index, (_, value) in enumerate(
                 self.btns_dict.items()):
             self.btns.append(self.create_button(
-                self.image,
+                background,
                 _x,
                 y_base + index * offset,
                 width,
@@ -425,7 +425,7 @@ class _Elements(_State):
 
     def draw_background(self):
         """Draw the background"""
-        self.screen.blit(self.image, (0, 0))
+        self.screen.blit(self.background, (0, 0))
 
     def draw_title(self, title):
         """Draw the title"""
@@ -435,7 +435,18 @@ class _Elements(_State):
             150,
             YELLOW_LIGHT,
             WIDTH // 2,
-            15,
+            min(15, 1 * HEIGHT // 20),
+            align="n")
+
+    def draw_subtitle(self, subtitle):
+        """Draw the subtitle"""
+        self.draw_text(
+            subtitle,
+            self.title_font,
+            60,
+            YELLOW_LIGHT,
+            WIDTH // 2,
+            min(180, 6 * HEIGHT // 20),
             align="n")
 
     def draw_buttons(self):

@@ -1,7 +1,12 @@
 """Options screen"""
 
+from os import path
+import json
+import pygame as pg
+from logger import logger
 from window import _Elements
 from config.screens import OPTIONS, SHORTCUTS
+from data.options import CUSTOM_SETTINGS_FILENAME
 
 
 class Options(_Elements):
@@ -12,6 +17,8 @@ class Options(_Elements):
         self.next = None
         super(Options, self).__init__(self.name, self.next, 'options', "background.jpg", self.create_buttons_dict())
 
+        self.states_dict = self.make_states_dict()
+
     def create_buttons_dict(self):
         """Create the dict for all buttons"""
         return {
@@ -20,7 +27,57 @@ class Options(_Elements):
                 "on_click": self.load_next_state,
                 "on_click_params": [SHORTCUTS],
             },
+            "screen_size": {
+                "text": "Screen resolutions",
+                "on_click": self.toggle_sub_state,
+                "on_click_params": ['screen'],
+            },
         }
+
+    def create_settings_buttons_dict(self):
+        """Create the dict for screen size buttons"""
+        return {
+            "small": {
+                "text": "small",
+                "on_click": self.save_settings,
+                "on_click_params": [1024, 768],
+            },
+            "medium": {
+                "text": "medium",
+                "on_click": self.save_settings,
+                "on_click_params": [1280, 720],
+            },
+        }
+
+    def toggle_sub_state(self, state):
+        super().toggle_sub_state(state)
+        pg.event.wait()
+        if state == 'screen':
+            self.image_screen = self.image.copy()
+            self.btns_dict = self.create_settings_buttons_dict()
+            self.btns = list()
+            self.create_buttons(self.image_screen)
+
+    def make_states_dict(self):
+        """Make the dictionnary of state methods for the level
+
+        Returns:
+            [object: define all the possible states for a screen
+        """
+        previous_dict = super().make_states_dict().copy()
+        add_dict = {"screen": self.screen_run}
+        return previous_dict | add_dict
+
+    def save_settings(self, w, h):
+        file_name = path.join(self.saved_settings, CUSTOM_SETTINGS_FILENAME)
+        to_save = {
+            "width": w,
+            "height": h
+        }
+        print(to_save, file_name)
+        with open(file_name, 'w') as _f:
+            _f.write(json.dumps(to_save))
+            logger.info("Saved %s in %s", CUSTOM_SETTINGS_FILENAME,  path.abspath(file_name))
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -37,6 +94,13 @@ class Options(_Elements):
         """Run the normal state"""
         super().events_buttons()
         self.draw()
+
+    def screen_run(self):
+        """Run the screen state"""
+        self.screen.blit(self.image_screen, (0, 0))
+        super().events_buttons()
+        super().draw_title("Options")
+        super().draw_subtitle("Screen resolutions")
 
     def draw(self):
         """Draw content"""
