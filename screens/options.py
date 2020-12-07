@@ -5,6 +5,8 @@ import json
 import pygame as pg
 from logger import logger
 from window import _Elements
+from config.window import WIDTH, HEIGHT
+from config.colors import BEIGE
 from config.screens import OPTIONS, SHORTCUTS
 from data.options import CUSTOM_SETTINGS_FILENAME
 
@@ -46,6 +48,11 @@ class Options(_Elements):
                 "text": "medium",
                 "on_click": self.save_settings,
                 "on_click_params": [1280, 720],
+            },
+            "large": {
+                "text": "large",
+                "on_click": self.save_settings,
+                "on_click_params": [1920, 1080],
             },
         }
 
@@ -101,6 +108,14 @@ class Options(_Elements):
         super().events_buttons()
         super().draw_title("Options")
         super().draw_subtitle("Screen resolutions")
+        self.draw_text(
+            "Restart to enable the new window size",
+            self.text_font,
+            36,
+            BEIGE,
+            WIDTH // 2,
+            HEIGHT,
+            align="s")
 
     def draw(self):
         """Draw content"""
