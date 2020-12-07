@@ -7,9 +7,10 @@ import pygame as pg
 from pygame_widgets import Button
 from logger import logger
 from config.screens import TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
-from config.colors import BLACK
+from config.colors import BLACK, BEIGE, GREEN_DARK, YELLOW_LIGHT
 from config.window import WIDTH, HEIGHT, FPS, TITLE
 from data.shortcuts import SHORTCUTS_DEFAULT, CUSTOM_SHORTCUTS_FILENAME
+from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
 from utils.shortcuts import key_for, load_shortcuts
 
 
@@ -372,6 +373,147 @@ class _State():
             pressed_color,
             on_click,
             on_click_params):
+        return Button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text=text,
+            font=pg.font.Font(font, fontsize),
+            fontSize=fontsize,
+            margin=margin,
+            radius=radius,
+            inactiveColour=inactive_color,
+            hoverColour=hover_color,
+            pressedColour=pressed_color,
+            onClick=on_click,
+            onClickParams=on_click_params)
+
+
+class _Elements(_State):
+    """Used to create a absctract layer to add a backround and simple buttons over a state and under a screen"""
+
+    def __init__(self, name, _next, folder_name, img_name, btns_dict):
+        logger.info('Start elements %s', name)
+        self.name = name
+        super(_Elements, self).__init__(name)
+        self.next = _next
+        self.btns = list()
+        self.btns_dict = btns_dict
+
+        # load the background image
+        image = pg.image.load(
+            path.join(self.img_folder, folder_name, img_name)).convert()
+        self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
+
+        # button
+        self.fontsize = 50
+
+        self.create_buttons()
+
+    def create_buttons(self):
+        """Create buttons"""
+        _x = WIDTH // 2 - WIDTH_BUTTON // 2
+        y_base = 250
+        self.btns = list()
+        logger.info("Create all buttons from %s", self.name)
+        for index, (_, value) in enumerate(
+                self.btns_dict.items()):
+            self.btns.append(self.create_button(
+                self.image,
+                _x,
+                y_base + index * 100,
+                WIDTH_BUTTON,
+                HEIGHT_BUTTON,
+                value["text"],
+                self.button_font,
+                self.fontsize,
+                MARGIN_BUTTON,
+                RADIUS_BUTTON,
+                BEIGE,
+                YELLOW_LIGHT,
+                GREEN_DARK,
+                value["on_click"],
+                value["on_click_params"]
+            ))
+
+    def load_next_state(self, *next_state):
+        """Load the new state"""
+        self.next = next_state[0]
+        super().set_state(TRANSITION_OUT)
+
+    def events_buttons(self):
+        """Used to manage the event for buttons"""
+        events = pg.event.get()
+        for btn in self.btns:
+            btn.listen(events)
+
+    def draw_elements(self, name):
+        """Draw all elements"""
+        self.draw_background()
+        self.draw_title(name)
+        self.draw_buttons()
+
+    def draw_background(self):
+        """Draw the background"""
+        self.screen.blit(self.image, (0, 0))
+
+    def draw_title(self, title):
+        """Draw the title"""
+        self.draw_text(
+            title,
+            self.title_font,
+            150,
+            YELLOW_LIGHT,
+            WIDTH // 2,
+            15,
+            align="n")
+
+    def draw_buttons(self):
+        """Draw all buttons"""
+        for btn in self.btns:
+            btn.draw()
+
+    @staticmethod
+    def create_button(
+            background,
+            x,
+            y,
+            width,
+            height,
+            text,
+            font,
+            fontsize,
+            margin,
+            radius,
+            inactive_color,
+            hover_color,
+            pressed_color,
+            on_click,
+            on_click_params):
+        """Create button
+
+        Args:
+            background (Surface)
+            x (int)
+            y (int)
+            width (int)
+            height (int)
+            text (str)
+            font (Font)
+            fontsize (int)
+            margin (int)
+            radius (int)
+            inactive_color (tuple)
+            hover_color (tuple)
+            pressed_color (tuple)
+            on_click (fn)
+            on_click_params (list)
+
+        Returns:
+            Button
+        """
         return Button(
             background,
             x,
