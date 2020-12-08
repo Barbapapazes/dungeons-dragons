@@ -139,7 +139,7 @@ class Game(_State):
                 if self.state == 'inventory':
                     if self.player.inventory.display_inventory:
                         logger.info("Select an item from the inventory")
-                        self.player.inventory.move_item(self.screen)
+                        self.player.inventory.move_item()
 
         self.event_versus(event)
         self.events_inventory(event)
