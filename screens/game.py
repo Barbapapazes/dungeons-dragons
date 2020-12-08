@@ -19,6 +19,7 @@ from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON
 # from inventory.inventory import Armor, Weapon
 from temp.enemy import Enemy
 from versus.versus import Versus
+from versus.sort import Sort
 
 vec = pg.math.Vector2
 
@@ -104,6 +105,8 @@ class Game(_State):
         # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
         # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
         # self.player.inventory.add_item(helmet_armor)
+        fireBall = Sort('fireBall','assets/img/items/fireBall.png',10,'sort',50,'fire',3)
+        self.player.inventory.add_item(fireBall)
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -148,6 +151,7 @@ class Game(_State):
 
     def event_versus(self, event):
 
+
         if event.type == pg.KEYUP:
             if event.key == pg.K_l:
                 life = {
@@ -170,18 +174,22 @@ class Game(_State):
 
                 if self.versus.isVersus:
                     mouse_pos = pg.mouse.get_pos()
-                    if self.versus.isATK(mouse_pos) and not self.versus.isProgress():
+                    self.versus.setMouse(mouse_pos)
+                    if self.versus.isATK() and not self.versus.isProgress():
                         self.versus.setAction("ATK")
                     if self.versus.action == "select_enemy":
-                        self.versus.selectedEnemy(self.enemy, mouse_pos)
+                        self.versus.selectedEnemy(self.enemy)
                         if self.versus.selectEnemy is not None:
                             self.versus.setAction(None)
-                    if self.versus.isMOV(mouse_pos) and not self.versus.isProgress():
+                    if self.versus.isMOV() and not self.versus.isProgress():
                         self.versus.setAction("Move")
-                    if self.versus.CheckMove(mouse_pos, self.player) and self.versus.action == 'Move':
+                    if self.versus.CheckMove(self.player) and self.versus.action == 'Move':
                         self.versus.setAction("Move_autorised")
-                    if self.versus.isSRT(mouse_pos) and not self.versus.isProgress():
-                        self.versus.setAction("Select_pos_sort")
+                    if self.versus.isSRT() and not self.versus.isProgress():
+                        if self.versus.CheckSort(self.player):
+                            self.versus.setAction("Select_pos_sort")
+                        else:
+                            logger.info("No sort select  Please select sort in inventory ")
 
     def events_inventory(self, event):
         """When the shop state is running"""
@@ -253,6 +261,7 @@ class Game(_State):
     def run(self, surface, keys, mouse, dt):
         """Run states"""
         self.screen = surface
+        self.versus.setSurface(self.screen)
         self.dt = dt
         update_level = self.states_dict[self.state]
         if self.state != 'normal':
@@ -327,6 +336,7 @@ class Game(_State):
         self.camera.update(self.player)
         self.minimap.update(self.player)
         self.game_data["minimap"] = self.minimap.create_minimap_data()
+        
 
     def draw(self):
         """Draw all"""

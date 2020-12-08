@@ -11,8 +11,9 @@ from logger import logger
 
 class Sort(Equipable):
     
-    def __init__(self,name,img,price,slot,weight,manaCost,srt_type,timeSort,nb_d=1, val_d=5, scope=2):
+    def __init__(self,name,img,price,slot,manaCost,srt_type,timeSort,weight=0,nb_d=1, val_d=5, scope=2):
         super(Sort,self).__init__(name,img,price,weight)
+        self.slot= slot
         self.manaCost =manaCost
         self.srt_type =srt_type
         self.timeSort = timeSort
@@ -22,7 +23,7 @@ class Sort(Equipable):
 
 
 
-def equip(self, inventory, target):
+    def equip(self, inventory, target):
         """Equip the sort in the target's sort slot
         and removes it from the inventory inventory
 
@@ -82,5 +83,5 @@ class ZoneEffect(pg.sprite.Sprite):
 
     def update(self):
         self.time -= 1
-        if self.time =< 0:
+        if self.time <= 0:
             self.kill

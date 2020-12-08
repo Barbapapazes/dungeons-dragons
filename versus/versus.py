@@ -3,7 +3,7 @@
 import pygame as pg
 from math import sqrt
 from config.window import WIDTH, HEIGHT, TILESIZE
-from config.colors import RED, YELLOW, BLUE
+from config.colors import RED, YELLOW, BLUE, BLUE_SKY
 from config.versus import TOUCH_HAND, DISTANCE_MOVE, DMG_ANY_WEAPON
 from utils.tilemap import Camera
 from logger import logger
@@ -29,6 +29,11 @@ class Versus():
     def setCamera(self,camera):
         self.camera=camera
 
+    def setMouse(self,mouse_pos):
+        self.mouse_pos = mouse_pos
+    
+    def setSurface(self,surface):
+        self.screen = surface
 
     def isProgress(self):
         """return True if thre are one action"""
@@ -50,18 +55,18 @@ class Versus():
         pg.draw.rect(surface,BLUE,self.BT_sort.copy())
 
 
-    def isMOV(self, mouse_pos):
-        return self.BT_move.collidepoint(mouse_pos[0], mouse_pos[1])
+    def isMOV(self):
+        return self.BT_move.collidepoint(self.mouse_pos[0], self.mouse_pos[1])
 
-    def isATK(self, mouse_pos):
-        return self.BT_attck.collidepoint(mouse_pos[0], mouse_pos[1])
+    def isATK(self):
+        return self.BT_attck.collidepoint(self.mouse_pos[0], self.mouse_pos[1])
 
-    def isSRT(self,mouse_pos):
-        return self.BT_sort.collidepoint(mouse_pos[0], mouse_pos[1])
+    def isSRT(self):
+        return self.BT_sort.collidepoint(self.mouse_pos[0], self.mouse_pos[1])
 
-    def selectedEnemy(self, listEnemy, mouse_pos):
+    def selectedEnemy(self, listEnemy):
         for enemy in listEnemy:
-            if enemy.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+            if enemy.rect.collidepoint(self.mouse_pos[0], self.mouse_pos[1]):
                 self.selectEnemy = enemy
 
     def rangeATK(self,surface,player):
@@ -76,10 +81,14 @@ class Versus():
     def rangeMOV(self,surface,player):
         pg.draw.circle(surface,YELLOW,player.pos,(DISTANCE_MOVE)*TILESIZE,2)
 
-    def CheckMove(self,mouse_pos,player):
-        return  (DISTANCE_MOVE*TILESIZE >= abs(sqrt((player.pos.x-mouse_pos[0])**2 + (player.pos.y-mouse_pos[1])**2)))
+    def ZoneSort(self,player):
+        pg.draw.circle(self.screen,BLUE_SKY,pg.mouse.get_pos(),player.sort.scope * TILESIZE,2)
 
+    def CheckMove(self,player):
+        return  (DISTANCE_MOVE*TILESIZE >= abs(sqrt((player.pos.x-self.mouse_pos[0])**2 + (player.pos.y-self.mouse_pos[1])**2)))
 
+    def CheckSort(self,player):
+        return (player.sort is not None) 
 
     def ONE_action(self,player,screen):
 
@@ -146,7 +155,10 @@ class Versus():
             logger.debug("personnage moved wait fct pathfinding")
             self.action=None
 
-        #if self.action == 'Se'
+
+        if self.action == 'Select_pos_sort':
+            logger.debug("cecle su le pointeur")
+            self.ZoneSort(player)
 
     def distance(self, player, enemy):
         return sqrt(
