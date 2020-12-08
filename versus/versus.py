@@ -4,7 +4,7 @@ import pygame as pg
 from math import sqrt
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import RED, YELLOW, BLUE
-from config.versus import TOUCH_HAND, DISTANCE_MOVE
+from config.versus import TOUCH_HAND, DISTANCE_MOVE, DMG_ANY_WEAPON
 from utils.tilemap import Camera
 from logger import logger
 
@@ -39,6 +39,7 @@ class Versus():
 
     def begin(self):
         self.isVersus = True
+        self.action =None
        
     def end(self):
         self.isVersus = False
@@ -145,6 +146,7 @@ class Versus():
             logger.debug("personnage moved wait fct pathfinding")
             self.action=None
 
+        #if self.action == 'Se'
 
     def distance(self, player, enemy):
         return sqrt(

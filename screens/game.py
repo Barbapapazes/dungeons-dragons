@@ -23,7 +23,7 @@ from versus.versus import Versus
 vec = pg.math.Vector2
 
 
-# temp
+
 
 
 class Game(_State):
@@ -44,6 +44,7 @@ class Game(_State):
         self.game_data = game_data
         self.walls = pg.sprite.Group()
         self.all_sprites = pg.sprite.Group()
+        self.zoneEffect = pg.sprite.Group()
 
         self.en1 = Enemy(self, 10, 4, "Boot n1")
         self.en2 = Enemy(self, 11, 7, "Boot n2")
@@ -180,7 +181,7 @@ class Game(_State):
                     if self.versus.CheckMove(mouse_pos, self.player) and self.versus.action == 'Move':
                         self.versus.setAction("Move_autorised")
                     if self.versus.isSRT(mouse_pos) and not self.versus.isProgress():
-                        self.versus.setAction("Select_sort")
+                        self.versus.setAction("Select_pos_sort")
 
     def events_inventory(self, event):
         """When the shop state is running"""

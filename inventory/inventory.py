@@ -6,7 +6,7 @@ from logger import logger
 from utils.container import Container
 from inventory.items import Item
 from config.window import HEIGHT, WIDTH, TILESIZE
-from config.colors import WHITE, GOLD, RED
+from config.colors import WHITE, GOLD, BLUE_SKY, PINK
 from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP, SORT_SLOTS
 
 
@@ -60,10 +60,10 @@ class Inventory:
                 self.armor_slots.append(EquipableSlot(_x, _y, INVENTORY_TILESIZE, WHITE))
 
         self.weapon_slots.append(EquipableSlot(min_x - step,
-                                               max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, WHITE))
+                                               max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, PINK))
 
         self.sort_slots.append(EquipableSlot(min_x - 2*step,
-                                               max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, RED))
+                                               max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, BLUE_SKY))
 
     def create_bag(self):
         """Create a bag to store item"""
