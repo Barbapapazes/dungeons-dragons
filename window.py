@@ -378,7 +378,6 @@ class _Elements(_State):
 
         offset = kwargs.get('btns_offset', 100)
         width = kwargs.get('btns_width', WIDTH_BUTTON)
-        print(offset)
         self.create_buttons(self.background, offset=offset, width=width)
 
     def create_back_button(self, background, on_click, on_click_params):
