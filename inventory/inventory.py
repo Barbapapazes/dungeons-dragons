@@ -105,7 +105,7 @@ class Inventory:
         Returns:
             EquipableSlot
         """
-        for slot in self.armor_slots + self.weapon_slots + self.sort_solts:
+        for slot in self.armor_slots + self.weapon_slots + self.sort_slots:
             if slot.slot_type == item.slot:
                 return slot
 
