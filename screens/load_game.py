@@ -7,7 +7,7 @@ from os import path
 import pygame as pg
 from logger import logger
 from window import _Elements
-from config.screens import GAME, LOAD_GAME, TRANSITION_OUT
+from config.screens import GAME, LOAD_GAME, MENU, TRANSITION_OUT
 
 
 class LoadGame(_Elements):
@@ -29,6 +29,8 @@ class LoadGame(_Elements):
 
         super(LoadGame, self).__init__(self.name, self.next, 'load_game', "background.jpg",
                                        self.create_buttons_dict(), btns_offset=70, btns_width=WIDTH_BUTTON + 50)
+
+        self.create_back_button(self.background, self.load_next_state, [MENU])
 
     def create_buttons_dict(self):
         """Create the dict for all buttons"""
@@ -52,7 +54,7 @@ class LoadGame(_Elements):
 
     def normal_run(self):
         """Run the normal state"""
-        super().events_buttons()
+        super().events_buttons(back=True)
         self.draw()
 
     def load(self, index):
@@ -87,4 +89,4 @@ class LoadGame(_Elements):
 
     def draw(self):
         """Draw loading page"""
-        super().draw_elements("Load a game")
+        super().draw_elements("Load a game", back=True)

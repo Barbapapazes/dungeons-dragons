@@ -378,7 +378,16 @@ class _Elements(_State):
 
         offset = kwargs.get('btns_offset', 100)
         width = kwargs.get('btns_width', WIDTH_BUTTON)
+        print(offset)
         self.create_buttons(self.background, offset=offset, width=width)
+
+    def create_back_button(self, background, on_click, on_click_params):
+        """Create the back button"""
+        _x = HEIGHT_BUTTON
+        _y = HEIGHT_BUTTON
+        self.back_btn = self.create_button(
+            background, _x, _y, WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2, "Back", self.button_font, self.fontsize // 2,
+            MARGIN_BUTTON, RADIUS_BUTTON, BEIGE, YELLOW_LIGHT, GREEN_DARK, on_click, on_click_params)
 
     def create_buttons(self, background, offset=100, width=WIDTH_BUTTON):
         """Create buttons"""
@@ -411,17 +420,19 @@ class _Elements(_State):
         self.next = next_state[0]
         super().set_state(TRANSITION_OUT)
 
-    def events_buttons(self):
+    def events_buttons(self, back=False):
         """Used to manage the event for buttons"""
         events = pg.event.get()
         for btn in self.btns:
             btn.listen(events)
+        if back:
+            self.back_btn.listen(events)
 
-    def draw_elements(self, name):
+    def draw_elements(self, name, back=False):
         """Draw all elements"""
         self.draw_background()
         self.draw_title(name)
-        self.draw_buttons()
+        self.draw_buttons(back)
 
     def draw_background(self):
         """Draw the background"""
@@ -449,10 +460,12 @@ class _Elements(_State):
             min(180, 6 * HEIGHT // 20),
             align="n")
 
-    def draw_buttons(self):
+    def draw_buttons(self, back=False):
         """Draw all buttons"""
         for btn in self.btns:
             btn.draw()
+        if back:
+            self.back_btn.draw()
 
     @staticmethod
     def create_button(

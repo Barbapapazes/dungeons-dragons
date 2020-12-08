@@ -7,7 +7,7 @@ from logger import logger
 from window import _Elements
 from config.window import WIDTH, HEIGHT
 from config.colors import BEIGE
-from config.screens import OPTIONS, SHORTCUTS
+from config.screens import MENU, OPTIONS, SHORTCUTS
 from data.options import CUSTOM_SETTINGS_FILENAME
 
 
@@ -18,6 +18,8 @@ class Options(_Elements):
         self.name = OPTIONS
         self.next = None
         super(Options, self).__init__(self.name, self.next, 'options', "background.jpg", self.create_buttons_dict())
+
+        self.create_back_button(self.background, self.load_next_state, [MENU])
 
         self.states_dict = self.make_states_dict()
 
@@ -62,8 +64,13 @@ class Options(_Elements):
         if state == 'screen':
             self.image_screen = self.image.copy()
             self.btns_dict = self.create_settings_buttons_dict()
+            self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
             self.btns = list()
             self.create_buttons(self.image_screen)
+        else:
+            self.btns_dict = self.create_buttons_dict()
+            self.create_buttons(self.background)
+            self.create_back_button(self.background, self.load_next_state, [MENU])
 
     def make_states_dict(self):
         """Make the dictionnary of state methods for the level
@@ -81,7 +88,6 @@ class Options(_Elements):
             "width": w,
             "height": h
         }
-        print(to_save, file_name)
         with open(file_name, 'w') as _f:
             _f.write(json.dumps(to_save))
             logger.info("Saved %s in %s", CUSTOM_SETTINGS_FILENAME,  path.abspath(file_name))
@@ -99,15 +105,16 @@ class Options(_Elements):
 
     def normal_run(self):
         """Run the normal state"""
-        super().events_buttons()
+        super().events_buttons(back=True)
         self.draw()
 
     def screen_run(self):
         """Run the screen state"""
         self.screen.blit(self.image_screen, (0, 0))
-        super().events_buttons()
+        super().events_buttons(back=True)
         super().draw_title("Options")
         super().draw_subtitle("Screen resolutions")
+        self.back_btn.draw()
         self.draw_text(
             "Restart to enable the new window size",
             self.text_font,
@@ -119,4 +126,4 @@ class Options(_Elements):
 
     def draw(self):
         """Draw content"""
-        super().draw_elements("Options")
+        super().draw_elements("Options", back=True)

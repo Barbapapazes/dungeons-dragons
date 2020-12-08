@@ -6,7 +6,7 @@ import json
 from logger import logger
 from os import path
 
-default_settings = {
+DEFAULT_SETTINGS = {
     "width": 1024,
     "height": 768
 }
@@ -26,7 +26,7 @@ def get(_type):
         with open(path.join('.', 'assets', 'saved_settings', CUSTOM_SETTINGS_FILENAME), 'r') as _f:
             value = json.load(_f)[_type]
     except:
-        value = default_settings[_type]
+        value = DEFAULT_SETTINGS[_type]
 
     logger.info("Load %s : %s", _type, value)
     return value

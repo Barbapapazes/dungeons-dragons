@@ -4,24 +4,24 @@ from os import path
 from datetime import datetime
 import pygame as pg
 from pygame_widgets import Button
-from window import _State
+from window import _Elements
 from logger import logger
 from components.cursor import Cursor
 from data.game_data import create_game_data
 from config.window import WIDTH, HEIGHT
-from config.screens import CHARACTER_CREATION, GAME, TRANSITION_OUT
+from config.screens import CHARACTER_CREATION, GAME, MENU, TRANSITION_OUT
 from config.colors import LIGHTGREY, YELLOW_LIGHT, BLACK, BEIGE, GREEN_DARK, WHITE
 from config.sprites import WIDTH_CHARACTER, HEIGHT_CHARACTER, USABLE_POINTS
 from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
 
 
-class CharacterCreation(_State):
+class CharacterCreation(_Elements):
     """Creation_player"""
 
     def __init__(self):
         self.name = CHARACTER_CREATION
-        super(CharacterCreation, self).__init__(self.name)
         self.next = GAME
+        super(CharacterCreation, self).__init__(self.name, self.next, "character_creation", "background.jpg", {})
 
         # Background image
         # used to avoid a persistence on the screen with the slider
@@ -33,14 +33,11 @@ class CharacterCreation(_State):
                 'background.jpg')).convert()
         self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
 
-        # Buttons
-        self.font_button = pg.font.Font(self.button_font, 50)
-        self.fontsize = 20
-
         self.new()
-        self.create_buttons()
+        self.create_confirm_button()
         self.create_animations()
         self.create_sliders()
+        self.create_back_button(self.background, self.load_next_state, [MENU])
 
         # textbox
         # self.name = TextBox(
@@ -64,7 +61,7 @@ class CharacterCreation(_State):
         self.selected = 0
         self.selected_character = self.get_selected_character()
 
-    def create_buttons(self):
+    def create_confirm_button(self):
         """Create buttons from this screen"""
         self.confirm_creation_btn = Button(
             self.background,
@@ -283,9 +280,10 @@ class CharacterCreation(_State):
 
     def events_buttons(self):
         """Events for buttons"""
+        events = pg.event.get()
         if self.remaining_points() <= 0:
-            events = pg.event.get()
             self.confirm_creation_btn.listen(events)
+        self.back_btn.listen(events)
 
     def events_sliders(self):
         """Events for sliders"""
@@ -318,6 +316,7 @@ class CharacterCreation(_State):
         self.draw_characteristic()
         self.draw_sliders()
         self.draw_points()
+        self.back_btn.draw()
 
         # # self.name.listen(events)
         # # self.name.draw()
