@@ -185,11 +185,15 @@ class Game(_State):
                         self.versus.setAction("Move")
                     if self.versus.CheckMove(self.player) and self.versus.action == 'Move':
                         self.versus.setAction("Move_autorised")
+                    if self.versus.action == "Select_pos_sort":
+                        self.versus.createZone(self.player)
                     if self.versus.isSRT() and not self.versus.isProgress():
                         if self.versus.CheckSort(self.player):
                             self.versus.setAction("Select_pos_sort")
                         else:
                             logger.info("No sort select  Please select sort in inventory ")
+
+                   
 
     def events_inventory(self, event):
         """When the shop state is running"""

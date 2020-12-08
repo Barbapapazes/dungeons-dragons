@@ -90,6 +90,15 @@ class Versus():
     def CheckSort(self,player):
         return (player.sort is not None) 
 
+
+    def createZone(self,player):
+        player.sort.placeSort(self.mouse_pos)
+        self.action = None
+        
+
+
+
+
     def ONE_action(self,player,screen):
 
         if(self.action == 'ATK'):
@@ -155,10 +164,9 @@ class Versus():
             logger.debug("personnage moved wait fct pathfinding")
             self.action=None
 
-
         if self.action == 'Select_pos_sort':
-            logger.debug("cecle su le pointeur")
             self.ZoneSort(player)
+        
 
     def distance(self, player, enemy):
         return sqrt(

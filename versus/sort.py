@@ -20,6 +20,7 @@ class Sort(Equipable):
         self.nb_d = nb_d
         self.val_d = val_d
         self.scope =scope
+        self.dammage = 0
 
 
 
@@ -53,10 +54,10 @@ class Sort(Equipable):
     
     def DefineDMG(self):
         """Define dammage zone"""
-        dmg = 0
+        self.dammage = 0
         for _ in range(self.nb_d):
-            dmg += randint(1, self.val_d)
-        return dmg
+            self.dammage += randint(1, self.val_d)
+        
 
 
 
@@ -81,7 +82,7 @@ class ZoneEffect(pg.sprite.Sprite):
     def draw(self):
         pg.draw.rect(self.screen,GREEN_DARK,self.rect.copy())
 
-    def update(self):
-        self.time -= 1
-        if self.time <= 0:
-            self.kill
+    # def update(self):
+    #     self.time -= 1
+    #     if self.time <= 0:
+    #         self.kill
