@@ -50,6 +50,7 @@ class Player(pg.sprite.Sprite):
         # Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
+        self.sort = None
         self.inventory = Inventory(self, 5, 8)
 
         # shop, temporary here, to put in a seller
@@ -124,6 +125,24 @@ class Player(pg.sprite.Sprite):
         if self.weapon is not None:
             self.weapon = None
 
+
+
+    def equip_sort(self, sort):
+        """Put a passed sort in the sort slot
+
+        Args:
+            weapon (Weapon)
+        """
+        if self.sort is not None:
+            self.unequip_sort()
+        self.sort = sort
+
+    def unequip_sort(self):
+        """Set sort to None if it wasn't
+        """
+        if self.sort is not None:
+            self.sort = None
+
     def update(self):
         self.get_keys()
         self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
@@ -138,7 +157,17 @@ class Player(pg.sprite.Sprite):
         collide_with_walls(self, self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
 
-    def throwDice(self, Val, modificateur=0):
-        score = randint(0, 100)
+    def throwDice(self, Val, modificateur=0,valueOfDice=100):
+        """Throw of dice like D&D
+
+        Args:
+            Val (int): [characteristic use for test like STR or INT]
+            modificateur (int): [malus or bonus on your characteristic]. Defaults to 0.
+            valueOfDice (int): [value of dice]. Defaults to 100.
+
+        Returns:
+            [Boolean]: [Your reussit of test]
+        """
+        score = randint(0, valueOfDice)
         logger.info("Your dice is %i / 100 and the succes is under %i", score, Val+modificateur)
         return score <= Val + modificateur

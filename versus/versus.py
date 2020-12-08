@@ -3,7 +3,7 @@
 import pygame as pg
 from math import sqrt
 from config.window import WIDTH, HEIGHT, TILESIZE
-from config.colors import RED, YELLOW
+from config.colors import RED, YELLOW, BLUE
 from config.versus import TOUCH_HAND, DISTANCE_MOVE
 from utils.tilemap import Camera
 from logger import logger
@@ -17,7 +17,9 @@ class Versus():
     def __init__(self):
 
         self.BT_attck = pg.Rect((0, HEIGHT - TILESIZE), (TILESIZE, HEIGHT))
+        self.BT_sort = pg.Rect((TILESIZE, HEIGHT - TILESIZE), (TILESIZE, HEIGHT))
         self.BT_move = pg.Rect((2*TILESIZE, HEIGHT - TILESIZE), (TILESIZE, HEIGHT))
+        
         self.action=None
         self.selectEnemy=None
         self.isVersus = False
@@ -44,12 +46,17 @@ class Versus():
     def draw(self, surface):
         pg.draw.rect(surface, RED, self.BT_attck.copy())
         pg.draw.rect(surface,YELLOW,self.BT_move.copy())
+        pg.draw.rect(surface,BLUE,self.BT_sort.copy())
 
-    def isMove(self, mouse_pos):
+
+    def isMOV(self, mouse_pos):
         return self.BT_move.collidepoint(mouse_pos[0], mouse_pos[1])
 
     def isATK(self, mouse_pos):
         return self.BT_attck.collidepoint(mouse_pos[0], mouse_pos[1])
+
+    def isSRT(self,mouse_pos):
+        return self.BT_sort.collidepoint(mouse_pos[0], mouse_pos[1])
 
     def selectedEnemy(self, listEnemy, mouse_pos):
         for enemy in listEnemy:

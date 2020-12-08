@@ -175,10 +175,12 @@ class Game(_State):
                         self.versus.selectedEnemy(self.enemy, mouse_pos)
                         if self.versus.selectEnemy is not None:
                             self.versus.setAction(None)
-                    if self.versus.isMove(mouse_pos) and not self.versus.isProgress():
+                    if self.versus.isMOV(mouse_pos) and not self.versus.isProgress():
                         self.versus.setAction("Move")
                     if self.versus.CheckMove(mouse_pos, self.player) and self.versus.action == 'Move':
                         self.versus.setAction("Move_autorised")
+                    if self.versus.isSRT(mouse_pos) and not self.versus.isProgress():
+                        self.versus.setAction("Select_sort")
 
     def events_inventory(self, event):
         """When the shop state is running"""

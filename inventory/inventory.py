@@ -6,8 +6,8 @@ from logger import logger
 from utils.container import Container
 from inventory.items import Item
 from config.window import HEIGHT, WIDTH, TILESIZE
-from config.colors import WHITE, GOLD
-from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP
+from config.colors import WHITE, GOLD, RED
+from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP, SORT_SLOTS
 
 
 class Inventory:
@@ -27,6 +27,7 @@ class Inventory:
         self.slots = []
         self.armor_slots = []
         self.weapon_slots = []
+        self.sort_slots = []
 
         self.player = player
 
@@ -61,6 +62,9 @@ class Inventory:
         self.weapon_slots.append(EquipableSlot(min_x - step,
                                                max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, WHITE))
 
+        self.sort_slots.append(EquipableSlot(min_x - 2*step,
+                                               max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, RED))
+
     def create_bag(self):
         """Create a bag to store item"""
         step = INVENTORY_TILESIZE + INVENTORY_SLOT_GAP
@@ -81,6 +85,8 @@ class Inventory:
             self.armor_slots[index].slot_type = value
         for index, value in enumerate(WEAPON_SLOTS):
             self.weapon_slots[index].slot_type = value
+        for index, value in enumerate(SORT_SLOTS):
+            self.sort_slots[index].slot_type = value
 
     def get_all_slots(self):
         """Get all slots fro the inventory
@@ -88,7 +94,7 @@ class Inventory:
         Returns:
             list: All slots from an inventory
         """
-        return self.slots + self.weapon_slots + self.armor_slots
+        return self.slots + self.weapon_slots + self.armor_slots + self.sort_slots
 
     def get_equip_slot(self, item):
         """Return the slot related to the Item if it's an Equipable
@@ -99,7 +105,7 @@ class Inventory:
         Returns:
             EquipableSlot
         """
-        for slot in self.armor_slots + self.weapon_slots:
+        for slot in self.armor_slots + self.weapon_slots + self.sort_solts:
             if slot.slot_type == item.slot:
                 return slot
 
@@ -416,8 +422,8 @@ class Armor(Equipable):
 class Weapon(Equipable):
     """Weapon"""
 
-    def __init__(self, name, img, value, slot, wpn_type, weight, nb_d=1, val_d=5, scope=2):
-        super(Weapon, self).__init__(name, img, value, weight)
+    def __init__(self, name, img, price, slot, wpn_type, weight, nb_d=1, val_d=5, scope=2):
+        super(Weapon, self).__init__(name, img, price, weight)
         self.slot = slot
         self.wpn_type = wpn_type
         self.nb_d = nb_d
