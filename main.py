@@ -8,7 +8,8 @@ from screens.load_game import LoadGame
 from screens.shortcuts import Shortcuts
 from screens.character_creation import CharacterCreation
 from screens.options import Options
-from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS
+from screens.new_game import NewGame
+from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME
 from logger import logger
 
 if __name__ == '__main__':
@@ -22,6 +23,7 @@ if __name__ == '__main__':
         OPTIONS: Options(),
         SHORTCUTS: Shortcuts(),
         CHARACTER_CREATION: CharacterCreation(),
+        NEW_GAME: NewGame()
     }
     W.setup_states(STATES, MENU)
     W.main()

@@ -82,7 +82,9 @@ class Window():
 
     def events(self):
         """Manage the event"""
-        for event in pg.event.get():
+        events = pg.event.get()
+        self.state.all_events(events)
+        for event in events:
             if event.type == pg.QUIT:
                 self.done = True
             elif event.type == pg.KEYDOWN:
@@ -279,11 +281,19 @@ class _State():
         self.transition_surface.set_alpha(self.alpha)
 
     def get_events(self, event):
-        """Manage event
+        """Manage events one by one
 
         Args:
             event (Event)
         """
+
+    def all_events(self, events):
+        """Manage all events
+
+        Args:
+            events (array)
+        """
+        pass
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -396,23 +406,24 @@ class _Elements(_State):
         logger.info("Create all buttons from %s", self.name)
         for index, (_, value) in enumerate(
                 self.btns_dict.items()):
-            self.btns.append(self.create_button(
-                background,
-                _x,
-                y_base + index * offset,
-                width,
-                HEIGHT_BUTTON,
-                value["text"],
-                self.button_font,
-                self.fontsize,
-                MARGIN_BUTTON,
-                RADIUS_BUTTON,
-                BEIGE,
-                YELLOW_LIGHT,
-                GREEN_DARK,
-                value["on_click"],
-                value["on_click_params"]
-            ))
+            if value["text"]:
+                self.btns.append(self.create_button(
+                    background,
+                    _x,
+                    y_base + index * offset,
+                    width,
+                    HEIGHT_BUTTON,
+                    value["text"],
+                    self.button_font,
+                    self.fontsize,
+                    MARGIN_BUTTON,
+                    RADIUS_BUTTON,
+                    BEIGE,
+                    YELLOW_LIGHT,
+                    GREEN_DARK,
+                    value["on_click"],
+                    value["on_click_params"]
+                ))
 
     def load_next_state(self, *next_state):
         """Load the new state"""

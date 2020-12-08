@@ -414,9 +414,14 @@ class CharacterCreation(_Elements):
     def next_action(self):
         """Pass to the next screen"""
         logger.info("Save data to game_data")
-        self.game_data['file_name'] = self.create_file_name()
+        if not self.game_data['file_name']:
+            self.game_data['file_name'] = self.create_file_name()
 
         self.game_data["game_data"] = create_game_data()
+        self.game_data["minimap"] = {
+            "fog": None,
+            "cover": None
+        }
 
         for slider in self.sliders:
             self.game_data["game_data"]["hero"]["characteristics"][slider.name] = slider.getValue()

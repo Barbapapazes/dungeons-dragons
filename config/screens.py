@@ -8,6 +8,7 @@ CREDITS = 'credits'
 SHORTCUTS = 'shortcuts'
 CHARACTER_CREATION = "character_creation"
 OPTIONS = "options"
+NEW_GAME = "new_game"
 
 # states
 TRANSITION_IN = 'transition in'

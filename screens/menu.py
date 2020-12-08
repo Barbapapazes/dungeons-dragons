@@ -2,7 +2,7 @@
 
 import pygame as pg
 from window import _Elements
-from config.screens import GAME, MENU, OPTIONS, LOAD_GAME, CHARACTER_CREATION
+from config.screens import GAME, MENU, NEW_GAME, OPTIONS, LOAD_GAME
 from utils.shortcuts import load_shortcuts
 
 
@@ -22,7 +22,7 @@ class Menu(_Elements):
             "new_game": {
                 "text": "New Game",
                 "on_click": self.load_next_state,
-                "on_click_params": [CHARACTER_CREATION],
+                "on_click_params": [NEW_GAME],
             },
             "load_game": {
                 "text": "Load a game",
