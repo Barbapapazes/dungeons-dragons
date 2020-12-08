@@ -59,6 +59,11 @@ WEAPONS = {
         "weight": 5,
         "slot": "weapon",
         "type": "dagger",
+        "nb_d": 7,
+        "val_d": 3,
+        "scope": 3,
+        "price": 10,
+        
     }
 }
 
