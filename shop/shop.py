@@ -221,36 +221,38 @@ class Shop():
         for slot in self.get_all_slots():
             if slot.item is not None:
                 if slot.rect.collidepoint(mouse_pos):
-                    if action == ACTIONS['buy']:
-                        logger.info('%s bought', slot.item.name)
-                        data = self.buy_item(slot.item, player)
-                        player.inventory.add_item(data)
-                    elif action == ACTIONS['buy_equip']:
-                        if isinstance(slot.item, Equipable):
+                    if slot.item:
+                        if action == ACTIONS['buy']:
+                            logger.info('%s bought', slot.item.name)
                             data = self.buy_item(slot.item, player)
-                            player.inventory.equip_item(data)
+                            player.inventory.add_item(data)
+                        elif action == ACTIONS['buy_equip']:
+                            if isinstance(slot.item, Equipable):
+                                data = self.buy_item(slot.item, player)
+                                player.inventory.equip_item(data)
+                            else:
+                                logger.info('Action can not be done')
+                        elif action == ACTIONS['buy_use']:
+                            if isinstance(slot.item, Consumable):
+                                data = self.buy_item(slot.item, player)
+                                player.inventory.use_item(data)
+                            else:
+                                logger.info('Action can not be done')
                         else:
                             logger.info('Action can not be done')
-                    elif action == ACTIONS['buy_use']:
-                        if isinstance(slot.item, Consumable):
-                            data = self.buy_item(slot.item, player)
-                            player.inventory.use_item(data)
-                        else:
-                            logger.info('Action can not be done')
-                    else:
-                        logger.info('Action can not be done')
 
         for slot in player.inventory.get_all_slots():
             if isinstance(slot, InventorySlot):
                 if slot.rect.collidepoint(mouse_pos):
-                    if action == INVENTORY_ACTIONS['sell']:
-                        logger.info('%s sold', slot.item.name)
-                        self.sell_item(slot.item, player)
-                        slot.item = None
-                    elif action in list(ACTIONS['equip']) + list(ACTIONS['unequip'])+list(ACTIONS['use']):
-                        player.inventory.check_slot(action, screen, mouse_pos)
-                    else:
-                        logger.info('Action can not be done')
+                    if slot.item:
+                        if action == INVENTORY_ACTIONS['sell']:
+                            logger.info('%s sold', slot.item.name)
+                            self.sell_item(slot.item, player)
+                            slot.item = None
+                        elif action in list(ACTIONS['equip']) + list(ACTIONS['unequip'])+list(ACTIONS['use']):
+                            player.inventory.check_slot(action, screen, mouse_pos)
+                        else:
+                            logger.info('Action can not be done')
             elif isinstance(slot, EquipableSlot):
                 if slot.rect.collidepoint(mouse_pos):
                     if slot.item is not None:
