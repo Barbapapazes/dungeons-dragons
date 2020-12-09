@@ -10,6 +10,7 @@ from config.colors import BLACK, BEIGE, GREEN_DARK, YELLOW_LIGHT
 from config.window import WIDTH, HEIGHT, FPS, TITLE
 from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
 from utils.shortcuts import key_for, load_shortcuts
+from music.music import Music
 
 
 class Window():
@@ -35,6 +36,8 @@ class Window():
 
         self.show_fps = False
 
+        self.M=Music(self)
+
         self.load_data()
 
     def load_data(self):
@@ -56,6 +59,7 @@ class Window():
         self.states_dict = states_dict
         self.state_name = start_state
         self.state = self.states_dict[self.state_name]
+        self.M.update()
 
     def flip_state(self, state=None):
         """Change state to a new state"""
@@ -71,6 +75,7 @@ class Window():
         logger.debug(self.persist)
         logger.info("Startup %s", self.state_name)
         self.state.startup(self.dt, self.persist)
+        self.M.update()
 
     def run(self):
         """Run the state"""

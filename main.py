@@ -9,8 +9,8 @@ from screens.shortcuts import Shortcuts
 from screens.character_creation import CharacterCreation
 from screens.options import Options
 from screens.new_game import NewGame
-from screens.introduction import Introduction
-from config.screens import INTRODUCTION, MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME
+from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME
+from music.music import Music
 from logger import logger
 
 if __name__ == '__main__':
