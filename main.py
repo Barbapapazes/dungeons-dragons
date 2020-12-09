@@ -16,6 +16,9 @@ from screens.online_game import OnlineGame
 from screens.options import Options
 from screens.shortcuts import Shortcuts
 from window import Window
+from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME
+from music.music import Music
+from logger import logger
 
 if __name__ == '__main__':
     logger.info("Create states")
