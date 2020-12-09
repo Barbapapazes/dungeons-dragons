@@ -168,8 +168,14 @@ class Shop():
         if self.display_shop:
             for slot in self.get_all_slots():
                 slot.draw(screen)
+            slot_moving = None
             for slot in self.get_all_slots():
-                slot.draw_items(screen)
+                if slot.item and not slot.item.is_moving:
+                    slot.draw_items(screen)
+                elif slot.item:
+                    slot_moving = slot
+            if slot_moving:
+                slot_moving.draw_items(screen)
 
     def move_item(self):
         """Drag function, makes an item following the mouse
@@ -199,7 +205,7 @@ class Shop():
             self.moving_item.is_moving = False
             self.moving_item = None
             self.moving_item_slot = None
-        else :
+        else:
             pass
         if inventory.find_item(data) == None and data:
             inventory.player.gold += data.price
