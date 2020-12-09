@@ -16,10 +16,10 @@ from screens.online_game import OnlineGame
 from screens.options import Options
 from screens.shortcuts import Shortcuts
 from window import Window
-from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME
 from screens.options_music import Options_music
 from screens.introduction import Introduction
 from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME,OPTIONS_MUSIC,INTRODUCTION
+from music.music import Music
 from logger import logger
 
 if __name__ == '__main__':
