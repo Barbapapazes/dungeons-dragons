@@ -4,7 +4,7 @@ from os import path
 from components.cursor import Cursor
 from config.buttons import HEIGHT_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
 from config.window import HEIGHT, WIDTH
-from config.colors import BLACK, BLUE_GREY, RED
+from config.colors import BEIGE, BLACK, BLUE_GREY
 from logger import logger
 import pygame as pg
 from pygame_widgets import TextBox
@@ -45,22 +45,23 @@ class NewGame(_Elements):
 
     def save_next(self, state):
         self.game_data['file_name'] = self.get_text_info() + '.json'
+        self.game_data['num_heros'] = self.slider.getValue()
+        logger.info("Filename : %s, Number of heros : %s", self.game_data['file_name'],  self.game_data['num_heros'])
         self.load_next_state(state)
 
     def create_slider(self):
         _x = WIDTH // 2 - WIDTH_SLIDER // 2
-        _y = 7 * HEIGHT // 10
-        self.slider = Cursor("Number of heros", "num_heros", _x, _y, WIDTH_SLIDER, HEIGHT_SLIDER,
+        _y = 6 * HEIGHT // 10
+        self.slider = Cursor("", "", _x, _y, WIDTH_SLIDER, HEIGHT_SLIDER,
                              self.background, 1, 3, 1, 1, self.text_font, self.draw_text, BLACK, BLUE_GREY)
 
     def create_text_box(self):
         _x = WIDTH // 2 - WIDTH_BUTTON // 2
-        _y = 5 * HEIGHT // 10 - HEIGHT_BUTTON // 2
+        _y = 4 * HEIGHT // 10 - HEIGHT_BUTTON // 2
         self.text_name = TextBox(self.background, _x, _y, WIDTH_BUTTON, HEIGHT_BUTTON, fontsize=50,
                                  color=BLACK, textColour=BLACK, onSubmit=self.get_text_info, radius=10, borderThickness=4)
 
     def get_text_info(self):
-        logger.info(self.text_name.getText())
         return self.text_name.getText()
 
     def run(self, surface, keys, mouse, dt):
@@ -89,4 +90,8 @@ class NewGame(_Elements):
         self.background.blit(self.image, (0, 0))
         self.text_name.draw()
         self.slider.draw()
+        self.draw_text("Name your game", self.text_font, 24, BEIGE, WIDTH //
+                       2, 3 * HEIGHT // 10, align="n", screen=self.background)
+        self.draw_text(f"Number of heroes : {self.slider.getValue()}", self.text_font, 24, BEIGE, WIDTH //
+                       2, 11 * HEIGHT // 20, align="n", screen=self.background)
         super().draw_elements("Create a game")
