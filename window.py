@@ -389,7 +389,8 @@ class _Elements(_State):
 
         offset = kwargs.get('btns_offset', 100)
         width = kwargs.get('btns_width', WIDTH_BUTTON)
-        self.create_buttons(self.background, offset=offset, width=width)
+        start_y_offset = kwargs.get('btns_start_y_offset', 250)
+        self.create_buttons(self.background, start_y_offset=start_y_offset, offset=offset, width=width)
 
     def create_back_button(self, background, on_click, on_click_params):
         """Create the back button"""
@@ -399,10 +400,10 @@ class _Elements(_State):
             background, _x, _y, WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2, "Back", self.button_font, self.fontsize // 2,
             MARGIN_BUTTON, RADIUS_BUTTON, BEIGE, YELLOW_LIGHT, GREEN_DARK, on_click, on_click_params)
 
-    def create_buttons(self, background, offset=100, width=WIDTH_BUTTON):
+    def create_buttons(self, background, start_y_offset=250, offset=100, width=WIDTH_BUTTON):
         """Create buttons"""
         _x = WIDTH // 2 - WIDTH_BUTTON // 2
-        y_base = 250
+        y_base = start_y_offset
         self.btns = list()
         logger.info("Create all buttons from %s", self.name)
         for index, (_, value) in enumerate(
