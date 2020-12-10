@@ -14,7 +14,9 @@ from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 from config.shop import ACTIONS
+from utils.turn_manager import TurnManager
 # from config.sprites import WEAPONS, ARMOR
+# from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON
 # from inventory.inventory import Armor, Weapon
 from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON, NUM_ACT_BEGIN
 from temp.enemy import Enemy
@@ -35,6 +37,8 @@ class Game(_State):
 
         self.all_sprites = None
         self.versus = Versus(self)
+
+        self.turn_manager = TurnManager()
 
         self.states_dict = self.make_states_dict()
 
@@ -71,7 +75,10 @@ class Game(_State):
                 tile_object.x + tile_object.width / 2,
                 tile_object.y + tile_object.height / 2)
             if tile_object.name == 'player':
-                self.player = Player(self, self.game_data["game_data"]["hero"]["class"], obj_center.x, obj_center.y)
+                self.turn_manager.players.append(
+                    Player(
+                        self, self.game_data["game_data"]["hero"]["class"],
+                        obj_center.x, obj_center.y))
             if tile_object.name == 'wall':
                 Obstacle(
                     self,
@@ -134,14 +141,16 @@ class Game(_State):
 
         if event.type == pg.KEYUP:
             self.toggle_states(event)
+            if event.key == pg.K_t:
+                self.turn_manager.add_turn()
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
 
                 if self.state == 'inventory':
-                    if self.player.inventory.display_inventory:
+                    if self.turn_manager.active_player().inventory.display_inventory:
                         logger.info("Select an item from the inventory")
-                        self.player.inventory.move_item()
+                        self.turn_manager.active_player().inventory.move_item()
 
         self.event_versus(event)
         self.events_inventory(event)
@@ -152,8 +161,8 @@ class Game(_State):
         if event.type == pg.KEYUP:
             if event.key == pg.K_l:
                 life = {
-                    'Player': self.player.HP,
-                    'mana': self.player.MP,
+                    'Player': self.turn_manager.active_player().HP,
+                    'mana': self.turn_manager.active_player().MP,
                     'en1': self.en1.HP,
                     'en2': self.en2.HP}
                 logger.info(life)
@@ -182,7 +191,7 @@ class Game(_State):
                             self.versus.setAction(None)
                     if self.versus.isMOV() and not self.versus.isProgress():
                         self.versus.setAction("Move")
-                    if self.versus.CheckMove(self.player) and self.versus.action == 'Move':
+                    if self.versus.CheckMove(self.turn_manager.active_player()) and self.versus.action == 'Move':
                         self.versus.setAction("Move_autorised")
                     if self.versus.action == "Select_pos_sort":
                         self.versus.createZone(self.player)
@@ -197,13 +206,13 @@ class Game(_State):
         if self.state == 'inventory':
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    self.player.inventory.move_item()
+                    self.turn_manager.active_player().inventory.move_item()
             elif event.type == pg.MOUSEBUTTONUP:
                 if event.button == 1:
-                    self.player.inventory.place_item()
+                    self.turn_manager.active_player().inventory.place_item()
                 elif event.button == 3:
                     self.mouse_pos = pg.mouse.get_pos()
-                    PopupMenu(self.player.inventory.menu_data)
+                    PopupMenu(self.turn_manager.active_player().inventory.menu_data)
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
                     self.inventory_events(event)
@@ -211,10 +220,10 @@ class Game(_State):
     def inventory_events(self, event):
         """Used to manage all event"""
         if event.name == "inventory":
-            self.player.inventory.check_slot(event.text, self.mouse_pos)
+            self.turn_manager.active_player().inventory.check_slot(event.text, self.mouse_pos)
             if event.text in ["sell"]:
-                self.player.shop.check_slot(
-                    event.text, self.screen, self.player, self.mouse_pos)
+                self.turn_manager.active_player().shop.check_slot(
+                    event.text, self.screen, self.turn_manager.active_player(), self.mouse_pos)
 
     def events_shop(self, event):
         """When the shop state is running"""
@@ -222,41 +231,41 @@ class Game(_State):
             if event.type == pg.MOUSEBUTTONUP:
                 if event.button == 3:
                     self.mouse_pos = pg.mouse.get_pos()
-                    if self.player.shop.is_clicked(self.mouse_pos):
-                        PopupMenu(self.player.shop.menu_data)
-                    elif self.player.inventory.is_clicked(self.mouse_pos):
-                        PopupMenu(self.player.inventory.menu_data)
+                    if self.turn_manager.active_player().shop.is_clicked(self.mouse_pos):
+                        PopupMenu(self.turn_manager.active_player().shop.menu_data)
+                    elif self.turn_manager.active_player().inventory.is_clicked(self.mouse_pos):
+                        PopupMenu(self.turn_manager.active_player().inventory.menu_data)
                 elif event.button == 1:
-                    self.player.shop.place_item(self.player.inventory)
-                    self.player.inventory.place_item()
+                    self.turn_manager.active_player().shop.place_item(self.turn_manager.active_player().inventory)
+                    self.turn_manager.active_player().inventory.place_item()
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    self.player.shop.move_item()
-                    self.player.inventory.move_item()
+                    self.turn_manager.active_player().shop.move_item()
+                    self.turn_manager.active_player().inventory.move_item()
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
-                    if event.name == 'shop' and event.text in self.player.shop.menu_data:
-                        self.player.shop.check_slot(
-                            event.text, self.screen, self.player, self.mouse_pos)
+                    if event.name == 'shop' and event.text in self.turn_manager.active_player().shop.menu_data:
+                        self.turn_manager.active_player().shop.check_slot(
+                            event.text, self.screen, self.turn_manager.active_player(), self.mouse_pos)
                     self.inventory_events(event)
 
     def toggle_states(self, event):
         """Use to toggle the state of all states"""
         if key_for(self.game_data["shortcuts"]["game"]["menu"]["keys"], event):
             logger.info("Toggle the sub-menu")
-            self.player.inventory.display_inventory = False
-            self.player.shop.display_shop = False
+            self.turn_manager.active_player().inventory.display_inventory = False
+            self.turn_manager.active_player().shop.display_shop = False
             super().toggle_sub_state('menu')
         if key_for(self.game_data["shortcuts"]["game"]
                    ["inventory"]["keys"], event):
-            logger.info("Toggle inventory from player")
-            self.player.shop.display_shop = False
-            self.player.inventory.display_inventory = True
+            logger.info("Toggle inventory from turn_manager.active_player()")
+            self.turn_manager.active_player().shop.display_shop = False
+            self.turn_manager.active_player().inventory.display_inventory = True
             super().toggle_sub_state('inventory')
         if event.key == pg.K_p:
             logger.info("Toggle the shop")
-            self.player.shop.display_shop = True
-            self.player.inventory.display_inventory = True
+            self.turn_manager.active_player().shop.display_shop = True
+            self.turn_manager.active_player().inventory.display_inventory = True
             super().toggle_sub_state('shop')
 
     def run(self, surface, keys, mouse, dt):
@@ -303,7 +312,7 @@ class Game(_State):
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
         self.screen.blit(self.dim_screen, (0, 0))
-        self.player.inventory.draw(self.screen)
+        self.turn_manager.active_player().inventory.draw(self.screen)
 
     def shop_run(self):
         """Run the shop state"""
@@ -311,14 +320,14 @@ class Game(_State):
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
         self.screen.blit(self.dim_screen, (0, 0))
-        self.player.inventory.draw(self.screen)
-        self.player.shop.draw(self.screen)
+        self.turn_manager.active_player().inventory.draw(self.screen)
+        self.turn_manager.active_player().shop.draw(self.screen)
 
     def versus_action(self):
 
         if self.player.numberOfAction > 0:
             self.versus.draw(self.screen)
-            self.versus.ONE_action(self.player, self.screen)
+            self.versus.ONE_action(self.turn_manager.active_player(), self.screen)
         else:
             self.versus.setAction("Turn_enemy")
 
@@ -327,7 +336,7 @@ class Game(_State):
             self.versus.log("END turn ENEMY")
             self.player.numberOfAction = 5
             self.versus.log("vous avez de nouveau 5 actions")
-            collisionZoneEffect(self.player, self)
+            collisionZoneEffect(self.turn_manager.active_player(), self)
             self.versus.setAction(None)
 
     def check_for_menu(self):
@@ -343,17 +352,18 @@ class Game(_State):
 
     def update(self):
         """Update all"""
-        self.all_sprites.update()
-        collisionZoneEffect(self.player, self)
-        self.camera.update(self.player)
-        self.minimap.update(self.player)
+        # self.all_sprites.update()
+        collisionZoneEffect(self.turn_manager.active_player(), self)
+        self.turn_manager.update()
+        self.camera.update(self.turn_manager.active_player())
+        self.minimap.update(self.turn_manager.active_player())
         self.game_data["minimap"] = self.minimap.create_minimap_data()
 
     def draw(self):
         """Draw all"""
         # self.screen.fill(BLACK)
         # self.draw_grid(self.screen)
-        # self.all_sprites.draw(self.screen)
+        self.all_sprites.draw(self.screen)
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
@@ -363,7 +373,7 @@ class Game(_State):
 
         self.screen.blit(
             self.minimap.create(
-                self.player),
+                self.turn_manager.active_player()),
             (WIDTH -
              self.minimap.width,
              HEIGHT -
