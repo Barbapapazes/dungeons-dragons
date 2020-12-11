@@ -68,6 +68,7 @@ class Window():
         self.state = self.states_dict[self.state_name]
         self.shortcuts = self.persist["shortcuts"]
         self.state.previous = previous
+        logger.debug(self.persist)
         logger.info("Startup %s", self.state_name)
         self.state.startup(self.dt, self.persist)
 

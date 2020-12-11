@@ -33,11 +33,18 @@ class CharacterCreation(_Elements):
                 'background.jpg')).convert()
         self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
 
+        self.remaining_heros_to_create = 0
+
         self.new()
-        self.create_confirm_button()
-        self.create_animations()
-        self.create_sliders()
-        self.create_back_button(self.background, self.load_next_state, [MENU])
+
+    def startup(self, dt, game_data):
+        game_data["game_data"] = create_game_data()
+        game_data["minimap"] = {
+            "fog": None,
+            "cover": None
+        }
+        self.remaining_heros_to_create = game_data["num_heros"]
+        super().startup(dt, game_data)
 
         # textbox
         # self.name = TextBox(
@@ -60,6 +67,10 @@ class CharacterCreation(_Elements):
         """Create new variables"""
         self.selected = 0
         self.selected_character = self.get_selected_character()
+        self.create_confirm_button()
+        self.create_animations()
+        self.create_sliders()
+        self.create_back_button(self.background, self.load_next_state, [MENU])
 
     def create_confirm_button(self):
         """Create buttons from this screen"""
@@ -434,24 +445,52 @@ class CharacterCreation(_Elements):
         timestamp = datetime.timestamp(now)
         return f"{date}-{int(timestamp)}.json"
 
-    def next_action(self):
-        """Pass to the next screen"""
-        logger.info("Save data to game_data")
-        if not self.game_data['file_name']:
-            self.game_data['file_name'] = self.create_file_name()
-
-        self.game_data["game_data"] = create_game_data()
-        self.game_data["minimap"] = {
-            "fog": None,
-            "cover": None
+    def register_hero(self):
+        """Used to save data to the game_data"""
+        characteristics = {
+            "str": 0,
+            "dex": 0,
+            "con": 0,
+            "int": 0,
+            "wis": 0,
+            "cha": 0
         }
-
         for slider in self.sliders:
-            self.game_data["game_data"]["hero"]["characteristics"][slider.name] = slider.getValue()
-        self.game_data["game_data"]["hero"]["class"] = self.get_selected_character()["name"]
+            characteristics[slider.name] = slider.getValue()
 
-        logger.info("Start a new game")
-        super().set_state(TRANSITION_OUT)
+        self.game_data["game_data"]["heros"].append({
+            "class": self.get_selected_character()["name"],
+            "characteristics": characteristics
+        })
+
+    def next_action(self):
+        """Pass to the next screen or create a new hero"""
+        logger.info("Save data to game_data")
+        # pour chaque perso à faire, il faut le faire, valider, sauvegarder, décrémenter le nombre restant de perso à faire
+        # si le nombre est > 0 alors on renvoie sur le même screen pour faire les autres
+        # si le nombre est = 0 alors on peut quitter et commencer la parties
+        # afficher le nombre de charactère restant
+
+        self.remaining_heros_to_create -= 1
+        self.game_data['num_heros'] = self.remaining_heros_to_create
+
+        if self.remaining_heros_to_create > 0:
+            self.register_hero()
+            # show a saved message (like the shortcuts)
+            # then, add a way to add the good number of Player, but always add 3 heros on the tmx map
+            self.new()
+            logger.info("Create a new hero")
+        else:
+            self.register_hero()
+            self.update_file_name()
+            self.next = GAME
+            super().set_state(TRANSITION_OUT)
+            logger.info("Start a new game")
+
+    def update_file_name(self):
+        if not self.game_data['file_name'] or self.game_data['file_name'] == '.json':
+            self.game_data['file_name'] = self.create_file_name()
+            logger.info("Update filename to %s", self.game_data["file_name"])
 
     def output(self):
         # Get text in the textbox
