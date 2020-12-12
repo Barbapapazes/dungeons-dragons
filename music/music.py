@@ -29,9 +29,11 @@ class Music():
      
     def init_data(self):
         DATA_MUSIC["is_enable"]=self.enable
+        DATA_MUSIC["current_playing"]=self.current_playing
      
     def load_data(self):
         self.enable=DATA_MUSIC["is_enable"]
+        self.current_playing=DATA_MUSIC["current_playing"]
 
     def update(self):
         self.load_data()
