@@ -108,7 +108,10 @@ class Options(_Elements):
     
     def status_music(self,none):
         print("la musique va s'arreter")
-        pg.mixer.stop()
+        DATA_MUSIC["is_enable"]=False
+        print(DATA_MUSIC["is_enable"])
+        #self.load_next_state(MENU)
+        self.toggle_sub_state("music")
 
      
 
