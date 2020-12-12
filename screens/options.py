@@ -99,22 +99,27 @@ class Options(_Elements):
     def create_music_buttons_dict(self):
         """Create the dict for screen size buttons"""
         return {
-            "small": {
+            "power": {
                 "text": "on/off",
                 "on_click": self.status_music,
                 "on_click_params": "1",
             },
+            "Apply":{
+                "text": "Apply",
+                "on_click": self.appliquer ,
+                "on_click_params": [OPTIONS],
+            },
         }
     
     def status_music(self,none):
-        print("la musique va s'arreter")
-        DATA_MUSIC["is_enable"]=False
-        print(DATA_MUSIC["is_enable"])
-        #self.load_next_state(MENU)
-        self.toggle_sub_state("music")
+        if(DATA_MUSIC["is_enable"]):
+            DATA_MUSIC["is_enable"]=False
+        else:
+            DATA_MUSIC["is_enable"]=True
 
-     
-
+    def appliquer(self,etat):
+        self.toggle_sub_state("normal")
+        self.load_next_state(etat)
 
     def toggle_sub_state(self, state):
         super().toggle_sub_state(state)
