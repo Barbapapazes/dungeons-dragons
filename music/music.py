@@ -1,31 +1,40 @@
 import pygame as pg
 from os import path
+from data.music_data import DATA_MUSIC
 
 
 class Music():
     def __init__(self,win):
         print("creation du module music")
-        self.state="menu"
         self.win=win
-        self.lib_music=path.join('.',"music")
+        self.startup()
+        
+    
+    def startup(self):
         self.current_playing=None
         self.enable=True
-    
-    def create_dict(self):
-        return {
-            "menu":"medieval_music.mp3",
-            "options":"test.wav"
-        }
-
-    def play(self):
-        if(self.state):
-            pg.mixer.music.play(-1)
+        self.state="menu"
+        self.lib_music=path.join('.',"music")
+        self.init_data()
         
 
-    def pause(self):
-        pg.mixer.music.pause
+    def create_dict(self):
+        return DATA_MUSIC["piste"]
+
+    def play(self):
+        pg.mixer.music.play(-1)
+    
+    def stop(self):
+        pg.mixer.music.stop()
+     
+    def init_data(self):
+        DATA_MUSIC["is_enable"]=self.enable
+     
+    def load_data(self):
+        self.enable=DATA_MUSIC["is_enable"]
 
     def update(self):
+        self.load_data()
         if(self.enable):
             self.state=self.win.state_name
             #si l'etat n'est pas nul et est dans le dict 
@@ -35,16 +44,10 @@ class Music():
                     pg.mixer.music.load(path.join(self.lib_music,self.create_dict()[self.state]))
                     self.current_playing=self.create_dict()[self.state]
                     self.play()
-                    print("OK")
+        else:
+            self.stop()
 
-    def music_isenable(self):
-        return self.enable
 
-    def activate(self):
-        self.enable=True
-    
-    def stop(self):
-        self.enable=False
 
             
 

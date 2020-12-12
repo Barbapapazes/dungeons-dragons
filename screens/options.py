@@ -9,6 +9,7 @@ from config.window import WIDTH, HEIGHT
 from config.colors import BEIGE
 from config.screens import MENU, OPTIONS, SHORTCUTS
 from data.options import CUSTOM_SETTINGS_FILENAME
+from data.music_data import DATA_MUSIC
 
 
 class Options(_Elements):
@@ -75,7 +76,10 @@ class Options(_Elements):
     
     def status_music(self,none):
         print("la musique va s'arreter")
-        pg.mixer.stop()
+        DATA_MUSIC["is_enable"]=False
+        print(DATA_MUSIC["is_enable"])
+        #self.load_next_state(MENU)
+        self.toggle_sub_state("music")
 
      
 
