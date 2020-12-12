@@ -50,6 +50,16 @@ class Music():
             self.stop()
 
 
+                    print("OK")
+
+    def music_isenable(self):
+        return self.enable
+
+    def activate(self):
+        self.enable=True
+    
+    def stop(self):
+        self.enable=False
 
             
 
