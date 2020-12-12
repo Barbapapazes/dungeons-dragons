@@ -4,22 +4,22 @@ import json
 from os import path
 import pygame as pg
 from pygame_widgets import Button
-from window import _State
+from window import _Elements
 from logger import logger
 from config.window import WIDTH, HEIGHT
 from config.colors import BEIGE, BLACK, WHITE, YELLOW_LIGHT, GREEN_DARK
 from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
-from config.screens import SHORTCUTS
+from config.screens import OPTIONS, SHORTCUTS
 from data.shortcuts import CUSTOM_SHORTCUTS_FILENAME, SHORTCUTS_DEFAULT
 
 
-class Shortcuts(_State):
+class Shortcuts(_Elements):
     """Shortcuts screen"""
 
     def __init__(self):
         self.name = SHORTCUTS
-        super(Shortcuts, self).__init__(self.name)
         self.next = None
+        super(Shortcuts, self).__init__(self.name, self.next, 'shortcuts', "background.jpg", {})
 
         self.key = None
 
@@ -49,6 +49,8 @@ class Shortcuts(_State):
         self.reset_memory = False
         self.alpha_actions = 0
 
+        self.create_back_button(self.screen_menu, self.load_next_state, [OPTIONS])
+
     def startup(self, dt, game_data):
         """Initialize data at scene start."""
         self.game_data = game_data
@@ -74,10 +76,10 @@ class Shortcuts(_State):
 
     def create_return_btn(self):
         """Create th return to previous button"""
-        self.back_btn = self.create_button(
+        self.unselect_btn = self.create_button(
             self.background, HEIGHT_BUTTON,
-            HEIGHT_BUTTON, WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2, "back", self.button_font,
-            30, MARGIN_BUTTON, RADIUS_BUTTON, BEIGE, YELLOW_LIGHT, GREEN_DARK, self.unselect_btn, [])
+            HEIGHT - HEIGHT_BUTTON, WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2, "unselect", self.button_font,
+            30, MARGIN_BUTTON, RADIUS_BUTTON, BEIGE, YELLOW_LIGHT, GREEN_DARK, self.unselect, [])
 
     def create_shortcuts(self):
         """Create buttons for selected shortcuts"""
@@ -167,6 +169,7 @@ class Shortcuts(_State):
     def events_buttons(self):
         """Used to manage the event for buttons"""
         events = pg.event.get()
+        self.unselect_btn.listen(events)
         self.back_btn.listen(events)
         if self.is_shortcut_selected:
             self.validate_btn.listen(events)
@@ -187,9 +190,9 @@ class Shortcuts(_State):
             elif event.key == pg.K_r and pg.key.get_mods() & pg.KMOD_ALT:
                 self.reset_shortcuts()
             elif event.key == pg.K_ESCAPE:
-                self.unselect_btn()
+                self.unselect()
 
-    def unselect_btn(self):
+    def unselect(self):
         """Unselect the last selected button"""
         if self.is_shortcut_selected:
             self.is_shortcut_selected = False
@@ -255,6 +258,7 @@ class Shortcuts(_State):
             self.draw_help()
 
         self.validate_btn.draw()
+        self.unselect_btn.draw()
         self.back_btn.draw()
 
         self.draw_title()
