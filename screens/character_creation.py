@@ -423,6 +423,14 @@ class CharacterCreation(_Elements):
             WIDTH // 2,
             HEIGHT - 20,
             align="s")
+        self.draw_text(
+            f"Remaining hero to create {self.remaining_heros_to_create}",
+            self.text_font,
+            36,
+            BEIGE,
+            19 * WIDTH // 20,
+            HEIGHT // 10,
+            align="e")
 
     def draw_title(self):
         """Draw title"""
