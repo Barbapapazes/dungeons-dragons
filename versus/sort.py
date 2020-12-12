@@ -5,7 +5,7 @@ import pygame as pg
 from random import randint
 from inventory.inventory import Equipable 
 from config.colors import GREEN_DARK
-from config.window import TILESIZE, FPS
+from config.window import TILESIZE
 from logger import logger
 
 
@@ -13,7 +13,7 @@ from logger import logger
 
 class Sort(Equipable):
     
-    def __init__(self,name,img,price,slot,manaCost,srt_type,timeSort,weight=0,nb_d=1, val_d=5, scope=2):
+    def __init__(self,name,img,price,slot,manaCost,srt_type,timeSort,nb_d, val_d, scope,weight=0):
         super(Sort,self).__init__(name,img,price,weight)
         self.slot= slot
         self.manaCost =manaCost

@@ -106,7 +106,7 @@ class Game(_State):
         # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
         # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
         # self.player.inventory.add_item(helmet_armor)
-        fireBall = Sort('fireBall','assets/img/items/fireBall.png',10,'sort',5,'fire',10)
+        fireBall = Sort('fireBall','assets/img/items/fireBall.png',10,'sort',5,'fire',10,2,4,2)
         self.player.inventory.add_item(fireBall)
 
     def make_states_dict(self):
