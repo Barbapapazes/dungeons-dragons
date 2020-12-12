@@ -119,7 +119,7 @@ class Versus():
         self.action=None
         self.selectEnemy = None
         self.game.zoneEffect.update()
-        collisionZoneEffect(player,self.game.zoneEffect)
+        collisionZoneEffect(player,self.game)
 
     def log(self,msg):
         

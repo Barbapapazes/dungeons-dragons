@@ -96,13 +96,13 @@ class ZoneEffect(pg.sprite.Sprite):
         self.draw()
 
 
-def collisionZoneEffect(person,ZoneEffect):
-    for zone in ZoneEffect:
+def collisionZoneEffect(person,game):
+    for zone in game.zoneEffect:
         if pg.sprite.collide_rect(person,zone):
             if zone.type == "heal":
-                logger.info("Une personne gagne %d PV de la zone magique",zone.dammage)
+                game.versus.log("Une personne gagne "+ str(zone.dammage)+" PV de la zone magique")
                 person.addHp(zone.dammage)
             else:    
-                logger.info("Une personne subit %d dégat de la zone magique",zone.dammage)
+                game.versus.log("Une personne subit "+ str(zone.dammage)+" dégat de la zone magique")
                 person.subHp(zone.dammage)
 

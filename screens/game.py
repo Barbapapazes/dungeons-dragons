@@ -333,7 +333,7 @@ class Game(_State):
             self.versus.log("END turn ENEMY")
             self.player.numberOfAction = 5
             self.versus.log("vous avez de nouveau 5 actions")
-            collisionZoneEffect(self.player,self.zoneEffect)
+            collisionZoneEffect(self.player,self)
             self.versus.setAction(None)
 
         
@@ -352,7 +352,7 @@ class Game(_State):
     def update(self):
         """Update all"""
         self.all_sprites.update()
-        collisionZoneEffect(self.player,self.zoneEffect)
+        collisionZoneEffect(self.player,self)
         self.camera.update(self.player)
         self.minimap.update(self.player)
         self.game_data["minimap"] = self.minimap.create_minimap_data()
