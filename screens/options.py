@@ -99,27 +99,36 @@ class Options(_Elements):
     def create_music_buttons_dict(self):
         """Create the dict for screen size buttons"""
         return {
-            "power": {
-                "text": "on/off",
+            "song": {
+                "text": "Song : "+str(DATA_MUSIC["is_enable"]),
                 "on_click": self.status_music,
                 "on_click_params": "1",
             },
-            "Apply":{
-                "text": "Apply",
-                "on_click": self.appliquer ,
-                "on_click_params": [OPTIONS],
+            "sound": {
+                "text": "Sound : "+str(DATA_MUSIC["is_enable"]),
+                "on_click": self.status_music,
+                "on_click_params": "1",
             },
         }
     
     def status_music(self,none):
         if(DATA_MUSIC["is_enable"]):
             DATA_MUSIC["is_enable"]=False
+            DATA_MUSIC["current_playing"]=None
+            logger.info("Musique false")
         else:
             DATA_MUSIC["is_enable"]=True
+            DATA_MUSIC["current_playing"]=None
+            logger.info("Musique true")
 
-    def appliquer(self,etat):
+        self.btns_dict = self.create_music_buttons_dict()
+        self.load_next_state(OPTIONS)
+        self.toggle_sub_state("music")
+        
+    def appliquer(self,etat,sub_state="normal"):
         self.toggle_sub_state("normal")
         self.load_next_state(etat)
+        
 
     def toggle_sub_state(self, state):
         super().toggle_sub_state(state)
@@ -172,6 +181,7 @@ class Options(_Elements):
             self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
             self.btns = list()
             self.create_buttons(self.image_screen)
+
         else:
             self.btns_dict = self.create_buttons_dict()
             self.create_buttons(self.background)
@@ -243,7 +253,7 @@ class Options(_Elements):
         self.back_btn.draw()
         super().draw_title("Options")
         super().draw_subtitle("Musics & Sounds")
-        #self.back_btn.draw()
+        self.back_btn.draw()
 
     def draw(self):
         """Draw content"""
