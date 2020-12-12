@@ -75,10 +75,11 @@ class Game(_State):
                 tile_object.x + tile_object.width / 2,
                 tile_object.y + tile_object.height / 2)
             if tile_object.name == 'player':
-                self.turn_manager.players.append(
-                    Player(
-                        self, self.game_data["game_data"]["hero"]["class"],
-                        obj_center.x, obj_center.y))
+                if len(self.turn_manager.players) < len(self.game_data["game_data"]["heros"]):
+                    self.turn_manager.players.append(
+                        Player(
+                            self, self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["class"],
+                            obj_center.x, obj_center.y))
             if tile_object.name == 'wall':
                 Obstacle(
                     self,
@@ -111,7 +112,7 @@ class Game(_State):
         # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
         # self.player.inventory.add_item(helmet_armor)
         fireBall = Sort('fireBall', 'assets/img/items/fireBall.png', 10, 'sort', 5, 'fire', 10, 2, 4, 2)
-        self.player.inventory.add_item(fireBall)
+        self.turn_manager.active_player().inventory.add_item(fireBall)
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -170,7 +171,7 @@ class Game(_State):
             if event.key == pg.K_TAB:
                 """Simulate begin versus"""
                 self.versus.log("Begin Versus")
-                self.player.numberOfAction = NUM_ACT_BEGIN
+                self.turn_manager.active_player().numberOfAction = NUM_ACT_BEGIN
 
                 if not self.versus.isVersus:
                     self.versus.begin()
@@ -194,9 +195,9 @@ class Game(_State):
                     if self.versus.CheckMove(self.turn_manager.active_player()) and self.versus.action == 'Move':
                         self.versus.setAction("Move_autorised")
                     if self.versus.action == "Select_pos_sort":
-                        self.versus.createZone(self.player)
+                        self.versus.createZone(self.turn_manager.active_player())
                     if self.versus.isSRT() and not self.versus.isProgress():
-                        if self.versus.CheckSort(self.player):
+                        if self.versus.CheckSort(self.turn_manager.active_player()):
                             self.versus.setAction("Select_pos_sort")
                         else:
                             self.versus.log("No sort select OR you don't have enough mana")
@@ -325,7 +326,7 @@ class Game(_State):
 
     def versus_action(self):
 
-        if self.player.numberOfAction > 0:
+        if self.turn_manager.active_player().numberOfAction > 0:
             self.versus.draw(self.screen)
             self.versus.ONE_action(self.turn_manager.active_player(), self.screen)
         else:
@@ -334,7 +335,7 @@ class Game(_State):
         if self.versus.action == "Turn_enemy":
             self.versus.log("Begin turn ENEMY")
             self.versus.log("END turn ENEMY")
-            self.player.numberOfAction = 5
+            self.turn_manager.active_player().numberOfAction = 5
             self.versus.log("vous avez de nouveau 5 actions")
             collisionZoneEffect(self.turn_manager.active_player(), self)
             self.versus.setAction(None)
