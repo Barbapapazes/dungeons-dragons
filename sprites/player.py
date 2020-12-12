@@ -4,7 +4,7 @@ from random import randint
 from logger import logger
 from config.colors import YELLOW
 from config.window import TILESIZE
-from config.sprites import PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT
+from config.sprites import PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT, PLAYER_MAX_MP
 from inventory.inventory import Inventory
 from utils.tilemap import collide_with_walls
 from shop.shop import Shop
@@ -34,7 +34,8 @@ class Player(pg.sprite.Sprite):
         self.HP = 100
         self.max_HP = PLAYER_MAX_HP
         self.shield = 0
-        self.MA = 50
+        self.MP = 50   #mana
+        self.max_MP = PLAYER_MAX_MP
 
         # Attribut
         self.STR = 70  # strenght
@@ -68,6 +69,26 @@ class Player(pg.sprite.Sprite):
             self.vel = vec(PLAYER_SPEED, 0).rotate(-self.rot)
         if keys[self.game.game_data["shortcuts"]["player"]["down"]["keys"][2]]:
             self.vel = vec(-PLAYER_SPEED / 2, 0).rotate(-self.rot)
+
+    def addMP(self, MP_gain):
+        """Add passed HP_gain to the player's health
+
+        Args:
+            HP_gain (int)
+        """
+        self.MP += MP_gain
+        if self.MP > self.max_MP:
+            self.MP = self.max_MP
+
+    def subMP(self, MP_lose):
+        """Sub passed HP_lose to the player's health
+
+        Args:
+            HP_lose (int)
+        """
+        self.MP -= MP_lose
+        if self.MP < 0:
+            self.MP = 0
 
     def addHp(self, hp_gain):
         """Add passed hp_gain to the player's health

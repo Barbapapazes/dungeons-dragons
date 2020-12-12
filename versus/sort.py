@@ -2,8 +2,10 @@
 
 
 import pygame as pg
+from random import randint
 from inventory.inventory import Equipable 
 from config.colors import GREEN_DARK
+from config.window import TILESIZE, FPS
 from logger import logger
 
 
@@ -16,7 +18,7 @@ class Sort(Equipable):
         self.slot= slot
         self.manaCost =manaCost
         self.srt_type =srt_type
-        self.timeSort = timeSort
+        self.timeSort = timeSort #seconde 
         self.nb_d = nb_d
         self.val_d = val_d
         self.scope =scope
@@ -57,12 +59,13 @@ class Sort(Equipable):
         self.dammage = 0
         for _ in range(self.nb_d):
             self.dammage += randint(1, self.val_d)
-        
+        return self.dammage
 
 
 
-    def placeSort(self,mouse_pos):
+    def placeSort(self,player,mouse_pos,game):
         logger.debug("create a zone effect")
+        ZoneEffect(game,mouse_pos,player.sort.scope,player.sort.timeSort,player.sort.DefineDMG())
         
 
 
@@ -76,13 +79,16 @@ class ZoneEffect(pg.sprite.Sprite):
         self.screen = game.screen
         self.x = mouse_pos[0]
         self.y = mouse_pos[1]
-        self.rect = pg.Rect(self.x-scope,self.y-scope,2*scope,2*scope)
-        self.time = time
+        self.rect = pg.Rect(self.x-scope*TILESIZE,self.y-scope*TILESIZE,2*scope*TILESIZE,2*scope*TILESIZE)
+        self.time = time * FPS
 
     def draw(self):
         pg.draw.rect(self.screen,GREEN_DARK,self.rect.copy())
 
-    # def update(self):
-    #     self.time -= 1
-    #     if self.time <= 0:
-    #         self.kill
+
+    def update(self):
+        self.time -= 1
+        if self.time <= 0:
+            self.kill()
+
+        self.draw()

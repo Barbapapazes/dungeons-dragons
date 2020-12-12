@@ -36,7 +36,7 @@ class Game(_State):
         self.next = CREDITS
 
         self.all_sprites = None
-        self.versus = Versus()
+        self.versus = Versus(self)
 
         self.states_dict = self.make_states_dict()
 
@@ -105,7 +105,7 @@ class Game(_State):
         # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
         # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
         # self.player.inventory.add_item(helmet_armor)
-        fireBall = Sort('fireBall','assets/img/items/fireBall.png',10,'sort',50,'fire',3)
+        fireBall = Sort('fireBall','assets/img/items/fireBall.png',10,'sort',50,'fire',10)
         self.player.inventory.add_item(fireBall)
 
     def make_states_dict(self):
@@ -279,6 +279,7 @@ class Game(_State):
             self.versus_action()
             if (self.versus.action == "Move_autorised"):
                 self.update()
+            self.zoneEffect.update()
         else:
             self.update()
             self.draw()

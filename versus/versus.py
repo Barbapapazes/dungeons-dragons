@@ -14,7 +14,9 @@ from temp.enemy import Enemy
 
 class Versus():
 
-    def __init__(self):
+    def __init__(self,game):
+
+        self.game = game
 
         self.BT_attck = pg.Rect((0, HEIGHT - TILESIZE), (TILESIZE, HEIGHT))
         self.BT_sort = pg.Rect((TILESIZE, HEIGHT - TILESIZE), (TILESIZE, HEIGHT))
@@ -88,11 +90,12 @@ class Versus():
         return  (DISTANCE_MOVE*TILESIZE >= abs(sqrt((player.pos.x-self.mouse_pos[0])**2 + (player.pos.y-self.mouse_pos[1])**2)))
 
     def CheckSort(self,player):
-        return (player.sort is not None) 
+        return (player.sort is not None and (player.MP-player.sort.manaCost >= 0)) 
 
 
     def createZone(self,player):
-        player.sort.placeSort(self.mouse_pos)
+        player.subMP(player.sort.manaCost)
+        player.sort.placeSort(player,self.mouse_pos,self.game)
         self.action = None
         
 

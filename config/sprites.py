@@ -5,6 +5,7 @@ import pygame as pg
 PLAYER_SPEED = 280
 PLAYER_ROT_SPEED = 200
 PLAYER_MAX_HP = 100
+PLAYER_MAX_MP = 50
 PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
 
 
