@@ -16,7 +16,7 @@ from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 from config.shop import ACTIONS
 # from config.sprites import WEAPONS, ARMOR
 # from inventory.inventory import Armor, Weapon
-from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON
+from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON, NUM_ACT_BEGIN
 from temp.enemy import Enemy
 from versus.versus import Versus
 from versus.sort import Sort
@@ -106,7 +106,7 @@ class Game(_State):
         # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
         # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
         # self.player.inventory.add_item(helmet_armor)
-        fireBall = Sort('fireBall','assets/img/items/fireBall.png',10,'sort',5,'heal',10)
+        fireBall = Sort('fireBall','assets/img/items/fireBall.png',10,'sort',5,'fire',10)
         self.player.inventory.add_item(fireBall)
 
     def make_states_dict(self):
@@ -165,6 +165,7 @@ class Game(_State):
             if event.key == pg.K_TAB:
                 """Simulate begin versus"""
                 logger.info("Begin Versus")
+                self.player.numberOfAction = NUM_ACT_BEGIN
 
                 if not self.versus.isVersus:
                     self.versus.begin()
@@ -281,8 +282,6 @@ class Game(_State):
             self.versus_action()
             if (self.versus.action == "Move_autorised"):
                 self.update()
-            self.zoneEffect.update()
-            collisionZoneEffect(self.player,self.zoneEffect)
         else:
             self.update()
             self.draw()
@@ -322,10 +321,23 @@ class Game(_State):
         self.player.shop.draw(self.screen)
 
     def versus_action(self):
-        self.versus.draw(self.screen)
+        
+        if self.player.numberOfAction > 0:
+            #Your turn
+            self.versus.draw(self.screen)
+            self.versus.ONE_action(self.player, self.screen)
+        else:
+            self.versus.setAction("Turn_enemy")
 
-        # Choose action
-        self.versus.ONE_action(self.player, self.screen)
+        if self.versus.action == "Turn_enemy":
+            logger.info("Begin turn ENEMY")
+            logger.info("END turn ENEMY")
+            self.player.numberOfAction = 5
+            logger.info("vous avez de nouveau 5 actions")
+            collisionZoneEffect(self.player,self.zoneEffect)
+            self.versus.setAction(None)
+
+        
 
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
@@ -341,7 +353,6 @@ class Game(_State):
     def update(self):
         """Update all"""
         self.all_sprites.update()
-        self.zoneEffect.update()
         collisionZoneEffect(self.player,self.zoneEffect)
         self.camera.update(self.player)
         self.minimap.update(self.player)
@@ -356,6 +367,9 @@ class Game(_State):
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
+        
+        for zone in self.zoneEffect:
+            zone.draw()
 
         self.screen.blit(
             self.minimap.create(

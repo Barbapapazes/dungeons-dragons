@@ -11,3 +11,7 @@ DISTANCE_MOVE=2
 
 #attack with hand
 DMG_ANY_WEAPON =2
+
+
+#number of action for to begin a versus
+NUM_ACT_BEGIN = 5

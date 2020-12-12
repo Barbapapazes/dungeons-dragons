@@ -5,6 +5,7 @@ from math import sqrt
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import RED, YELLOW, BLUE, BLUE_SKY
 from config.versus import TOUCH_HAND, DISTANCE_MOVE, DMG_ANY_WEAPON
+from versus.sort import collisionZoneEffect
 from utils.tilemap import Camera
 from logger import logger
 
@@ -92,11 +93,17 @@ class Versus():
     def CheckSort(self,player):
         return (player.sort is not None and (player.MP-player.sort.manaCost >= 0)) 
 
-
     def createZone(self,player):
         player.subMP(player.sort.manaCost)
         player.sort.placeSort(self.mouse_pos,self.game)
-        self.action = None
+        self.ENDofAction(player)
+
+    def ENDofAction(self,player):
+        player.numberOfAction -= 1
+        self.action=None
+        self.selectEnemy = None
+        self.game.zoneEffect.update()
+        collisionZoneEffect(player,self.game.zoneEffect)
         
 
 
@@ -155,7 +162,7 @@ class Versus():
                     self.selectEnemy.name,
                     dmg)
 
-            self.selectEnemy = None
+            self.ENDofAction(player)
 
 
         if self.action =='Move':
@@ -165,7 +172,7 @@ class Versus():
         if self.action=='Move_autorised':
             #player pathfinding
             logger.debug("personnage moved wait fct pathfinding")
-            self.action=None
+            self.ENDofAction(player)
 
         if self.action == 'Select_pos_sort':
             self.ZoneSort(player)

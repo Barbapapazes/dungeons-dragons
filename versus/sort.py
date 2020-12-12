@@ -18,7 +18,7 @@ class Sort(Equipable):
         self.slot= slot
         self.manaCost =manaCost
         self.srt_type =srt_type
-        self.timeSort = timeSort #seconde 
+        self.timeSort = timeSort 
         self.nb_d = nb_d
         self.val_d = val_d
         self.scope =scope
@@ -80,7 +80,7 @@ class ZoneEffect(pg.sprite.Sprite):
         self.x = mouse_pos[0]
         self.y = mouse_pos[1]
         self.rect = pg.Rect(self.x-scope*TILESIZE,self.y-scope*TILESIZE,2*scope*TILESIZE,2*scope*TILESIZE)
-        self.time = time * FPS
+        self.time = time 
         self.dammage = DMG
         self.type = type
 
