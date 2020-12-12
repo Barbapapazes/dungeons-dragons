@@ -3,11 +3,13 @@
 import pygame as pg
 from math import sqrt
 from config.window import WIDTH, HEIGHT, TILESIZE
-from config.colors import RED, YELLOW, BLUE, BLUE_SKY
-from config.versus import TOUCH_HAND, DISTANCE_MOVE, DMG_ANY_WEAPON
+from config.colors import RED, YELLOW, BLUE, BLUE_SKY,WHITE,BLACK
+from config.versus import TOUCH_HAND, DISTANCE_MOVE, DMG_ANY_WEAPON, NUM_MSG, SIZE_TEXT
 from versus.sort import collisionZoneEffect
 from utils.tilemap import Camera
 from logger import logger
+
+
 
 # temp
 from temp.enemy import Enemy
@@ -26,6 +28,15 @@ class Versus():
         self.action=None
         self.selectEnemy=None
         self.isVersus = False
+
+        self.countLog = 0
+        self.all_msg=[]
+        for i in range(NUM_MSG):
+            self.all_msg.append('')
+        self.nb_msg = NUM_MSG-1
+        self.screenLog= pg.Rect((0,0),(5*TILESIZE,(NUM_MSG*SIZE_TEXT)))
+        
+        
     
 
 
@@ -56,6 +67,11 @@ class Versus():
         pg.draw.rect(surface, RED, self.BT_attck.copy())
         pg.draw.rect(surface,YELLOW,self.BT_move.copy())
         pg.draw.rect(surface,BLUE,self.BT_sort.copy())
+
+        pg.draw.rect(surface,BLACK,self.screenLog.copy())
+
+        for i in range(len(self.all_msg)):
+            self.game.draw_text(self.all_msg[i],self.game.text_font,SIZE_TEXT,WHITE,0,i*SIZE_TEXT)
 
 
     def isMOV(self):
@@ -104,6 +120,17 @@ class Versus():
         self.selectEnemy = None
         self.game.zoneEffect.update()
         collisionZoneEffect(player,self.game.zoneEffect)
+
+    def log(self,msg):
+        
+        for i in range(self.nb_msg):
+            self.all_msg[i]=self.all_msg[i+1]
+
+        self.all_msg[self.nb_msg] = msg
+
+
+       
+ 
         
 
 
@@ -112,9 +139,9 @@ class Versus():
     def ONE_action(self,player,screen):
 
         if(self.action == 'ATK'):
-            logger.info("Your action is Attack")
+            self.log("Your action is Attack")
             self.action = 'select_enemy'
-            logger.info("Select your cible")
+            self.log("Select your cible")
             
         
         if(self.action=='select_enemy'):
@@ -123,7 +150,7 @@ class Versus():
 
         if self.selectEnemy is not None:
             dmg = 0
-            logger.debug(self.selectEnemy.name)
+            self.log(self.selectEnemy.name)
             if player.weapon is not None:  # check if player had a weapon
 
                 if player.weapon.wpn_type == "sword" and player.weapon.scope >= self.distance(
@@ -131,7 +158,7 @@ class Versus():
                     if player.throwDice(player.STR):
                         dmg = player.weapon.attack()
                     else:
-                        logger.info("You miss your cible")
+                        self.log("You miss your cible")
 
                 elif player.weapon.wpn_type == "arc":
                     dist = self.distance(player, self.selectEnemy)
@@ -145,23 +172,20 @@ class Versus():
                     if player.throwDice(player.DEX, malus):
                         dmg = player.weapon.attack()
                     else:
-                        logger.info("You miss your cible")
+                        self.log("You miss your cible")
 
                 else:
-                    logger.info("It's too far away ")
+                    self.log("It's too far away ")
             else:
                 if self.distance(player, self.selectEnemy)//TILESIZE <= TOUCH_HAND:
                     dmg = DMG_ANY_WEAPON  
                 else:
-                    logger.info("It's too far away ")
+                    self.log("It's too far away ")
 
             self.selectEnemy.HP -= dmg
             if dmg != 0:
-                logger.info(
-                    "The enemy %s lose %i HP",
-                    self.selectEnemy.name,
-                    dmg)
-
+                self.log("The enemy " + str(self.selectEnemy.name) + " lose " + str(dmg) + " HP")
+                   
             self.ENDofAction(player)
 
 

@@ -150,7 +150,7 @@ class Game(_State):
         self.events_inventory(event)
         self.events_shop(event)
 
-
+        
     def event_versus(self, event):
 
         if event.type == pg.KEYUP:
@@ -164,7 +164,7 @@ class Game(_State):
 
             if event.key == pg.K_TAB:
                 """Simulate begin versus"""
-                logger.info("Begin Versus")
+                self.versus.log("Begin Versus")
                 self.player.numberOfAction = NUM_ACT_BEGIN
 
                 if not self.versus.isVersus:
@@ -194,7 +194,7 @@ class Game(_State):
                         if self.versus.CheckSort(self.player):
                             self.versus.setAction("Select_pos_sort")
                         else:
-                            logger.info("No sort select  OR you don't have enough mana ")
+                            self.versus.log("No sort select OR you don't have enough mana")
 
                    
 
@@ -323,17 +323,16 @@ class Game(_State):
     def versus_action(self):
         
         if self.player.numberOfAction > 0:
-            #Your turn
             self.versus.draw(self.screen)
             self.versus.ONE_action(self.player, self.screen)
         else:
             self.versus.setAction("Turn_enemy")
 
         if self.versus.action == "Turn_enemy":
-            logger.info("Begin turn ENEMY")
-            logger.info("END turn ENEMY")
+            self.versus.log("Begin turn ENEMY")
+            self.versus.log("END turn ENEMY")
             self.player.numberOfAction = 5
-            logger.info("vous avez de nouveau 5 actions")
+            self.versus.log("vous avez de nouveau 5 actions")
             collisionZoneEffect(self.player,self.zoneEffect)
             self.versus.setAction(None)
 

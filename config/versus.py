@@ -15,3 +15,8 @@ DMG_ANY_WEAPON =2
 
 #number of action for to begin a versus
 NUM_ACT_BEGIN = 5
+
+#numner of message in log versus
+NUM_MSG = 4
+
+SIZE_TEXT = 15
