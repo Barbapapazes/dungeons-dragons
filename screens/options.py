@@ -11,6 +11,9 @@ from config.colors import BEIGE
 from config.screens import MENU, OPTIONS, SHORTCUTS
 from data.options import CUSTOM_SETTINGS_FILENAME
 from data.music_data import DATA_MUSIC
+from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
+from config.colors import BLACK, BEIGE, GREEN_DARK, YELLOW_LIGHT,LIGHTGREY
+from components.cursor import Cursor
 
 
 class Options(_Elements):
@@ -28,6 +31,9 @@ class Options(_Elements):
         Chandelier(self, 3 * WIDTH // 4, 0, 200)
 
         self.states_dict = self.make_states_dict()
+        
+        
+        
 
     def all_events(self, events):
         for event in events:
@@ -55,50 +61,41 @@ class Options(_Elements):
             }
         }
 
-    def create_settings_buttons_dict(self):
-        """Create the dict for screen size buttons"""
-        return {
-            "small": {
-                "text": "small",
-                "on_click": self.save_settings,
-                "on_click_params": [1024, 768],
-            },
-            "medium": {
-                "text": "medium",
-                "on_click": self.save_settings,
-                "on_click_params": [1280, 720],
-            },
-            "large": {
-                "text": "large",
-                "on_click": self.save_settings,
-                "on_click_params": [1920, 1080],
-            },
-        }
+    
     
     def create_music_buttons_dict(self):
         """Create the dict for screen size buttons"""
         return {
-            "power": {
-                "text": "on/off",
+            "song": {
+                "text": "Song : "+str(DATA_MUSIC["is_enable"]),
                 "on_click": self.status_music,
                 "on_click_params": "1",
             },
-            "Apply":{
-                "text": "Apply",
-                "on_click": self.appliquer ,
-                "on_click_params": [OPTIONS],
+            "sound": {
+                "text": "Sound : "+str(DATA_MUSIC["is_enable"]),
+                "on_click": self.status_music,
+                "on_click_params": "1",
             },
         }
     
     def status_music(self,none):
         if(DATA_MUSIC["is_enable"]):
             DATA_MUSIC["is_enable"]=False
+            DATA_MUSIC["current_playing"]=None
+            logger.info("Musique false")
         else:
             DATA_MUSIC["is_enable"]=True
+            DATA_MUSIC["current_playing"]=None
+            logger.info("Musique true")
 
-    def appliquer(self,etat):
+        self.btns_dict = self.create_music_buttons_dict()
+        self.load_next_state(OPTIONS)
+        self.toggle_sub_state("music")
+        
+    def appliquer(self,etat,sub_state="normal"):
         self.toggle_sub_state("normal")
         self.load_next_state(etat)
+        
 
     def toggle_sub_state(self, state):
         super().toggle_sub_state(state)
@@ -112,9 +109,42 @@ class Options(_Elements):
         elif state =="music":
             self.image_screen = self.image.copy()
             self.btns_dict = self.create_music_buttons_dict()
+            self.apply=self.create_button(
+                    self.image_screen,
+                    WIDTH // 2 - WIDTH_BUTTON // 2,
+                    600,
+                    WIDTH_BUTTON,
+                    HEIGHT_BUTTON,
+                    "Apply",
+                    self.button_font,
+                    self.fontsize,
+                    MARGIN_BUTTON,
+                    RADIUS_BUTTON,
+                    BEIGE,
+                    YELLOW_LIGHT,
+                    GREEN_DARK,
+                    self.appliquer,
+                    [OPTIONS],
+                )
+            self.slider=self.create_slider(
+                    "Volume",
+                    "Volume",
+                    WIDTH // 2 - WIDTH_BUTTON // 2,
+                    500,
+                    400,
+                    20,
+                    self.image_screen,
+                    0,
+                    100,
+                    1,
+                    50,
+                    self.button_font,
+                    self.draw_text, BLACK, LIGHTGREY
+                )
             self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
             self.btns = list()
             self.create_buttons(self.image_screen)
+
         else:
             self.btns_dict = self.create_buttons_dict()
             self.create_buttons(self.background)
@@ -155,8 +185,6 @@ class Options(_Elements):
     def normal_run(self):
         """Run the normal state"""
         super().events_buttons(back=True)
-        self.animated.update()
-        self.draw()
 
     def screen_run(self):
         """Run the screen state"""
@@ -178,11 +206,70 @@ class Options(_Elements):
         """Run the screen state"""
         self.screen.blit(self.image_screen, (0, 0))
         super().events_buttons(back=True)
+        events = pg.event.get()
+        self.apply.listen(events)
+        self.apply.draw()
+        self.slider.listen(events)
+        self.slider.draw()
         super().draw_title("Options")
         super().draw_subtitle("Musics & Sounds")
-        #self.back_btn.draw()
+        self.back_btn.draw()
 
     def draw(self):
         """Draw content"""
         super().draw_elements("Options", back=True)
         self.animated.draw(self.screen)
+
+
+
+    @staticmethod
+    def create_slider(
+            title,
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color):
+        """Create a slider
+
+        Args:
+            title (str)
+            name (str)
+            x (int)
+            y (int)
+            width (int)
+            height (int)
+            surface (Surface)
+            min (int)
+            max (int)
+            step (int)
+            start (int)
+            font (str)
+            draw_text (func)
+            color (tuple)
+            handle_color (tuple)
+
+        Returns:
+            Cursor
+        """
+        return Cursor(
+            title,
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color)
