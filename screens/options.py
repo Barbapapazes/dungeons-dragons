@@ -47,6 +47,11 @@ class Options(_Elements):
                 "on_click": self.toggle_sub_state,
                 "on_click_params": ['screen'],
             },
+            "music":{
+                "text": "Musics & Sounds",
+                "on_click": self.toggle_sub_state,
+                "on_click_params": ['music'],
+            }
         }
 
     def create_settings_buttons_dict(self):
@@ -68,6 +73,23 @@ class Options(_Elements):
                 "on_click_params": [1920, 1080],
             },
         }
+    
+    def create_music_buttons_dict(self):
+        """Create the dict for screen size buttons"""
+        return {
+            "small": {
+                "text": "on/off",
+                "on_click": self.status_music,
+                "on_click_params": "1",
+            },
+        }
+    
+    def status_music(self,none):
+        print("la musique va s'arreter")
+        pg.mixer.stop()
+
+     
+
 
     def toggle_sub_state(self, state):
         super().toggle_sub_state(state)
@@ -75,6 +97,12 @@ class Options(_Elements):
         if state == 'screen':
             self.image_screen = self.image.copy()
             self.btns_dict = self.create_settings_buttons_dict()
+            self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
+            self.btns = list()
+            self.create_buttons(self.image_screen)
+        elif state =="music":
+            self.image_screen = self.image.copy()
+            self.btns_dict = self.create_music_buttons_dict()
             self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
             self.btns = list()
             self.create_buttons(self.image_screen)
@@ -91,7 +119,8 @@ class Options(_Elements):
         """
         previous_dict = super().make_states_dict().copy()
         add_dict = {"screen": self.screen_run}
-        return previous_dict | add_dict
+        add_dict_music={"music":self.music_run}
+        return previous_dict | add_dict | add_dict_music
 
     def save_settings(self, w, h):
         file_name = path.join(self.saved_settings, CUSTOM_SETTINGS_FILENAME)
@@ -135,6 +164,14 @@ class Options(_Elements):
             WIDTH // 2,
             HEIGHT,
             align="s")
+    
+    def music_run(self):
+        """Run the screen state"""
+        self.screen.blit(self.image_screen, (0, 0))
+        super().events_buttons(back=True)
+        super().draw_title("Options")
+        super().draw_subtitle("Musics & Sounds")
+        #self.back_btn.draw()
 
     def draw(self):
         """Draw content"""
