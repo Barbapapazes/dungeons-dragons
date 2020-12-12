@@ -104,6 +104,14 @@ class Minimap:
         self.fog_color = (0, 0, 0, 150)
         self.fog.fill(self.fog_color)
 
+    @staticmethod
+    def draw_player(_map, pos):
+        pg.draw.circle(_map, (0, 255, 0), pos, 3, width=2)
+
+    def create_all_players(self, _map, players):
+        for player in players:
+            self.draw_player(_map, player.pos * self.img_ratio)
+
     def update(self, player):
         """Update the frog using a pos
 
@@ -126,7 +134,7 @@ class Minimap:
             "cover": self.cover
         }
 
-    def create(self, player):
+    def create(self, player, players):
         """Create the minimap as a surface
 
         Args:
@@ -137,7 +145,10 @@ class Minimap:
         """
         pos = player.pos * self.img_ratio
         temp_map = self.resized_map.copy()
-        pg.draw.circle(temp_map, (0, 255, 0), pos, 3, width=2)
+
+        self.draw_player(temp_map, pos)
+        self.create_all_players(temp_map, players)
+
         temp_map.blit(self.fog, (0, 0))
         temp_map.blit(self.cover, (0, 0))
         return temp_map

@@ -374,7 +374,7 @@ class Game(_State):
 
         self.screen.blit(
             self.minimap.create(
-                self.turn_manager.active_player()),
+                self.turn_manager.active_player(), self.turn_manager.players),
             (WIDTH -
              self.minimap.width,
              HEIGHT -
