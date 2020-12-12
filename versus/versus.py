@@ -95,7 +95,7 @@ class Versus():
 
     def createZone(self,player):
         player.subMP(player.sort.manaCost)
-        player.sort.placeSort(player,self.mouse_pos,self.game)
+        player.sort.placeSort(self.mouse_pos,self.game)
         self.action = None
         
 

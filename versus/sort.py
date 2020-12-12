@@ -56,16 +56,16 @@ class Sort(Equipable):
     
     def DefineDMG(self):
         """Define dammage zone"""
-        self.dammage = 0
+        dammage = 0
         for _ in range(self.nb_d):
-            self.dammage += randint(1, self.val_d)
-        return self.dammage
+            dammage += randint(1, self.val_d)
+        return dammage
 
 
 
-    def placeSort(self,player,mouse_pos,game):
+    def placeSort(self,mouse_pos,game):
         logger.debug("create a zone effect")
-        ZoneEffect(game,mouse_pos,player.sort.scope,player.sort.timeSort,player.sort.DefineDMG())
+        ZoneEffect(game,mouse_pos,self.scope,self.timeSort,self.DefineDMG(),self.srt_type)
         
 
 
@@ -73,7 +73,7 @@ class Sort(Equipable):
 
 class ZoneEffect(pg.sprite.Sprite):
 
-    def __init__(self,game,mouse_pos,scope,time,DMG):
+    def __init__(self,game,mouse_pos,scope,time,DMG,type):
         self.groups = game.zoneEffect
         pg.sprite.Sprite.__init__(self,self.groups)
         self.screen = game.screen
@@ -81,6 +81,8 @@ class ZoneEffect(pg.sprite.Sprite):
         self.y = mouse_pos[1]
         self.rect = pg.Rect(self.x-scope*TILESIZE,self.y-scope*TILESIZE,2*scope*TILESIZE,2*scope*TILESIZE)
         self.time = time * FPS
+        self.dammage = DMG
+        self.type = type
 
     def draw(self):
         pg.draw.rect(self.screen,GREEN_DARK,self.rect.copy())
@@ -92,3 +94,15 @@ class ZoneEffect(pg.sprite.Sprite):
             self.kill()
 
         self.draw()
+
+
+def collisionZoneEffect(person,ZoneEffect):
+    for zone in ZoneEffect:
+        if pg.sprite.collide_rect(person,zone):
+            if zone.type == "heal":
+                logger.info("Une personne gagne %d PV de la zone magique",zone.dammage)
+                person.addHp(zone.dammage)
+            else:    
+                logger.info("Une personne subit %d dégat de la zone magique",zone.dammage)
+                person.subHp(zone.dammage)
+

@@ -15,11 +15,12 @@ from config.colors import LIGHTGREY, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 from config.shop import ACTIONS
 # from config.sprites import WEAPONS, ARMOR
-from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON
 # from inventory.inventory import Armor, Weapon
+from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON
 from temp.enemy import Enemy
 from versus.versus import Versus
 from versus.sort import Sort
+from versus.sort import collisionZoneEffect
 
 vec = pg.math.Vector2
 
@@ -105,7 +106,7 @@ class Game(_State):
         # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
         # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
         # self.player.inventory.add_item(helmet_armor)
-        fireBall = Sort('fireBall','assets/img/items/fireBall.png',10,'sort',50,'fire',10)
+        fireBall = Sort('fireBall','assets/img/items/fireBall.png',10,'sort',5,'heal',10)
         self.player.inventory.add_item(fireBall)
 
     def make_states_dict(self):
@@ -149,13 +150,14 @@ class Game(_State):
         self.events_inventory(event)
         self.events_shop(event)
 
-    def event_versus(self, event):
 
+    def event_versus(self, event):
 
         if event.type == pg.KEYUP:
             if event.key == pg.K_l:
                 life = {
                     'Player': self.player.HP,
+                    'mana': self.player.MP,
                     'en1': self.en1.HP,
                     'en2': self.en2.HP}
                 logger.info(life)
@@ -191,7 +193,7 @@ class Game(_State):
                         if self.versus.CheckSort(self.player):
                             self.versus.setAction("Select_pos_sort")
                         else:
-                            logger.info("No sort select  Please select sort in inventory ")
+                            logger.info("No sort select  OR you don't have enough mana ")
 
                    
 
@@ -280,6 +282,7 @@ class Game(_State):
             if (self.versus.action == "Move_autorised"):
                 self.update()
             self.zoneEffect.update()
+            collisionZoneEffect(self.player,self.zoneEffect)
         else:
             self.update()
             self.draw()
@@ -338,6 +341,8 @@ class Game(_State):
     def update(self):
         """Update all"""
         self.all_sprites.update()
+        self.zoneEffect.update()
+        collisionZoneEffect(self.player,self.zoneEffect)
         self.camera.update(self.player)
         self.minimap.update(self.player)
         self.game_data["minimap"] = self.minimap.create_minimap_data()

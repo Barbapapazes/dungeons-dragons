@@ -71,7 +71,7 @@ class Player(pg.sprite.Sprite):
             self.vel = vec(-PLAYER_SPEED / 2, 0).rotate(-self.rot)
 
     def addMP(self, MP_gain):
-        """Add passed HP_gain to the player's health
+        """Add passed HP_gain to the player's mana
 
         Args:
             HP_gain (int)
@@ -81,10 +81,10 @@ class Player(pg.sprite.Sprite):
             self.MP = self.max_MP
 
     def subMP(self, MP_lose):
-        """Sub passed HP_lose to the player's health
+        """Sub passed MP_lose to the player's mana
 
         Args:
-            HP_lose (int)
+            MP_lose (int)
         """
         self.MP -= MP_lose
         if self.MP < 0:
@@ -99,6 +99,16 @@ class Player(pg.sprite.Sprite):
         self.HP += hp_gain
         if self.HP > self.max_HP:
             self.HP = self.max_HP
+
+    def subHp(self, hp_lose):
+        """Sub passed hp_lose to the player's health
+
+        Args:
+            hp_lose (int)
+        """
+        self.HP -= hp_lose
+        if self.HP < 0:
+            self.HP = 0
 
     def addShield(self, shield_gain):
         """Add passed shield_gain to the player's shield
@@ -177,6 +187,7 @@ class Player(pg.sprite.Sprite):
         self.hit_rect.centery = self.pos.y
         collide_with_walls(self, self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
+        
 
     def throwDice(self, Val, modificateur=0,valueOfDice=100):
         """Throw of dice like D&D
