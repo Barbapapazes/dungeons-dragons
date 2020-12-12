@@ -96,6 +96,22 @@ class Options(_Elements):
         self.toggle_sub_state("normal")
         self.load_next_state(etat)
         
+    def create_music_buttons_dict(self):
+        """Create the dict for screen size buttons"""
+        return {
+            "small": {
+                "text": "on/off",
+                "on_click": self.status_music,
+                "on_click_params": "1",
+            },
+        }
+    
+    def status_music(self,none):
+        print("la musique va s'arreter")
+        pg.mixer.stop()
+
+     
+
 
     def toggle_sub_state(self, state):
         super().toggle_sub_state(state)
@@ -145,6 +161,9 @@ class Options(_Elements):
             self.btns = list()
             self.create_buttons(self.image_screen)
 
+            self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
+            self.btns = list()
+            self.create_buttons(self.image_screen)
         else:
             self.btns_dict = self.create_buttons_dict()
             self.create_buttons(self.background)
@@ -214,6 +233,9 @@ class Options(_Elements):
         super().draw_title("Options")
         super().draw_subtitle("Musics & Sounds")
         self.back_btn.draw()
+        super().draw_title("Options")
+        super().draw_subtitle("Musics & Sounds")
+        #self.back_btn.draw()
 
     def draw(self):
         """Draw content"""
