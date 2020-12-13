@@ -6,6 +6,7 @@ from os import path
 from sprites.item import PlacableItem
 from inventory.items import Item as InventoryItem
 from sprites.door import Door
+from versus.logs import Logs
 import pygame as pg
 from components.popup_menu import PopupMenu
 from window import _State
@@ -40,7 +41,6 @@ class Game(_State):
         self.next = CREDITS
 
         self.all_sprites = None
-        self.versus = Versus(self)
 
         self.turn_manager = TurnManager()
 
@@ -54,6 +54,7 @@ class Game(_State):
         self.doors = pg.sprite.Group()
         self.items = pg.sprite.Group()
         self.zoneEffect = pg.sprite.Group()
+        self.logs = Logs(0, 0, 300, 100, self.text_font, 16,  self.draw_text)
 
         # self.en1 = Enemy(self, 10, 4, "Boot n1")
         # self.en2 = Enemy(self, 11, 7, "Boot n2")
@@ -76,7 +77,6 @@ class Game(_State):
             self.map_rect.width /
             self.map_rect.height, self.game_data["minimap"]["fog"], self.game_data["minimap"]["cover"])
         self.camera = Camera(self.map.width, self.map.height)
-        self.versus.setCamera(self.camera)
 
         for tile_object in self.map.tmxdata.objects:
             obj_center = vec(
@@ -115,6 +115,8 @@ class Game(_State):
                 Door(self, obj_center.x, obj_center.y, wall)
             if tile_object.name == "key":
                 PlacableItem(self, obj_center, "key_02c")
+
+        self.versus = Versus(self, self.logs)
 
         # Temporaire
         # think how this will be used with the menu
@@ -201,34 +203,38 @@ class Game(_State):
                 self.versus.log("Begin Versus")
                 self.turn_manager.active_characters().numberOfAction = NUM_ACT_BEGIN
 
-                if not self.versus.isVersus:
-                    self.versus.begin()
+                if self.versus.active:
+                    self.versus.finish()
                 else:
-                    self.versus.end()
+                    self.versus.start()
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
 
-                if self.versus.isVersus:
+                if self.versus.active:
                     mouse_pos = pg.mouse.get_pos()
-                    self.versus.setMouse(mouse_pos)
-                    if self.versus.isATK() and not self.versus.isProgress():
-                        self.versus.setAction("ATK")
+
+                    if Versus.is_clicked(self.versus.attack_btn, mouse_pos) and not self.versus.is_progress():
+                        self.versus.set_action("attack")
+
                     if self.versus.action == "select_enemy":
-                        self.versus.selectedEnemy(self.enemy)
-                        if self.versus.selectEnemy is not None:
-                            self.versus.setAction(None)
-                    if self.versus.isMOV() and not self.versus.isProgress():
-                        self.versus.setAction("Move")
-                    if self.versus.CheckMove(self.turn_manager.active_characters()) and self.versus.action == 'Move':
-                        self.versus.setAction("Move_autorised")
-                    if self.versus.action == "Select_pos_sort":
-                        self.versus.createZone(self.turn_manager.active_characters())
-                    if self.versus.isSRT() and not self.versus.isProgress():
-                        if self.versus.CheckSort(self.turn_manager.active_characters()):
-                            self.versus.setAction("Select_pos_sort")
+                        logger.info("Select an enemy")
+                        self.versus.selected_enemy(self.enemy, mouse_pos)
+
+                    if Versus.is_clicked(self.versus.move_btn, mouse_pos) and not self.versus.is_progress():
+                        self.versus.set_action("move")
+
+                    if self.versus.CheckMove(self.player, mouse_pos) and self.versus.action == 'move':
+                        self.versus.set_action("move_is_authorized")
+
+                    if self.versus.action == "pos_spell":
+                        self.versus.createZone(self.player, mouse_pos)
+
+                    if Versus.is_clicked(self.versus.spell_btn, mouse_pos) and not self.versus.is_progress():
+                        if self.versus.check_spell(self.player):
+                            self.versus.set_action("pos_spell")
                         else:
-                            self.versus.log("No sort select OR you don't have enough mana")
+                            self.logs.add_log("No sort select OR you don't have enough mana")
 
     def events_inventory(self, event):
         """When the shop state is running"""
@@ -300,7 +306,6 @@ class Game(_State):
     def run(self, surface, keys, mouse, dt):
         """Run states"""
         self.screen = surface
-        self.versus.setSurface(self.screen)
         self.dt = dt
         update_level = self.states_dict[self.state]
         if self.state != 'normal':
@@ -309,14 +314,13 @@ class Game(_State):
 
     def normal_run(self):
         """Run the normal state"""
-        if self.versus.isVersus:
-            self.draw()
-            self.versus_action()
+        if self.versus.active:
+            self.versus_update()
             if (self.versus.action == "Move_autorised"):
                 self.update()
         else:
             self.update()
-            self.draw()
+        self.draw()
 
         self.check_for_menu()
 
@@ -371,14 +375,6 @@ class Game(_State):
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
 
-    @staticmethod
-    def draw_grid(surface):
-        """Draw a grid in the background"""
-        for x in range(0, WIDTH, TILESIZE):
-            pg.draw.line(surface, LIGHTGREY, (x, 0), (x, HEIGHT))
-        for y in range(0, HEIGHT, TILESIZE):
-            pg.draw.line(surface, LIGHTGREY, (0, y), (WIDTH, y))
-
     def update(self):
         """Update all"""
         # self.all_sprites.update()
@@ -420,7 +416,8 @@ class Game(_State):
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
         for zone in self.zoneEffect:
-            zone.draw()
+            zone.rect = self.camera.apply_rect(zone.rect)
+            # zone.draw()  ça marche pas de ouf mais c'est pas loin
 
         self.screen.blit(
             self.minimap.create(
@@ -430,4 +427,13 @@ class Game(_State):
              HEIGHT -
              self.minimap.height))
 
+        self.draw_versus()
+
+        self.logs.draw(self.screen)
+
         super().transtition_active(self.screen)
+
+    def draw_versus(self):
+        """Draw the hud for the versus"""
+        if self.versus.active and self.player.numberOfAction > 0:
+            self.versus.draw(self.screen, self.player)
