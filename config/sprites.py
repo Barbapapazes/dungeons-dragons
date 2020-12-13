@@ -121,7 +121,7 @@ WIDTH_CHARACTER = 220
 HEIGHT_CHARACTER = 340
 USABLE_POINTS = 12
 
-TYPES = ["wizard", "soldier"]
+TYPES = ["wizard", "soldier", "thief"]
 DIRECTIONS = ["front", "back", "left", "right"]
 ASSETS_SPRITES = {_type: {key: [pg.transform.scale(pg.image.load(path.join(
     sprites_folder, _type, key, f"{i}.png")), (TILESIZE, TILESIZE)) for i in range(3)] for key in DIRECTIONS} for _type in TYPES}

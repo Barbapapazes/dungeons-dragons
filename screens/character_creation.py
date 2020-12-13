@@ -208,8 +208,33 @@ class CharacterCreation(_Elements):
                     "cha": {
                         "base": 2,
                         "max": 12}}},
-            "mage": {
+            "wizard": {
                 "name": "wizard",
+                "image": path.join(
+                    self.img_folder,
+                    "character_creation",
+                    "mage.png"),
+                "description": "",
+                "characteristics": {
+                    "str": {
+                        "base": 0,
+                        "max": 7},
+                    "dex": {
+                        "base": 2,
+                        "max": 12},
+                    "con": {
+                        "base": 2,
+                        "max": 12},
+                    "int": {
+                        "base": 2,
+                        "max": 12},
+                    "wis": {
+                        "base": 2,
+                        "max": 12},
+                    "cha": {
+                        "base": 2,
+                        "max": 12}}},  "thief": {
+                "name": "thief",
                 "image": path.join(
                     self.img_folder,
                     "character_creation",
