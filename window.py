@@ -225,6 +225,7 @@ class _State():
         self.text_font = path.join(self.fonts_folder, 'Roboto-Regular.ttf')
         self.button_font = path.join(self.fonts_folder, 'Enchanted Land.otf')
         self.img_folder = path.join(self.assets_folder, 'img')
+        self.sprites_folder = path.join(self.assets_folder, 'sprites')
 
     def draw_text(self, text, font_name, size, color, x, y, align="nw", screen=None):
         """Used to draw text

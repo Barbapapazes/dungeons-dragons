@@ -7,6 +7,7 @@ from config.window import TILESIZE
 from config.sprites import PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT, PLAYER_MAX_MP
 from inventory.inventory import Inventory
 from utils.tilemap import collide_with_walls
+from os import path
 from shop.shop import Shop
 vec = pg.math.Vector2
 
@@ -18,6 +19,34 @@ class Player(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
+        # self.idle_images = [
+        #     pg.transform.scale(
+        #         pg.image.load(path.join(game.sprites_folder, "knight", f"knight_idle_anim_f{i}.png")),
+        #         (TILESIZE, TILESIZE)) for i in range(6)]
+        # self.run_images = [
+        #     pg.transform.scale(
+        #         pg.image.load(path.join(game.sprites_folder, "knight", f"knight_run_anim_f{i}.png")),
+        #         (TILESIZE, TILESIZE)) for i in range(6)]
+        self.run_right_images = [
+            pg.transform.scale(
+                pg.image.load(path.join(game.sprites_folder, "soldier", "right", f"{i}.png")),
+                (TILESIZE, TILESIZE)) for i in range(3)]
+        self.run_left_images = [
+            pg.transform.scale(
+                pg.image.load(path.join(game.sprites_folder, "soldier", "left", f"{i}.png")),
+                (TILESIZE, TILESIZE)) for i in range(3)]
+        self.run_front_images = [
+            pg.transform.scale(
+                pg.image.load(path.join(game.sprites_folder, "soldier", "front", f"{i}.png")),
+                (TILESIZE, TILESIZE)) for i in range(3)]
+        self.run_back_images = [
+            pg.transform.scale(
+                pg.image.load(path.join(game.sprites_folder, "soldier", "back", f"{i}.png")),
+                (TILESIZE, TILESIZE)) for i in range(3)]
+        self.idle_image = pg.transform.scale(
+            pg.image.load(path.join(game.sprites_folder, "soldier", "front", "1.png")),
+            (TILESIZE, TILESIZE))
+
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
@@ -28,13 +57,16 @@ class Player(pg.sprite.Sprite):
         self.pos = vec(x, y)
         self.rot = 0
 
-        self.numberOfAction= 0
+        self.is_moving = False
+        self.frame_count = 0
+
+        self.numberOfAction = 0
 
         # Stats
         self.HP = 100
         self.max_HP = PLAYER_MAX_HP
         self.shield = 0
-        self.MP = 50   #mana
+        self.MP = 50  # mana
         self.max_MP = PLAYER_MAX_MP
 
         # Attribut
@@ -44,7 +76,6 @@ class Player(pg.sprite.Sprite):
         self.INT = 10  # intelligence
         self.WIS = 10  # lucky
         self.CHA = 60  # charisme
-
 
         self.gold = 100
 
@@ -60,14 +91,19 @@ class Player(pg.sprite.Sprite):
     def get_keys(self):
         self.rot_speed = 0
         self.vel = vec(0, 0)
+        self.is_moving = False
         keys = pg.key.get_pressed()
         if keys[self.game.game_data["shortcuts"]["player"]["left"]["keys"][2]]:
+            self.is_moving = True
             self.rot_speed = PLAYER_ROT_SPEED
         if keys[self.game.game_data["shortcuts"]["player"]["right"]["keys"][2]]:
+            self.is_moving = True
             self.rot_speed = -PLAYER_ROT_SPEED
         if keys[self.game.game_data["shortcuts"]["player"]["up"]["keys"][2]]:
+            self.is_moving = True
             self.vel = vec(PLAYER_SPEED, 0).rotate(-self.rot)
         if keys[self.game.game_data["shortcuts"]["player"]["down"]["keys"][2]]:
+            self.is_moving = True
             self.vel = vec(-PLAYER_SPEED / 2, 0).rotate(-self.rot)
 
     def addMP(self, MP_gain):
@@ -156,8 +192,6 @@ class Player(pg.sprite.Sprite):
         if self.weapon is not None:
             self.weapon = None
 
-
-
     def equip_sort(self, sort):
         """Put a passed sort in the sort slot
 
@@ -176,9 +210,38 @@ class Player(pg.sprite.Sprite):
 
     def update(self):
         self.get_keys()
+        self.frame_count += 1
+        if self.frame_count >= 27:
+            self.frame_count = 0
+
         self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
-        self.image = pg.transform.rotate(pg.Surface((TILESIZE, TILESIZE)), self.rot)
-        self.image.fill(YELLOW)
+
+        if self.is_moving:
+            print(self.rot)
+            # if 270 < self.rot <= 45:
+            #     self.image = pg.transform.rotate(self.run_right_images[self.frame_count // 9], self.rot)
+            # elif 45 < self.rot <= 135:
+            #     self.image = pg.transform.rotate(self.run_back_images[self.frame_count // 9], self.rot)
+            # if 315 < self.rot <= 45:
+            #     self.image = pg.transform.rotate(
+            #         self.run_left_images[self.frame_count // 9], self.rot)
+            if 135 < self.rot <= 225:
+                self.image = pg.transform.flip(pg.transform.rotate(
+                    self.run_right_images[self.frame_count // 9], -self.rot), False, True)
+            if 225 < self.rot <= 315:
+                self.image = pg.transform.rotate(
+                    self.run_front_images[self.frame_count // 9], self.rot - 270)
+            if 315 < self.rot <= 360 or 0 <= self.rot < 45:
+                self.image = pg.transform.flip(pg.transform.rotate(
+                    self.run_left_images[self.frame_count // 9], -self.rot), True, False)
+            if 45 < self.rot <= 135:
+                self.image = pg.transform.rotate(
+                    self.run_back_images[self.frame_count // 9], self.rot - 90)
+            # elif 225 < self.rot <= 270:
+            #     self.image = pg.transform.rotate(self.run_front_images[self.frame_count // 9], self.rot)
+        else:
+            self.image = self.idle_image
+
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.pos += self.vel * self.game.dt
@@ -187,9 +250,8 @@ class Player(pg.sprite.Sprite):
         self.hit_rect.centery = self.pos.y
         collide_with_walls(self, self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
-        
 
-    def throwDice(self, Val, modificateur=0,valueOfDice=100):
+    def throwDice(self, Val, modificateur=0, valueOfDice=100):
         """Throw of dice like D&D
 
         Args:
