@@ -4,16 +4,16 @@
 class Item:
     """Item"""
 
-    def __init__(self, name, img, price, weight):
+    def __init__(self, name, image, price, weight):
         """Create a item
 
         Args:
-            img (Surface)
+            image (Surface)
             price (Number)
             weight (Number)
         """
         self.name = name
-        self.img = img
+        self.image = image
         self.price = price
         self.weight = weight
         self.is_moving = False

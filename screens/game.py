@@ -2,6 +2,7 @@
 
 from math import sqrt
 from os import path
+from sprites.item import Item
 from sprites.door import Door
 import pygame as pg
 from components.popup_menu import PopupMenu
@@ -49,6 +50,7 @@ class Game(_State):
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
         self.doors = pg.sprite.Group()
+        self.items = pg.sprite.Group()
         self.zoneEffect = pg.sprite.Group()
 
         self.en1 = Enemy(self, 10, 4, "Boot n1")
@@ -96,7 +98,15 @@ class Game(_State):
                     tile_object.width,
                     tile_object.height)
             if tile_object.name == "door":
-                Door(self, tile_object.x, tile_object.y)
+                wall = Obstacle(
+                    self,
+                    tile_object.x,
+                    tile_object.y,
+                    tile_object.width,
+                    tile_object.height)
+                Door(self, obj_center.x, obj_center.y, wall)
+            if tile_object.name == "key":
+                Item(self, obj_center, "key")
 
         # Temporaire
         # think how this will be used with the menu
@@ -364,15 +374,29 @@ class Game(_State):
     def update(self):
         """Update all"""
         # self.all_sprites.update()
+        self.items.update()
+        for sprite in self.all_sprites:
+            self.all_sprites.change_layer(sprite, sprite.rect.bottom)
+        hits = pg.sprite.spritecollide(self.turn_manager.active_player(), self.doors, False)
+        for hit in hits:
+            hit.try_open(self.turn_manager.active_player())
+        hits = pg.sprite.spritecollide(self.turn_manager.active_player(), self.items, False)
+        for hit in hits:
+            if hit.type == 'key':
+                hit.kill()
+                self.turn_manager.active_player().inventory.add_item(hit)
+                # ajouter à l'inventaire
+
         collisionZoneEffect(self.turn_manager.active_player(), self)
         self.turn_manager.update()
+        self.doors.update()
         self.camera.update(self.turn_manager.active_player())
         self.minimap.update(self.turn_manager.active_player())
         self.update_game_data()
 
     def update_game_data(self):
         self.game_data["minimap"] = self.minimap.create_minimap_data()
-        self.game_data["game_data"]["heros"][self.turn_manager.turn]["last_pos"] = {
+        self.game_data["game_data"]["heros"][self.turn_manager.get_relative_turn()]["last_pos"] = {
             "x": self.turn_manager.active_player().pos.x, "y": self.turn_manager.active_player().pos.y}
 
     def draw(self):

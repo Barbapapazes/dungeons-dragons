@@ -121,6 +121,15 @@ WIDTH_CHARACTER = 150
 HEIGHT_CHARACTER = 150
 USABLE_POINTS = 12
 
+# Items
+BOB_RANGE = 15
+BOB_SPEED = 0.4
+ASSETS_ITEMS = {
+    "key": pg.image.load(path.join(sprites_folder, 'items', "key_silver.png"))
+}
+
+
+# Heros
 TYPES = ["wizard", "soldier", "thief"]
 DIRECTIONS = ["front", "back", "left", "right"]
 

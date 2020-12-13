@@ -1,6 +1,6 @@
 """Define a door"""
 
-from os import path
+from os import close, path
 import pygame as pg
 from config.sprites import ASSETS_DOOR
 from config.window import TILESIZE
@@ -9,13 +9,15 @@ from config.window import TILESIZE
 class Door(pg.sprite.Sprite):
     """Create a door"""
 
-    def __init__(self, game, x, y):
-        self._layer = 0
+    def __init__(self, game, x, y, wall):
+        self._layer = y
         self.groups = game.doors, game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
 
         self.x = x
         self.y = y
+        self.wall = wall
+        self.game = game
 
         self.close_image = pg.transform.scale(
             pg.image.load(path.join(game.sprites_folder, "door", "door_closed.png")),
@@ -29,8 +31,29 @@ class Door(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
-    def update(self):
-        pass
+        self.to_open = False
+        self.is_open = False
+        self.frame_count = 0
 
-    # def draw(self):
-    #     pass
+    def update(self):
+        if self.to_open and not self.is_open:
+            self.frame_count += 1
+            if self.frame_count > 78:
+                self.frame_count = 0
+                self.is_open = True
+                self.to_open = False
+                self.game.walls.remove(self.wall)
+            else:
+                self.image = self.opening_image[self.frame_count // 6]
+
+        elif self.is_open:
+            self.image = self.open_image
+        else:
+            self.image = self.close_image
+
+    def try_open(self, player):
+        # si l'utilisateur a une clé
+        self.to_open = True
+
+        # def draw(self):
+        #     pass

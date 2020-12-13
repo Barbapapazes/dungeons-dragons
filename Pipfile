@@ -13,6 +13,7 @@ pytmx = "*"
 colorlog = "*"
 pygame-gui = "*"
 pygame-widgets = "*"
+pytweening = "*"
 
 [requires]
 python_version = "3.9"

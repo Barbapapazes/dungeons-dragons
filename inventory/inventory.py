@@ -63,7 +63,7 @@ class Inventory:
                                                max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, PINK))
 
         self.sort_slots.append(EquipableSlot(min_x - 2*step,
-                                               max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, BLUE_SKY))
+                                             max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, BLUE_SKY))
 
     def create_bag(self):
         """Create a bag to store item"""
@@ -150,8 +150,7 @@ class Inventory:
 
             if slot.rect.collidepoint(
                     mouse_pos) and (self.moving_item is not None or shop_item):
-                
-                
+
                 if isinstance(
                         self.moving_item_slot, EquipableSlot) and isinstance(
                         slot, InventorySlot) and not isinstance(
@@ -299,10 +298,11 @@ class Inventory:
         """Used to draw the player's money
         """
         myfont = pg.font.SysFont('Calibri', 25)
-        self.coins = myfont.render(f"{self.player.gold}" , False, GOLD)
+        self.coins = myfont.render(f"{self.player.gold}", False, GOLD)
         self.coinimg = pg.image.load('assets/img/coin1.png').convert_alpha()
-        self.player.game.screen.blit(self.coins,(50, 175))
-        self.player.game.screen.blit(self.coinimg,(0,155))
+        self.player.game.screen.blit(self.coins, (50, 175))
+        self.player.game.screen.blit(self.coinimg, (0, 155))
+
 
 class InventorySlot(Container):
     """A slot from the inventory"""
@@ -314,7 +314,7 @@ class InventorySlot(Container):
             screen(Surface)
         """
         if self.item is not None and not self.item.is_moving:
-            image = pg.image.load(self.item.img).convert_alpha()
+            image = pg.image.load(self.item.image).convert_alpha()
             image = pg.transform.scale(image, (self.size, self.size))
             image_x = image.get_width()
             image_y = image.get_height()
@@ -325,7 +325,7 @@ class InventorySlot(Container):
 
         if self.item is not None and self.item.is_moving:
             mouse_pos = pg.mouse.get_pos()
-            image = pg.image.load(self.item.img).convert_alpha()
+            image = pg.image.load(self.item.image).convert_alpha()
             image = pg.transform.scale(image, (self.size + 10, self.size + 10))
             image_x = image.get_width()
             image_y = image.get_height()
@@ -344,8 +344,8 @@ class EquipableSlot(InventorySlot):
 class Consumable(Item):
     """A consumable item"""
 
-    def __init__(self, name,  img, price, weight, hp_gain=0, shield_gain=0):
-        Item.__init__(self, name, img, price, weight)
+    def __init__(self, name,  image, price, weight, hp_gain=0, shield_gain=0):
+        Item.__init__(self, name, image, price, weight)
         self.hp_gain = hp_gain
         self.shield_gain = shield_gain
 
@@ -364,8 +364,8 @@ class Consumable(Item):
 class Equipable(Item):
     """Used add equipable ability"""
 
-    def __init__(self, name, img, price, weight):
-        super(Equipable, self).__init__(name, img, price, weight)
+    def __init__(self, name, image, price, weight):
+        super(Equipable, self).__init__(name, image, price, weight)
         self.is_equipped = False
         self.equipped_to = None
 
@@ -387,8 +387,8 @@ class Equipable(Item):
 class Armor(Equipable):
     """Armor"""
 
-    def __init__(self, name, img, price, weight, shield, slot):
-        super(Armor, self).__init__(name, img, price, weight)
+    def __init__(self, name, image, price, weight, shield, slot):
+        super(Armor, self).__init__(name, image, price, weight)
         self.shield = shield
         self.slot = slot
 
@@ -422,8 +422,8 @@ class Armor(Equipable):
 class Weapon(Equipable):
     """Weapon"""
 
-    def __init__(self, name, img, price, slot, wpn_type, weight, nb_d=1, val_d=5, scope=2):
-        super(Weapon, self).__init__(name, img, price, weight)
+    def __init__(self, name, image, price, slot, wpn_type, weight, nb_d=1, val_d=5, scope=2):
+        super(Weapon, self).__init__(name, image, price, weight)
         self.slot = slot
         self.wpn_type = wpn_type
         self.nb_d = nb_d

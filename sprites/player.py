@@ -16,7 +16,7 @@ class Player(pg.sprite.Sprite):
     """Create a player"""
 
     def __init__(self, game, _type, x, y):
-        self._layer = 1
+        self._layer = y
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
