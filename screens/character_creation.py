@@ -426,7 +426,7 @@ class CharacterCreation(_Elements):
         self.draw_text(
             f"Remaining hero to create {self.remaining_heros_to_create}",
             self.text_font,
-            36,
+            24,
             BEIGE,
             19 * WIDTH // 20,
             HEIGHT // 10,

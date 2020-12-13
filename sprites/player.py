@@ -20,21 +20,12 @@ class Player(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.type = _type
-        # self.idle_images = [
-        #     pg.transform.scale(
-        #         pg.image.load(path.join(game.sprites_folder, "knight", f"knight_idle_anim_f{i}.png")),
-        #         (TILESIZE, TILESIZE)) for i in range(6)]
-        # self.run_images = [
-        #     pg.transform.scale(
-        #         pg.image.load(path.join(game.sprites_folder, "knight", f"knight_run_anim_f{i}.png")),
-        #         (TILESIZE, TILESIZE)) for i in range(6)]
         self.run_right_images = ASSETS_SPRITES[self.type]["right"]
         self.run_left_images = ASSETS_SPRITES[self.type]["left"]
         self.run_front_images = ASSETS_SPRITES[self.type]["front"]
         self.run_back_images = ASSETS_SPRITES[self.type]["back"]
 
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(YELLOW)
+        self.image = self.run_front_images[1]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.hit_rect = PLAYER_HIT_RECT
