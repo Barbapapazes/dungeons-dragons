@@ -2,6 +2,7 @@
 
 from math import sqrt
 from os import path
+from sprites.door import Door
 import pygame as pg
 from components.popup_menu import PopupMenu
 from window import _State
@@ -45,8 +46,9 @@ class Game(_State):
     def startup(self, dt, game_data):
         self.dt = dt
         self.game_data = game_data
+        self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
-        self.all_sprites = pg.sprite.Group()
+        self.doors = pg.sprite.Group()
         self.zoneEffect = pg.sprite.Group()
 
         self.en1 = Enemy(self, 10, 4, "Boot n1")
@@ -93,6 +95,8 @@ class Game(_State):
                     tile_object.y,
                     tile_object.width,
                     tile_object.height)
+            if tile_object.name == "door":
+                Door(self, tile_object.x, tile_object.y)
 
         # Temporaire
         # think how this will be used with the menu
@@ -375,8 +379,8 @@ class Game(_State):
         """Draw all"""
         # self.screen.fill(BLACK)
         # self.draw_grid(self.screen)
-        self.all_sprites.draw(self.screen)
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+        # self.all_sprites.draw(self.screen)
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
