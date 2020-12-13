@@ -2,6 +2,8 @@
 from config.window import TILESIZE
 import pygame as pg
 from os import path
+from tools import strip_from_sheet as strip
+
 
 game_folder = path.dirname('.')
 assets_folder = path.join(game_folder, 'assets')

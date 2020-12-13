@@ -60,6 +60,3 @@ class Door(pg.sprite.Sprite):
                 self.to_open = True
                 break
         logger.info("You need a key to open the door")
-
-        # def draw(self):
-        #     pass
