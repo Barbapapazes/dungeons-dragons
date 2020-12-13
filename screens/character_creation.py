@@ -182,12 +182,11 @@ class CharacterCreation(_Elements):
             dict
         """
         return {
-            "fighter": {
+            "soldier": {
                 "name": "soldier",
                 "image": path.join(
-                    self.img_folder,
-                    "character_creation",
-                    "guerrier.png"),
+                    self.sprites_folder,
+                    "soldier", "front", "1.png"),
                 "description": "Chevaliers menant une quête, seigneurs conquérants, champions royaux, fantassins d'élite, mercenaires endurcis et rois-bandits,\ntous partagent une maîtrise inégalée des armes et des armures ainsi qu'une connaissance approfondie des compétences de combat.\nTous connaissent bien la mort, l'infligeant autant qu'ils lui font face.",
                 "characteristics": {
                     "str": {
@@ -211,9 +210,8 @@ class CharacterCreation(_Elements):
             "wizard": {
                 "name": "wizard",
                 "image": path.join(
-                    self.img_folder,
-                    "character_creation",
-                    "mage.png"),
+                    self.sprites_folder,
+                    "wizard", "front", "1.png"),
                 "description": "",
                 "characteristics": {
                     "str": {
@@ -233,12 +231,12 @@ class CharacterCreation(_Elements):
                         "max": 12},
                     "cha": {
                         "base": 2,
-                        "max": 12}}},  "thief": {
+                        "max": 12}}},
+            "thief": {
                 "name": "thief",
                 "image": path.join(
-                    self.img_folder,
-                    "character_creation",
-                    "mage.png"),
+                    self.sprites_folder,
+                    "thief", "front", "1.png"),
                 "description": "",
                 "characteristics": {
                     "str": {
