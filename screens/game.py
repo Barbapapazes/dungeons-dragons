@@ -76,10 +76,16 @@ class Game(_State):
                 tile_object.y + tile_object.height / 2)
             if tile_object.name == 'player':
                 if len(self.turn_manager.players) < len(self.game_data["game_data"]["heros"]):
+                    _x = obj_center.x if not ("last_pos" in self.game_data["game_data"]["heros"][
+                        len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
+                        len(self.turn_manager.players)]["last_pos"]["x"]
+                    _y = obj_center.y if not ("last_pos" in self.game_data["game_data"]["heros"][
+                        len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
+                        len(self.turn_manager.players)]["last_pos"]["y"]
                     self.turn_manager.players.append(
                         Player(
                             self, self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["class"],
-                            obj_center.x, obj_center.y))
+                            _x, _y))
             if tile_object.name == 'wall':
                 Obstacle(
                     self,
@@ -358,7 +364,12 @@ class Game(_State):
         self.turn_manager.update()
         self.camera.update(self.turn_manager.active_player())
         self.minimap.update(self.turn_manager.active_player())
+        self.update_game_data()
+
+    def update_game_data(self):
         self.game_data["minimap"] = self.minimap.create_minimap_data()
+        self.game_data["game_data"]["heros"][self.turn_manager.turn]["last_pos"] = {
+            "x": self.turn_manager.active_player().pos.x, "y": self.turn_manager.active_player().pos.y}
 
     def draw(self):
         """Draw all"""
