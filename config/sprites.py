@@ -1,5 +1,11 @@
 """Define settings for the sprites"""
+from config.window import TILESIZE
 import pygame as pg
+from os import path
+
+game_folder = path.dirname('.')
+assets_folder = path.join(game_folder, 'assets')
+sprites_folder = path.join(assets_folder, 'sprites')
 
 # player
 PLAYER_SPEED = 280
@@ -64,7 +70,7 @@ WEAPONS = {
         "val_d": 3,
         "scope": 3,
         "price": 10,
-        
+
     }
 }
 
@@ -114,3 +120,8 @@ CONSUMABLE_ROWS = len(CONSUMABLE.keys()) // WEAPONS_COLS + 1
 WIDTH_CHARACTER = 220
 HEIGHT_CHARACTER = 340
 USABLE_POINTS = 12
+
+TYPES = ["wizard", "soldier"]
+DIRECTIONS = ["front", "back", "left", "right"]
+ASSETS_SPRITES = {_type: {key: [pg.transform.scale(pg.image.load(path.join(
+    sprites_folder, _type, key, f"{i}.png")), (TILESIZE, TILESIZE)) for i in range(3)] for key in DIRECTIONS} for _type in TYPES}

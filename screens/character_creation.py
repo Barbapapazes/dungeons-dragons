@@ -183,7 +183,7 @@ class CharacterCreation(_Elements):
         """
         return {
             "fighter": {
-                "name": "fighter",
+                "name": "soldier",
                 "image": path.join(
                     self.img_folder,
                     "character_creation",
@@ -209,7 +209,7 @@ class CharacterCreation(_Elements):
                         "base": 2,
                         "max": 12}}},
             "mage": {
-                "name": "mage",
+                "name": "wizard",
                 "image": path.join(
                     self.img_folder,
                     "character_creation",

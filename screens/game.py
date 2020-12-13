@@ -25,9 +25,6 @@ from versus.sort import collisionZoneEffect
 vec = pg.math.Vector2
 
 
-
-
-
 class Game(_State):
     """Game screen"""
 
@@ -74,7 +71,7 @@ class Game(_State):
                 tile_object.x + tile_object.width / 2,
                 tile_object.y + tile_object.height / 2)
             if tile_object.name == 'player':
-                self.player = Player(self, obj_center.x, obj_center.y)
+                self.player = Player(self, self.game_data["game_data"]["hero"]["class"], obj_center.x, obj_center.y)
             if tile_object.name == 'wall':
                 Obstacle(
                     self,
@@ -106,7 +103,7 @@ class Game(_State):
         # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
         # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
         # self.player.inventory.add_item(helmet_armor)
-        fireBall = Sort('fireBall','assets/img/items/fireBall.png',10,'sort',5,'fire',10,2,4,2)
+        fireBall = Sort('fireBall', 'assets/img/items/fireBall.png', 10, 'sort', 5, 'fire', 10, 2, 4, 2)
         self.player.inventory.add_item(fireBall)
 
     def make_states_dict(self):
@@ -150,7 +147,6 @@ class Game(_State):
         self.events_inventory(event)
         self.events_shop(event)
 
-        
     def event_versus(self, event):
 
         if event.type == pg.KEYUP:
@@ -195,8 +191,6 @@ class Game(_State):
                             self.versus.setAction("Select_pos_sort")
                         else:
                             self.versus.log("No sort select OR you don't have enough mana")
-
-                   
 
     def events_inventory(self, event):
         """When the shop state is running"""
@@ -321,7 +315,7 @@ class Game(_State):
         self.player.shop.draw(self.screen)
 
     def versus_action(self):
-        
+
         if self.player.numberOfAction > 0:
             self.versus.draw(self.screen)
             self.versus.ONE_action(self.player, self.screen)
@@ -333,10 +327,8 @@ class Game(_State):
             self.versus.log("END turn ENEMY")
             self.player.numberOfAction = 5
             self.versus.log("vous avez de nouveau 5 actions")
-            collisionZoneEffect(self.player,self)
+            collisionZoneEffect(self.player, self)
             self.versus.setAction(None)
-
-        
 
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
@@ -352,11 +344,10 @@ class Game(_State):
     def update(self):
         """Update all"""
         self.all_sprites.update()
-        collisionZoneEffect(self.player,self)
+        collisionZoneEffect(self.player, self)
         self.camera.update(self.player)
         self.minimap.update(self.player)
         self.game_data["minimap"] = self.minimap.create_minimap_data()
-        
 
     def draw(self):
         """Draw all"""
@@ -366,7 +357,7 @@ class Game(_State):
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
-        
+
         for zone in self.zoneEffect:
             zone.draw()
 

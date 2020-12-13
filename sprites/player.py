@@ -4,7 +4,7 @@ from random import randint
 from logger import logger
 from config.colors import YELLOW
 from config.window import TILESIZE
-from config.sprites import PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT, PLAYER_MAX_MP
+from config.sprites import ASSETS_SPRITES, PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT, PLAYER_MAX_MP
 from inventory.inventory import Inventory
 from utils.tilemap import collide_with_walls
 from os import path
@@ -15,10 +15,11 @@ vec = pg.math.Vector2
 class Player(pg.sprite.Sprite):
     """Create a player"""
 
-    def __init__(self, game, x, y):
+    def __init__(self, game, _type, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
+        self.type = _type
         # self.idle_images = [
         #     pg.transform.scale(
         #         pg.image.load(path.join(game.sprites_folder, "knight", f"knight_idle_anim_f{i}.png")),
@@ -27,25 +28,10 @@ class Player(pg.sprite.Sprite):
         #     pg.transform.scale(
         #         pg.image.load(path.join(game.sprites_folder, "knight", f"knight_run_anim_f{i}.png")),
         #         (TILESIZE, TILESIZE)) for i in range(6)]
-        self.run_right_images = [
-            pg.transform.scale(
-                pg.image.load(path.join(game.sprites_folder, "soldier", "right", f"{i}.png")),
-                (TILESIZE, TILESIZE)) for i in range(3)]
-        self.run_left_images = [
-            pg.transform.scale(
-                pg.image.load(path.join(game.sprites_folder, "soldier", "left", f"{i}.png")),
-                (TILESIZE, TILESIZE)) for i in range(3)]
-        self.run_front_images = [
-            pg.transform.scale(
-                pg.image.load(path.join(game.sprites_folder, "soldier", "front", f"{i}.png")),
-                (TILESIZE, TILESIZE)) for i in range(3)]
-        self.run_back_images = [
-            pg.transform.scale(
-                pg.image.load(path.join(game.sprites_folder, "soldier", "back", f"{i}.png")),
-                (TILESIZE, TILESIZE)) for i in range(3)]
-        self.idle_image = pg.transform.scale(
-            pg.image.load(path.join(game.sprites_folder, "soldier", "front", "1.png")),
-            (TILESIZE, TILESIZE))
+        self.run_right_images = ASSETS_SPRITES[self.type]["right"]
+        self.run_left_images = ASSETS_SPRITES[self.type]["left"]
+        self.run_front_images = ASSETS_SPRITES[self.type]["front"]
+        self.run_back_images = ASSETS_SPRITES[self.type]["back"]
 
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(YELLOW)
@@ -217,14 +203,6 @@ class Player(pg.sprite.Sprite):
         self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
 
         if self.is_moving:
-            print(self.rot)
-            # if 270 < self.rot <= 45:
-            #     self.image = pg.transform.rotate(self.run_right_images[self.frame_count // 9], self.rot)
-            # elif 45 < self.rot <= 135:
-            #     self.image = pg.transform.rotate(self.run_back_images[self.frame_count // 9], self.rot)
-            # if 315 < self.rot <= 45:
-            #     self.image = pg.transform.rotate(
-            #         self.run_left_images[self.frame_count // 9], self.rot)
             if 135 < self.rot <= 225:
                 self.image = pg.transform.flip(pg.transform.rotate(
                     self.run_right_images[self.frame_count // 9], -self.rot), False, True)
@@ -237,10 +215,6 @@ class Player(pg.sprite.Sprite):
             if 45 < self.rot <= 135:
                 self.image = pg.transform.rotate(
                     self.run_back_images[self.frame_count // 9], self.rot - 90)
-            # elif 225 < self.rot <= 270:
-            #     self.image = pg.transform.rotate(self.run_front_images[self.frame_count // 9], self.rot)
-        else:
-            self.image = self.idle_image
 
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
