@@ -3,6 +3,7 @@
 from math import sqrt
 from os import path
 from sprites.item import Item
+from inventory.items import Item as InventoryItem
 from sprites.door import Door
 import pygame as pg
 from components.popup_menu import PopupMenu
@@ -384,7 +385,8 @@ class Game(_State):
         for hit in hits:
             if hit.type == 'key':
                 hit.kill()
-                self.turn_manager.active_player().inventory.add_item(hit)
+                self.turn_manager.active_player().inventory.add_item(InventoryItem(
+                    "key", path.join(self.sprites_folder, "items", "key_silver.png"), 0, False))
                 # ajouter à l'inventaire
 
         collisionZoneEffect(self.turn_manager.active_player(), self)

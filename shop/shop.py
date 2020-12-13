@@ -339,7 +339,7 @@ class ShopSlot(Container):
             screen (Surface)
         """
         if self.item is not None:
-            image = pg.image.load(self.item.img).convert_alpha()
+            image = pg.image.load(self.item.image).convert_alpha()
             image = pg.transform.scale(image, (self.size, self.size))
             image_x = image.get_width()
             image_y = image.get_height()
@@ -350,7 +350,7 @@ class ShopSlot(Container):
 
         if self.item is not None and self.item.is_moving:
             mouse_pos = pg.mouse.get_pos()
-            image = pg.image.load(self.item.img).convert_alpha()
+            image = pg.image.load(self.item.image).convert_alpha()
             image = pg.transform.scale(image, (self.size + 10, self.size + 10))
             image_x = image.get_width()
             image_y = image.get_height()

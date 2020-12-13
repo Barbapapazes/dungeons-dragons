@@ -4,6 +4,7 @@ from os import close, path
 import pygame as pg
 from config.sprites import ASSETS_DOOR
 from config.window import TILESIZE
+from logger import logger
 
 
 class Door(pg.sprite.Sprite):
@@ -52,8 +53,13 @@ class Door(pg.sprite.Sprite):
             self.image = self.close_image
 
     def try_open(self, player):
-        # si l'utilisateur a une clé
-        self.to_open = True
+        for slot in player.inventory.slots:
+            if slot.item and slot.item.name == "key":
+                logger.info("Open a door")
+                player.inventory.slots.remove(slot)
+                self.to_open = True
+                break
+        logger.info("You need a key to open the door")
 
         # def draw(self):
         #     pass
