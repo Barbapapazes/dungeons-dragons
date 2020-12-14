@@ -1,18 +1,18 @@
-"""Define a key"""
+"""Define a placable item"""
 
-from config.sprites import ASSETS_ITEMS, BOB_RANGE, BOB_SPEED
+from config.sprites import ITEMS, BOB_RANGE, BOB_SPEED
 import pygame as pg
 import pytweening as tween
 
 
-class Item(pg.sprite.Sprite):
-    """Create a key"""
+class PlacableItem(pg.sprite.Sprite):
+    """Create a Placable item"""
 
     def __init__(self, game, pos, _type):
         self._layer = 1
         self.groups = game.all_sprites, game.items
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.image = pg.transform.scale(ASSETS_ITEMS[_type], (32, 32))
+        self.image = pg.transform.scale(ITEMS[_type], (32, 32))
         self.rect = self.image.get_rect()
         self.type = _type
         self.pos = pos

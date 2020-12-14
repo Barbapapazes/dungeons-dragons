@@ -2,7 +2,7 @@
 
 from math import sqrt
 from os import path
-from sprites.item import Item
+from sprites.item import PlacableItem
 from inventory.items import Item as InventoryItem
 from sprites.door import Door
 import pygame as pg
@@ -107,7 +107,7 @@ class Game(_State):
                     tile_object.height)
                 Door(self, obj_center.x, obj_center.y, wall)
             if tile_object.name == "key":
-                Item(self, obj_center, "key")
+                PlacableItem(self, obj_center, "key_02c")
 
         # Temporaire
         # think how this will be used with the menu
@@ -383,10 +383,10 @@ class Game(_State):
             hit.try_open(self.turn_manager.active_player())
         hits = pg.sprite.spritecollide(self.turn_manager.active_player(), self.items, False)
         for hit in hits:
-            if hit.type == 'key':
+            if hit.type.startswith('key'):
                 hit.kill()
                 self.turn_manager.active_player().inventory.add_item(InventoryItem(
-                    "key", path.join(self.sprites_folder, "items", "key_silver.png"), 0, False))
+                    "key", hit.image.copy(), 0, False))
                 # ajouter à l'inventaire
 
         collisionZoneEffect(self.turn_manager.active_player(), self)

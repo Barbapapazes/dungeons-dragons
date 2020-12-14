@@ -5,9 +5,6 @@ import pygame as pg
 from config.window import HEIGHT, TILESIZE, WIDTH
 from tools import strip_from_sheet as strip
 
-pg.init()
-pg.display.set_mode((WIDTH, HEIGHT))
-
 game_folder = path.dirname('.')
 assets_folder = path.join(game_folder, 'assets')
 items_folder = path.join(assets_folder, "img", 'items')
@@ -23,7 +20,7 @@ PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
 
 # all items
 ITEMS = {
-    f.split('.png')[0]: pg.image.load(path.join(items_folder, f)).convert_alpha()
+    f.split('.png')[0]: pg.image.load(path.join(items_folder, f))
     for f in os.listdir(items_folder) if f.endswith('.png')}
 
 # equipables
@@ -129,12 +126,9 @@ WIDTH_CHARACTER = 150
 HEIGHT_CHARACTER = 150
 USABLE_POINTS = 12
 
-# Items
+# Bounce
 BOB_RANGE = 15
 BOB_SPEED = 0.4
-ASSETS_ITEMS = {
-    "key": pg.image.load(path.join(sprites_folder, 'items', "key_silver.png"))
-}
 
 
 # Heros
