@@ -441,9 +441,10 @@ class _Elements(_State):
         if back:
             self.back_btn.listen(events)
 
-    def draw_elements(self, name, back=False):
+    def draw_elements(self, name, back=False, background=True):
         """Draw all elements"""
-        self.draw_background()
+        if background:
+            self.draw_background()
         self.draw_title(name)
         self.draw_buttons(back)
 

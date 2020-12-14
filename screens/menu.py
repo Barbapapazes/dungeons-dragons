@@ -1,9 +1,11 @@
 """Menu screen"""
 
+from config.window import HEIGHT, WIDTH
 import pygame as pg
 from window import _Elements
-from config.screens import GAME, MENU, NEW_GAME, OPTIONS, LOAD_GAME
+from config.screens import BACKGROUND_MENU, GAME, MENU, NEW_GAME, OPTIONS, LOAD_GAME
 from utils.shortcuts import load_shortcuts
+from itertools import cycle
 
 
 class Menu(_Elements):
@@ -12,7 +14,21 @@ class Menu(_Elements):
     def __init__(self):
         self.name = MENU
         self.next = GAME
-        super(Menu, self).__init__(self.name, self.next, 'menu', 'background.png', self.create_buttons_dict())
+        super(Menu, self).__init__(self.name, self.next, 'menu', '0.png', self.create_buttons_dict())
+
+        self.frames = list()
+        for frame in BACKGROUND_MENU:
+            self.frames.append(pg.transform.scale(frame, (WIDTH, HEIGHT)))
+
+        self.frames = cycle(self.frames)
+        self.background = next(self.frames)
+
+        self.frame_time = 80 / 1000
+        self.frame_timer = 0
+
+        self.win = pg.Surface((WIDTH, HEIGHT)).convert_alpha()
+        self.win.fill((0, 0, 0, 0))
+        self.create_buttons(self.win)
 
         self.startup(0, load_shortcuts())
 
@@ -54,12 +70,21 @@ class Menu(_Elements):
 
     def normal_run(self):
         """Run the normal state"""
+        self.update_background()
         super().events_buttons()
         self.draw()
+
+    def update_background(self):
+        """Used to update the background"""
+        self.frame_timer += self.dt
+        if self.frame_timer >= self.frame_time:
+            self.frame_timer -= self.frame_time
+            self.background = next(self.frames)
 
     def draw(self):
         """Draw content"""
         super().draw_elements("Dungeons and Dragons")
+        self.screen.blit(self.win, (0, 0))
 
     @staticmethod
     def stop_window():
