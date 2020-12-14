@@ -144,12 +144,11 @@ ASSETS_SPRITES = {
 }
 
 ASSETS_DOOR = [pg.transform.scale(
-    pg.image.load(path.join(sprites_folder, "door", "opening", f)),
-    (TILESIZE, TILESIZE)) for f in os.listdir(path.join(sprites_folder, "door", "opening"))]
+    pg.image.load(path.join(sprites_folder, "door", "opening", f"{i}.png")),
+    (TILESIZE, TILESIZE)) for i in range(14)]
 
-ASSETS_FLAMES = [pg.image.load(path.join(sprites_folder, "flames", f))
-                 for f in os.listdir(path.join(sprites_folder, 'flames'))]
-
+ASSETS_FLAMES = [pg.image.load(path.join(sprites_folder, "flames", f"{i}.png"))
+                 for i in range(6)]
 
 ASSETS_BOOK_OPENING = [pg.image.load(path.join(sprites_folder, "book", "opening",  f"{i}.png"))
                        for i in range(4)]
