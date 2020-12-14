@@ -18,13 +18,13 @@ class NewGame(_Elements):
     def __init__(self):
         self.name = NEW_GAME
         self.next = CHARACTER_CREATION
-        super(NewGame, self).__init__(self.name, self.next, 'menu', 'background.jpg', {})
+        super(NewGame, self).__init__(self.name, self.next, 'new_game', 'background.jpg', {})
 
         self.background = pg.Surface((WIDTH, HEIGHT))
         image = pg.image.load(
             path.join(
                 self.img_folder,
-                'menu',
+                'new_game',
                 'background.jpg')).convert()
         self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
 

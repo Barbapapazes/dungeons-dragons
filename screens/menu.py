@@ -12,7 +12,7 @@ class Menu(_Elements):
     def __init__(self):
         self.name = MENU
         self.next = GAME
-        super(Menu, self).__init__(self.name, self.next, 'menu', 'background.jpg', self.create_buttons_dict())
+        super(Menu, self).__init__(self.name, self.next, 'menu', 'background.png', self.create_buttons_dict())
 
         self.startup(0, load_shortcuts())
 
