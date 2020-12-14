@@ -1,12 +1,16 @@
 """Define settings for the sprites"""
-from config.window import TILESIZE
-import pygame as pg
+import os
 from os import path
+import pygame as pg
+from config.window import HEIGHT, TILESIZE, WIDTH
 from tools import strip_from_sheet as strip
 
+pg.init()
+pg.display.set_mode((WIDTH, HEIGHT))
 
 game_folder = path.dirname('.')
 assets_folder = path.join(game_folder, 'assets')
+items_folder = path.join(assets_folder, "img", 'items')
 sprites_folder = path.join(assets_folder, 'sprites')
 
 # player
@@ -17,12 +21,15 @@ PLAYER_MAX_MP = 50
 PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
 
 
-#  ajouter les charastéristiques
+# all items
+ITEMS = {
+    f.split('.png')[0]: pg.image.load(path.join(items_folder, f)).convert_alpha()
+    for f in os.listdir(items_folder) if f.endswith('.png')}
 
 # equipables
 CONSUMABLE = {
     "potion red": {
-        "image": "potionRed.png",
+        "image": ITEMS["potion_02a"],
         "price": 10,
         "weight": 2,
         "heal": 30
@@ -31,7 +38,7 @@ CONSUMABLE = {
 
 WEAPONS = {
     "sword wood": {
-        "image": "swordWood.png",
+        "image": ITEMS["potion_02a"],
         "price": 10,
         "weight": 10,
         "slot": "weapon",
@@ -41,7 +48,7 @@ WEAPONS = {
         "scope": 2
     },
     "sword steel": {
-        "image": "sword.png",
+        "image": ITEMS["potion_02a"],
         "price": 10,
         "weight": 20,
         "slot": "weapon",
@@ -52,7 +59,7 @@ WEAPONS = {
 
     },
     "arc": {
-        "image": "arc.png",
+        "image": ITEMS["potion_02a"],
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
@@ -63,7 +70,7 @@ WEAPONS = {
 
     },
     "dagger": {
-        "image": "upg_dagger.png",
+        "image": ITEMS["potion_02a"],
         "price": 10,
         "weight": 5,
         "slot": "weapon",
@@ -78,14 +85,14 @@ WEAPONS = {
 
 ARMOR = {
     "steel helmet": {
-        "image": "helmet.png",
+        "image": ITEMS["potion_02a"],
         "price": 10,
         "weight": 10,
         "armor": 20,
         "slot": 'head'
     },
     "gold helmet": {
-        "image": "upg_helmet.png",
+        "image": ITEMS["potion_02a"],
         "price": 10,
         "weight": 15,
         "armor": 30,
@@ -93,14 +100,14 @@ ARMOR = {
     },
 
     "steel chest": {
-        "image": "chest.png",
+        "image": ITEMS["potion_02a"],
         "price": 10,
         "weight": 20,
         "armor": 40,
         "slot": "chest"
     },
     "gold chest": {
-        "image": "upg_chest.png",
+        "image": ITEMS["potion_02a"],
         "price": 10,
         "weight": 30,
         "armor": 70,

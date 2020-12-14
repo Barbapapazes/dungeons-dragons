@@ -103,7 +103,7 @@ class Shop():
         for key, value in WEAPONS.items():
             data = Weapon(
                 key,
-                path.join(self.items_folder, value['image']),
+                value['image'],
                 value['price'],
                 value['slot'],
                 value['type'],
@@ -125,7 +125,7 @@ class Shop():
         for key, value in ARMOR.items():
             data = Armor(
                 key,
-                path.join(self.items_folder, value['image']),
+                value['image'],
                 value['price'],
                 value['weight'],
                 value['armor'],
@@ -146,7 +146,7 @@ class Shop():
         for key, value in CONSUMABLE.items():
             data = Consumable(
                 key,
-                path.join(self.items_folder, value['image']),
+                value['image'],
                 value['price'],
                 value['weight'])
             self.consumables.append(data)
@@ -339,8 +339,7 @@ class ShopSlot(Container):
             screen (Surface)
         """
         if self.item is not None:
-            image = pg.image.load(self.item.image).convert_alpha()
-            image = pg.transform.scale(image, (self.size, self.size))
+            image = pg.transform.scale(self.item.image, (self.size, self.size))
             image_x = image.get_width()
             image_y = image.get_height()
 
@@ -350,8 +349,7 @@ class ShopSlot(Container):
 
         if self.item is not None and self.item.is_moving:
             mouse_pos = pg.mouse.get_pos()
-            image = pg.image.load(self.item.image).convert_alpha()
-            image = pg.transform.scale(image, (self.size + 10, self.size + 10))
+            image = pg.transform.scale(self.item.image, (self.size + 10, self.size + 10))
             image_x = image.get_width()
             image_y = image.get_height()
 

@@ -12,6 +12,7 @@ class Item:
             price (Number)
             weight (Number)
         """
+        print(type(image), name)
         self.name = name
         self.image = image
         self.price = price
@@ -20,3 +21,6 @@ class Item:
 
     def __str__(self):
         return self.name
+
+    def __deepcopy__(self, memo):
+        return Item(self.name, self.image.copy(), self.price, self.weight)

@@ -253,7 +253,7 @@ class Inventory:
         """
         if isinstance(item, Consumable):
             logger.info("Use %s from inventory", item)
-            item.use(self, self.player)
+            item.use(self.player)
 
     def equip_item(self, item):
         """Equip a passed item if it's an Equipable
@@ -273,7 +273,7 @@ class Inventory:
         """
         if isinstance(item, Equipable):
             logger.info("Unequip %s from inventory", item)
-            item.unequip(self)
+            item.unequip()
 
     def is_clicked(self, mouse_pos):
         """Check if the inventory is clicked"""
@@ -314,8 +314,7 @@ class InventorySlot(Container):
             screen(Surface)
         """
         if self.item is not None and not self.item.is_moving:
-            image = pg.image.load(self.item.image).convert_alpha()
-            image = pg.transform.scale(image, (self.size, self.size))
+            image = pg.transform.scale(self.item.image, (self.size, self.size))
             image_x = image.get_width()
             image_y = image.get_height()
 
@@ -325,8 +324,7 @@ class InventorySlot(Container):
 
         if self.item is not None and self.item.is_moving:
             mouse_pos = pg.mouse.get_pos()
-            image = pg.image.load(self.item.image).convert_alpha()
-            image = pg.transform.scale(image, (self.size + 10, self.size + 10))
+            image = pg.transform.scale(self.item.image, (self.size + 10, self.size + 10))
             image_x = image.get_width()
             image_y = image.get_height()
 
@@ -383,6 +381,9 @@ class Equipable(Item):
         self.is_equipped = False
         self.equipped_to = None
 
+    def __deepcopy__(self, memo):
+        return Equipable(self.name, self.image.copy(), self.price, self.weight)
+
 
 class Armor(Equipable):
     """Armor"""
@@ -417,6 +418,9 @@ class Armor(Equipable):
         Equipable.unequip(self)
         inventory.add_item(self)
         inventory.get_equip_slot(self).item = None
+
+    def __deepcopy__(self, memo):
+        return Armor(self.name, self.image.copy(), self.price, self.weight, self.shield, self.slot)
 
 
 class Weapon(Equipable):
@@ -461,3 +465,8 @@ class Weapon(Equipable):
         for _ in range(self.nb_d):
             dmg += randint(1, self.val_d)
         return dmg
+
+    def __deepcopy__(self, memo):
+        return Weapon(
+            self.name, self.image.copy(),
+            self.price, self.slot, self.wpn_type, self.weight, self.nb_d, self.val_d, self.scope // TILESIZE)
