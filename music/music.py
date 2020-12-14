@@ -50,8 +50,6 @@ class Music():
             self.stop()
 
 
-                    print("OK")
-
 
 
             
