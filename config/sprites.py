@@ -4,6 +4,7 @@ from os import path
 import pygame as pg
 from config.window import HEIGHT, TILESIZE, WIDTH
 from tools import strip_from_sheet as strip
+from itertools import cycle
 
 game_folder = path.dirname('.')
 assets_folder = path.join(game_folder, 'assets')
@@ -133,10 +134,14 @@ BOB_SPEED = 0.4
 
 # Heros
 TYPES = ["wizard", "soldier", "thief"]
-DIRECTIONS = ["front", "back", "left", "right"]
+DIRECTIONS = ["up", "down", "left", "right", "idle"]
 
-ASSETS_SPRITES = {_type: {key: [pg.transform.scale(pg.image.load(path.join(
-    sprites_folder, _type, key, f"{i}.png")), (TILESIZE, TILESIZE)) for i in range(3)] for key in DIRECTIONS} for _type in TYPES}
+ASSETS_SPRITES = {
+    _type: {
+        key: cycle([pg.transform.scale(pg.image.load(path.join(
+            sprites_folder, _type, key, f"{i}.png")), (TILESIZE, TILESIZE)) for i in range(3)]) for key in DIRECTIONS
+    } for _type in TYPES
+}
 
 ASSETS_DOOR = [pg.transform.scale(
     pg.image.load(path.join(sprites_folder, "door", "opening", f)),

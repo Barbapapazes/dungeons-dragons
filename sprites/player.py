@@ -1,4 +1,5 @@
 """Define a player"""
+from sprites.character import Character
 import pygame as pg
 from random import randint
 from logger import logger
@@ -12,31 +13,11 @@ from shop.shop import Shop
 vec = pg.math.Vector2
 
 
-class Player(pg.sprite.Sprite):
+class Player(Character):
     """Create a player"""
 
-    def __init__(self, game, _type, x, y):
-        self._layer = y
-        self.groups = game.all_sprites
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.type = _type
-        self.run_right_images = ASSETS_SPRITES[self.type]["right"]
-        self.run_left_images = ASSETS_SPRITES[self.type]["left"]
-        self.run_front_images = ASSETS_SPRITES[self.type]["front"]
-        self.run_back_images = ASSETS_SPRITES[self.type]["back"]
-
-        self.image = self.run_front_images[1]
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.hit_rect = PLAYER_HIT_RECT
-        self.hit_rect.center = self.rect.center
-        self.vel = vec(0, 0)
-        self.pos = vec(x, y)
-        self.rot = 0
-
-        self.is_moving = False
-        self.frame_count = 0
+    def __init__(self, game, x, y, _type, images):
+        super(Player, self).__init__(game, x, y, _type, images)
 
         self.numberOfAction = 0
 
@@ -67,22 +48,23 @@ class Player(pg.sprite.Sprite):
         self.shop = Shop()
 
     def get_keys(self):
-        self.rot_speed = 0
         self.vel = vec(0, 0)
-        self.is_moving = False
         keys = pg.key.get_pressed()
+        self.direction = "idle"
         if keys[self.game.game_data["shortcuts"]["player"]["left"]["keys"][2]]:
-            self.is_moving = True
-            self.rot_speed = PLAYER_ROT_SPEED
+            self.direction = "left"
+            self.vel.x = -PLAYER_SPEED
         if keys[self.game.game_data["shortcuts"]["player"]["right"]["keys"][2]]:
-            self.is_moving = True
-            self.rot_speed = -PLAYER_ROT_SPEED
+            self.direction = "right"
+            self.vel.x = PLAYER_SPEED
         if keys[self.game.game_data["shortcuts"]["player"]["up"]["keys"][2]]:
-            self.is_moving = True
-            self.vel = vec(PLAYER_SPEED, 0).rotate(-self.rot)
+            self.direction = "up"
+            self.vel.y = -PLAYER_SPEED
         if keys[self.game.game_data["shortcuts"]["player"]["down"]["keys"][2]]:
-            self.is_moving = True
-            self.vel = vec(-PLAYER_SPEED / 2, 0).rotate(-self.rot)
+            self.direction = "down"
+            self.vel.y = PLAYER_SPEED
+        if self.vel.x != 0 and self.vel.y != 0:
+            self.vel *= 0.7071
 
     def addMP(self, MP_gain):
         """Add passed HP_gain to the player's mana
@@ -188,29 +170,37 @@ class Player(pg.sprite.Sprite):
 
     def update(self):
         self.get_keys()
-        self.frame_count += 1
-        if self.frame_count >= 27:
-            self.frame_count = 0
+        self.frame_timer += self.game.dt
+        if self.frame_timer >= self.frame_time:
+            self.frame_timer -= self.frame_time
+            self.image = next(self.images[self.direction])
+        # self.frame_count += 1
+        # if self.frame_count >= 27:
+        #     self.frame_count = 0
 
-        self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+        # self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
 
-        if self.is_moving:
-            if 135 < self.rot <= 225:
-                self.image = pg.transform.flip(pg.transform.rotate(
-                    self.run_right_images[self.frame_count // 9], -self.rot), False, True)
-            if 225 < self.rot <= 315:
-                self.image = pg.transform.rotate(
-                    self.run_front_images[self.frame_count // 9], self.rot - 270)
-            if 315 < self.rot <= 360 or 0 <= self.rot < 45:
-                self.image = pg.transform.flip(pg.transform.rotate(
-                    self.run_left_images[self.frame_count // 9], -self.rot), True, False)
-            if 45 < self.rot <= 135:
-                self.image = pg.transform.rotate(
-                    self.run_back_images[self.frame_count // 9], self.rot - 90)
-
+        # if self.is_moving:
+        #     if 135 < self.rot <= 225:
+        #         self.image = pg.transform.flip(pg.transform.rotate(
+        #             self.run_right_images[self.frame_count // 9], -self.rot), False, True)
+        #     if 225 < self.rot <= 315:
+        #         self.image = pg.transform.rotate(
+        #             self.run_front_images[self.frame_count // 9], self.rot - 270)
+        #     if 315 < self.rot <= 360 or 0 <= self.rot < 45:
+        #         self.image = pg.transform.flip(pg.transform.rotate(
+        #             self.run_left_images[self.frame_count // 9], -self.rot), True, False)
+        #     if 45 < self.rot <= 135:
+        #         self.image = pg.transform.rotate(
+        #             self.run_back_images[self.frame_count // 9], self.rot - 90)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.pos += self.vel * self.game.dt
+
+        self.update_collisions()
+
+    def update_collisions(self):
+        """Manage the collisions"""
         self.hit_rect.centerx = self.pos.x
         collide_with_walls(self, self.game.walls, 'x')
         self.hit_rect.centery = self.pos.y

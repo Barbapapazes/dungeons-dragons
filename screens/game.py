@@ -1,5 +1,6 @@
 """Game screen"""
 
+from config.sprites import ASSETS_SPRITES
 from math import sqrt
 from os import path
 from sprites.item import PlacableItem
@@ -87,10 +88,11 @@ class Game(_State):
                     _y = obj_center.y if not ("last_pos" in self.game_data["game_data"]["heros"][
                         len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
                         len(self.turn_manager.players)]["last_pos"]["y"]
+                    _class = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["class"]
+                    logger.debug(_class)
+                    _images = ASSETS_SPRITES[_class]
                     self.turn_manager.players.append(
-                        Player(
-                            self, self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["class"],
-                            _x, _y))
+                        Player(self, _x, _y, _class, _images))
             if tile_object.name == 'wall':
                 Obstacle(
                     self,

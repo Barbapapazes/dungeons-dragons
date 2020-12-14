@@ -203,7 +203,7 @@ class CharacterCreation(_Elements):
                 "name": "soldier",
                 "image": path.join(
                     self.sprites_folder,
-                    "soldier", "front", "1.png"),
+                    "soldier", "down", "1.png"),
                 "description": "Chevaliers menant une quête, seigneurs conquérants, champions royaux, fantassins d'élite, mercenaires endurcis et rois-bandits,\ntous partagent une maîtrise inégalée des armes et des armures ainsi qu'une connaissance approfondie des compétences de combat.\nTous connaissent bien la mort, l'infligeant autant qu'ils lui font face.",
                 "characteristics": {
                     "str": {
@@ -228,7 +228,7 @@ class CharacterCreation(_Elements):
                 "name": "wizard",
                 "image": path.join(
                     self.sprites_folder,
-                    "wizard", "front", "1.png"),
+                    "wizard", "down", "1.png"),
                 "description": "",
                 "characteristics": {
                     "str": {
@@ -253,7 +253,7 @@ class CharacterCreation(_Elements):
                 "name": "thief",
                 "image": path.join(
                     self.sprites_folder,
-                    "thief", "front", "1.png"),
+                    "thief", "down", "1.png"),
                 "description": "",
                 "characteristics": {
                     "str": {
