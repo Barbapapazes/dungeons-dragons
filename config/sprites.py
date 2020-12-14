@@ -138,5 +138,9 @@ DIRECTIONS = ["front", "back", "left", "right"]
 ASSETS_SPRITES = {_type: {key: [pg.transform.scale(pg.image.load(path.join(
     sprites_folder, _type, key, f"{i}.png")), (TILESIZE, TILESIZE)) for i in range(3)] for key in DIRECTIONS} for _type in TYPES}
 
-ASSETS_DOOR = [pg.transform.scale(pg.image.load(path.join(
-    sprites_folder, "door", "opening", f"{i}.png")), (TILESIZE, TILESIZE)) for i in range(14)]
+ASSETS_DOOR = [pg.transform.scale(
+    pg.image.load(path.join(sprites_folder, "door", "opening", f)),
+    (TILESIZE, TILESIZE)) for f in os.listdir(path.join(sprites_folder, "door", "opening"))]
+
+ASSETS_FLAMES = [pg.image.load(path.join(sprites_folder, "flames", f))
+                 for f in os.listdir(path.join(sprites_folder, 'flames'))]

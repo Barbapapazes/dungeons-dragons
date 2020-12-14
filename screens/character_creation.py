@@ -2,6 +2,7 @@
 
 from os import path
 from datetime import datetime
+from sprites.animated import Flames
 import pygame as pg
 from pygame_widgets import Button
 from window import _Elements
@@ -34,6 +35,11 @@ class CharacterCreation(_Elements):
         self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
 
         self.remaining_heros_to_create = 0
+
+        self.animated = pg.sprite.Group()
+
+        Flames(self, 1 * WIDTH // 20, 4 * HEIGHT // 10, 150)
+        Flames(self, 19 * WIDTH // 20, 4 * HEIGHT // 10, 150)
 
         self.new()
 
@@ -311,6 +317,7 @@ class CharacterCreation(_Elements):
                 slider.update(stop_count=True)
             else:
                 slider.update()
+        self.animated.update()
 
     def events_buttons(self):
         """Events for buttons"""
@@ -350,6 +357,7 @@ class CharacterCreation(_Elements):
         self.draw_characteristic()
         self.draw_sliders()
         self.draw_points()
+        self.animated.draw(self.screen)
         self.back_btn.draw()
 
         # # self.name.listen(events)
