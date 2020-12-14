@@ -38,7 +38,7 @@ CONSUMABLE = {
 
 WEAPONS = {
     "sword wood": {
-        "image": ITEMS["potion_02a"],
+        "image": ITEMS["sword_01a"],
         "price": 10,
         "weight": 10,
         "slot": "weapon",
@@ -48,7 +48,7 @@ WEAPONS = {
         "scope": 2
     },
     "sword steel": {
-        "image": ITEMS["potion_02a"],
+        "image": ITEMS["sword_01c"],
         "price": 10,
         "weight": 20,
         "slot": "weapon",
@@ -59,7 +59,7 @@ WEAPONS = {
 
     },
     "arc": {
-        "image": ITEMS["potion_02a"],
+        "image": ITEMS["bow_01a"],
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
@@ -70,7 +70,7 @@ WEAPONS = {
 
     },
     "dagger": {
-        "image": ITEMS["potion_02a"],
+        "image": ITEMS["sword_03a"],
         "price": 10,
         "weight": 5,
         "slot": "weapon",
@@ -85,29 +85,28 @@ WEAPONS = {
 
 ARMOR = {
     "steel helmet": {
-        "image": ITEMS["potion_02a"],
+        "image": ITEMS["helmet_01b"],
         "price": 10,
         "weight": 10,
         "armor": 20,
         "slot": 'head'
     },
     "gold helmet": {
-        "image": ITEMS["potion_02a"],
+        "image": ITEMS["helmet_01d"],
         "price": 10,
         "weight": 15,
         "armor": 30,
         "slot": "head"
     },
-
     "steel chest": {
-        "image": ITEMS["potion_02a"],
+        "image": ITEMS["armor_01a"],
         "price": 10,
         "weight": 20,
         "armor": 40,
         "slot": "chest"
     },
     "gold chest": {
-        "image": ITEMS["potion_02a"],
+        "image": ITEMS["armor_01d"],
         "price": 10,
         "weight": 30,
         "armor": 70,
