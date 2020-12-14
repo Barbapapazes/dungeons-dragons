@@ -170,10 +170,8 @@ class Player(Character):
 
     def update(self):
         self.get_keys()
-        self.frame_timer += self.game.dt
-        if self.frame_timer >= self.frame_time:
-            self.frame_timer -= self.frame_time
-            self.image = next(self.images[self.direction])
+        super().update()
+
         # self.frame_count += 1
         # if self.frame_count >= 27:
         #     self.frame_count = 0
@@ -193,19 +191,6 @@ class Player(Character):
         #     if 45 < self.rot <= 135:
         #         self.image = pg.transform.rotate(
         #             self.run_back_images[self.frame_count // 9], self.rot - 90)
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        self.pos += self.vel * self.game.dt
-
-        self.update_collisions()
-
-    def update_collisions(self):
-        """Manage the collisions"""
-        self.hit_rect.centerx = self.pos.x
-        collide_with_walls(self, self.game.walls, 'x')
-        self.hit_rect.centery = self.pos.y
-        collide_with_walls(self, self.game.walls, 'y')
-        self.rect.center = self.hit_rect.center
 
     def throwDice(self, Val, modificateur=0, valueOfDice=100):
         """Throw of dice like D&D

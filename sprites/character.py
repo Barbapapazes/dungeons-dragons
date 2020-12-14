@@ -1,5 +1,6 @@
 """Define a character"""
 
+from utils.tilemap import collide_with_walls
 from config.sprites import PLAYER_HIT_RECT
 import pygame as pg
 from logger import logger
@@ -34,3 +35,26 @@ class Character(pg.sprite.Sprite):
 
         self.frame_time = 60 / 1000
         self.frame_timer = 0
+
+    def update(self):
+        self.frame_timer += self.game.dt
+        if self.frame_timer >= self.frame_time:
+            self.frame_timer -= self.frame_time
+            self.image = next(self.images[self.direction])
+
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        self.pos += self.vel * self.game.dt
+
+        self.update_collisions()
+
+    def update_collisions(self):
+        """Manage the collisions"""
+        self.hit_rect.centerx = self.pos.x
+        collide_with_walls(self, self.game.walls, 'x')
+        self.hit_rect.centery = self.pos.y
+        collide_with_walls(self, self.game.walls, 'y')
+        self.rect.center = self.hit_rect.center
+
+    def __str__(self):
+        return f"Sprite {self.type}"
