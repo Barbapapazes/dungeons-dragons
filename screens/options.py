@@ -7,12 +7,8 @@ from logger import logger
 from window import _Elements
 from config.window import WIDTH, HEIGHT
 from config.colors import BEIGE
-from config.screens import MENU, OPTIONS, SHORTCUTS
+from config.screens import MENU, OPTIONS, SHORTCUTS ,OPTIONS_MUSIC
 from data.options import CUSTOM_SETTINGS_FILENAME
-from data.music_data import DATA_MUSIC
-from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
-from config.colors import BLACK, BEIGE, GREEN_DARK, YELLOW_LIGHT,LIGHTGREY
-from components.cursor import Cursor
 
 
 class Options(_Elements):
@@ -26,8 +22,7 @@ class Options(_Elements):
         self.create_back_button(self.background, self.load_next_state, [MENU])
 
         self.states_dict = self.make_states_dict()
-        
-        
+
     def create_buttons_dict(self):
         """Create the dict for all buttons"""
         return {
@@ -41,81 +36,32 @@ class Options(_Elements):
                 "on_click": self.toggle_sub_state,
                 "on_click_params": ['screen'],
             },
-            "music":{
+            "Music & Sounds": {
                 "text": "Musics & Sounds",
-                "on_click": self.toggle_sub_state,
-                "on_click_params": ['music'],
-            }
+                "on_click": self.load_next_state,
+                "on_click_params": [OPTIONS_MUSIC],
+            },
         }
 
-    
-    
-    def create_music_buttons_dict(self):
+    def create_settings_buttons_dict(self):
         """Create the dict for screen size buttons"""
         return {
-            "song": {
-                "text": "Song : "+str(DATA_MUSIC["is_enable"]),
-                "on_click": self.status_music,
-                "on_click_params": "1",
+            "small": {
+                "text": "small",
+                "on_click": self.save_settings,
+                "on_click_params": [1024, 768],
             },
-            "sound": {
-                "text": "Sound : "+str(DATA_MUSIC["is_enable"]),
-                "on_click": self.status_music,
-                "on_click_params": "1",
+            "medium": {
+                "text": "medium",
+                "on_click": self.save_settings,
+                "on_click_params": [1280, 720],
             },
-        }
-    
-    def status_music(self,none):
-        if(DATA_MUSIC["is_enable"]):
-            DATA_MUSIC["is_enable"]=False
-            DATA_MUSIC["current_playing"]=None
-            logger.info("Musique false")
-        else:
-            DATA_MUSIC["is_enable"]=True
-            DATA_MUSIC["current_playing"]=None
-            logger.info("Musique true")
-
-        self.btns_dict = self.create_music_buttons_dict()
-        self.load_next_state(OPTIONS)
-        self.toggle_sub_state("music")
-        
-    def appliquer(self,etat,sub_state="normal"):
-        self.toggle_sub_state("normal")
-        self.load_next_state(etat)
-        
-    def create_music_buttons_dict(self):
-        """Create the dict for screen size buttons"""
-        return {
-            "song": {
-                "text": "Song : "+str(DATA_MUSIC["is_enable"]),
-                "on_click": self.status_music,
-                "on_click_params": "1",
-            },
-            "sound": {
-                "text": "Sound : "+str(DATA_MUSIC["is_enable"]),
-                "on_click": self.status_music,
-                "on_click_params": "1",
+            "large": {
+                "text": "large",
+                "on_click": self.save_settings,
+                "on_click_params": [1920, 1080],
             },
         }
-    
-    def status_music(self,none):
-        if(DATA_MUSIC["is_enable"]):
-            DATA_MUSIC["is_enable"]=False
-            DATA_MUSIC["current_playing"]=None
-            logger.info("Musique false")
-        else:
-            DATA_MUSIC["is_enable"]=True
-            DATA_MUSIC["current_playing"]=None
-            logger.info("Musique true")
-
-        self.btns_dict = self.create_music_buttons_dict()
-        self.load_next_state(OPTIONS)
-        self.toggle_sub_state("music")
-        
-    def appliquer(self,etat,sub_state="normal"):
-        self.toggle_sub_state("normal")
-        self.load_next_state(etat)
-        
 
     def toggle_sub_state(self, state):
         super().toggle_sub_state(state)
@@ -139,8 +85,7 @@ class Options(_Elements):
         """
         previous_dict = super().make_states_dict().copy()
         add_dict = {"screen": self.screen_run}
-        add_dict_music={"music":self.music_run}
-        return previous_dict | add_dict | add_dict_music
+        return previous_dict | add_dict
 
     def save_settings(self, w, h):
         file_name = path.join(self.saved_settings, CUSTOM_SETTINGS_FILENAME)
@@ -166,6 +111,7 @@ class Options(_Elements):
     def normal_run(self):
         """Run the normal state"""
         super().events_buttons(back=True)
+        self.draw()
 
     def screen_run(self):
         """Run the screen state"""
@@ -182,77 +128,7 @@ class Options(_Elements):
             WIDTH // 2,
             HEIGHT,
             align="s")
-    
-    def music_run(self):
-        """Run the screen state"""
-        self.screen.blit(self.image_screen, (0, 0))
-        super().events_buttons(back=True)
-        events = pg.event.get()
-        self.apply.listen(events)
-        self.apply.draw()
-        self.slider.listen(events)
-        self.slider.draw()
-        super().draw_title("Options")
-        super().draw_subtitle("Musics & Sounds")
-        self.back_btn.draw()
-        super().draw_title("Options")
-        super().draw_subtitle("Musics & Sounds")
-        self.back_btn.draw()
 
     def draw(self):
         """Draw content"""
         super().draw_elements("Options", back=True)
-
-
-
-    @staticmethod
-    def create_slider(
-            title,
-            name,
-            x,
-            y,
-            width,
-            height,
-            surface,
-            min,
-            max,
-            step,
-            start,
-            font,
-            draw_text, color, handle_color):
-        """Create a slider
-
-        Args:
-            title (str)
-            name (str)
-            x (int)
-            y (int)
-            width (int)
-            height (int)
-            surface (Surface)
-            min (int)
-            max (int)
-            step (int)
-            start (int)
-            font (str)
-            draw_text (func)
-            color (tuple)
-            handle_color (tuple)
-
-        Returns:
-            Cursor
-        """
-        return Cursor(
-            title,
-            name,
-            x,
-            y,
-            width,
-            height,
-            surface,
-            min,
-            max,
-            step,
-            start,
-            font,
-            draw_text, color, handle_color)
