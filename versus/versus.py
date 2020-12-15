@@ -35,8 +35,11 @@ class VersusManager:
 
     def is_in_range(self, pos, _range):
         dist = pos - self.turn_manager.active_character().pos
-        print(dist, dist.length_squared(), _range * _range)
         return dist.length_squared() < _range * _range
+
+    def events(self, pos):
+        self.select_action(pos)
+        self.select_enemy(pos)
 
     def select_action(self, pos):
         if self.active and self.turn_manager.is_active_player():
@@ -53,9 +56,10 @@ class VersusManager:
             if self.is_in_range(pos, 400):
                 for enemy in self.turn_manager.enemies:
                     if enemy.rect.collidepoint(pos[0], pos[1]):
-                        self.selected_enemy = enemy
+                        self.selected_enemy = enemy  # on se branle de le stocker, faut jsute le tuer, et il fatu ajouter la barrre de vie
                         self.remove_action()
                         self.logs.add_log("Enemy selected")
+                        enemy.health -= 30
                         self.turn_manager.turn += 1
                         # il faut lui enlever des points de vies et vois pour comment on le tue (faire comme dans kids can code)
                         break

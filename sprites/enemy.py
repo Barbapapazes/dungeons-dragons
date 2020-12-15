@@ -1,6 +1,7 @@
 """Define a enemy"""
 
 
+from config.colors import GREEN, YELLOW, RED
 from config.window import TILESIZE
 import pygame as pg
 from sprites.character import Character
@@ -13,6 +14,7 @@ SEEK_FORCE = 0.2
 APPROACH_RADIUS = 30
 MOB_HIT_RECT = pg.Rect(0, 0, 30, 30)
 SIZE = 8
+MOB_HEALTH = 100
 
 
 class Enemy(Character):
@@ -30,7 +32,24 @@ class Enemy(Character):
 
         self.last_target = 0
 
+        self.health = 50
+
+    def draw_health(self):
+        if self.health > 60:
+            col = GREEN
+        elif self.health > 30:
+            col = YELLOW
+        else:
+            col = RED
+        width = int(self.rect.width * self.health / MOB_HEALTH)
+        self.health_bar = pg.Rect(0, 0, width, 7)
+        if self.health < MOB_HEALTH:
+            pg.draw.rect(self.image, col, self.health_bar)
+
     def update(self):
+        if self.health <= 0:
+            self.kill()
+            self.game.turn_manager.enemies.remove(self)
         self.target = self.targets[0]
         target_min_dist = self.targets[0].pos - self.pos
         for target in self.targets:

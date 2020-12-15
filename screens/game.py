@@ -216,9 +216,9 @@ class Game(_State):
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
+                self.versus_manager.events(mouse_pos)
                 # faire un fonction event pour le veruss qui regroupe tout ça
-                self.versus_manager.select_action(mouse_pos)
-                self.versus_manager.select_enemy(mouse_pos)
+
                 # if self.versus.active:
 
                 #     if Versus.is_clicked(self.versus.attack_btn, mouse_pos) and not self.versus.is_progress():
@@ -422,6 +422,9 @@ class Game(_State):
         # self.all_sprites.draw(self.screen)
         self.versus_manager.draw(self.screen)
         for sprite in self.all_sprites:
+            if isinstance(sprite, Enemy):
+                sprite.draw_health()
+
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
         for zone in self.zoneEffect:
