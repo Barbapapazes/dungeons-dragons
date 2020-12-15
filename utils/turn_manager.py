@@ -37,7 +37,7 @@ class TurnManager:
         turn_to_number = self.turn % len_characters
         return turn_to_number
 
-    def active_characters(self):
+    def active_character(self):
         """Return the active character using the turn manager
 
         Returns:
@@ -46,15 +46,15 @@ class TurnManager:
         return self.get_characters()[self.get_relative_turn()]
 
     def is_active_player(self):
-        return isinstance(self.active_characters(), Player)
+        return isinstance(self.active_character(), Player)
 
     def is_active_enemy(self):
-        return isinstance(self.active_characters(), Enemy)
+        return isinstance(self.active_character(), Enemy)
 
     def update(self):
         if self.is_active_player():
-            self.active_characters().update()
+            self.active_character().update()
         if self.is_active_enemy():
-            self.active_characters().update()
+            self.active_character().update()
 
             # mettre la logique de l'enemy ici

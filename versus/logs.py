@@ -2,6 +2,7 @@
 
 from config.colors import WHITE
 import pygame as pg
+from logger import logger
 
 
 class Logs:
@@ -45,6 +46,7 @@ class Logs:
         """
         if len(self.messages) > 4:
             self.messages.pop()
+        logger.info("Logs: %s", message)
         self.messages.insert(0, message)
 
     def update(self):

@@ -24,7 +24,7 @@ from utils.turn_manager import TurnManager
 # from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON
 # from inventory.inventory import Armor, Weapon
 from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON, NUM_ACT_BEGIN
-from versus.versus import Versus
+from versus.versus import VersusManager
 from versus.sort import Sort
 from versus.sort import collisionZoneEffect
 from sprites.enemy import Enemy
@@ -42,7 +42,9 @@ class Game(_State):
 
         self.all_sprites = None
 
+        self.logs = Logs(0, 0, 300, 100, self.text_font, 16,  self.draw_text)
         self.turn_manager = TurnManager()
+        self.versus_manager = VersusManager(self)
 
         self.states_dict = self.make_states_dict()
 
@@ -54,7 +56,6 @@ class Game(_State):
         self.doors = pg.sprite.Group()
         self.items = pg.sprite.Group()
         self.zoneEffect = pg.sprite.Group()
-        self.logs = Logs(0, 0, 300, 100, self.text_font, 16,  self.draw_text)
 
         # self.en1 = Enemy(self, 10, 4, "Boot n1")
         # self.en2 = Enemy(self, 11, 7, "Boot n2")
@@ -116,8 +117,6 @@ class Game(_State):
             if tile_object.name == "key":
                 PlacableItem(self, obj_center, "key_02c")
 
-        self.versus = Versus(self, self.logs)
-
         # Temporaire
         # think how this will be used with the menu
         # add a logger inside the inventory (for each keys or mouse move)
@@ -142,7 +141,7 @@ class Game(_State):
         # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
         # self.player.inventory.add_item(helmet_armor)
         # fireBall = Sort('fireBall', 'assets/img/items/fireBall.png', 10, 'sort', 5, 'fire', 10, 2, 4, 2)
-        # self.turn_manager.active_characters().inventory.add_item(fireBall)
+        # self.turn_manager.active_character().inventory.add_item(fireBall)
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -179,9 +178,9 @@ class Game(_State):
             if event.button == 1:
 
                 if self.state == 'inventory':
-                    if self.turn_manager.active_characters().inventory.display_inventory:
+                    if self.turn_manager.active_character().inventory.display_inventory:
                         logger.info("Select an item from the inventory")
-                        self.turn_manager.active_characters().inventory.move_item()
+                        self.turn_manager.active_character().inventory.move_item()
 
         self.event_versus(event)
         self.events_inventory(event)
@@ -191,63 +190,68 @@ class Game(_State):
 
         if event.type == pg.KEYUP:
             if event.key == pg.K_l:
-                life = {
-                    'Player': self.turn_manager.active_characters().HP,
-                    'mana': self.turn_manager.active_characters().MP,
-                    'en1': self.en1.HP,
-                    'en2': self.en2.HP}
-                logger.info(life)
+                pass
+                # life = {
+                #     'Player': self.turn_manager.active_character().HP,
+                #     'mana': self.turn_manager.active_character().MP,
+                #     'en1': self.en1.HP,
+                #     'en2': self.en2.HP}
+                # logger.info(life)
 
             if event.key == pg.K_TAB:
                 """Simulate begin versus"""
-                self.versus.log("Begin Versus")
-                self.turn_manager.active_characters().numberOfAction = NUM_ACT_BEGIN
-
-                if self.versus.active:
-                    self.versus.finish()
+                if self.versus_manager.active:
+                    self.versus_manager.finish_versus()
                 else:
-                    self.versus.start()
+                    self.versus_manager.start_versus()
+
+                # self.turn_manager.active_character().numberOfAction = NUM_ACT_BEGIN
+
+                # if self.versus.active:
+                #     self.versus.finish()
+                # else:
+                #     self.versus.start()
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
+                mouse_pos = pg.mouse.get_pos()
+                self.versus_manager.select_action(mouse_pos)
+                # if self.versus.active:
 
-                if self.versus.active:
-                    mouse_pos = pg.mouse.get_pos()
+                #     if Versus.is_clicked(self.versus.attack_btn, mouse_pos) and not self.versus.is_progress():
+                #         self.versus.set_action("attack")
 
-                    if Versus.is_clicked(self.versus.attack_btn, mouse_pos) and not self.versus.is_progress():
-                        self.versus.set_action("attack")
+                #     if self.versus.action == "select_enemy":
+                #         logger.info("Select an enemy")
+                #         self.versus.selected_enemy(self.enemy, mouse_pos)
 
-                    if self.versus.action == "select_enemy":
-                        logger.info("Select an enemy")
-                        self.versus.selected_enemy(self.enemy, mouse_pos)
+                #     if Versus.is_clicked(self.versus.move_btn, mouse_pos) and not self.versus.is_progress():
+                #         self.versus.set_action("move")
 
-                    if Versus.is_clicked(self.versus.move_btn, mouse_pos) and not self.versus.is_progress():
-                        self.versus.set_action("move")
+                #     if self.versus.CheckMove(self.player, mouse_pos) and self.versus.action == 'move':
+                #         self.versus.set_action("move_is_authorized")
 
-                    if self.versus.CheckMove(self.player, mouse_pos) and self.versus.action == 'move':
-                        self.versus.set_action("move_is_authorized")
+                #     if self.versus.action == "pos_spell":
+                #         self.versus.createZone(self.player, mouse_pos)
 
-                    if self.versus.action == "pos_spell":
-                        self.versus.createZone(self.player, mouse_pos)
-
-                    if Versus.is_clicked(self.versus.spell_btn, mouse_pos) and not self.versus.is_progress():
-                        if self.versus.check_spell(self.player):
-                            self.versus.set_action("pos_spell")
-                        else:
-                            self.logs.add_log("No sort select OR you don't have enough mana")
+                #     if Versus.is_clicked(self.versus.spell_btn, mouse_pos) and not self.versus.is_progress():
+                #         if self.versus.check_spell(self.player):
+                #             self.versus.set_action("pos_spell")
+                #         else:
+                #             self.logs.add_log("No sort select OR you don't have enough mana")
 
     def events_inventory(self, event):
         """When the shop state is running"""
         if self.state == 'inventory':
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    self.turn_manager.active_characters().inventory.move_item()
+                    self.turn_manager.active_character().inventory.move_item()
             elif event.type == pg.MOUSEBUTTONUP:
                 if event.button == 1:
-                    self.turn_manager.active_characters().inventory.place_item()
+                    self.turn_manager.active_character().inventory.place_item()
                 elif event.button == 3:
                     self.mouse_pos = pg.mouse.get_pos()
-                    PopupMenu(self.turn_manager.active_characters().inventory.menu_data)
+                    PopupMenu(self.turn_manager.active_character().inventory.menu_data)
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
                     self.inventory_events(event)
@@ -255,10 +259,10 @@ class Game(_State):
     def inventory_events(self, event):
         """Used to manage all event"""
         if event.name == "inventory":
-            self.turn_manager.active_characters().inventory.check_slot(event.text, self.mouse_pos)
+            self.turn_manager.active_character().inventory.check_slot(event.text, self.mouse_pos)
             if event.text in ["sell"]:
-                self.turn_manager.active_characters().shop.check_slot(
-                    event.text, self.screen, self.turn_manager.active_characters(), self.mouse_pos)
+                self.turn_manager.active_character().shop.check_slot(
+                    event.text, self.screen, self.turn_manager.active_character(), self.mouse_pos)
 
     def events_shop(self, event):
         """When the shop state is running"""
@@ -266,41 +270,41 @@ class Game(_State):
             if event.type == pg.MOUSEBUTTONUP:
                 if event.button == 3:
                     self.mouse_pos = pg.mouse.get_pos()
-                    if self.turn_manager.active_characters().shop.is_clicked(self.mouse_pos):
-                        PopupMenu(self.turn_manager.active_characters().shop.menu_data)
-                    elif self.turn_manager.active_characters().inventory.is_clicked(self.mouse_pos):
-                        PopupMenu(self.turn_manager.active_characters().inventory.menu_data)
+                    if self.turn_manager.active_character().shop.is_clicked(self.mouse_pos):
+                        PopupMenu(self.turn_manager.active_character().shop.menu_data)
+                    elif self.turn_manager.active_character().inventory.is_clicked(self.mouse_pos):
+                        PopupMenu(self.turn_manager.active_character().inventory.menu_data)
                 elif event.button == 1:
-                    self.turn_manager.active_characters().shop.place_item(self.turn_manager.active_characters().inventory)
-                    self.turn_manager.active_characters().inventory.place_item()
+                    self.turn_manager.active_character().shop.place_item(self.turn_manager.active_character().inventory)
+                    self.turn_manager.active_character().inventory.place_item()
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    self.turn_manager.active_characters().shop.move_item()
-                    self.turn_manager.active_characters().inventory.move_item()
+                    self.turn_manager.active_character().shop.move_item()
+                    self.turn_manager.active_character().inventory.move_item()
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
-                    if event.name == 'shop' and event.text in self.turn_manager.active_characters().shop.menu_data:
-                        self.turn_manager.active_characters().shop.check_slot(
-                            event.text, self.screen, self.turn_manager.active_characters(), self.mouse_pos)
+                    if event.name == 'shop' and event.text in self.turn_manager.active_character().shop.menu_data:
+                        self.turn_manager.active_character().shop.check_slot(
+                            event.text, self.screen, self.turn_manager.active_character(), self.mouse_pos)
                     self.inventory_events(event)
 
     def toggle_states(self, event):
         """Use to toggle the state of all states"""
         if key_for(self.game_data["shortcuts"]["game"]["menu"]["keys"], event):
             logger.info("Toggle the sub-menu")
-            self.turn_manager.active_characters().inventory.display_inventory = False
-            self.turn_manager.active_characters().shop.display_shop = False
+            self.turn_manager.active_character().inventory.display_inventory = False
+            self.turn_manager.active_character().shop.display_shop = False
             super().toggle_sub_state('menu')
         if key_for(self.game_data["shortcuts"]["game"]
                    ["inventory"]["keys"], event):
-            logger.info("Toggle inventory from turn_manager.active_characters()")
-            self.turn_manager.active_characters().shop.display_shop = False
-            self.turn_manager.active_characters().inventory.display_inventory = True
+            logger.info("Toggle inventory from turn_manager.active_character()")
+            self.turn_manager.active_character().shop.display_shop = False
+            self.turn_manager.active_character().inventory.display_inventory = True
             super().toggle_sub_state('inventory')
         if event.key == pg.K_p:
             logger.info("Toggle the shop")
-            self.turn_manager.active_characters().shop.display_shop = True
-            self.turn_manager.active_characters().inventory.display_inventory = True
+            self.turn_manager.active_character().shop.display_shop = True
+            self.turn_manager.active_character().inventory.display_inventory = True
             super().toggle_sub_state('shop')
 
     def run(self, surface, keys, mouse, dt):
@@ -314,12 +318,12 @@ class Game(_State):
 
     def normal_run(self):
         """Run the normal state"""
-        if self.versus.active:
-            self.versus_update()
-            if (self.versus.action == "Move_autorised"):
-                self.update()
-        else:
-            self.update()
+        # if self.versus.active:
+        #     # self.versus_update()
+        #     if (self.versus.action == "Move_autorised"):
+        #         self.update()
+        # else:
+        self.update()
         self.draw()
 
         self.check_for_menu()
@@ -345,7 +349,7 @@ class Game(_State):
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
         self.screen.blit(self.dim_screen, (0, 0))
-        self.turn_manager.active_characters().inventory.draw(self.screen)
+        self.turn_manager.active_character().inventory.draw(self.screen)
 
     def shop_run(self):
         """Run the shop state"""
@@ -353,23 +357,23 @@ class Game(_State):
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
         self.screen.blit(self.dim_screen, (0, 0))
-        self.turn_manager.active_characters().inventory.draw(self.screen)
-        self.turn_manager.active_characters().shop.draw(self.screen)
+        self.turn_manager.active_character().inventory.draw(self.screen)
+        self.turn_manager.active_character().shop.draw(self.screen)
 
     def versus_action(self):
 
-        if self.turn_manager.active_characters().numberOfAction > 0:
+        if self.turn_manager.active_character().numberOfAction > 0:
             self.versus.draw(self.screen)
-            self.versus.ONE_action(self.turn_manager.active_characters(), self.screen)
+            self.versus.ONE_action(self.turn_manager.active_character(), self.screen)
         else:
             self.versus.setAction("Turn_enemy")
 
         if self.versus.action == "Turn_enemy":
             self.versus.log("Begin turn ENEMY")
             self.versus.log("END turn ENEMY")
-            self.turn_manager.active_characters().numberOfAction = 5
+            self.turn_manager.active_character().numberOfAction = 5
             self.versus.log("vous avez de nouveau 5 actions")
-            collisionZoneEffect(self.turn_manager.active_characters(), self)
+            collisionZoneEffect(self.turn_manager.active_character(), self)
             self.versus.setAction(None)
 
     def check_for_menu(self):
@@ -381,30 +385,31 @@ class Game(_State):
         self.items.update()
         for sprite in self.all_sprites:
             self.all_sprites.change_layer(sprite, sprite.rect.bottom)
-        hits = pg.sprite.spritecollide(self.turn_manager.active_characters(), self.doors, False)
+        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.doors, False)
         for hit in hits:
-            hit.try_open(self.turn_manager.active_characters())
-        hits = pg.sprite.spritecollide(self.turn_manager.active_characters(), self.items, False)
+            hit.try_open(self.turn_manager.active_character())
+        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.items, False)
         for hit in hits:
             if hit.type.startswith('key'):
                 hit.kill()
-                self.turn_manager.active_characters().inventory.add_item(InventoryItem(
+                self.turn_manager.active_character().inventory.add_item(InventoryItem(
                     "key", hit.image.copy(), 0, False))
                 # ajouter à l'inventaire
 
-        collisionZoneEffect(self.turn_manager.active_characters(), self)
+        # collisionZoneEffect(self.turn_manager.active_character(), self)
+        self.versus_manager.update()
         self.turn_manager.update()
         self.doors.update()
         # if self.turn_manager.is_active_player():
-        self.camera.update(self.turn_manager.active_characters())
-        self.minimap.update(self.turn_manager.active_characters())
+        self.camera.update(self.turn_manager.active_character())
+        self.minimap.update(self.turn_manager.active_character())
         self.update_game_data()
 
     def update_game_data(self):
         if self.turn_manager.is_active_player():
             self.game_data["minimap"] = self.minimap.create_minimap_data()
             self.game_data["game_data"]["heros"][self.turn_manager.get_relative_turn()]["last_pos"] = {
-                "x": self.turn_manager.active_characters().pos.x, "y": self.turn_manager.active_characters().pos.y}
+                "x": self.turn_manager.active_character().pos.x, "y": self.turn_manager.active_character().pos.y}
 
     def draw(self):
         """Draw all"""
@@ -421,19 +426,20 @@ class Game(_State):
 
         self.screen.blit(
             self.minimap.create(
-                self.turn_manager.active_characters(), self.turn_manager.players),
+                self.turn_manager.active_character(), self.turn_manager.players),
             (WIDTH -
              self.minimap.width,
              HEIGHT -
              self.minimap.height))
 
-        self.draw_versus()
+        # self.draw_versus()
+        self.versus_manager.draw(self.screen)
 
         self.logs.draw(self.screen)
 
         super().transtition_active(self.screen)
 
-    def draw_versus(self):
-        """Draw the hud for the versus"""
-        if self.versus.active and self.player.numberOfAction > 0:
-            self.versus.draw(self.screen, self.player)
+    # def draw_versus(self):
+    #     """Draw the hud for the versus"""
+    #     if self.versus.active and self.turn_manager.numberOfAction > 0:
+    #         self.versus.draw(self.screen, self.player)
