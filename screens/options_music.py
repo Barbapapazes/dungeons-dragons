@@ -15,7 +15,7 @@ class Options_music(_Elements):
         self.name = OPTIONS_MUSIC
         self.next = None
         super(Options_music, self).__init__(self.name, self.next, 'options', 'background.jpg', self.create_buttons_dict())
-        self.create_back_button(self.background, self.load_next_state, [MENU])
+        self.create_back_button(self.background, self.load_next_state, [OPTIONS])
         self.startup(0, load_shortcuts())
 
     def create_buttons_dict(self):
@@ -60,13 +60,14 @@ class Options_music(_Elements):
 
     def normal_run(self):
         """Run the normal state"""
-        super().events_buttons()
+        super().events_buttons(back=True)
         self.draw()
 
     def draw(self):
         """Draw content"""
         super().draw_elements("Options")
         super().draw_subtitle("Musics & Sounds")
+        super().draw_buttons()
 
     @staticmethod
     def stop_window():
