@@ -44,6 +44,7 @@ class Game(_State):
 
         self.logs = Logs(0, 0, 300, 100, self.text_font, 16,  self.draw_text)
         self.turn_manager = TurnManager()
+        self.animated = pg.sprite.Group()
         self.versus_manager = VersusManager(self)
 
         self.states_dict = self.make_states_dict()

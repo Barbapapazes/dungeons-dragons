@@ -1,10 +1,12 @@
 """Used to create a animated sprite"""
 
+from collections import deque
+from random import randint
+from config.sprites import ASSETS_CIRCLE, ASSETS_FLAMES
+from pygame.image import get_sdl_image_version
+from config.sprites import ASSETS_FLAMES, ASSETS_BOOK_OPENING
 from config.window import HEIGHT, WIDTH
 import pygame as pg
-from config.sprites import ASSETS_FLAMES, ASSETS_BOOK_OPENING
-from random import randint
-from collections import deque
 
 default_fn = lambda *args: None
 
@@ -80,3 +82,33 @@ class Book(Animated):
         self.frames = tmp_frames
         self.frame_total = (len(frames) - 1) * self.frame_per_image
         self.frame_count = 0
+
+
+class Circle(Animated):
+    """Usedd to create an circle for player range"""
+
+    def __init__(self, game, x, y, width):
+        self.x = x
+        self.y = y
+        self.width = width
+
+        frame_per_image = 6
+        frames = list()
+
+        for frame in ASSETS_CIRCLE:
+            frame.set_colorkey((50, 50, 50))
+            frames.append(frame)
+        super(Circle, self).__init__(game, frame_per_image, frames)
+
+        self.rect.center = (self.x, self.y)
+
+    def set_pos(self, pos):
+        self.x = pos[0]
+        self.y = pos[1]
+        self.rect.center = pos
+
+    def set_width(self, width):
+        if self.width is not width:
+            self.width = width
+            for frame in self.frames:
+                pg.transform.scale(frame, (width, width))

@@ -3,6 +3,7 @@ from config.sprites import ITEMS
 from config.window import HEIGHT, TILESIZE
 import pygame as pg
 from logger import logger
+from sprites.animated import Circle
 
 
 class VersusManager:
@@ -14,6 +15,8 @@ class VersusManager:
 
         self.attack_btn = pg.Rect((0, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.action = None
+
+        self.circle = Circle(game, 0, 0, 0)
 
         self.active = False
 
@@ -33,10 +36,15 @@ class VersusManager:
             if not self.action:
                 if self.attack_btn.collidepoint(pos[0], pos[1]):
                     self.action = 'attack'
-                    self.logs.add_log("User will attack")
+                    self.logs.add_log("Attack is selected")
+                    self.logs.add_log("Select a enemy")
 
     def update(self):
-        pass
+        if self.active:
+            if self.action == "attack":
+                self.circle.set_pos(self.turn_manager.active_character().pos)
+                self.circle.set_width(400)
+                self.circle.update()
 
     def draw(self, screen):
         if self.active and self.turn_manager.is_active_player():
@@ -47,3 +55,9 @@ class VersusManager:
             else:
                 weapon_image = ITEMS["punch"]
             screen.blit(pg.transform.scale(weapon_image, (TILESIZE, TILESIZE)), self.attack_btn)
+
+            if self.action == 'attack':
+                self.draw_range(screen)
+
+    def draw_range(self, screen):
+        self.game.animated.draw(screen)
