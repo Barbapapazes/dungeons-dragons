@@ -39,6 +39,6 @@ if __name__ == '__main__':
         INTRODUCTION: Introduction()
         OPTIONS_MUSIC:Options_music(),
     }
-    W.setup_states(STATES, OPTIONS_MUSIC)
+    W.setup_states(STATES, MENU)
     W.main()
     W.quit()
