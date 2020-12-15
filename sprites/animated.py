@@ -1,12 +1,11 @@
 """Used to create a animated sprite"""
 
-from collections import deque
 from random import randint
-from config.sprites import ASSETS_CIRCLE, ASSETS_FLAMES
-from pygame.image import get_sdl_image_version
-from config.sprites import ASSETS_FLAMES, ASSETS_BOOK_OPENING
-from config.window import HEIGHT, WIDTH
+from collections import deque
 import pygame as pg
+from logger import logger
+from config.sprites import ASSETS_CIRCLE, ASSETS_FLAMES
+from config.sprites import ASSETS_FLAMES, ASSETS_BOOK_OPENING
 
 default_fn = lambda *args: None
 
@@ -103,12 +102,13 @@ class Circle(Animated):
         self.rect.center = (self.x, self.y)
 
     def set_pos(self, pos):
+        logger.debug(pos)
         self.x = pos[0]
         self.y = pos[1]
         self.rect.center = pos
 
     def set_width(self, width):
-        if self.width is not width:
+        if self.width != width:
             self.width = width
             for frame in self.frames:
                 pg.transform.scale(frame, (width, width))

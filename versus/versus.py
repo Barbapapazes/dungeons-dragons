@@ -28,13 +28,15 @@ class VersusManager:
 
     def finish_versus(self):
         self.active = False
+        self.remove_action()
         self.logs.add_log("Finish the versus")
 
     def remove_action(self):
         self.action = None
 
     def is_in_range(self, pos, _range):
-        dist = pos - self.turn_manager.active_character().pos
+        updated_pos = vec(pos) - vec(self.game.camera.camera.x, self.game.camera.camera.y)
+        dist = updated_pos - self.turn_manager.active_character().pos
         return dist.length_squared() < _range * _range
 
     def events(self, pos):
@@ -53,7 +55,7 @@ class VersusManager:
 
     def select_enemy(self, pos):
         if self.action == "attack":
-            if self.is_in_range(pos, 400):
+            if self.is_in_range(pos, 200): 
                 for enemy in self.turn_manager.enemies:
                     if enemy.rect.collidepoint(pos[0], pos[1]):
                         self.selected_enemy = enemy  # on se branle de le stocker, faut jsute le tuer, et il fatu ajouter la barrre de vie
@@ -85,4 +87,5 @@ class VersusManager:
                 self.draw_range(screen)
 
     def draw_range(self, screen):
-        self.game.animated.draw(screen)
+        for animated in self.game.animated:
+            screen.blit(animated.image, self.game.camera.apply(animated))
