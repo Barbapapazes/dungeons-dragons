@@ -55,7 +55,7 @@ class VersusManager:
 
     def select_enemy(self, pos):
         if self.action == "attack":
-            if self.is_in_range(pos, 200): 
+            if self.is_in_range(pos, 200):  # warning, c'est la moitier de la taille du cercle
                 for enemy in self.turn_manager.enemies:
                     if enemy.rect.collidepoint(pos[0], pos[1]):
                         self.selected_enemy = enemy  # on se branle de le stocker, faut jsute le tuer, et il fatu ajouter la barrre de vie
