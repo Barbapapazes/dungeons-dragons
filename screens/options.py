@@ -28,8 +28,6 @@ class Options(_Elements):
         self.states_dict = self.make_states_dict()
         
         
-        
-
     def create_buttons_dict(self):
         """Create the dict for all buttons"""
         return {
@@ -128,49 +126,6 @@ class Options(_Elements):
             self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
             self.btns = list()
             self.create_buttons(self.image_screen)
-        elif state =="music":
-            self.image_screen = self.image.copy()
-            self.btns_dict = self.create_music_buttons_dict()
-            self.apply=self.create_button(
-                    self.image_screen,
-                    WIDTH // 2 - WIDTH_BUTTON // 2,
-                    600,
-                    WIDTH_BUTTON,
-                    HEIGHT_BUTTON,
-                    "Apply",
-                    self.button_font,
-                    self.fontsize,
-                    MARGIN_BUTTON,
-                    RADIUS_BUTTON,
-                    BEIGE,
-                    YELLOW_LIGHT,
-                    GREEN_DARK,
-                    self.appliquer,
-                    [OPTIONS],
-                )
-            self.slider=self.create_slider(
-                    "Volume",
-                    "Volume",
-                    WIDTH // 2 - WIDTH_BUTTON // 2,
-                    500,
-                    400,
-                    20,
-                    self.image_screen,
-                    0,
-                    100,
-                    1,
-                    50,
-                    self.button_font,
-                    self.draw_text, BLACK, LIGHTGREY
-                )
-            self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
-            self.btns = list()
-            self.create_buttons(self.image_screen)
-
-            self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
-            self.btns = list()
-            self.create_buttons(self.image_screen)
-
         else:
             self.btns_dict = self.create_buttons_dict()
             self.create_buttons(self.background)

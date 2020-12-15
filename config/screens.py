@@ -17,6 +17,7 @@ CHARACTER_CREATION = "character_creation"
 OPTIONS = "options"
 NEW_GAME = "new_game"
 INTRODUCTION = "introduction"
+OPTIONS_MUSIC="options_music"
 
 # states
 TRANSITION_IN = 'transition in'
