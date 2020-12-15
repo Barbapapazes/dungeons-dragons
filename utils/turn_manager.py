@@ -11,7 +11,7 @@ class TurnManager:
 
     def __init__(self, turn_number=0):
         self.players = list()
-        self.enemy = list()
+        self.enemies = list()
 
         self.turn = turn_number
 
@@ -25,7 +25,7 @@ class TurnManager:
         Returns:
             list
         """
-        return self.players + self.enemy
+        return self.players + self.enemies
 
     def get_relative_turn(self):
         """Get the relative turn

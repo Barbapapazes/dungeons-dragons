@@ -4,6 +4,7 @@ from config.window import HEIGHT, TILESIZE
 import pygame as pg
 from logger import logger
 from sprites.animated import Circle
+vec = pg.Vector2
 
 
 class VersusManager:
@@ -15,6 +16,7 @@ class VersusManager:
 
         self.attack_btn = pg.Rect((0, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.action = None
+        self.selected_enemy = None
 
         self.circle = Circle(game, 0, 0, 0)
 
@@ -31,6 +33,11 @@ class VersusManager:
     def remove_action(self):
         self.action = None
 
+    def is_in_range(self, pos, _range):
+        dist = pos - self.turn_manager.active_character().pos
+        print(dist, dist.length_squared(), _range * _range)
+        return dist.length_squared() < _range * _range
+
     def select_action(self, pos):
         if self.active and self.turn_manager.is_active_player():
             if not self.action:
@@ -38,12 +45,26 @@ class VersusManager:
                     self.action = 'attack'
                     self.logs.add_log("Attack is selected")
                     self.logs.add_log("Select a enemy")
+                    self.circle.set_width(400)
+                    self.circle.set_pos(self.turn_manager.active_character().pos)
+
+    def select_enemy(self, pos):
+        if self.action == "attack":
+            if self.is_in_range(pos, 400):
+                for enemy in self.turn_manager.enemies:
+                    if enemy.rect.collidepoint(pos[0], pos[1]):
+                        self.selected_enemy = enemy
+                        self.remove_action()
+                        self.logs.add_log("Enemy selected")
+                        self.turn_manager.turn += 1
+                        # il faut lui enlever des points de vies et vois pour comment on le tue (faire comme dans kids can code)
+                        break
+            else:
+                logger.info("Select inside the range")
 
     def update(self):
         if self.active:
             if self.action == "attack":
-                self.circle.set_pos(self.turn_manager.active_character().pos)
-                self.circle.set_width(400)
                 self.circle.update()
 
     def draw(self, screen):

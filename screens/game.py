@@ -97,7 +97,7 @@ class Game(_State):
                     self.turn_manager.players.append(
                         Player(self, _x, _y, _class, _images))
             if tile_object.name == "enemy":
-                self.turn_manager.enemy.append(
+                self.turn_manager.enemies.append(
                     Enemy(self, obj_center.x, obj_center.y, "enemy_1", ASSETS_SPRITES["enemy_1"])
                 )
             if tile_object.name == 'wall':
@@ -216,7 +216,9 @@ class Game(_State):
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
+                # faire un fonction event pour le veruss qui regroupe tout ça
                 self.versus_manager.select_action(mouse_pos)
+                self.versus_manager.select_enemy(mouse_pos)
                 # if self.versus.active:
 
                 #     if Versus.is_clicked(self.versus.attack_btn, mouse_pos) and not self.versus.is_progress():
@@ -418,6 +420,7 @@ class Game(_State):
         # self.draw_grid(self.screen)
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         # self.all_sprites.draw(self.screen)
+        self.versus_manager.draw(self.screen)
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
@@ -434,7 +437,6 @@ class Game(_State):
              self.minimap.height))
 
         # self.draw_versus()
-        self.versus_manager.draw(self.screen)
 
         self.logs.draw(self.screen)
 
