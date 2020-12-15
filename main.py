@@ -37,8 +37,9 @@ if __name__ == '__main__':
         NEW_GAME: NewGame(),
         CHOOSE_MAP: ChooseMap(),
         INTRODUCTION: Introduction(),
+        INTRODUCTION: Introduction()
         OPTIONS_MUSIC:Options_music(),
     }
-    W.setup_states(STATES, MENU)
+    W.setup_states(STATES, OPTIONS_MUSIC)
     W.main()
     W.quit()
