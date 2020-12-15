@@ -17,6 +17,8 @@ from screens.options import Options
 from screens.shortcuts import Shortcuts
 from window import Window
 from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME
+from screens.options_music import Options_music
+from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME,OPTIONS_MUSIC
 from logger import logger
 
 if __name__ == '__main__':
@@ -34,7 +36,9 @@ if __name__ == '__main__':
         NEW_GAME: NewGame(),
         INTRODUCTION: Introduction(),
         CHOOSE_MAP: ChooseMap()
+        INTRODUCTION: Introduction()
+        OPTIONS_MUSIC:Options_music(),
     }
-    W.setup_states(STATES, MENU)
+    W.setup_states(STATES, OPTIONS_MUSIC)
     W.main()
     W.quit()
