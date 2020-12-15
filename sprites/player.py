@@ -17,7 +17,7 @@ class Player(Character):
     """Create a player"""
 
     def __init__(self, game, x, y, _type, images):
-        super(Player, self).__init__(game, x, y, _type, images)
+        super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
 
         self.numberOfAction = 0
 

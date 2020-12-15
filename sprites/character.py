@@ -9,7 +9,7 @@ vec = pg.Vector2
 
 class Character(pg.sprite.Sprite):
 
-    def __init__(self, game, x, y, _type, images):
+    def __init__(self, game, x, y, _type, images, hit_rect):
         self._layer = y
         self.groups = game.all_sprites,
         super(Character, self).__init__(self.groups)
@@ -19,7 +19,6 @@ class Character(pg.sprite.Sprite):
         self.images = images
 
         self.direction = "left"
-        self.last_direction = self.direction
 
         self.x = x
         self.y = y
@@ -30,23 +29,26 @@ class Character(pg.sprite.Sprite):
         self.image = next(self.images[self.direction])
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.hit_rect = PLAYER_HIT_RECT
+        self.hit_rect = hit_rect
         self.hit_rect.center = self.rect.center
 
         self.frame_time = 60 / 1000
         self.frame_timer = 0
 
     def update(self):
+        self.update_image()
+
+        self.pos += self.vel * self.game.dt
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+
+        self.update_collisions()
+
+    def update_image(self):
         self.frame_timer += self.game.dt
         if self.frame_timer >= self.frame_time:
             self.frame_timer -= self.frame_time
             self.image = next(self.images[self.direction])
-
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        self.pos += self.vel * self.game.dt
-
-        self.update_collisions()
 
     def update_collisions(self):
         """Manage the collisions"""

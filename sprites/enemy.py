@@ -9,19 +9,20 @@ from logger import logger
 from random import uniform
 vec = pg.Vector2
 
-SEEK_FORCE = 0.1
-APPROACH_RADIUS = 50
+SEEK_FORCE = 0.2
+APPROACH_RADIUS = 30
+MOB_HIT_RECT = pg.Rect(0, 0, 30, 30)
+SIZE = 8
 
 
 class Enemy(Character):
     def __init__(self, game, x, y, _type, images):
-        super(Enemy, self).__init__(game, x, y, _type, images)
+        super(Enemy, self).__init__(game, x, y, _type, images, MOB_HIT_RECT)
 
         self.pos = vec(x, y)
         self.vel = vec(1, 1).rotate(uniform(0, 360))
         self.acc = vec(0, 0)
-        self.speed = 2
-
+        self.speed = 3
         self.targets = game.turn_manager.players
         self.target = None
 
@@ -37,7 +38,10 @@ class Enemy(Character):
                 self.target = target
                 target_min_dist = target.pos - self.pos
 
-        if target_min_dist.length_squared() < 400 * 400:
+        if target_min_dist.length_squared() < 800 * 800:
+            # if self.evaluation():
+            #     self.flee(self.player_spotted.pos)
+            # else:
             if not self.goto:
                 self.goto = self.path_finding(self.target.pos)
                 if self.goto:
@@ -47,19 +51,21 @@ class Enemy(Character):
 
             # logger.debug(self.goto)
 
-            # for i in self.goto:
-            #     rect = pg.Rect(i.coor, (32, 32))
-            #     pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
+            for i in self.goto:
+                rect = pg.Rect(i.coor, (SIZE, SIZE))
+                pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
 
             if self.goto:
                 self.acc = self.seek(self.goto[0].coor)
-                if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
+                if self.goto[0].coor.x - SIZE <= self.pos.x <= self.goto[0].coor.x + SIZE and self.goto[0].coor.y - SIZE <= self.pos.y <= self.goto[0].coor.y + SIZE:
                     del self.goto[0]
             # logger.debug("enemy proche, utilisation du A* et avancement que de X case")
 
             self.vel += self.acc
             if self.vel.length() > self.speed:
                 self.vel.scale_to_length(self.speed)
+            self.get_direction()
+            self.update_image()
             self.pos += self.vel
             self.rect = self.image.get_rect()
             self.rect.center = self.pos
@@ -70,6 +76,16 @@ class Enemy(Character):
             # if self.vel.length() > self.speed:
             #     self.vel.scale_to_length(self.speed)
             # super().update()
+
+    def get_direction(self):
+        angle = self.vel.angle_to(vec(0, 1))
+        self.direction = "down"
+        if 180 - 45 <= angle < 180 + 45:
+            self.direction = "up"
+        if 90 - 45 <= angle < 90 + 45:
+            self.direction = "right"
+        if 270 - 45 <= angle < 270 + 45:
+            self.direction = "left"
 
     def seek(self, target):
         """moves self toward a given target following a curve trajectory from its position
@@ -101,7 +117,7 @@ class Enemy(Character):
         Returns:
             list : calls the function reconstruct_path to create the list of cells
         """
-        start = Cell(coor=self.pos+vec(16, 16))
+        start = Cell(coor=self.pos)
 
         open_set = [start]
         closed_set = []
