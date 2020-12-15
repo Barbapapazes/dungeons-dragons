@@ -5,6 +5,7 @@ DATA_MUSIC = {
     "current_playing":None,
     "piste":{
         "menu":"medieval_music.mp3",
-        "options":"test.wav"
+        "options":"test.wav",
+        "options_music":"test.wav",
             },
 }
