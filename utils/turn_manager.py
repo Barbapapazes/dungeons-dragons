@@ -55,5 +55,6 @@ class TurnManager:
         if self.is_active_player():
             self.active_characters().update()
         if self.is_active_enemy():
-            logger.debug("enemy")
+            self.active_characters().update()
+
             # mettre la logique de l'enemy ici
