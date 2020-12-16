@@ -194,17 +194,4 @@ class Player(Character):
         #         self.image = pg.transform.rotate(
         #             self.run_back_images[self.frame_count // 9], self.rot - 90)
 
-    def throwDice(self, Val, modificateur=0, valueOfDice=100):
-        """Throw of dice like D&D
-
-        Args:
-            Val (int): [characteristic use for test like STR or INT]
-            modificateur (int): [malus or bonus on your characteristic]. Defaults to 0.
-            valueOfDice (int): [value of dice]. Defaults to 100.
-
-        Returns:
-            [Boolean]: [Your reussit of test]
-        """
-        score = randint(0, valueOfDice)
-        logger.info("Your dice is %i / 100 and the succes is under %i", score, Val+modificateur)
-        return score <= Val + modificateur
+ 
