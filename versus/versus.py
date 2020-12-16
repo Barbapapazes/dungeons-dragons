@@ -21,6 +21,7 @@ class VersusManager:
         self.action = None
         self.last_player_pos = None
         self.selected_enemy = None
+        self.border_enemy = None
 
         self.circle = Circle(game, 0, 0, 0)
 
@@ -32,6 +33,7 @@ class VersusManager:
 
     def finish_versus(self):
         self.active = False
+        self.remove_last_player_pos()
         self.remove_action()
         self.logs.add_log("Finish the versus")
 
@@ -65,6 +67,12 @@ class VersusManager:
                     self.last_player_pos = vec(self.turn_manager.active_character().pos)
                     self.circle.set_width(800)
                     self.circle.set_pos(self.turn_manager.active_character().pos)
+            if self.action == 'attack':
+                if self.validate_btn.collidepoint(pos[0], pos[1]):
+                    self.remove_action()
+                    self.logs("Enemy attacked")
+                    self.selected_enemy.health -= 30
+                    self.add_turn()
             if self.action == 'move':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
                     self.remove_action()
@@ -77,10 +85,8 @@ class VersusManager:
                 for enemy in self.turn_manager.enemies:
                     if enemy.rect.collidepoint(pos[0], pos[1]):
                         self.selected_enemy = enemy  # on se branle de le stocker, faut jsute le tuer, et il fatu ajouter la barrre de vie mais on pourrait faire une touche valider et ça permettrait de surligner le personnage que l'on va attaquer
-                        self.remove_action()
                         self.logs.add_log("Enemy selected")
-                        enemy.health -= 30
-                        self.add_turn()
+
                         # il faut lui enlever des points de vies et vois pour comment on le tue (faire comme dans kids can code)
                         break
             else:
@@ -99,6 +105,26 @@ class VersusManager:
     def draw(self, screen):
         self.draw_range(screen)
         self.draw_btns(screen)
+        self.draw_enemy_border(screen)
+
+    def draw_enemy_border(self, screen):
+        if self.selected_enemy:
+            image = self.selected_enemy.image.copy()
+            image = image.convert_alpha()
+            self.create_border(image, RED_PIGMENT)
+            image = pg.transform.scale(image, (image.get_width() + 6, image.get_height() + 6))
+            rect = self.selected_enemy.rect.copy()
+            rect.centerx -= 3
+            rect.centery -= 3
+            screen.blit(image, rect)
+
+    def create_border(self, surface, color):
+        w, h = surface.get_size()
+        r, g, b = color
+        for x in range(w):
+            for y in range(h):
+                a = surface.get_at((x, y))[3]
+                surface.set_at((x, y), pg.Color(r, g, b, a))
 
     def draw_btns(self, screen):
         if self.active and self.turn_manager.is_active_player():
