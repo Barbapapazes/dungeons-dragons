@@ -19,7 +19,6 @@ from utils.shortcuts import key_for
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
-from config.store import ACTIONS
 from utils.turn_manager import TurnManager
 # from config.sprites import WEAPONS, ARMOR
 # from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON
@@ -333,7 +332,7 @@ class Game(_State):
                     self.turn_manager.active_character().inventory.move_item()
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
-                    if event.name == 'shop' and event.text in self.opened_chest.store.menu_data:
+                    if event.name == 'store' and event.text in self.opened_chest.store.menu_data:
                         self.opened_chest.store.check_slot(
                             event.text, self.screen, self.turn_manager.active_character(), self.mouse_pos)
                     self.inventory_events(event)

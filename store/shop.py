@@ -5,7 +5,7 @@ from logger import logger
 from store.store import Store
 from inventory.inventory import Consumable, EquipableSlot, InventorySlot, Equipable
 from utils.container import Container
-from config.store import ACTIONS
+from config.store import SHOP_ACTIONS, SHOP_MENU
 from config.inventory import ACTIONS as INVENTORY_ACTIONS
 
 
@@ -15,7 +15,7 @@ class Shop(Store):
     def __init__(self):
         """Create the shop
         """
-        super(Shop, self).__init__()
+        super(Shop, self).__init__(SHOP_MENU)
         # il va falloir adapter les actions et utiliser un flag
 
     def place_item(self, inventory):
@@ -46,17 +46,17 @@ class Shop(Store):
             if slot.item is not None:
                 if slot.rect.collidepoint(mouse_pos):
                     if slot.item:
-                        if action == ACTIONS['buy']:
+                        if action == SHOP_ACTIONS['buy']:
                             logger.info('%s bought', slot.item.name)
                             data = self.get_item(slot.item, player)
                             player.inventory.add_item(data)
-                        elif action == ACTIONS['buy_equip']:
+                        elif action == SHOP_ACTIONS['buy_equip']:
                             if isinstance(slot.item, Equipable):
                                 data = self.get_item(slot.item, player)
                                 player.inventory.equip_item(data)
                             else:
                                 logger.info('Action can not be done')
-                        elif action == ACTIONS['buy_use']:
+                        elif action == SHOP_ACTIONS['buy_use']:
                             if isinstance(slot.item, Consumable):
                                 data = self.get_item(slot.item, player)
                                 player.inventory.use_item(data)
@@ -73,7 +73,7 @@ class Shop(Store):
                             logger.info('%s sold', slot.item.name)
                             self.sell_item(slot.item, player)
                             slot.item = None
-                        elif action in list(ACTIONS['equip']) + list(ACTIONS['unequip'])+list(ACTIONS['use']):
+                        elif action in list(SHOP_ACTIONS['equip']) + list(SHOP_ACTIONS['unequip'])+list(SHOP_ACTIONS['use']):
                             player.inventory.check_slot(action, screen, mouse_pos)
                         else:
                             logger.info('Action can not be done')

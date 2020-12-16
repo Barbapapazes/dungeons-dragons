@@ -1,15 +1,23 @@
 """Settings for the store"""
 
 
-SHOP_TILESIZE = 48
-SHOP_SLOT_GAP = 2
+# store
+STORE_ACTIONS = {
+    "get": "get",
+    "get_equip": "get and equip",
+    "get_use": "get and use",
+}
+STORE_MENU = ["store"] + list(STORE_ACTIONS.values())
 
-SHOP_CATEGORIES = ['consumables', 'weapons', 'armor']
+STORE_TILESIZE = 48
+STORE_SLOT_GAP = 2
 
-ACTIONS = {
+STORE_CATEGORIES = ['consumables', 'weapons', 'armor']
+
+SHOP_ACTIONS = {
     "buy": "buy",
     "buy_equip": "buy and equip",
     "buy_use": "buy and use",
 }
 
-MENU_DATA = ["shop"] + list(ACTIONS.values())
+SHOP_MENU = ["shop"] + list(SHOP_ACTIONS.values())

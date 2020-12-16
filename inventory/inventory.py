@@ -294,7 +294,7 @@ class Inventory:
         """
         if isinstance(item, Equipable):
             logger.info("Unequip %s from inventory", item)
-            item.unequip()
+            item.unequip(self)
 
     def is_clicked(self, mouse_pos):
         """Check if the inventory is clicked"""

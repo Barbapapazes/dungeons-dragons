@@ -8,7 +8,7 @@ from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, Invent
 from utils.container import Container
 from config.window import HEIGHT, WIDTH
 from config.colors import WHITE
-from config.store import SHOP_TILESIZE, SHOP_SLOT_GAP, SHOP_CATEGORIES, ACTIONS, MENU_DATA
+from config.store import STORE_TILESIZE, STORE_SLOT_GAP, STORE_CATEGORIES, STORE_ACTIONS, STORE_MENU
 from config.sprites import CONSUMABLE, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
 from config.inventory import ACTIONS as INVENTORY_ACTIONS
 
@@ -16,7 +16,7 @@ from config.inventory import ACTIONS as INVENTORY_ACTIONS
 class Store:
     """Represent a store"""
 
-    def __init__(self):
+    def __init__(self, menu_data=STORE_MENU):
         """Create the store
         """
 
@@ -38,16 +38,16 @@ class Store:
         self.moving_item = None
         self.moving_item_slot = None
 
+        self.menu_data = menu_data
+
         self.create_all_slots()  # utiliser un randint avec un choix ensuite dans un dictionnaire d'items
         self.add_all_items()
 
         self.display_shop = False
 
-        self.menu_data = MENU_DATA
-
     def set_all_categories(self):
         """Used to define the different categories of items"""
-        for categorie in SHOP_CATEGORIES:
+        for categorie in STORE_CATEGORIES:
             self.categories.append(categorie)
 
     def get_all_slots(self):
@@ -74,21 +74,21 @@ class Store:
         step, min_x, max_x, min_y, max_y = self.create_slots(WEAPONS_COLS, WEAPONS_ROWS, 0)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
-                self.weapon_slots.append(StoreSlot(x, y, SHOP_TILESIZE, WHITE))
+                self.weapon_slots.append(StoreSlot(x, y, STORE_TILESIZE, WHITE))
 
     def create_armor_slots(self):
         """Create slots for the Armor category"""
         step, min_x, max_x, min_y, max_y = self.create_slots(ARMOR_COLS, ARMOR_ROWS, 100)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
-                self.armor_slots.append(StoreSlot(x, y, SHOP_TILESIZE, WHITE))
+                self.armor_slots.append(StoreSlot(x, y, STORE_TILESIZE, WHITE))
 
     def create_consumable_slots(self):
         """Create slots for the Consumable category"""
         step, min_x, max_x, min_y, max_y = self.create_slots(CONSUMABLE_COLS, CONSUMABLE_ROWS, 200)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
-                self.consumable_slots.append(StoreSlot(x, y, SHOP_TILESIZE, WHITE))
+                self.consumable_slots.append(StoreSlot(x, y, STORE_TILESIZE, WHITE))
 
     def add_all_items(self):
         """Add all items all category"""
@@ -215,51 +215,32 @@ class Store:
             screen (Surface)
             mouse_pos (tuple):
         """
+        print(action)
         for slot in self.get_all_slots():
             if slot.item is not None:
                 if slot.rect.collidepoint(mouse_pos):
                     if slot.item:
-                        if action == ACTIONS['buy']:
+                        if action == STORE_ACTIONS['get']:
                             logger.info('%s bought', slot.item.name)
                             data = self.get_item(slot.item)
+                            slot.item = None
                             player.inventory.add_item(data)
-                        elif action == ACTIONS['buy_equip']:
+                        elif action == STORE_ACTIONS['get_equip']:
                             if isinstance(slot.item, Equipable):
                                 data = self.get_item(slot.item)
+                                slot.item = None
                                 player.inventory.equip_item(data)
                             else:
                                 logger.info('Action can not be done')
-                        elif action == ACTIONS['buy_use']:
+                        elif action == STORE_ACTIONS['get_use']:
                             if isinstance(slot.item, Consumable):
                                 data = self.get_item(slot.item)
+                                slot.item = None
                                 player.inventory.use_item(data)
                             else:
                                 logger.info('Action can not be done')
                         else:
                             logger.info('Action can not be done')
-
-        for slot in player.inventory.get_all_slots():
-            if isinstance(slot, InventorySlot):
-                if slot.rect.collidepoint(mouse_pos):
-                    if slot.item:
-                        if action == INVENTORY_ACTIONS['sell']:
-                            logger.info('%s sold', slot.item.name)
-                            # self.sell_item(slot.item, player)
-                            slot.item = None
-                        elif action in list(ACTIONS['equip']) + list(ACTIONS['unequip'])+list(ACTIONS['use']):
-                            player.inventory.check_slot(action, screen, mouse_pos)
-                        else:
-                            logger.info('Action can not be done')
-            elif isinstance(slot, EquipableSlot):
-                if slot.rect.collidepoint(mouse_pos):
-                    if slot.item is not None:
-                        if action == INVENTORY_ACTIONS['sell']:
-                            logger.info('%s sold', slot.item.name)
-                            player.inventory.unequip_item(slot.item)
-                            # self.sell_item(slot.item, player)
-                            slot.item = None
-                    else:
-                        logger.info('Action can not be done')
 
     def get_item(self, item):
         """Buy an item
@@ -301,10 +282,10 @@ class Store:
         Returns:
             tuple: step, min_x, max_x, min_y, max_y
         """
-        step = SHOP_TILESIZE + SHOP_SLOT_GAP
-        min_x = WIDTH // 4 - (step * cols) // 2 + SHOP_SLOT_GAP
+        step = STORE_TILESIZE + STORE_SLOT_GAP
+        min_x = WIDTH // 4 - (step * cols) // 2 + STORE_SLOT_GAP
         max_x = WIDTH // 4 + (step * cols) // 2
-        min_y = HEIGHT // 3 - (step * rows) // 2 + SHOP_SLOT_GAP + offset_y
+        min_y = HEIGHT // 3 - (step * rows) // 2 + STORE_SLOT_GAP + offset_y
         max_y = HEIGHT // 3 + (step * rows) // 2 + offset_y
         return (step, min_x, max_x, min_y, max_y)
 
