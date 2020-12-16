@@ -5,7 +5,7 @@ from os import path
 import pygame as pg
 from logger import logger
 from config.sprites import ASSETS_CHEST
-from store.chest import ChestStore
+from store.store import Store
 
 
 class Chest(pg.sprite.Sprite):
@@ -29,7 +29,7 @@ class Chest(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
-        self.store = ChestStore()
+        self.store = Store()
 
         self.frame_count = 0
 

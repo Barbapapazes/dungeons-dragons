@@ -1,23 +1,23 @@
 """Used to create the chest store"""
 
 from os import path
-from utils.container import Container
+from copy import deepcopy
 import pygame as pg
 from logger import logger
+from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, InventorySlot, Equipable
+from utils.container import Container
 from config.window import HEIGHT, WIDTH
 from config.colors import WHITE
 from config.store import SHOP_TILESIZE, SHOP_SLOT_GAP, SHOP_CATEGORIES, ACTIONS, MENU_DATA
 from config.sprites import CONSUMABLE, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
-from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, InventorySlot, Equipable
 from config.inventory import ACTIONS as INVENTORY_ACTIONS
-from copy import deepcopy
 
 
-class ChestStore():
-    """Represent a shop"""
+class Store:
+    """Represent a store"""
 
     def __init__(self):
-        """Create the shop
+        """Create the store
         """
 
         game_folder = path.dirname('.')
@@ -38,7 +38,7 @@ class ChestStore():
         self.moving_item = None
         self.moving_item_slot = None
 
-        self.create_all_slots()
+        self.create_all_slots()  # utiliser un randint avec un choix ensuite dans un dictionnaire d'items
         self.add_all_items()
 
         self.display_shop = False
@@ -74,21 +74,21 @@ class ChestStore():
         step, min_x, max_x, min_y, max_y = self.create_slots(WEAPONS_COLS, WEAPONS_ROWS, 0)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
-                self.weapon_slots.append(ShopSlot(x, y, SHOP_TILESIZE, WHITE))
+                self.weapon_slots.append(StoreSlot(x, y, SHOP_TILESIZE, WHITE))
 
     def create_armor_slots(self):
         """Create slots for the Armor category"""
         step, min_x, max_x, min_y, max_y = self.create_slots(ARMOR_COLS, ARMOR_ROWS, 100)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
-                self.armor_slots.append(ShopSlot(x, y, SHOP_TILESIZE, WHITE))
+                self.armor_slots.append(StoreSlot(x, y, SHOP_TILESIZE, WHITE))
 
     def create_consumable_slots(self):
         """Create slots for the Consumable category"""
         step, min_x, max_x, min_y, max_y = self.create_slots(CONSUMABLE_COLS, CONSUMABLE_ROWS, 200)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
-                self.consumable_slots.append(ShopSlot(x, y, SHOP_TILESIZE, WHITE))
+                self.consumable_slots.append(StoreSlot(x, y, SHOP_TILESIZE, WHITE))
 
     def add_all_items(self):
         """Add all items all category"""
@@ -100,7 +100,7 @@ class ChestStore():
         """Add all items to the weapon category
         """
         self.weapons = list()
-        for key, value in WEAPONS.items():
+        for key, value in WEAPONS.items():  # il va falloir utiliser des variables pour que l'implémentation soit smart
             data = Weapon(
                 key,
                 value['image'],
@@ -200,16 +200,12 @@ class ChestStore():
         data = None
 
         if self.moving_item is not None:
-            data = self.get_item(self.moving_item, inventory.player)
+            data = self.get_item(self.moving_item)
             inventory.place_item(data)
             self.moving_item_slot.item = None
             self.moving_item.is_moving = False
             self.moving_item = None
             self.moving_item_slot = None
-        else:
-            pass
-        # if inventory.find_item(data) == None and data:
-        #     inventory.player.gold += data.price
 
     def check_slot(self, action, screen, player, mouse_pos):
         """Execute a passed action if it's possible
@@ -225,17 +221,17 @@ class ChestStore():
                     if slot.item:
                         if action == ACTIONS['buy']:
                             logger.info('%s bought', slot.item.name)
-                            data = self.get_item(slot.item, player)
+                            data = self.get_item(slot.item)
                             player.inventory.add_item(data)
                         elif action == ACTIONS['buy_equip']:
                             if isinstance(slot.item, Equipable):
-                                data = self.get_item(slot.item, player)
+                                data = self.get_item(slot.item)
                                 player.inventory.equip_item(data)
                             else:
                                 logger.info('Action can not be done')
                         elif action == ACTIONS['buy_use']:
                             if isinstance(slot.item, Consumable):
-                                data = self.get_item(slot.item, player)
+                                data = self.get_item(slot.item)
                                 player.inventory.use_item(data)
                             else:
                                 logger.info('Action can not be done')
@@ -265,32 +261,19 @@ class ChestStore():
                     else:
                         logger.info('Action can not be done')
 
-    def get_item(self, item, player):
+    def get_item(self, item):
         """Buy an item
 
         Args:
             item (Item)
-            player (Player)
         """
-        # player.gold -= item.price
         logger.info("Get %s from store", item)
         data = deepcopy(item)
         return data
 
-    # def sell_item(self, item, player):
-    #     """Sell an item
-
-    #     Args:
-    #         item (Item)
-    #         player (Player)
-    #     """
-    #     if item is not None:
-    #         logger.info("Sell %s", item)
-    #         player.gold += item.price
-
     def find_item(self, item):
         """Find the slot in which a passed item is contained,
-            None if no slot contains thi sitem
+            None if no slot contains this item
 
         Args:
             item(Item)
@@ -326,7 +309,7 @@ class ChestStore():
         return (step, min_x, max_x, min_y, max_y)
 
 
-class ShopSlot(Container):
+class StoreSlot(Container):
     """A slot from the shop"""
 
     def draw_items(self, screen):

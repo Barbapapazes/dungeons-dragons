@@ -1,4 +1,4 @@
-"""Settings dor shop"""
+"""Settings for the store"""
 
 
 SHOP_TILESIZE = 48

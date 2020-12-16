@@ -136,7 +136,7 @@ class Inventory:
                 self.moving_item_slot = slot
                 break
 
-    def place_item(self, shop_item=None):
+    def place_item(self, shop_item=None, from_shop=False):
         """Place a item
 
         Args:
@@ -183,7 +183,7 @@ class Inventory:
                         self.outside = False
                         break
 
-        if self.outside and shop_item:
+        if self.outside and shop_item and not from_shop:
             PlacableItem(
                 self.player.game, vec(self.player.pos) +
                 vec(randint(self.player.hit_rect.width + 50, self.player.hit_rect.width + 100),
