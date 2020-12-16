@@ -10,7 +10,7 @@ from logger import logger
 from components.cursor import Cursor
 from data.game_data import create_game_data
 from config.window import WIDTH, HEIGHT
-from config.screens import CHARACTER_CREATION, GAME, MENU, TRANSITION_OUT
+from config.screens import CHARACTER_CREATION, INTRODUCTION, MENU, TRANSITION_OUT
 from config.colors import LIGHTGREY, YELLOW_LIGHT, BLACK, BEIGE, GREEN_DARK, WHITE
 from config.sprites import WIDTH_CHARACTER, HEIGHT_CHARACTER, USABLE_POINTS
 from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
@@ -21,7 +21,7 @@ class CharacterCreation(_Elements):
 
     def __init__(self):
         self.name = CHARACTER_CREATION
-        self.next = GAME
+        self.next = INTRODUCTION
         super(CharacterCreation, self).__init__(self.name, self.next, "character_creation", "background.jpg", {})
 
         # Background image
@@ -499,7 +499,7 @@ class CharacterCreation(_Elements):
         else:
             self.register_hero()
             self.update_file_name()
-            self.next = GAME
+            self.next = INTRODUCTION
             super().set_state(TRANSITION_OUT)
             logger.info("Start a new game")
 
