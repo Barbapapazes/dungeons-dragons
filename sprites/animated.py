@@ -110,5 +110,10 @@ class Circle(Animated):
     def set_width(self, width):
         if self.width != width:
             self.width = width
+            tmp_frames = list()
             for frame in self.frames:
-                pg.transform.scale(frame, (width, width))
+                frame = pg.transform.scale(frame, (width, width))
+                frame.set_colorkey((50, 50, 50))
+                tmp_frames.append(frame)
+            self.frames = tmp_frames
+            self.rect = self.frames[0].get_rect()
