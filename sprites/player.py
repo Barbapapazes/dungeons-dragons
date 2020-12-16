@@ -21,6 +21,7 @@ class Player(Character):
 
         self.numberOfAction = 0
 
+        self.can_move = True
         # Stats
         self.HP = 100
         self.max_HP = PLAYER_MAX_HP
@@ -51,20 +52,21 @@ class Player(Character):
         self.vel = vec(0, 0)
         keys = pg.key.get_pressed()
         self.direction = "idle"
-        if keys[self.game.game_data["shortcuts"]["player"]["left"]["keys"][2]]:
-            self.direction = "left"
-            self.vel.x = -PLAYER_SPEED
-        if keys[self.game.game_data["shortcuts"]["player"]["right"]["keys"][2]]:
-            self.direction = "right"
-            self.vel.x = PLAYER_SPEED
-        if keys[self.game.game_data["shortcuts"]["player"]["up"]["keys"][2]]:
-            self.direction = "up"
-            self.vel.y = -PLAYER_SPEED
-        if keys[self.game.game_data["shortcuts"]["player"]["down"]["keys"][2]]:
-            self.direction = "down"
-            self.vel.y = PLAYER_SPEED
-        if self.vel.x != 0 and self.vel.y != 0:
-            self.vel *= 0.7071
+        if self.can_move:
+            if keys[self.game.game_data["shortcuts"]["player"]["left"]["keys"][2]]:
+                self.direction = "left"
+                self.vel.x = -PLAYER_SPEED
+            if keys[self.game.game_data["shortcuts"]["player"]["right"]["keys"][2]]:
+                self.direction = "right"
+                self.vel.x = PLAYER_SPEED
+            if keys[self.game.game_data["shortcuts"]["player"]["up"]["keys"][2]]:
+                self.direction = "up"
+                self.vel.y = -PLAYER_SPEED
+            if keys[self.game.game_data["shortcuts"]["player"]["down"]["keys"][2]]:
+                self.direction = "down"
+                self.vel.y = PLAYER_SPEED
+            if self.vel.x != 0 and self.vel.y != 0:
+                self.vel *= 0.7071
 
     def addMP(self, MP_gain):
         """Add passed HP_gain to the player's mana

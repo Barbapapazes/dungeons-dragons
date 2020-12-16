@@ -29,10 +29,12 @@ class VersusManager:
 
     def start_versus(self):
         self.active = True
+        self.set_move_player(False)
         self.logs.add_log("Start the versus")
 
     def finish_versus(self):
         self.active = False
+        self.set_move_player(True)
         self.remove_selected_enemy()
         self.remove_last_player_pos()
         self.remove_action()
@@ -57,6 +59,9 @@ class VersusManager:
         self.select_action(pos)
         self.select_enemy(pos)
 
+    def set_move_player(self, _bool):
+        self.turn_manager.active_character().can_move = _bool
+
     def select_action(self, pos):
         if self.active and self.turn_manager.is_active_player():
             if not self.action:
@@ -66,12 +71,14 @@ class VersusManager:
                     self.logs.add_log("Select a enemy")
                     self.circle.set_width(400)
                     self.circle.set_pos(self.turn_manager.active_character().pos)
+                    self.set_move_player(False)
                 if self.move_btn.collidepoint(pos[0], pos[1]):
                     self.action = 'move'
                     self.logs.add_log("Move your hero")
                     self.last_player_pos = vec(self.turn_manager.active_character().pos)
                     self.circle.set_width(800)
                     self.circle.set_pos(self.turn_manager.active_character().pos)
+                    self.set_move_player(True)
             if self.action == 'attack':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
                     self.remove_action()
@@ -91,10 +98,8 @@ class VersusManager:
                     _x = pos[0] - self.game.camera.camera.x
                     _y = pos[1] - self.game.camera.camera.y
                     if enemy.rect.collidepoint(_x, _y):
-                        self.selected_enemy = enemy  # on se branle de le stocker, faut jsute le tuer, et il fatu ajouter la barrre de vie mais on pourrait faire une touche valider et ça permettrait de surligner le personnage que l'on va attaquer
+                        self.selected_enemy = enemy
                         self.logs.add_log("Enemy selected")
-
-                        # il faut lui enlever des points de vies et vois pour comment on le tue (faire comme dans kids can code)
                         break
             else:
                 logger.info("Select inside the range")
