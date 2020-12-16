@@ -5,6 +5,7 @@ from os import path
 import pygame as pg
 from logger import logger
 from config.sprites import ASSETS_CHEST
+from store.chest import ChestStore
 
 
 class Chest(pg.sprite.Sprite):
@@ -28,6 +29,8 @@ class Chest(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
+        self.store = ChestStore()
+
         self.frame_count = 0
 
     def update(self):
@@ -46,6 +49,8 @@ class Chest(pg.sprite.Sprite):
                 if slot.item and slot.item.name == "key":
                     logger.info("Open a chest")
                     player.inventory.slots.remove(slot)
+                    self.game.chest_open = True
+                    self.game.opened_chest = self
                     self.is_open = True
                     break
             logger.info("You need a key to open the chest")

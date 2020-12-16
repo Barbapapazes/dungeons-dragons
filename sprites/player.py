@@ -9,7 +9,7 @@ from config.sprites import ASSETS_SPRITES, PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYE
 from inventory.inventory import Inventory
 from utils.tilemap import collide_with_walls
 from os import path
-from shop.shop import Shop
+from store.shop import Shop
 vec = pg.math.Vector2
 
 
@@ -198,5 +198,3 @@ class Player(Character):
         #     if 45 < self.rot <= 135:
         #         self.image = pg.transform.rotate(
         #             self.run_back_images[self.frame_count // 9], self.rot - 90)
-
- 

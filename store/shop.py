@@ -6,7 +6,7 @@ import pygame as pg
 from logger import logger
 from config.window import HEIGHT, WIDTH
 from config.colors import WHITE
-from config.shop import SHOP_TILESIZE, SHOP_SLOT_GAP, SHOP_CATEGORIES, ACTIONS, MENU_DATA
+from config.store import SHOP_TILESIZE, SHOP_SLOT_GAP, SHOP_CATEGORIES, ACTIONS, MENU_DATA
 from config.sprites import CONSUMABLE, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
 from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, InventorySlot, Equipable
 from config.inventory import ACTIONS as INVENTORY_ACTIONS

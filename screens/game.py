@@ -3,7 +3,6 @@
 from sprites.chest import Chest
 from inventory.inventory import Consumable
 from config.sprites import ASSETS_SPRITES, ITEMS
-from math import sqrt
 from os import path
 from sprites.item import PlacableItem
 from inventory.items import Item as InventoryItem
@@ -20,7 +19,7 @@ from utils.shortcuts import key_for
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
-from config.shop import ACTIONS
+from config.store import ACTIONS
 from utils.turn_manager import TurnManager
 # from config.sprites import WEAPONS, ARMOR
 # from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON
@@ -50,6 +49,8 @@ class Game(_State):
         self.versus_manager = VersusManager(self)
 
         self.press_space = False
+        self.chest_open = False
+        self.opened_chest = None
 
         self.states_dict = self.make_states_dict()
 
@@ -173,7 +174,8 @@ class Game(_State):
                        'normal': self.normal_run,
                        'menu': self.menu_run,
                        'inventory': self.inventory_run,
-                       'shop': self.shop_run
+                       'shop': self.shop_run,
+                       'chest': self.chest_run
                        }
 
         return states_dict
@@ -289,7 +291,7 @@ class Game(_State):
 
     def events_shop(self, event):
         """When the shop state is running"""
-        if self.state == 'shop':
+        if self.state == 'shop':  # faudrait foutre tout ça dans une fonction du shop et de l'inventaire
             if event.type == pg.MOUSEBUTTONUP:
                 if event.button == 3:
                     self.mouse_pos = pg.mouse.get_pos()
@@ -329,6 +331,11 @@ class Game(_State):
             self.turn_manager.active_character().shop.display_shop = True
             self.turn_manager.active_character().inventory.display_inventory = True
             super().toggle_sub_state('shop')
+        # if event.key == pg.K_c:
+        #     logger.info("Toggle the chest")
+        #     self.turn_manager.active_character().shop.display_shop = True
+        #     self.turn_manager.active_character().inventory.display_inventory = True
+        #     super().toggle_sub_state('chest')
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -382,6 +389,14 @@ class Game(_State):
         self.screen.blit(self.dim_screen, (0, 0))
         self.turn_manager.active_character().inventory.draw(self.screen)
         self.turn_manager.active_character().shop.draw(self.screen)
+
+    def chest_run(self):
+        self.draw()
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.screen.blit(self.dim_screen, (0, 0))
+        self.turn_manager.active_character().inventory.draw(self.screen)
+        self.opened_chest.store.draw(self.screen)
 
     # def versus_action(self):
 
@@ -437,6 +452,14 @@ class Game(_State):
         self.camera.update(self.turn_manager.active_character())
         self.minimap.update(self.turn_manager.active_character())
         self.update_game_data()
+        self.check_for_chest()
+
+    def check_for_chest(self):
+        if self.chest_open:
+            self.chest_open = False
+            self.opened_chest.store.display_shop = True
+            self.turn_manager.active_character().inventory.display_inventory = True
+            super().toggle_sub_state('chest')
 
     def update_game_data(self):
         if self.turn_manager.is_active_player():
