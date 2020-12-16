@@ -33,9 +33,14 @@ class VersusManager:
 
     def finish_versus(self):
         self.active = False
+        self.remove_selected_enemy()
         self.remove_last_player_pos()
         self.remove_action()
         self.logs.add_log("Finish the versus")
+
+    def remove_selected_enemy(self):
+        self.selected_enemy = None
+        self.border_enemy = None
 
     def remove_action(self):
         self.action = None
@@ -70,7 +75,7 @@ class VersusManager:
             if self.action == 'attack':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
                     self.remove_action()
-                    self.logs("Enemy attacked")
+                    self.logs.add_log("Enemy attacked")
                     self.selected_enemy.health -= 30
                     self.add_turn()
             if self.action == 'move':
@@ -83,7 +88,9 @@ class VersusManager:
         if self.action == "attack":
             if self.is_in_range(pos, 200):  # warning, c'est la moitier de la taille du cercle
                 for enemy in self.turn_manager.enemies:
-                    if enemy.rect.collidepoint(pos[0], pos[1]):
+                    _x = pos[0] - self.game.camera.camera.x
+                    _y = pos[1] - self.game.camera.camera.y
+                    if enemy.rect.collidepoint(_x, _y):
                         self.selected_enemy = enemy  # on se branle de le stocker, faut jsute le tuer, et il fatu ajouter la barrre de vie mais on pourrait faire une touche valider et ça permettrait de surligner le personnage que l'on va attaquer
                         self.logs.add_log("Enemy selected")
 
@@ -116,7 +123,7 @@ class VersusManager:
             rect = self.selected_enemy.rect.copy()
             rect.centerx -= 3
             rect.centery -= 3
-            screen.blit(image, rect)
+            screen.blit(image, self.game.camera.apply_rect(rect))
 
     def create_border(self, surface, color):
         w, h = surface.get_size()
@@ -152,5 +159,7 @@ class VersusManager:
                 screen.blit(animated.image, self.game.camera.apply(animated))
 
     def add_turn(self):
+        self.selected_enemy = None
+        self.border_enemy = None
         self.logs.add_log("Next turn")
         self.turn_manager.add_turn()
