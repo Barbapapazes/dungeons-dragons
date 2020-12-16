@@ -1,6 +1,6 @@
 """Define a door"""
 
-from os import close, path
+from os import path
 import pygame as pg
 from config.sprites import ASSETS_DOOR
 from config.window import TILESIZE

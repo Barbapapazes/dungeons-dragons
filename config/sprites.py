@@ -147,6 +147,10 @@ ASSETS_DOOR = [pg.transform.scale(
     pg.image.load(path.join(sprites_folder, "door", "opening", f"{i}.png")),
     (TILESIZE, TILESIZE)) for i in range(14)]
 
+ASSETS_CHEST = [pg.transform.scale(
+    pg.image.load(path.join(sprites_folder, "chest", f"{i}.png")),
+    (TILESIZE, TILESIZE)) for i in range(8)]
+
 ASSETS_FLAMES = [pg.image.load(path.join(sprites_folder, "flames", f"{i}.png"))
                  for i in range(6)]
 

@@ -1,5 +1,6 @@
 """Game screen"""
 
+from sprites.chest import Chest
 from inventory.inventory import Consumable
 from config.sprites import ASSETS_SPRITES, ITEMS
 from math import sqrt
@@ -48,6 +49,8 @@ class Game(_State):
         self.animated = pg.sprite.Group()
         self.versus_manager = VersusManager(self)
 
+        self.press_space = False
+
         self.states_dict = self.make_states_dict()
 
     def startup(self, dt, game_data):
@@ -56,6 +59,7 @@ class Game(_State):
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
         self.doors = pg.sprite.Group()
+        self.chests = pg.sprite.Group()
         self.items = pg.sprite.Group()
         self.zoneEffect = pg.sprite.Group()
 
@@ -122,6 +126,14 @@ class Game(_State):
                 PlacableItem(self, obj_center, tile_object.name, ITEMS["key_02c"])
             if tile_object.name == "potion_health_medium":
                 PlacableItem(self, obj_center, tile_object.name, ITEMS["potion_02b"])
+            if tile_object.name == "chest":
+                Chest(self, obj_center.x, obj_center.y)
+                Obstacle(
+                    self,
+                    tile_object.x,
+                    tile_object.y,
+                    tile_object.width,
+                    tile_object.height)
 
         # Temporaire
         # think how this will be used with the menu
@@ -167,6 +179,7 @@ class Game(_State):
         return states_dict
 
     def get_events(self, event):
+        self.press_space = False
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_LEFT:
                 self.next = MENU
@@ -179,6 +192,8 @@ class Game(_State):
             self.toggle_states(event)
             if event.key == pg.K_t:
                 self.turn_manager.add_turn()
+            if event.key == pg.K_SPACE:
+                self.press_space = True
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
@@ -396,12 +411,17 @@ class Game(_State):
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.doors, False)
         for hit in hits:
             hit.try_open(self.turn_manager.active_character())
+        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.chests, False)
+        if self.press_space:
+            for hit in hits:
+                hit.try_open(self.turn_manager.active_character())
+            self.press_space = False
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.items, False)
         for hit in hits:
-            # if hit.:
-            #     hit.kill()
-            #     self.turn_manager.active_character().inventory.add_item(InventoryItem(
-            #         "key", hit.image.copy(), 0, False))
+            if hit.name == "silver_key_small":
+                hit.kill()
+                self.turn_manager.active_character().inventory.add_item(InventoryItem(
+                    "key", hit.image.copy(), 0, False))
             if hit.name == 'potion_health_medium':
                 hit.kill()
                 self.turn_manager.active_character().inventory.add_item(Consumable(
@@ -412,6 +432,7 @@ class Game(_State):
         self.versus_manager.update()
         self.turn_manager.update()
         self.doors.update()
+        self.chests.update()
         # if self.turn_manager.is_active_player():
         self.camera.update(self.turn_manager.active_character())
         self.minimap.update(self.turn_manager.active_character())
