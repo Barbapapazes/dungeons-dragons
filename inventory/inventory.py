@@ -1,6 +1,7 @@
 """Inventory"""
 
 from random import randint
+from sprites.item import PlacableItem
 import pygame as pg
 from logger import logger
 from utils.container import Container
@@ -8,6 +9,7 @@ from inventory.items import Item
 from config.window import HEIGHT, WIDTH, TILESIZE
 from config.colors import WHITE, GOLD, BLUE_SKY, PINK
 from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP, SORT_SLOTS
+vec = pg.Vector2
 
 
 class Inventory:
@@ -190,6 +192,12 @@ class Inventory:
         for slot in self.get_all_slots():
             if action == ACTIONS['throw']:
                 if slot.rect.collidepoint(mouse_pos):
+                    logger.info(self.player)
+                    PlacableItem(
+                        self.player.game, vec(self.player.pos) +
+                        vec(randint(self.player.hit_rect.width + 50, self.player.hit_rect.width + 100),
+                            0).rotate(randint(0, 360)),
+                        slot.item.name, slot.item.image.copy())
                     self.remove_item(slot.item)
             if isinstance(slot, InventorySlot):
                 if slot.rect.collidepoint(mouse_pos):
@@ -253,7 +261,7 @@ class Inventory:
         """
         if isinstance(item, Consumable):
             logger.info("Use %s from inventory", item)
-            item.use(self.player)
+            item.use(self, self.player)
 
     def equip_item(self, item):
         """Equip a passed item if it's an Equipable

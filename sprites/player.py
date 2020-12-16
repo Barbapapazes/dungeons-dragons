@@ -16,12 +16,18 @@ vec = pg.math.Vector2
 class Player(Character):
     """Create a player"""
 
-    def __init__(self, game, x, y, _type, images):
+    def __init__(self, game, x, y, _type, characteristics, images):
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
+        self.can_move = True
+
+        self.characteristics = characteristics
+
+        self.health = PLAYER_MAX_HP
+        self.xp = 0
+        self.gold = 100
 
         self.numberOfAction = 0
 
-        self.can_move = True
         # Stats
         self.HP = 100
         self.max_HP = PLAYER_MAX_HP
@@ -36,8 +42,6 @@ class Player(Character):
         self.INT = 10  # intelligence
         self.WIS = 10  # lucky
         self.CHA = 60  # charisme
-
-        self.gold = 100
 
         # Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
@@ -68,57 +72,13 @@ class Player(Character):
             if self.vel.x != 0 and self.vel.y != 0:
                 self.vel *= 0.7071
 
-    def addMP(self, MP_gain):
-        """Add passed HP_gain to the player's mana
-
-        Args:
-            HP_gain (int)
-        """
-        self.MP += MP_gain
-        if self.MP > self.max_MP:
-            self.MP = self.max_MP
-
-    def subMP(self, MP_lose):
-        """Sub passed MP_lose to the player's mana
-
-        Args:
-            MP_lose (int)
-        """
-        self.MP -= MP_lose
-        if self.MP < 0:
-            self.MP = 0
-
-    def addHp(self, hp_gain):
-        """Add passed hp_gain to the player's health
-
-        Args:
-            hp_gain (int)
-        """
-        self.HP += hp_gain
-        if self.HP > self.max_HP:
-            self.HP = self.max_HP
-
-    def subHp(self, hp_lose):
-        """Sub passed hp_lose to the player's health
-
-        Args:
-            hp_lose (int)
-        """
-        self.HP -= hp_lose
-        if self.HP < 0:
-            self.HP = 0
-
-    def addShield(self, shield_gain):
-        """Add passed shield_gain to the player's shield
-
-        Args:
-            shield_gain (int)
-        """
-        self.shield += shield_gain
+    def update(self):
+        self.get_keys()
+        super().update()
 
     def equip_armor(self, item):
         """Equip a passed armor item in the right armor slot,
-        if an item is already in the needed armor slot, it will be unequiped
+        if an item is already in the needed armor slot, it will be unequipped
 
         Args:
             item (Armor)
@@ -154,6 +114,55 @@ class Player(Character):
         if self.weapon is not None:
             self.weapon = None
 
+    def addHp(self, hp_gain):
+        """Add passed hp_gain to the player's health
+
+        Args:
+            hp_gain (int)
+        """
+        self.HP += hp_gain
+        logger.debug(hp_gain)
+        if self.HP > self.max_HP:
+            self.HP = self.max_HP
+
+    def subHp(self, hp_lose):
+        """Sub passed hp_lose to the player's health
+
+        Args:
+            hp_lose (int)
+        """
+        self.HP -= hp_lose
+        if self.HP < 0:
+            self.HP = 0
+
+    def addMP(self, MP_gain):
+        """Add passed HP_gain to the player's mana
+
+        Args:
+            HP_gain (int)
+        """
+        self.MP += MP_gain
+        if self.MP > self.max_MP:
+            self.MP = self.max_MP
+
+    def subMP(self, MP_lose):
+        """Sub passed MP_lose to the player's mana
+
+        Args:
+            MP_lose (int)
+        """
+        self.MP -= MP_lose
+        if self.MP < 0:
+            self.MP = 0
+
+    def addShield(self, shield_gain):
+        """Add passed shield_gain to the player's shield
+
+        Args:
+            shield_gain (int)
+        """
+        self.shield += shield_gain
+
     def equip_sort(self, sort):
         """Put a passed sort in the sort slot
 
@@ -169,10 +178,6 @@ class Player(Character):
         """
         if self.sort is not None:
             self.sort = None
-
-    def update(self):
-        self.get_keys()
-        super().update()
 
         # self.frame_count += 1
         # if self.frame_count >= 27:

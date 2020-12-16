@@ -12,9 +12,9 @@ class Item:
             price (Number)
             weight (Number)
         """
-        print(type(image), name)
         self.name = name
         self.image = image
+        self.rect = self.image.get_rect()
         self.price = price
         self.weight = weight
         self.is_moving = False

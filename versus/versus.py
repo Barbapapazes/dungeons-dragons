@@ -110,7 +110,6 @@ class VersusManager:
                 self.circle.update()
             if self.action == "move":
                 dist = self.last_player_pos - self.turn_manager.active_character().pos
-                print(dist)
                 if dist.length_squared() > 370 * 370:
                     self.turn_manager.active_character().pos -= self.turn_manager.active_character().vel * self.game.dt
 

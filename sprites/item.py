@@ -1,6 +1,6 @@
 """Define a placable item"""
 
-from config.sprites import ITEMS, BOB_RANGE, BOB_SPEED
+from config.sprites import BOB_RANGE, BOB_SPEED
 import pygame as pg
 import pytweening as tween
 
@@ -8,13 +8,13 @@ import pytweening as tween
 class PlacableItem(pg.sprite.Sprite):
     """Create a Placable item"""
 
-    def __init__(self, game, pos, _type):
+    def __init__(self, game, pos, name, image):  # ajouter un nom et image (surface)
         self._layer = 1
         self.groups = game.all_sprites, game.items
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.image = pg.transform.scale(ITEMS[_type], (32, 32))
+        self.image = pg.transform.scale(image, (32, 32))
         self.rect = self.image.get_rect()
-        self.type = _type
+        self.name = name
         self.pos = pos
         self.rect.center = pos
         self.tween = tween.easeInOutSine

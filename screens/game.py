@@ -1,6 +1,7 @@
 """Game screen"""
 
-from config.sprites import ASSETS_SPRITES
+from inventory.inventory import Consumable
+from config.sprites import ASSETS_SPRITES, ITEMS
 from math import sqrt
 from os import path
 from sprites.item import PlacableItem
@@ -93,9 +94,11 @@ class Game(_State):
                         len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
                         len(self.turn_manager.players)]["last_pos"]["y"]
                     _class = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["class"]
+                    _characteristics = self.game_data["game_data"]["heros"][
+                        len(self.turn_manager.players)]["characteristics"]
                     _images = ASSETS_SPRITES[_class]
                     self.turn_manager.players.append(
-                        Player(self, _x, _y, _class, _images))
+                        Player(self, _x, _y, _class, _characteristics, _images))
             if tile_object.name == "enemy":
                 self.turn_manager.enemies.append(
                     Enemy(self, obj_center.x, obj_center.y, "enemy_1", ASSETS_SPRITES["enemy_1"])
@@ -115,8 +118,10 @@ class Game(_State):
                     tile_object.width,
                     tile_object.height)
                 Door(self, obj_center.x, obj_center.y, wall)
-            if tile_object.name == "key":
-                PlacableItem(self, obj_center, "key_02c")
+            if tile_object.name == "silver_key_small":
+                PlacableItem(self, obj_center, tile_object.name, ITEMS["key_02c"])
+            if tile_object.name == "potion_health_medium":
+                PlacableItem(self, obj_center, tile_object.name, ITEMS["potion_02b"])
 
         # Temporaire
         # think how this will be used with the menu
@@ -363,21 +368,21 @@ class Game(_State):
         self.turn_manager.active_character().inventory.draw(self.screen)
         self.turn_manager.active_character().shop.draw(self.screen)
 
-    def versus_action(self):
+    # def versus_action(self):
 
-        if self.turn_manager.active_character().numberOfAction > 0:
-            self.versus.draw(self.screen)
-            self.versus.ONE_action(self.turn_manager.active_character(), self.screen)
-        else:
-            self.versus.setAction("Turn_enemy")
+    #     if self.turn_manager.active_character().numberOfAction > 0:
+    #         self.versus.draw(self.screen)
+    #         self.versus.ONE_action(self.turn_manager.active_character(), self.screen)
+    #     else:
+    #         self.versus.setAction("Turn_enemy")
 
-        if self.versus.action == "Turn_enemy":
-            self.versus.log("Begin turn ENEMY")
-            self.versus.log("END turn ENEMY")
-            self.turn_manager.active_character().numberOfAction = 5
-            self.versus.log("vous avez de nouveau 5 actions")
-            collisionZoneEffect(self.turn_manager.active_character(), self)
-            self.versus.setAction(None)
+    #     if self.versus.action == "Turn_enemy":
+    #         self.versus.log("Begin turn ENEMY")
+    #         self.versus.log("END turn ENEMY")
+    #         self.turn_manager.active_character().numberOfAction = 5
+    #         self.versus.log("vous avez de nouveau 5 actions")
+    #         collisionZoneEffect(self.turn_manager.active_character(), self)
+    #         self.versus.setAction(None)
 
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
@@ -393,10 +398,14 @@ class Game(_State):
             hit.try_open(self.turn_manager.active_character())
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.items, False)
         for hit in hits:
-            if hit.type.startswith('key'):
+            # if hit.:
+            #     hit.kill()
+            #     self.turn_manager.active_character().inventory.add_item(InventoryItem(
+            #         "key", hit.image.copy(), 0, False))
+            if hit.name == 'potion_health_medium':
                 hit.kill()
-                self.turn_manager.active_character().inventory.add_item(InventoryItem(
-                    "key", hit.image.copy(), 0, False))
+                self.turn_manager.active_character().inventory.add_item(Consumable(
+                    "potion_health_medium", hit.image.copy(), 15, 10, hp_gain=15))  # il faut faire un consumable
                 # ajouter à l'inventaire
 
         # collisionZoneEffect(self.turn_manager.active_character(), self)
