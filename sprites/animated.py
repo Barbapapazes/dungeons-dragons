@@ -1,8 +1,8 @@
 """Used to create a animated sprite"""
 
+from config.window import HEIGHT, WIDTH
 import pygame as pg
-from pygame.image import get_sdl_image_version
-from config.sprites import ASSETS_FLAMES
+from config.sprites import ASSETS_FLAMES, ASSETS_BOOK_OPENING
 from random import randint
 from collections import deque
 
@@ -53,3 +53,30 @@ class Flames(Animated):
         super(Flames, self).__init__(game, frame_per_image, frames, offset=randint(0, 6))
 
         self.rect.center = (self.x, self.y)
+
+
+class Book(Animated):
+    """Used to create a book"""
+
+    def __init__(self, game, x, y, width):
+        self.x = x
+        self.y = y
+        self.width = width
+
+        frame_per_image = 6
+        frames = list()
+        for frame in ASSETS_BOOK_OPENING:
+            frames.append(pg.transform.scale(frame, (self.width, int(
+                self.width * frame.get_height() / frame.get_width()))))
+        super(Book, self).__init__(game, frame_per_image, frames)
+
+        self.rect.center = (self.x, self.y)
+
+    def set_frames(self, frames):
+        tmp_frames = list()
+        for frame in frames:
+            tmp_frames.append(pg.transform.scale(frame, (self.width, int(
+                self.width * frame.get_height() / frame.get_width()))))
+        self.frames = tmp_frames
+        self.frame_total = (len(frames) - 1) * self.frame_per_image
+        self.frame_count = 0

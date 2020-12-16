@@ -16,6 +16,7 @@ SHORTCUTS = 'shortcuts'
 CHARACTER_CREATION = "character_creation"
 OPTIONS = "options"
 NEW_GAME = "new_game"
+INTRODUCTION = "introduction"
 
 # states
 TRANSITION_IN = 'transition in'
@@ -24,3 +25,6 @@ TRANSITION_OUT = 'transition out'
 # backgrounds
 BACKGROUND_MENU = [pg.image.load(path.join(img_folder, "menu", f"{i}.png"))
                    for i in range(15)]
+
+BACKGROUND_INTRODUCTION = [pg.image.load(path.join(img_folder, "introduction", "{:04d}.png".format(i)))
+                           for i in range(1, 10)]

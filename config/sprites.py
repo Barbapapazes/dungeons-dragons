@@ -144,3 +144,9 @@ ASSETS_DOOR = [pg.transform.scale(
 
 ASSETS_FLAMES = [pg.image.load(path.join(sprites_folder, "flames", f))
                  for f in os.listdir(path.join(sprites_folder, 'flames'))]
+
+
+ASSETS_BOOK_OPENING = [pg.image.load(path.join(sprites_folder, "book", "opening",  f"{i}.png"))
+                       for i in range(4)]
+ASSETS_BOOK_NEXT = [pg.image.load(path.join(sprites_folder, "book", "next",  f"{i}.png"))
+                    for i in range(5)]
