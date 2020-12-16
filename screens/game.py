@@ -50,6 +50,7 @@ class Game(_State):
         self.press_space = False
         self.chest_open = False
         self.opened_chest = None
+        self.seller = False
 
         self.states_dict = self.make_states_dict()
 
@@ -285,9 +286,10 @@ class Game(_State):
         """Used to manage all event"""
         if event.name == "inventory":
             self.turn_manager.active_character().inventory.check_slot(event.text, self.mouse_pos)
-            if event.text in ["sell"]:
-                self.turn_manager.active_character().shop.check_slot(
-                    event.text, self.screen, self.turn_manager.active_character(), self.mouse_pos)
+            if self.seller:
+                if event.text in ["sell"]:
+                    self.turn_manager.active_character().shop.check_slot(
+                        event.text, self.screen, self.turn_manager.active_character(), self.mouse_pos)
 
     def events_shop(self, event):
         """When the shop state is running"""
@@ -340,6 +342,7 @@ class Game(_State):
     def toggle_states(self, event):
         """Use to toggle the state of all states"""
         if key_for(self.game_data["shortcuts"]["game"]["menu"]["keys"], event):
+            self.seller = False
             logger.info("Toggle the sub-menu")
             self.turn_manager.active_character().inventory.display_inventory = False
             self.turn_manager.active_character().shop.display_shop = False
@@ -347,11 +350,13 @@ class Game(_State):
         if key_for(self.game_data["shortcuts"]["game"]
                    ["inventory"]["keys"], event):
             logger.info("Toggle inventory from turn_manager.active_character()")
+            self.seller = False
             self.turn_manager.active_character().shop.display_shop = False
             self.turn_manager.active_character().inventory.display_inventory = True
             super().toggle_sub_state('inventory')
         if event.key == pg.K_p:
             logger.info("Toggle the shop")
+            self.seller = not self.seller
             self.turn_manager.active_character().shop.display_shop = True
             self.turn_manager.active_character().inventory.display_inventory = True
             super().toggle_sub_state('shop')
@@ -481,6 +486,7 @@ class Game(_State):
     def check_for_chest(self):
         if self.chest_open:
             self.chest_open = False
+            self.seller = False
             self.opened_chest.store.display_shop = True
             self.turn_manager.active_character().inventory.display_inventory = True
             super().toggle_sub_state('chest')
