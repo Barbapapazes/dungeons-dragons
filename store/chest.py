@@ -200,15 +200,16 @@ class ChestStore():
         data = None
 
         if self.moving_item is not None:
-            data = self.buy_item(self.moving_item, inventory.player)
+            data = self.get_item(self.moving_item, inventory.player)
             inventory.place_item(data)
+            self.moving_item_slot.item = None
             self.moving_item.is_moving = False
             self.moving_item = None
             self.moving_item_slot = None
         else:
             pass
-        if inventory.find_item(data) == None and data:
-            inventory.player.gold += data.price
+        # if inventory.find_item(data) == None and data:
+        #     inventory.player.gold += data.price
 
     def check_slot(self, action, screen, player, mouse_pos):
         """Execute a passed action if it's possible
@@ -224,17 +225,17 @@ class ChestStore():
                     if slot.item:
                         if action == ACTIONS['buy']:
                             logger.info('%s bought', slot.item.name)
-                            data = self.buy_item(slot.item, player)
+                            data = self.get_item(slot.item, player)
                             player.inventory.add_item(data)
                         elif action == ACTIONS['buy_equip']:
                             if isinstance(slot.item, Equipable):
-                                data = self.buy_item(slot.item, player)
+                                data = self.get_item(slot.item, player)
                                 player.inventory.equip_item(data)
                             else:
                                 logger.info('Action can not be done')
                         elif action == ACTIONS['buy_use']:
                             if isinstance(slot.item, Consumable):
-                                data = self.buy_item(slot.item, player)
+                                data = self.get_item(slot.item, player)
                                 player.inventory.use_item(data)
                             else:
                                 logger.info('Action can not be done')
@@ -247,7 +248,7 @@ class ChestStore():
                     if slot.item:
                         if action == INVENTORY_ACTIONS['sell']:
                             logger.info('%s sold', slot.item.name)
-                            self.sell_item(slot.item, player)
+                            # self.sell_item(slot.item, player)
                             slot.item = None
                         elif action in list(ACTIONS['equip']) + list(ACTIONS['unequip'])+list(ACTIONS['use']):
                             player.inventory.check_slot(action, screen, mouse_pos)
@@ -259,37 +260,33 @@ class ChestStore():
                         if action == INVENTORY_ACTIONS['sell']:
                             logger.info('%s sold', slot.item.name)
                             player.inventory.unequip_item(slot.item)
-                            self.sell_item(slot.item, player)
+                            # self.sell_item(slot.item, player)
                             slot.item = None
                     else:
                         logger.info('Action can not be done')
 
-    def buy_item(self, item, player):
+    def get_item(self, item, player):
         """Buy an item
 
         Args:
             item (Item)
             player (Player)
         """
-        if item.price > player.gold:
-            logger.info("You have not enough money")
-            return
-        else:
-            player.gold -= item.price
-            logger.info("Buy %s from shop", item)
-            data = deepcopy(item)
+        # player.gold -= item.price
+        logger.info("Get %s from store", item)
+        data = deepcopy(item)
         return data
 
-    def sell_item(self, item, player):
-        """Sell an item
+    # def sell_item(self, item, player):
+    #     """Sell an item
 
-        Args:
-            item (Item)
-            player (Player)
-        """
-        if item is not None:
-            logger.info("Sell %s", item)
-            player.gold += item.price
+    #     Args:
+    #         item (Item)
+    #         player (Player)
+    #     """
+    #     if item is not None:
+    #         logger.info("Sell %s", item)
+    #         player.gold += item.price
 
     def find_item(self, item):
         """Find the slot in which a passed item is contained,
@@ -338,7 +335,7 @@ class ShopSlot(Container):
         Args:
             screen (Surface)
         """
-        if self.item is not None:
+        if self.item is not None and not self.item.is_moving:
             image = pg.transform.scale(self.item.image, (self.size, self.size))
             image_x = image.get_width()
             image_y = image.get_height()

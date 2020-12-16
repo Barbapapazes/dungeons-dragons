@@ -148,6 +148,7 @@ class Inventory:
             self.moving_item = shop_item
             self.moving_item.is_moving = True
 
+        self.outside = True
         for slot in self.get_all_slots():
 
             if slot.rect.collidepoint(
@@ -158,6 +159,7 @@ class Inventory:
                         slot, InventorySlot) and not isinstance(
                         slot, EquipableSlot) and slot.item is None:
                     self.unequip_item(self.moving_item)
+                    self.outside = False
                     break
                 if isinstance(
                         slot, InventorySlot) and not isinstance(
@@ -165,18 +167,29 @@ class Inventory:
                         self.moving_item_slot, EquipableSlot):
                     self.remove_item(self.moving_item)
                     self.add_item(self.moving_item, slot)
+                    self.outside = False
                     break
                 if isinstance(self.moving_item_slot, EquipableSlot) and isinstance(slot.item, Equipable):
                     if self.moving_item.slot == slot.item.slot:
                         self.unequip_item(self.moving_item)
                         self.equip_item(slot.item)
+                        self.outside = False
                         break
                 if isinstance(
                         slot, EquipableSlot) and isinstance(
                         self.moving_item, Equipable):
                     if slot.slot_type == self.moving_item.slot:
                         self.equip_item(self.moving_item)
+                        self.outside = False
                         break
+
+        if self.outside and shop_item:
+            PlacableItem(
+                self.player.game, vec(self.player.pos) +
+                vec(randint(self.player.hit_rect.width + 50, self.player.hit_rect.width + 100),
+                    0).rotate(randint(0, 360)),
+                shop_item.name, shop_item.image.copy())
+
         if self.moving_item is not None:
             self.moving_item.is_moving = False
             self.moving_item = None

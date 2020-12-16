@@ -208,6 +208,7 @@ class Game(_State):
         self.event_versus(event)
         self.events_inventory(event)
         self.events_shop(event)
+        self.events_chest(event)
 
     def event_versus(self, event):
 
@@ -310,6 +311,30 @@ class Game(_State):
                 if event.code == 'MENU':
                     if event.name == 'shop' and event.text in self.turn_manager.active_character().shop.menu_data:
                         self.turn_manager.active_character().shop.check_slot(
+                            event.text, self.screen, self.turn_manager.active_character(), self.mouse_pos)
+                    self.inventory_events(event)
+
+    def events_chest(self, event):
+        """When the chest state is running"""
+        if self.state == 'chest':  # faudrait foutre tout ça dans une fonction du shop et de l'inventaire
+            if event.type == pg.MOUSEBUTTONUP:
+                if event.button == 3:
+                    self.mouse_pos = pg.mouse.get_pos()
+                    if self.opened_chest.store.is_clicked(self.mouse_pos):
+                        PopupMenu(self.opened_chest.store.menu_data)
+                    elif self.turn_manager.active_character().inventory.is_clicked(self.mouse_pos):
+                        PopupMenu(self.turn_manager.active_character().inventory.menu_data)
+                elif event.button == 1:
+                    self.opened_chest.store.place_item(self.turn_manager.active_character().inventory)
+                    self.turn_manager.active_character().inventory.place_item()
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    self.opened_chest.store.move_item()
+                    self.turn_manager.active_character().inventory.move_item()
+            elif event.type == pg.USEREVENT:
+                if event.code == 'MENU':
+                    if event.name == 'shop' and event.text in self.opened_chest.store.menu_data:
+                        self.opened_chest.store.check_slot(
                             event.text, self.screen, self.turn_manager.active_character(), self.mouse_pos)
                     self.inventory_events(event)
 
