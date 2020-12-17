@@ -24,6 +24,11 @@ ITEMS = {
     f.split('.png')[0]: pg.image.load(path.join(items_folder, f))
     for f in os.listdir(items_folder) if f.endswith('.png')}
 
+ITEMS_NAMES = {
+    "silver_key_small": "key_02c",
+    "potion_health_medium": "potion_02b"
+}
+
 # equipables
 CONSUMABLE = {
     "potion red": {

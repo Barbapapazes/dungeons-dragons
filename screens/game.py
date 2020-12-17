@@ -2,7 +2,7 @@
 
 from sprites.chest import Chest
 from inventory.inventory import Armor, Consumable, Weapon
-from config.sprites import ASSETS_SPRITES, ITEMS
+from config.sprites import ASSETS_SPRITES, ITEMS, ITEMS_NAMES
 from os import path
 from sprites.item import PlacableItem
 from inventory.items import Item as InventoryItem
@@ -123,10 +123,6 @@ class Game(_State):
                     tile_object.width,
                     tile_object.height)
                 Door(self, obj_center.x, obj_center.y, wall)
-            if tile_object.name == "silver_key_small":
-                PlacableItem(self, obj_center, tile_object.name, ITEMS["key_02c"])
-            if tile_object.name == "potion_health_medium":
-                PlacableItem(self, obj_center, tile_object.name, ITEMS["potion_02b"])
             if tile_object.name == "chest":
                 Chest(self, obj_center.x, obj_center.y)
                 Obstacle(
@@ -135,6 +131,9 @@ class Game(_State):
                     tile_object.y,
                     tile_object.width,
                     tile_object.height)
+            if tile_object.name in ITEMS_NAMES.keys():
+                PlacableItem(self, obj_center, tile_object.name, tile_object.properties,
+                             ITEMS_NAMES[tile_object.name], ITEMS[ITEMS_NAMES[tile_object.name]])
 
         # Temporaire
         # think how this will be used with the menu
@@ -462,15 +461,24 @@ class Game(_State):
             self.press_space = False
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.items, False)
         for hit in hits:
-            if hit.name == "silver_key_small":
+            if hit.properties["object_type"] == "other":
                 hit.kill()
                 self.turn_manager.active_character().inventory.add_item(InventoryItem(
                     "key", hit.image.copy(), 0, False))
-            if hit.name == 'potion_health_medium':
+            if hit.properties["object_type"] == "consumable":
                 hit.kill()
                 self.turn_manager.active_character().inventory.add_item(Consumable(
-                    "potion_health_medium", hit.image.copy(), 15, 10, hp_gain=15))  # il faut faire un consumable
-                # ajouter à l'inventaire
+                    hit.name, hit.image.copy(), 15, 10, hp_gain=15))
+            if hit.properties["object_type"] == "weapon":
+                hit.kill()
+                self.turn_manager.active_character().inventory.add_item(Weapon(
+                    hit.name, hit.image.copy(), 15, "weapon", "sword", 10
+                ))  # ajouter des choses aux properties des items : le proce, le slot, le wp tupe le weight
+            if hit.properties["object_type"] == "armor":
+                hit.kill()
+                self.turn_manager.active_character().inventory.add_item(Armor(
+                    hit.name, hit.image.copy(), 15, 10, 10, "head"
+                ))  # ajouter des choses aux properties des items : le slot, le shield, le weight et le price
 
         # collisionZoneEffect(self.turn_manager.active_character(), self)
         self.versus_manager.update()
@@ -518,6 +526,8 @@ class Game(_State):
                     "name": item.name,
                     "price": item.price,
                     "weight": item.weight,
+                    # "type": item.type,
+                    # "image_name": item.image_name
                     # il va falloir ajouter une propriété avec le nom de l'image
                 }
                 if isinstance(slot.item, Weapon):
