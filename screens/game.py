@@ -516,9 +516,39 @@ class Game(_State):
             self.game_data["game_data"]["heros"][list_pos]["gold"] = self.turn_manager.active_character().gold
             self.game_data["game_data"]["heros"][list_pos]["health"] = self.turn_manager.active_character().health
             self.game_data["game_data"]["heros"][list_pos]["inventory"] = self.save_inventory()
+            self.game_data["game_data"]["items"] = self.save_items()
+            self.game_data["game_data"]["enemy"] = self.save_enemies()
+
+    def save_enemies(self):
+        enemies_list = list()
+        for character in self.all_sprites:
+            if isinstance(character, Enemy):
+                enemies_list.append(character.save())
+
+        return enemies_list
+
+    def save_items(self):
+        """Save all the placable items on the map
+
+        Returns:
+            object
+        """
+        items_list = list()
+        for item in self.items:
+            items_list.append({
+                "name": item.name,
+                "pos": {
+                    "x": item.pos.x,
+                    "y": item.pos.y
+                },
+                "properties": item.properties,
+                "image_name": item.image_name,
+            })
+
+        return items_list
 
     def save_inventory(self):  # à mettre dans l'inventory
-        inventory_dict = list()
+        inventory_list = list()
         for slot in self.turn_manager.active_character().inventory.slots:
             if slot.item:
                 item = slot.item
@@ -542,9 +572,9 @@ class Game(_State):
                 elif isinstance(slot.item, Consumable):
                     to_save["hp_gain"] = item.hp_gain
                     to_save["shield_gain"] = item.shield_gain
-                inventory_dict.append(to_save)
+                inventory_list.append(to_save)
 
-        return inventory_dict
+        return inventory_list
 
     def draw(self):
         """Draw all"""

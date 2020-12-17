@@ -34,6 +34,15 @@ class Enemy(Character):
 
         self.health = 50
 
+    def save(self):
+        return {
+            "pos": {
+                "x": self.pos.x,
+                "y": self.pos.y
+            },
+            "health": self.health
+        }
+
     def draw_health(self):
         if self.health > 60:
             col = GREEN
