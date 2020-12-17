@@ -1,18 +1,24 @@
 """Define a character"""
+<<<<<<< HEAD
 
 from random import randint
+=======
+from random import randint, uniform
+import pygame as pg
+>>>>>>> 206fbfa (merged code into pathfinding branch)
 from utils.tilemap import collide_with_walls
 from config.sprites import PLAYER_HIT_RECT
-import pygame as pg
 from logger import logger
-vec = pg.Vector2
 
+vec = pg.math.Vector2
+players = pg.sprite.Group()
+enemies = pg.sprite.Group()
 
 class Character(pg.sprite.Sprite):
 
     def __init__(self, game, x, y, _type, images, hit_rect):
         self._layer = y
-        self.groups = game.all_sprites,
+        self.groups = game.all_sprites
         super(Character, self).__init__(self.groups)
 
         self.characteristics = {
