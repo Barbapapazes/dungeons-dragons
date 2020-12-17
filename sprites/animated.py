@@ -84,7 +84,7 @@ class Book(Animated):
 
 
 class Circle(Animated):
-    """Usedd to create an circle for player range"""
+    """Used to create an circle for player range"""
 
     def __init__(self, game, x, y, width):
         self.x = x

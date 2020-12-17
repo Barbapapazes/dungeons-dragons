@@ -518,6 +518,7 @@ class Game(_State):
                     "name": item.name,
                     "price": item.price,
                     "weight": item.weight,
+                    # il va falloir ajouter une propriété avec le nom de l'image
                 }
                 if isinstance(slot.item, Weapon):
                     to_save["wpn_type"] = item.wpn_type
