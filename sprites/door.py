@@ -10,7 +10,7 @@ from logger import logger
 class Door(pg.sprite.Sprite):
     """Create a door"""
 
-    def __init__(self, game, x, y, wall):
+    def __init__(self, game, x, y, wall, is_open=False):
         self._layer = y
         self.groups = game.doors, game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -33,8 +33,17 @@ class Door(pg.sprite.Sprite):
         self.rect.center = (x, y)
 
         self.to_open = False
-        self.is_open = False
+        self.is_open = is_open
         self.frame_count = 0
+
+    def save(self):
+        return {
+            "pos": {
+                "x": self.x,
+                "y": self.y
+            },
+            "is_open": self.is_open,
+        }
 
     def update(self):
         if self.to_open and not self.is_open:

@@ -120,6 +120,17 @@ class Game(_State):
                     chest["pos"]["y"] - border,
                     border,
                     border)
+            for door in self.game_data["game_data"]["doors"]:
+                border = TILESIZE * 0.4
+                wall = None
+                if not door["is_open"]:
+                    wall = Obstacle(
+                        self,
+                        door["pos"]["x"] - border // 2,
+                        door["pos"]["y"] - border,
+                        border,
+                        border)
+                Door(self, door["pos"]["x"], door["pos"]["y"], wall, is_open=door["is_open"])
             for tile_object in self.map.tmxdata.objects:
                 if tile_object.name == 'wall':
                     Obstacle(
@@ -507,8 +518,10 @@ class Game(_State):
             self.all_sprites.change_layer(sprite, sprite.rect.bottom)
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.doors,
                                        False)  # toues les fonctions hits c'est des fonctions hits
-        for hit in hits:
-            hit.try_open(self.turn_manager.active_character())
+        if self.press_space and hits:
+            for hit in hits:
+                hit.try_open(self.turn_manager.active_character())
+            self.press_space = False
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.chests, False)
         if self.press_space and hits:
             for hit in hits:
@@ -570,6 +583,14 @@ class Game(_State):
         self.game_data["game_data"]["items"] = self.save_items()
         self.game_data["game_data"]["enemies"] = self.save_enemies()
         self.game_data["game_data"]["chests"] = self.save_chests()
+        self.game_data["game_data"]["doors"] = self.save_doors()
+
+    def save_doors(self):
+        doors_list = list()
+        for door in self.doors:
+            doors_list.append(door.save())
+
+        return doors_list
 
     def save_chests(self):
         chests_list = list()
