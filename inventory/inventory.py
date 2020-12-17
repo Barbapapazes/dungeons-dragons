@@ -213,11 +213,12 @@ class Inventory:
                         break
 
         if self.outside and shop_item and not from_shop:
-            PlacableItem(
-                self.player.game, vec(self.player.pos) +
-                vec(randint(self.player.hit_rect.width + 50, self.player.hit_rect.width + 100),
-                    0).rotate(randint(0, 360)),
-                shop_item.name, shop_item.image.copy())
+            logger.debug("ajouter les properties pour faire le reverse")
+            # PlacableItem(
+            #     self.player.game, vec(self.player.pos) +
+            #     vec(randint(self.player.hit_rect.width + 50, self.player.hit_rect.width + 100),
+            #         0).rotate(randint(0, 360)),
+            #     shop_item.name, shop_item.image.copy())
 
         if self.moving_item is not None:
             self.moving_item.is_moving = False
@@ -234,12 +235,13 @@ class Inventory:
         for slot in self.get_all_slots():
             if action == ACTIONS['throw']:
                 if slot.rect.collidepoint(mouse_pos):
-                    logger.info(self.player)
-                    PlacableItem(
-                        self.player.game, vec(self.player.pos) +
-                        vec(randint(self.player.hit_rect.width + 50, self.player.hit_rect.width + 100),
-                            0).rotate(randint(0, 360)),
-                        slot.item.name, slot.item.image.copy())
+                    logger.debug(
+                        "ajouter les properties (faire une fonction qui permet de jeter un item autour du personnage avec l'item en paramètre")
+                    # PlacableItem(
+                    #     self.player.game, vec(self.player.pos) +
+                    #     vec(randint(self.player.hit_rect.width + 50, self.player.hit_rect.width + 100),
+                    #         0).rotate(randint(0, 360)),
+                    #     slot.item.name, slot.item.image.copy())
                     self.remove_item(slot.item)
             if isinstance(slot, InventorySlot):
                 if slot.rect.collidepoint(mouse_pos):
