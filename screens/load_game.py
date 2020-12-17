@@ -37,6 +37,10 @@ class LoadGame(_Elements):
         self.create_delete_buttons()
         self.create_back_button(self.background, self.load_next_state, [MENU])
 
+    def startup(self, dt, game_data):
+        super().startup(dt, game_data)
+        self.refresh()
+
     def create_delete_buttons(self):
         """Create delete btn"""
         _x = WIDTH // 2 + WIDTH_BUTTON
@@ -125,7 +129,7 @@ class LoadGame(_Elements):
         self.create_back_button(self.background, self.load_next_state, [MENU])
 
         self.btns_dict = self.create_buttons_dict()
-        self.create_buttons(self.background, offset=70)
+        self.create_buttons(self.background, offset=70, width=WIDTH_BUTTON + 50)
 
         logger.info("Refresh the info")
 
