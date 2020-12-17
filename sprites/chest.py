@@ -9,7 +9,7 @@ from store.store import Store
 
 
 class Chest(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, is_open=False):
         self._layer = y
         self.groups = game.all_sprites, game.chests
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -23,7 +23,7 @@ class Chest(pg.sprite.Sprite):
             pg.image.load(path.join(game.sprites_folder, "chest", "open.png")),
             (TILESIZE, TILESIZE))
 
-        self.is_open = False
+        self.is_open = is_open
 
         self.image = self.opening_images[0]
         self.rect = self.image.get_rect()
@@ -32,6 +32,17 @@ class Chest(pg.sprite.Sprite):
         self.store = Store()
 
         self.frame_count = 0
+
+    def save(self):
+        return {
+            "pos": {
+                "x": self.x,
+                "y": self.y
+            },
+            "is_open": self.is_open,
+            "store": self.store.save()
+
+        }
 
     def update(self):
         if not self.is_open:

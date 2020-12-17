@@ -45,6 +45,13 @@ class Store:
 
         self.display_shop = False
 
+    def save(self):
+        slots_list = list()
+        for slot in self.weapon_slots + self.armor_slots + self.consumable_slots:
+            if slot.item:
+                slots_list.append(slot.item.save())
+        return slots_list
+
     def set_all_categories(self):
         """Used to define the different categories of items"""
         for categorie in STORE_CATEGORIES:

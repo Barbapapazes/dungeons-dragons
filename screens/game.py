@@ -102,7 +102,7 @@ class Game(_State):
             for item in self.game_data["game_data"]["items"]:
                 PlacableItem(self, vec(item["pos"]["x"], item["pos"]["y"]), item["name"], item["properties"],
                              ITEMS[item["image_name"]], item["image_name"])
-            for enemy in self.game_data["game_data"]["enemy"]:
+            for enemy in self.game_data["game_data"]["enemies"]:
                 self.turn_manager.enemies.append(
                     Enemy(
                         self, enemy["pos"]["x"],
@@ -110,6 +110,16 @@ class Game(_State):
                         enemy["class"],
                         enemy["health"],
                         ASSETS_SPRITES[enemy["class"]]))
+            for chest in self.game_data["game_data"]["chests"]:
+                Chest(self, chest["pos"]["x"], chest["pos"]["y"], is_open=chest["is_open"])
+                logger.debug("il faut ajotuer l'ajout du contenu du coffre")
+                border = TILESIZE * 0.4
+                Obstacle(
+                    self,
+                    chest["pos"]["x"] - border // 2,
+                    chest["pos"]["y"] - border,
+                    border,
+                    border)
             for tile_object in self.map.tmxdata.objects:
                 if tile_object.name == 'wall':
                     Obstacle(
@@ -118,6 +128,8 @@ class Game(_State):
                         tile_object.y,
                         tile_object.width,
                         tile_object.height)
+                if tile_object.name == "camp_fire":
+                    CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
         else:
             logger.info("Load a new game")
             for tile_object in self.map.tmxdata.objects:
@@ -163,8 +175,8 @@ class Game(_State):
                         self,
                         tile_object.x,
                         tile_object.y,
-                        tile_object.width,
-                        tile_object.height)
+                        TILESIZE * 0.4,
+                        TILESIZE * 0.4)
                 if tile_object.name == "camp_fire":
                     CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
                 if tile_object.name in ITEMS_NAMES.keys():
@@ -556,7 +568,15 @@ class Game(_State):
         self.game_data["minimap"] = self.minimap.create_minimap_data()
         self.game_data["game_data"]["heros"] = self.save_players()
         self.game_data["game_data"]["items"] = self.save_items()
-        self.game_data["game_data"]["enemy"] = self.save_enemies()
+        self.game_data["game_data"]["enemies"] = self.save_enemies()
+        self.game_data["game_data"]["chests"] = self.save_chests()
+
+    def save_chests(self):
+        chests_list = list()
+        for chest in self.chests:
+            chests_list.append(chest.save())
+
+        return chests_list
 
     def save_players(self):
         players_list = list()

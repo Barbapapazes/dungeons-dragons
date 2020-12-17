@@ -46,26 +46,7 @@ class Inventory:
         inventory_list = list()
         for slot in self.slots:
             if slot.item:
-                item = slot.item
-                to_save = {
-                    "name": item.name,
-                    "price": item.price,
-                    "weight": item.weight,
-                    "image_name": item.image_name
-                }
-                if isinstance(slot.item, Weapon):
-                    to_save["wpn_type"] = item.wpn_type
-                    to_save["nb_d"] = item.nb_d
-                    to_save["val_d"] = item.val_d
-                    to_save["scope"] = item.scope
-                    to_save["slot"] = item.slot
-                elif isinstance(slot.item, Armor):
-                    to_save["shield"] = item.shield
-                    to_save["slot"] = item.slot
-                elif isinstance(slot.item, Consumable):
-                    to_save["hp_gain"] = item.hp_gain
-                    to_save["shield_gain"] = item.shield_gain
-                inventory_list.append(to_save)
+                inventory_list.append(slot.item.save())
 
         return inventory_list
 
@@ -410,6 +391,12 @@ class Consumable(Item):
         self.hp_gain = hp_gain
         self.shield_gain = shield_gain
 
+    def save(self):
+        return {
+            "hp_gain":  self.hp_gain,
+            "shield_gain":  self.shield_gain
+        } | super().save()
+
     def use(self, inventory, target):
         """remove the consumable from the inventory inv and uses it on the target player
 
@@ -456,6 +443,12 @@ class Armor(Equipable):
         self.shield = shield
         self.slot = slot
 
+    def save(self):
+        return {
+            "shield": self.shield,
+            "slot": self.slot
+        } | super().save()
+
     def equip(self, inventory, target):
         """Equip the Armor on the right player's armor slot,
         if an Armor is already in the needed slot, it is unequipped
@@ -496,6 +489,15 @@ class Weapon(Equipable):
         self.nb_d = nb_d
         self.val_d = val_d
         self.scope = scope*TILESIZE
+
+    def save(self):
+        return {
+            "wpn_type": self.wpn_type,
+            "nb_d": self.nb_d,
+            "val_d": self.val_d,
+            "scope": self.scope,
+            "slot": self.slot
+        } | super().save()
 
     def equip(self, inventory, target):
         """Equip the weapon in the target's weapon slot

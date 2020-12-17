@@ -20,6 +20,14 @@ class Item:
         self.weight = weight
         self.is_moving = False
 
+    def save(self):
+        return {
+            "name": self.name,
+            "price": self.price,
+            "weight": self.weight,
+            "image_name": self.image_name
+        }
+
     def __str__(self):
         return self.name
 
