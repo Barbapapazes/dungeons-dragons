@@ -28,6 +28,7 @@ ITEMS_NAMES = {
     "silver_key_small": "key_02c",
     "potion_health_medium": "potion_02b"
 }
+# ajouter dans la doc la création de la carte
 
 # equipables
 CONSUMABLE = {

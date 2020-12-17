@@ -1,6 +1,7 @@
 """Define a enemy"""
 
 
+from inventory.inventory import Inventory
 from config.colors import GREEN, YELLOW, RED
 from config.window import TILESIZE
 import pygame as pg
@@ -32,10 +33,14 @@ class Enemy(Character):
 
         self.last_target = 0
 
+        self.inventory = Inventory(self, 5, 8)
+        logger.debug("quand il meurt, il faut utiliser la fonction de l'inventaire pour jeter les objet")
+
         self.health = 50
 
     def save(self):
         return {
+            "class": self.type,
             "pos": {
                 "x": self.pos.x,
                 "y": self.pos.y

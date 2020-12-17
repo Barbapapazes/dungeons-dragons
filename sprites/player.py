@@ -21,7 +21,6 @@ class Player(Character):
         self.can_move = True
 
         self.characteristics = characteristics
-
         self.health = PLAYER_MAX_HP
         self.xp = 0
         self.gold = 100
@@ -54,10 +53,12 @@ class Player(Character):
 
     def save(self):
         return {
+            "class": self.type,
             "pos:": {
                 "x": self.pos.x,
                 "y": self.pos.y
             },
+            "characteristics": self.characteristics,
             "health": self.health,
             "xp": self.xp,
             "health": self.health,
