@@ -1,8 +1,5 @@
 """Define a player"""
-from sprites.character import Character
-import pygame as pg
-from random import randint
-from logger import logger
+from sprites.character import *
 from config.colors import YELLOW
 from config.window import TILESIZE
 from config.sprites import ASSETS_SPRITES, PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT, PLAYER_MAX_MP
@@ -16,7 +13,12 @@ vec = pg.math.Vector2
 class Player(Character):
     """Create a player"""
 
+<<<<<<< HEAD
     def __init__(self, game, x, y, _type, characteristics, health, xp, gold, images):
+=======
+    def __init__(self, game, x, y, _type, characteristics, images):
+        self.groups = players        
+>>>>>>> d3ca57e (merged code into pathfinding branch)
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
         self.can_move = True
 
