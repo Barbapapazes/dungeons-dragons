@@ -42,6 +42,35 @@ class Inventory:
 
         self.menu_data = MENU_DATA
 
+    def save(self):
+        inventory_list = list()
+        for slot in self.slots:
+            if slot.item:
+                item = slot.item
+                to_save = {
+                    "name": item.name,
+                    "price": item.price,
+                    "weight": item.weight,
+                    # "type": item.type,
+                    # "image_name": item.image_name
+                    # il va falloir ajouter une propriété avec le nom de l'image
+                }
+                if isinstance(slot.item, Weapon):
+                    to_save["wpn_type"] = item.wpn_type
+                    to_save["nb_d"] = item.nb_d
+                    to_save["val_d"] = item.val_d
+                    to_save["scope"] = item.scope
+                    to_save["slot"] = item.slot
+                elif isinstance(slot.item, Armor):
+                    to_save["shield"] = item.shield
+                    to_save["slot"] = item.slot
+                elif isinstance(slot.item, Consumable):
+                    to_save["hp_gain"] = item.hp_gain
+                    to_save["shield_gain"] = item.shield_gain
+                inventory_list.append(to_save)
+
+        return inventory_list
+
     def create_slots(self):
         """Create the inventory slots"""
         self.create_bag()

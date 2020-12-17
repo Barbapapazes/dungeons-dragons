@@ -31,3 +31,14 @@ class PlacableItem(pg.sprite.Sprite):
         if self.step > BOB_RANGE:
             self.step = 0
             self.dir *= -1
+
+    def save(self):
+        return {
+            "name": self.name,
+            "pos": {
+                "x": self.pos.x,
+                "y": self.pos.y
+            },
+            "properties": self.properties,
+            "image_name": self.image_name,
+        }

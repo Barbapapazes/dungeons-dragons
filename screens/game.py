@@ -501,21 +501,10 @@ class Game(_State):
 
     def update_game_data(self):
         if self.turn_manager.is_active_player():
-            list_pos = 0
-            for character in self.turn_manager.get_characters():
-                if self.turn_manager.active_character() == character:
-                    break
-                elif isinstance(character, Player):
-                    list_pos += 1
 
             self.game_data["minimap"] = self.minimap.create_minimap_data()
-            self.game_data["game_data"]["heros"][list_pos]["last_pos"] = {
-                "x": self.turn_manager.active_character().pos.x, "y": self.turn_manager.active_character().pos.y}
-            # à mettre dans le personnage pour n'avoir qu'à faire un .save()
-            self.game_data["game_data"]["heros"][list_pos]["xp"] = self.turn_manager.active_character().xp
-            self.game_data["game_data"]["heros"][list_pos]["gold"] = self.turn_manager.active_character().gold
-            self.game_data["game_data"]["heros"][list_pos]["health"] = self.turn_manager.active_character().health
-            self.game_data["game_data"]["heros"][list_pos]["inventory"] = self.save_inventory()
+            self.game_data["game_data"]["heros"][
+                self.turn_manager.get_pos_player()] = self.turn_manager.active_character().save()
             self.game_data["game_data"]["items"] = self.save_items()
             self.game_data["game_data"]["enemy"] = self.save_enemies()
 
@@ -535,46 +524,9 @@ class Game(_State):
         """
         items_list = list()
         for item in self.items:
-            items_list.append({
-                "name": item.name,
-                "pos": {
-                    "x": item.pos.x,
-                    "y": item.pos.y
-                },
-                "properties": item.properties,
-                "image_name": item.image_name,
-            })
+            items_list.append(item.save())
 
         return items_list
-
-    def save_inventory(self):  # à mettre dans l'inventory
-        inventory_list = list()
-        for slot in self.turn_manager.active_character().inventory.slots:
-            if slot.item:
-                item = slot.item
-                to_save = {
-                    "name": item.name,
-                    "price": item.price,
-                    "weight": item.weight,
-                    # "type": item.type,
-                    # "image_name": item.image_name
-                    # il va falloir ajouter une propriété avec le nom de l'image
-                }
-                if isinstance(slot.item, Weapon):
-                    to_save["wpn_type"] = item.wpn_type
-                    to_save["nb_d"] = item.nb_d
-                    to_save["val_d"] = item.val_d
-                    to_save["scope"] = item.scope
-                    to_save["slot"] = item.slot
-                elif isinstance(slot.item, Armor):
-                    to_save["shield"] = item.shield
-                    to_save["slot"] = item.slot
-                elif isinstance(slot.item, Consumable):
-                    to_save["hp_gain"] = item.hp_gain
-                    to_save["shield_gain"] = item.shield_gain
-                inventory_list.append(to_save)
-
-        return inventory_list
 
     def draw(self):
         """Draw all"""

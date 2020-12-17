@@ -52,6 +52,18 @@ class Player(Character):
         # shop, temporary here, to put in a seller
         self.shop = Shop()
 
+    def save(self):
+        return {
+            "pos:": {
+                "x": self.pos.x,
+                "y": self.pos.y
+            },
+            "health": self.health,
+            "xp": self.xp,
+            "health": self.health,
+            "inventory": self.inventory.save()
+        }
+
     def get_keys(self):
         self.vel = vec(0, 0)
         keys = pg.key.get_pressed()

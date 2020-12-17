@@ -58,3 +58,11 @@ class TurnManager:
             self.active_character().update()
 
             # mettre la logique de l'enemy ici
+    def get_pos_player(self):
+        list_pos = 0
+        for character in self.get_characters():
+            if self.active_character() == character:
+                break
+            elif isinstance(character, Player):
+                list_pos += 1
+        return list_pos
