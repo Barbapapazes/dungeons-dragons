@@ -42,14 +42,12 @@ class Music():
             #si l'etat n'est pas nul et est dans le dict 
             if(self.state and (self.state in self.create_dict())):
                 #si la musique qui se joue est différente de celle qui va etre jouer 
-                print("musique diff")
                 if(self.create_dict()[self.state] != self.current_playing):
                     pg.mixer.music.load(path.join(self.lib_music,self.create_dict()[self.state]))
                     self.current_playing=self.create_dict()[self.state]
                     self.play()
         else:
             self.stop()
-            print("stop")
 
     def update_volume(self):
         #appeler en boucle qui modifie le volume 
