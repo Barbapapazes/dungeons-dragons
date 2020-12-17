@@ -34,6 +34,7 @@ ITEMS_NAMES = {
 CONSUMABLE = {
     "potion red": {
         "image": ITEMS["potion_02a"],
+        "image_name": "potion_02a",
         "price": 10,
         "weight": 2,
         "heal": 30
@@ -42,7 +43,8 @@ CONSUMABLE = {
 
 WEAPONS = {
     "sword wood": {
-        "image": ITEMS["sword_01a"],
+        "image": ITEMS["sword_01a"],  # on peut enlerver ce champs là
+        "image_name": "sword_01a",
         "price": 10,
         "weight": 10,
         "slot": "weapon",
@@ -53,6 +55,7 @@ WEAPONS = {
     },
     "sword steel": {
         "image": ITEMS["sword_01c"],
+        "image_name": "sword_01c",
         "price": 10,
         "weight": 20,
         "slot": "weapon",
@@ -64,6 +67,7 @@ WEAPONS = {
     },
     "arc": {
         "image": ITEMS["bow_01a"],
+        "image_name": "bow_01a",
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
@@ -75,6 +79,7 @@ WEAPONS = {
     },
     "dagger": {
         "image": ITEMS["sword_03a"],
+        "image_name": "sword_03a",
         "price": 10,
         "weight": 5,
         "slot": "weapon",
@@ -90,6 +95,7 @@ WEAPONS = {
 ARMOR = {
     "steel helmet": {
         "image": ITEMS["helmet_01b"],
+        "image_name": "helmet_01b",
         "price": 10,
         "weight": 10,
         "armor": 20,
@@ -97,6 +103,7 @@ ARMOR = {
     },
     "gold helmet": {
         "image": ITEMS["helmet_01d"],
+        "image_name": "helmet_01d",
         "price": 10,
         "weight": 15,
         "armor": 30,
@@ -104,6 +111,7 @@ ARMOR = {
     },
     "steel chest": {
         "image": ITEMS["armor_01a"],
+        "image_name": "armor_01a",
         "price": 10,
         "weight": 20,
         "armor": 40,
@@ -111,6 +119,7 @@ ARMOR = {
     },
     "gold chest": {
         "image": ITEMS["armor_01d"],
+        "image_name": "armor_01d",
         "price": 10,
         "weight": 30,
         "armor": 70,

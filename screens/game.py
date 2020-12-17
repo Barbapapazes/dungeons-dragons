@@ -136,7 +136,7 @@ class Game(_State):
                 CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
             if tile_object.name in ITEMS_NAMES.keys():
                 PlacableItem(self, obj_center, tile_object.name, tile_object.properties,
-                             ITEMS_NAMES[tile_object.name], ITEMS[ITEMS_NAMES[tile_object.name]])
+                             ITEMS[ITEMS_NAMES[tile_object.name]], ITEMS_NAMES[tile_object.name])
 
         # Temporaire
         # think how this will be used with the menu
@@ -476,20 +476,20 @@ class Game(_State):
             if hit.properties["object_type"] == "other":
                 hit.kill()
                 self.turn_manager.active_character().inventory.add_item(InventoryItem(
-                    "key", hit.image.copy(), 0, False))
+                    "key", hit.image.copy(), hit.image_name, 0, False))
             if hit.properties["object_type"] == "consumable":
                 hit.kill()
                 self.turn_manager.active_character().inventory.add_item(Consumable(
-                    hit.name, hit.image.copy(), 15, 10, hp_gain=15))
+                    hit.name, hit.image.copy(), hit.image_name, 15, 10,  hp_gain=15))
             if hit.properties["object_type"] == "weapon":
                 hit.kill()
                 self.turn_manager.active_character().inventory.add_item(Weapon(
-                    hit.name, hit.image.copy(), 15, "weapon", "sword", 10
+                    hit.name, hit.image.copy(), hit.image_name, 15, "weapon", "sword", 10
                 ))  # ajouter des choses aux properties des items : le proce, le slot, le wp tupe le weight
             if hit.properties["object_type"] == "armor":
                 hit.kill()
                 self.turn_manager.active_character().inventory.add_item(Armor(
-                    hit.name, hit.image.copy(), 15, 10, 10, "head"
+                    hit.name, hit.image.copy(), hit.image_name, 15, 10, 10, "head"
                 ))  # ajouter des choses aux properties des items : le slot, le shield, le weight et le price
 
         # collisionZoneEffect(self.turn_manager.active_character(), self)

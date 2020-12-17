@@ -4,7 +4,7 @@
 class Item:
     """Item"""
 
-    def __init__(self, name, image, price, weight):
+    def __init__(self, name, image, image_name, price, weight):
         """Create a item
 
         Args:
@@ -14,6 +14,7 @@ class Item:
         """
         self.name = name
         self.image = image
+        self.image_name = image_name
         self.rect = self.image.get_rect()
         self.price = price
         self.weight = weight
@@ -23,4 +24,4 @@ class Item:
         return self.name
 
     def __deepcopy__(self, memo):
-        return Item(self.name, self.image.copy(), self.price, self.weight)
+        return Item(self.name, self.image.copy(), self.image_name, self.price, self.weight)

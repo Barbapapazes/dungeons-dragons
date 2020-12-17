@@ -235,14 +235,7 @@ class Inventory:
         for slot in self.get_all_slots():
             if action == ACTIONS['throw']:
                 if slot.rect.collidepoint(mouse_pos):
-                    logger.debug(
-                        "ajouter les properties (faire une fonction qui permet de jeter un item autour du personnage avec l'item en paramètre")
-                    # PlacableItem(
-                    #     self.player.game, vec(self.player.pos) +
-                    #     vec(randint(self.player.hit_rect.width + 50, self.player.hit_rect.width + 100),
-                    #         0).rotate(randint(0, 360)),
-                    #     slot.item.name, slot.item.image.copy())
-                    self.remove_item(slot.item)
+                    self.throw_item(slot)
             if isinstance(slot, InventorySlot):
                 if slot.rect.collidepoint(mouse_pos):
                     if isinstance(slot.item, Equipable):
@@ -262,6 +255,30 @@ class Inventory:
                             self.unequip_item(slot.item)
                         else:
                             logger.info('Action can not be done')
+
+    def throw_item(self, slot):
+        """Used to thro an item
+
+        Args:
+            slot (InventorySlot)
+        """
+        logger.info("throw %s", slot.item)
+        properties = dict()
+        if isinstance(slot.item, Weapon):
+            properties['object_type'] = "weapon"
+        elif isinstance(slot.item, Armor):
+            properties['object_type'] = "armor"
+        elif isinstance(slot.item, Consumable):
+            properties['object_type'] = "consomable"
+        else:
+            properties['object_type'] = "other"
+
+        PlacableItem(
+            self.player.game, vec(self.player.pos) +
+            vec(randint(self.player.hit_rect.width + 50, self.player.hit_rect.width + 100),
+                0).rotate(randint(0, 360)),
+            slot.item.name, properties, slot.item.image.copy(), slot.item.image_name)
+        self.remove_item(slot.item)
 
     def add_item(self, item, slot=None):
         """Add a passed item to the inventory
@@ -394,8 +411,8 @@ class EquipableSlot(InventorySlot):
 class Consumable(Item):
     """A consumable item"""
 
-    def __init__(self, name,  image, price, weight, hp_gain=0, shield_gain=0):
-        Item.__init__(self, name, image, price, weight)
+    def __init__(self, name,  image, image_name, price, weight, hp_gain=0, shield_gain=0):
+        Item.__init__(self, name, image, image_name, price, weight)
         self.hp_gain = hp_gain
         self.shield_gain = shield_gain
 
@@ -414,8 +431,8 @@ class Consumable(Item):
 class Equipable(Item):
     """Used add equipable ability"""
 
-    def __init__(self, name, image, price, weight):
-        super(Equipable, self).__init__(name, image, price, weight)
+    def __init__(self, name, image, image_name, price, weight):
+        super(Equipable, self).__init__(name, image, image_name, price, weight)
         self.is_equipped = False
         self.equipped_to = None
 
@@ -434,14 +451,14 @@ class Equipable(Item):
         self.equipped_to = None
 
     def __deepcopy__(self, memo):
-        return Equipable(self.name, self.image.copy(), self.price, self.weight)
+        return Equipable(self.name, self.image.copy(), self.image_name, self.price, self.weight)
 
 
 class Armor(Equipable):
     """Armor"""
 
-    def __init__(self, name, image, price, weight, shield, slot):
-        super(Armor, self).__init__(name, image, price, weight)
+    def __init__(self, name, image, image_name, price, weight, shield, slot):
+        super(Armor, self).__init__(name, image, image_name, price, weight)
         self.shield = shield
         self.slot = slot
 
@@ -472,14 +489,14 @@ class Armor(Equipable):
         inventory.get_equip_slot(self).item = None
 
     def __deepcopy__(self, memo):
-        return Armor(self.name, self.image.copy(), self.price, self.weight, self.shield, self.slot)
+        return Armor(self.name, self.image.copy(), self.image_name, self.price, self.weight, self.shield, self.slot)
 
 
 class Weapon(Equipable):
     """Weapon"""
 
-    def __init__(self, name, image, price, slot, wpn_type, weight, nb_d=1, val_d=5, scope=2):
-        super(Weapon, self).__init__(name, image, price, weight)
+    def __init__(self, name, image, image_name, price, slot, wpn_type, weight, nb_d=1, val_d=5, scope=2):
+        super(Weapon, self).__init__(name, image, image_name, price, weight)
         self.slot = slot
         self.wpn_type = wpn_type
         self.nb_d = nb_d
@@ -520,5 +537,5 @@ class Weapon(Equipable):
 
     def __deepcopy__(self, memo):
         return Weapon(
-            self.name, self.image.copy(),
+            self.name, self.image.copy(), self.image_name,
             self.price, self.slot, self.wpn_type, self.weight, self.nb_d, self.val_d, self.scope // TILESIZE)

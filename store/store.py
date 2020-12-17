@@ -104,6 +104,7 @@ class Store:
             data = Weapon(
                 key,
                 value['image'],
+                value['image_name'],
                 value['price'],
                 value['slot'],
                 value['type'],
@@ -126,6 +127,7 @@ class Store:
             data = Armor(
                 key,
                 value['image'],
+                value['image_name'],
                 value['price'],
                 value['weight'],
                 value['armor'],
@@ -147,6 +149,7 @@ class Store:
             data = Consumable(
                 key,
                 value['image'],
+                value['image_name'],
                 value['price'],
                 value['weight'])
             self.consumables.append(data)

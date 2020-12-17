@@ -8,7 +8,7 @@ import pytweening as tween
 class PlacableItem(pg.sprite.Sprite):
     """Create a Placable item"""
 
-    def __init__(self, game, pos, name, properties, image_name, image):  # ajouter un nom et image (surface)
+    def __init__(self, game, pos, name, properties, image, image_name):  # ajouter un nom et image (surface)
         self._layer = 1
         self.groups = game.all_sprites, game.items
         pg.sprite.Sprite.__init__(self, self.groups)

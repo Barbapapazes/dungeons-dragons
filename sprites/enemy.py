@@ -60,8 +60,14 @@ class Enemy(Character):
         if self.health < MOB_HEALTH:
             pg.draw.rect(self.image, col, self.health_bar)
 
+    def throw_inventory(self):
+        for slot in self.inventory.slots:
+            if slot.item:
+                self.inventory.throw_item(slot)
+
     def update(self):
         if self.health <= 0:
+            self.throw_inventory()
             self.kill()
             self.game.turn_manager.enemies.remove(self)
         self.target = self.targets[0]
