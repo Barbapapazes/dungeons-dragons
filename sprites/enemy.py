@@ -19,7 +19,7 @@ MOB_HEALTH = 100
 
 
 class Enemy(Character):
-    def __init__(self, game, x, y, _type, images):
+    def __init__(self, game, x, y, _type, health, images):
         super(Enemy, self).__init__(game, x, y, _type, images, MOB_HIT_RECT)
 
         self.pos = vec(x, y)
@@ -35,7 +35,7 @@ class Enemy(Character):
 
         self.inventory = Inventory(self, 5, 8)
 
-        self.health = 50
+        self.health = health
 
     def save(self):
         return {

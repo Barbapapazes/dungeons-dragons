@@ -16,14 +16,14 @@ vec = pg.math.Vector2
 class Player(Character):
     """Create a player"""
 
-    def __init__(self, game, x, y, _type, characteristics, images):
+    def __init__(self, game, x, y, _type, characteristics, health, xp, gold, images):
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
         self.can_move = True
 
         self.characteristics = characteristics
-        self.health = PLAYER_MAX_HP
-        self.xp = 0
-        self.gold = 100
+        self.health = health
+        self.xp = xp
+        self.gold = gold
 
         self.numberOfAction = 0
 
@@ -54,7 +54,7 @@ class Player(Character):
     def save(self):
         return {
             "class": self.type,
-            "pos:": {
+            "pos": {
                 "x": self.pos.x,
                 "y": self.pos.y
             },
@@ -62,6 +62,7 @@ class Player(Character):
             "health": self.health,
             "xp": self.xp,
             "health": self.health,
+            "gold": self.gold,
             "inventory": self.inventory.save()
         }
 

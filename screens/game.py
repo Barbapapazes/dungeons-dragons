@@ -88,8 +88,38 @@ class Game(_State):
         self.camera = Camera(self.map.width, self.map.height)
 
         if self.game_data["loaded"]:
-            logger.debug("load from the file")
+            logger.info("Load from a file")
+            for hero in self.game_data["game_data"]["heros"]:
+                self.turn_manager.players.append(Player(
+                    self, hero["pos"]["x"],
+                    hero["pos"]["y"],
+                    hero["class"],
+                    hero["characteristics"],
+                    hero["health"],
+                    hero["xp"],
+                    hero["gold"],
+                    ASSETS_SPRITES[hero["class"]]))
+            for item in self.game_data["game_data"]["items"]:
+                PlacableItem(self, vec(item["pos"]["x"], item["pos"]["y"]), item["name"], item["properties"],
+                             ITEMS[item["image_name"]], item["image_name"])
+            for enemy in self.game_data["game_data"]["enemy"]:
+                self.turn_manager.enemies.append(
+                    Enemy(
+                        self, enemy["pos"]["x"],
+                        enemy["pos"]["y"],
+                        enemy["class"],
+                        enemy["health"],
+                        ASSETS_SPRITES[enemy["class"]]))
+            for tile_object in self.map.tmxdata.objects:
+                if tile_object.name == 'wall':
+                    Obstacle(
+                        self,
+                        tile_object.x,
+                        tile_object.y,
+                        tile_object.width,
+                        tile_object.height)
         else:
+            logger.info("Load a new game")
             for tile_object in self.map.tmxdata.objects:
                 obj_center = vec(
                     tile_object.x + tile_object.width / 2,
@@ -107,10 +137,10 @@ class Game(_State):
                             len(self.turn_manager.players)]["characteristics"]
                         _images = ASSETS_SPRITES[_class]
                         self.turn_manager.players.append(
-                            Player(self, _x, _y, _class, _characteristics, _images))
+                            Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
                 if tile_object.name == "enemy":
                     self.turn_manager.enemies.append(
-                        Enemy(self, obj_center.x, obj_center.y, "enemy_1", ASSETS_SPRITES["enemy_1"])
+                        Enemy(self, obj_center.x, obj_center.y, "enemy_1", 100, ASSETS_SPRITES["enemy_1"])
                     )
                 if tile_object.name == 'wall':
                     Obstacle(
