@@ -160,6 +160,7 @@ class LoadGame(_Elements):
             with open(path.join(self.saved_games, selected)) as f:
                 self.game_data['game_data'] = json.load(f)
                 self.game_data['file_name'] = selected
+                self.game_data['loaded'] = True
                 super().set_state(TRANSITION_OUT)
                 logger.info('Load : %s', selected)
         except EnvironmentError as e:

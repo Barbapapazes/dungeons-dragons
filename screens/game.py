@@ -87,56 +87,61 @@ class Game(_State):
             self.map_rect.height, self.game_data["minimap"]["fog"], self.game_data["minimap"]["cover"])
         self.camera = Camera(self.map.width, self.map.height)
 
-        for tile_object in self.map.tmxdata.objects:
-            obj_center = vec(
-                tile_object.x + tile_object.width / 2,
-                tile_object.y + tile_object.height / 2)
-            if tile_object.name == 'player':
-                if len(self.turn_manager.players) < len(self.game_data["game_data"]["heros"]):
-                    _x = obj_center.x if not ("last_pos" in self.game_data["game_data"]["heros"][
-                        len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
-                        len(self.turn_manager.players)]["last_pos"]["x"]
-                    _y = obj_center.y if not ("last_pos" in self.game_data["game_data"]["heros"][
-                        len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
-                        len(self.turn_manager.players)]["last_pos"]["y"]
-                    _class = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["class"]
-                    _characteristics = self.game_data["game_data"]["heros"][
-                        len(self.turn_manager.players)]["characteristics"]
-                    _images = ASSETS_SPRITES[_class]
-                    self.turn_manager.players.append(
-                        Player(self, _x, _y, _class, _characteristics, _images))
-            if tile_object.name == "enemy":
-                self.turn_manager.enemies.append(
-                    Enemy(self, obj_center.x, obj_center.y, "enemy_1", ASSETS_SPRITES["enemy_1"])
-                )
-            if tile_object.name == 'wall':
-                Obstacle(
-                    self,
-                    tile_object.x,
-                    tile_object.y,
-                    tile_object.width,
-                    tile_object.height)
-            if tile_object.name == "door":
-                wall = Obstacle(
-                    self,
-                    tile_object.x,
-                    tile_object.y,
-                    tile_object.width,
-                    tile_object.height)
-                Door(self, obj_center.x, obj_center.y, wall)
-            if tile_object.name == "chest":
-                Chest(self, obj_center.x, obj_center.y)
-                Obstacle(
-                    self,
-                    tile_object.x,
-                    tile_object.y,
-                    tile_object.width,
-                    tile_object.height)
-            if tile_object.name == "camp_fire":
-                CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
-            if tile_object.name in ITEMS_NAMES.keys():
-                PlacableItem(self, obj_center, tile_object.name, tile_object.properties,
-                             ITEMS[ITEMS_NAMES[tile_object.name]], ITEMS_NAMES[tile_object.name])
+        if self.game_data["loaded"]:
+            logger.debug("load from the file")
+        else:
+            for tile_object in self.map.tmxdata.objects:
+                obj_center = vec(
+                    tile_object.x + tile_object.width / 2,
+                    tile_object.y + tile_object.height / 2)
+                if tile_object.name == 'player':
+                    if len(self.turn_manager.players) < len(self.game_data["game_data"]["heros"]):
+                        _x = obj_center.x if not ("last_pos" in self.game_data["game_data"]["heros"][
+                            len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
+                            len(self.turn_manager.players)]["last_pos"]["x"]
+                        _y = obj_center.y if not ("last_pos" in self.game_data["game_data"]["heros"][
+                            len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
+                            len(self.turn_manager.players)]["last_pos"]["y"]
+                        _class = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["class"]
+                        _characteristics = self.game_data["game_data"]["heros"][
+                            len(self.turn_manager.players)]["characteristics"]
+                        _images = ASSETS_SPRITES[_class]
+                        self.turn_manager.players.append(
+                            Player(self, _x, _y, _class, _characteristics, _images))
+                if tile_object.name == "enemy":
+                    self.turn_manager.enemies.append(
+                        Enemy(self, obj_center.x, obj_center.y, "enemy_1", ASSETS_SPRITES["enemy_1"])
+                    )
+                if tile_object.name == 'wall':
+                    Obstacle(
+                        self,
+                        tile_object.x,
+                        tile_object.y,
+                        tile_object.width,
+                        tile_object.height)
+                if tile_object.name == "door":
+                    wall = Obstacle(
+                        self,
+                        tile_object.x,
+                        tile_object.y,
+                        tile_object.width,
+                        tile_object.height)
+                    Door(self, obj_center.x, obj_center.y, wall)
+                if tile_object.name == "chest":
+                    Chest(self, obj_center.x, obj_center.y)
+                    Obstacle(
+                        self,
+                        tile_object.x,
+                        tile_object.y,
+                        tile_object.width,
+                        tile_object.height)
+                if tile_object.name == "camp_fire":
+                    CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
+                if tile_object.name in ITEMS_NAMES.keys():
+                    PlacableItem(self, obj_center, tile_object.name, tile_object.properties,
+                                 ITEMS[ITEMS_NAMES[tile_object.name]], ITEMS_NAMES[tile_object.name])
+            self.save_data()
+            self.save_data_in_file()
 
         # Temporaire
         # think how this will be used with the menu
@@ -448,13 +453,18 @@ class Game(_State):
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
 
+    def save_data_in_file(self):
+        save_event = pg.event.Event(pg.USEREVENT, code="_State", name="save")
+        pg.event.post(save_event)
+
     def update(self):
         """Update all"""
         # self.all_sprites.update()
         self.items.update()
         for sprite in self.all_sprites:
             self.all_sprites.change_layer(sprite, sprite.rect.bottom)
-        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.doors, False)
+        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.doors,
+                                       False)  # toues les fonctions hits c'est des fonctions hits
         for hit in hits:
             hit.try_open(self.turn_manager.active_character())
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.chests, False)
@@ -467,8 +477,7 @@ class Game(_State):
             for hit in hits:
                 if isinstance(hit, CampFire):
                     self.save_data()
-                    save_event = pg.event.Event(pg.USEREVENT, code="_State", name="save")
-                    pg.event.post(save_event)
+                    self.save_data_in_file()
                     self.press_space = False
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.items, False)
         for hit in hits:

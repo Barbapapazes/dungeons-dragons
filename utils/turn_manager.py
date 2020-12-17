@@ -34,6 +34,7 @@ class TurnManager:
             int
         """
         len_characters = len(self.get_characters())
+        # logger.debug("si il n'y a plus de partie, c'est game over")
         turn_to_number = self.turn % len_characters
         return turn_to_number
 
