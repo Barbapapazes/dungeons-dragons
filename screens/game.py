@@ -466,10 +466,9 @@ class Game(_State):
         if self.press_space and hits:
             for hit in hits:
                 if isinstance(hit, CampFire):
-                    self.update_game_data()
+                    self.save_data()
                     save_event = pg.event.Event(pg.USEREVENT, code="_State", name="save")
                     pg.event.post(save_event)
-                    print("evnet send")
                     self.press_space = False
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.items, False)
         for hit in hits:
@@ -503,7 +502,7 @@ class Game(_State):
         # if self.turn_manager.is_active_player():
         self.camera.update(self.turn_manager.active_character())
         self.minimap.update(self.turn_manager.active_character())
-        self.update_game_data()
+        # self.update_game_data()
         self.check_for_chest()
 
     def check_for_chest(self):
@@ -514,14 +513,19 @@ class Game(_State):
             self.turn_manager.active_character().inventory.display_inventory = True
             super().toggle_sub_state('chest')
 
-    def update_game_data(self):
-        if self.turn_manager.is_active_player():
+    def save_data(self):
+        self.game_data["minimap"] = self.minimap.create_minimap_data()
+        self.game_data["game_data"]["heros"] = self.save_players()
+        self.game_data["game_data"]["items"] = self.save_items()
+        self.game_data["game_data"]["enemy"] = self.save_enemies()
 
-            self.game_data["minimap"] = self.minimap.create_minimap_data()
-            self.game_data["game_data"]["heros"][
-                self.turn_manager.get_pos_player()] = self.turn_manager.active_character().save()
-            self.game_data["game_data"]["items"] = self.save_items()
-            self.game_data["game_data"]["enemy"] = self.save_enemies()
+    def save_players(self):
+        players_list = list()
+        for character in self.all_sprites:
+            if isinstance(character, Player):
+                players_list.append(character.save())
+
+        return players_list
 
     def save_enemies(self):
         enemies_list = list()

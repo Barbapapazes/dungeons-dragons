@@ -133,11 +133,11 @@ class Window():
         minimap_data = self.persist["minimap"]
         filename = self.persist["file_name"].split(".json")[0]
         minimap_types = ["cover", "fog"]
-        for type in minimap_types:
+        for _type in minimap_types:
             try:
-                path_cover = path.join(self.saved_minimap, f"{filename}-{type}.png")
-                pg.image.save(minimap_data[type], path_cover)
-                logger.info('File %s saved in %s', f"{filename}-{type}.png", path.abspath(self.saved_minimap))
+                path_cover = path.join(self.saved_minimap, f"{filename}-{_type}.png")
+                pg.image.save(minimap_data[_type], path_cover)
+                logger.info('File %s saved in %s', f"{filename}-{_type}.png", path.abspath(self.saved_minimap))
             except EnvironmentError as e:
                 logger.exception(e)
 

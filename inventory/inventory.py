@@ -51,9 +51,7 @@ class Inventory:
                     "name": item.name,
                     "price": item.price,
                     "weight": item.weight,
-                    # "type": item.type,
-                    # "image_name": item.image_name
-                    # il va falloir ajouter une propriété avec le nom de l'image
+                    "image_name": item.image_name
                 }
                 if isinstance(slot.item, Weapon):
                     to_save["wpn_type"] = item.wpn_type
