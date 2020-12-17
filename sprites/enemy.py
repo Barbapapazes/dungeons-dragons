@@ -24,6 +24,7 @@ TYPE = {
 
 class Enemy(Character):
     def __init__(self, game, x, y, _type, health, images):
+
         self.groups = enemies
         pg.sprite.Sprite.__init__(self, self.groups)
         super(Enemy, self).__init__(game, x, y, _type, images, MOB_HIT_RECT)
@@ -76,6 +77,20 @@ class Enemy(Character):
             "health": self.health,
             "inventory": self.inventory.save()
         }
+=======
+        self.speed = 2
+        
+        self.target = self.pos
+        self.player_spotted = None
+        self.view_range = TILESIZE*2
+
+        self.last_timestamp = 0
+        self.now = self.last_timestamp
+        self.classe = CLASSES[(randint(0,len(CLASSES)-1))]
+        self.goto = []
+    
+        self.health = 50
+>>>>>>> d3ca57e (merged code into pathfinding branch)
 
     def draw_health(self):
         """draw healthbar onto the screen
@@ -106,6 +121,7 @@ class Enemy(Character):
 
         #if trap nearby: flee(trap)
 
+<<<<<<< HEAD
         """ reset player spotted every 10 seconds
         """
         self.now = pg.time.get_ticks()
@@ -159,6 +175,43 @@ class Enemy(Character):
                 #     self.acc = self.wander()
                 # else:
                 #     self.acc = temp
+=======
+        self.now = pg.time.get_ticks()
+
+        """ If a player is in sight, evaluate whether he is worth attacking or not
+        """
+        if self.player_detection():
+            if self.evaluation():
+                self.flee(self.player_spotted.pos)
+            else:
+                if not self.goto:
+                    self.goto = self.pathfinding2(self.player_spotted.pos)
+                    if self.goto:
+                        del self.goto[0]
+                
+                # if self.now - self.last_timestamp > 150:
+                #     self.last_timestamp = self.now
+                
+                # logger.debug(self.goto)
+                
+                if self.goto:
+                    for i in self.goto:
+                        rect = pg.Rect(i.coor, (SIZE, SIZE))
+                        pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
+                    self.acc = self.seek(self.goto[0].coor)
+                    if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
+                        del self.goto[0]
+                    # logger.debug("enemy proche, utilisation du A* et avancement que de X case")
+
+            """if there is no player in range, just move around
+            """
+        else:
+            temp = self.avoidnpc()
+            if temp is False:
+                self.acc = self.wander()
+            else:
+                self.acc = temp
+>>>>>>> c3b9e22 (merged code into pathfinding branch)
 
             
         """actual movement update
@@ -355,7 +408,10 @@ class Enemy(Character):
             for player in players:
                 if (player.pos - self.pos).length() < self.view_range:
                     self.player_spotted = player
+<<<<<<< HEAD
                     logger.info("player spotted")
+=======
+>>>>>>> c3b9e22 (merged code into pathfinding branch)
                     return True
             return False
         return True
@@ -373,11 +429,14 @@ class Enemy(Character):
                     return Enemy.flee(self, sprite.pos)
         return False
 
+<<<<<<< HEAD
     def health_percentage(self):
         """returns the percentage of health left
         """
         return self.health / TYPE.get(self.type).get("health") * 100
 
+=======
+>>>>>>> c3b9e22 (merged code into pathfinding branch)
     def evaluation(self):
         """evaluates whether the ennemi should rush or flee the player.
 
@@ -385,6 +444,7 @@ class Enemy(Character):
             vec(x,y): acceleration vector following [the shortest path to the player / the optimal fleeing curve]
         """
         # linear : lambda x : x/25 - 2
+<<<<<<< HEAD
         return self.health_percentage()/25 - 2 < (self.groupCount(enemies.sprites()) - Character.groupCount(self.player_spotted, players.sprites()))
         #     return npc.flee(self, self.player_spotted.pos)
         # else: return npc.moveto(self, npc.pathfinding2(self, self.player_spotted.pos))
@@ -406,3 +466,9 @@ class Enemy(Character):
         self.player_spotted.health -= self.STR
         self.game.versus_manager.logs.add_log(f'{self} attacked {self.player_spotted} dealing {self.STR} damages !')
         self.game.versus_manager.add_turn()
+=======
+        return self.HP_percent()/25 - 2 < (self.groupCount(enemies.sprites()) - Character.groupCount(self.player_spotted, players.sprites()))
+        #     return npc.flee(self, self.player_spotted.pos)
+        # else: return npc.moveto(self, npc.pathfinding2(self, self.player_spotted.pos))
+
+>>>>>>> c3b9e22 (merged code into pathfinding branch)
