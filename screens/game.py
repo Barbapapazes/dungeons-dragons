@@ -1,5 +1,6 @@
 """Game screen"""
 
+from sprites.animated import CampFire
 from sprites.chest import Chest
 from inventory.inventory import Armor, Consumable, Weapon
 from config.sprites import ASSETS_SPRITES, ITEMS, ITEMS_NAMES
@@ -131,6 +132,8 @@ class Game(_State):
                     tile_object.y,
                     tile_object.width,
                     tile_object.height)
+            if tile_object.name == "camp_fire":
+                CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
             if tile_object.name in ITEMS_NAMES.keys():
                 PlacableItem(self, obj_center, tile_object.name, tile_object.properties,
                              ITEMS_NAMES[tile_object.name], ITEMS[ITEMS_NAMES[tile_object.name]])
@@ -455,10 +458,19 @@ class Game(_State):
         for hit in hits:
             hit.try_open(self.turn_manager.active_character())
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.chests, False)
-        if self.press_space:
+        if self.press_space and hits:
             for hit in hits:
                 hit.try_open(self.turn_manager.active_character())
             self.press_space = False
+        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.animated, False)
+        if self.press_space and hits:
+            for hit in hits:
+                if isinstance(hit, CampFire):
+                    self.update_game_data()
+                    save_event = pg.event.Event(pg.USEREVENT, code="_State", name="save")
+                    pg.event.post(save_event)
+                    print("evnet send")
+                    self.press_space = False
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.items, False)
         for hit in hits:
             if hit.properties["object_type"] == "other":
@@ -485,6 +497,9 @@ class Game(_State):
         self.turn_manager.update()
         self.doors.update()
         self.chests.update()
+        for animated in self.animated:
+            if isinstance(animated, CampFire):
+                animated.update()
         # if self.turn_manager.is_active_player():
         self.camera.update(self.turn_manager.active_character())
         self.minimap.update(self.turn_manager.active_character())
@@ -535,6 +550,10 @@ class Game(_State):
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         # self.all_sprites.draw(self.screen)
         self.versus_manager.draw(self.screen)
+        for animated in self.animated:
+            if isinstance(animated, CampFire):
+                self.screen.blit(animated.image, self.camera.apply(animated))
+
         for sprite in self.all_sprites:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()

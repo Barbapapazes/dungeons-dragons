@@ -120,6 +120,9 @@ class Window():
                     if event.name == "quit":
                         logger.info("User event : quit")
                         self.done = True
+                    if event.name == 'save':
+                        logger.info("User event: save ")
+                        self.save()
 
     def save(self):
         self.save_game_data()

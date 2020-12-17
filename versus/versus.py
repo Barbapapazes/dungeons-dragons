@@ -160,7 +160,8 @@ class VersusManager:
     def draw_range(self, screen):
         if self.action in ['attack', "move"]:
             for animated in self.game.animated:
-                screen.blit(animated.image, self.game.camera.apply(animated))
+                if isinstance(animated, Circle):
+                    screen.blit(animated.image, self.game.camera.apply(animated))
 
     def add_turn(self):
         self.selected_enemy = None

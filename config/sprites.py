@@ -160,6 +160,9 @@ ASSETS_CHEST = [pg.transform.scale(
 ASSETS_FLAMES = [pg.image.load(path.join(sprites_folder, "flames", f"{i}.png"))
                  for i in range(6)]
 
+ASSETS_CAMP_FIRE = [pg.image.load(path.join(sprites_folder, "camp_fire", "{:04d}.png".format(i)))
+                    for i in range(1, 9)]
+
 ASSETS_BOOK_OPENING = [pg.image.load(path.join(sprites_folder, "book", "opening",  f"{i}.png"))
                        for i in range(4)]
 ASSETS_BOOK_NEXT = [pg.image.load(path.join(sprites_folder, "book", "next",  f"{i}.png"))

@@ -4,7 +4,7 @@ from random import randint
 from collections import deque
 import pygame as pg
 from logger import logger
-from config.sprites import ASSETS_CIRCLE, ASSETS_FLAMES
+from config.sprites import ASSETS_CAMP_FIRE, ASSETS_CIRCLE, ASSETS_FLAMES
 from config.sprites import ASSETS_FLAMES, ASSETS_BOOK_OPENING
 
 default_fn = lambda *args: None
@@ -52,6 +52,23 @@ class Flames(Animated):
         for frame in ASSETS_FLAMES:
             frames.append(pg.transform.scale(frame, (self.width, int(width * frame.get_height() / frame.get_width()))))
         super(Flames, self).__init__(game, frame_per_image, frames, offset=randint(0, 6))
+
+        self.rect.center = (self.x, self.y)
+
+
+class CampFire(Animated):
+    """Used to create a camp fire"""
+
+    def __init__(self, game, x, y, width):
+        self.x = x
+        self.y = y
+        self.width = width
+
+        frame_per_image = randint(12, 18)
+        frames = list()
+        for frame in ASSETS_CAMP_FIRE:
+            frames.append(pg.transform.scale(frame, (self.width, int(width * frame.get_height() / frame.get_width()))))
+        super(CampFire, self).__init__(game, frame_per_image, frames, offset=randint(0, 6))
 
         self.rect.center = (self.x, self.y)
 
