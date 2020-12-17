@@ -68,6 +68,24 @@ class Cursor(Slider):
             align="w")
 
         super().draw()
+    
+    def draw_without_text(self):
+
+        value = super().getValue() - self.start
+
+        self.draw_text(
+            self.title.upper(),
+            self.font,
+            20,
+            YELLOW_LIGHT,
+            self.x,
+            self.y -
+            3 *
+            self.height //
+            4,
+            align="w")
+
+        super().draw()
 
     def update(self, stop_count=False):
         self.check_min_value()
