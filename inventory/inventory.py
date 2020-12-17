@@ -211,12 +211,7 @@ class Inventory:
                         break
 
         if self.outside and shop_item and not from_shop:
-            logger.debug("ajouter les properties pour faire le reverse")
-            # PlacableItem(
-            #     self.player.game, vec(self.player.pos) +
-            #     vec(randint(self.player.hit_rect.width + 50, self.player.hit_rect.width + 100),
-            #         0).rotate(randint(0, 360)),
-            #     shop_item.name, shop_item.image.copy())
+            self.throw_item(shop_item)
 
         if self.moving_item is not None:
             self.moving_item.is_moving = False
@@ -233,7 +228,7 @@ class Inventory:
         for slot in self.get_all_slots():
             if action == ACTIONS['throw']:
                 if slot.rect.collidepoint(mouse_pos):
-                    self.throw_item(slot)
+                    self.throw_item(slot.item)
             if isinstance(slot, InventorySlot):
                 if slot.rect.collidepoint(mouse_pos):
                     if isinstance(slot.item, Equipable):
@@ -254,19 +249,20 @@ class Inventory:
                         else:
                             logger.info('Action can not be done')
 
-    def throw_item(self, slot):
-        """Used to thro an item
+    def throw_item(self, item):
+        """Used to throw an item
 
         Args:
-            slot (InventorySlot)
+            item (Item)
         """
-        logger.info("throw %s", slot.item)
+        logger.info("throw %s", item)
+        logger.debug("ajuster les properites")
         properties = dict()
-        if isinstance(slot.item, Weapon):
+        if isinstance(item, Weapon):
             properties['object_type'] = "weapon"
-        elif isinstance(slot.item, Armor):
+        elif isinstance(item, Armor):
             properties['object_type'] = "armor"
-        elif isinstance(slot.item, Consumable):
+        elif isinstance(item, Consumable):
             properties['object_type'] = "consomable"
         else:
             properties['object_type'] = "other"
@@ -275,8 +271,8 @@ class Inventory:
             self.player.game, vec(self.player.pos) +
             vec(randint(self.player.hit_rect.width + 50, self.player.hit_rect.width + 100),
                 0).rotate(randint(0, 360)),
-            slot.item.name, properties, slot.item.image.copy(), slot.item.image_name)
-        self.remove_item(slot.item)
+            item.name, properties, item.image.copy(), item.image_name)
+        self.remove_item(item)
 
     def add_item(self, item, slot=None):
         """Add a passed item to the inventory

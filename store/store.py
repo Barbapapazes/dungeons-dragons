@@ -218,7 +218,6 @@ class Store:
             screen (Surface)
             mouse_pos (tuple):
         """
-        print(action)
         for slot in self.get_all_slots():
             if slot.item is not None:
                 if slot.rect.collidepoint(mouse_pos):
