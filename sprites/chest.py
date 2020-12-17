@@ -48,7 +48,7 @@ class Chest(pg.sprite.Sprite):
             for slot in player.inventory.slots:
                 if slot.item and slot.item.name == "key":
                     logger.info("Open a chest")
-                    player.inventory.slots.remove(slot)
+                    player.inventory.remove_item(slot.item)
                     self.game.chest_open = True
                     self.game.opened_chest = self
                     self.is_open = True
