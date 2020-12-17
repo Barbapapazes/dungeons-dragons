@@ -3,7 +3,7 @@
 from config.window import HEIGHT, WIDTH
 import pygame as pg
 from window import _Elements
-from config.screens import BACKGROUND_MENU, GAME, MENU, NEW_GAME, OPTIONS, LOAD_GAME
+from config.screens import BACKGROUND_MENU, CREDITS, GAME, MENU, NEW_GAME, OPTIONS, LOAD_GAME
 from utils.shortcuts import load_shortcuts
 from itertools import cycle
 
@@ -49,6 +49,11 @@ class Menu(_Elements):
                 "text": "Options",
                 "on_click": self.load_next_state,
                 "on_click_params": [OPTIONS],
+            },
+            "credits": {
+                "text": "Credits",
+                "on_click": self.load_next_state,
+                "on_click_params": [CREDITS],
             },
             "quit": {
                 "text": "Quit",

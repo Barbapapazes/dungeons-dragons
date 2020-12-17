@@ -26,5 +26,8 @@ TRANSITION_OUT = 'transition out'
 BACKGROUND_MENU = [pg.image.load(path.join(img_folder, "menu", f"{i}.png"))
                    for i in range(15)]
 
+BACKGROUND_CREDITS = [pg.image.load(path.join(img_folder, "credits", "{:04d}.png".format(i)))
+                      for i in range(1, 9)]
+
 BACKGROUND_INTRODUCTION = [pg.image.load(path.join(img_folder, "introduction", "{:04d}.png".format(i)))
                            for i in range(1, 10)]

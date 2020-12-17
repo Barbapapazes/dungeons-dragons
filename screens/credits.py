@@ -1,27 +1,33 @@
 """Credits screen"""
 
+from config.window import HEIGHT, WIDTH
 import pygame as pg
-from window import _State
-from config.window import WIDTH, HEIGHT
-from config.screens import GAME, CREDITS, TRANSITION_OUT
+from window import _Elements
+from config.screens import BACKGROUND_CREDITS, CREDITS, MENU, NEW_GAME, OPTIONS, LOAD_GAME
+from itertools import cycle
 
 
-class Credits(_State):
-    """Credits screen"""
+class Credits(_Elements):
+    """Credit screen"""
 
     def __init__(self):
         self.name = CREDITS
-        super(Credits, self).__init__(self.name)
-        self.next = GAME
+        self.next = MENU
+        super(Credits, self).__init__(self.name, self.next, 'credits', '0001.png', {})
 
-        self.background = pg.Surface((WIDTH, HEIGHT))
+        self.frames = list()
+        for frame in BACKGROUND_CREDITS:
+            self.frames.append(pg.transform.scale(frame, (WIDTH, HEIGHT)))
 
-    def startup(self, dt, game_data):
-        """Initialize data at scene start."""
-        self.game_data = game_data
-        self.dt = dt
-        self.background.fill((255, 0, 0))
-        super().setup_transition()
+        self.frames = cycle(self.frames)
+        self.background = next(self.frames)
+
+        self.frame_time = 80 / 1000
+        self.frame_timer = 0
+
+        self.win = pg.Surface((WIDTH, HEIGHT)).convert_alpha()
+        self.win.fill((0, 0, 0, 0))
+        self.create_back_button(self.win, self.load_next_state, [MENU])
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -36,14 +42,19 @@ class Credits(_State):
 
     def normal_run(self):
         """Run the normal state"""
+        self.update_background()
+        super().events_buttons(back=True)
         self.draw()
 
-    def get_events(self, event):
-        """Events loop"""
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_LEFT:
-                super().set_state(TRANSITION_OUT)
+    def update_background(self):
+        """Used to update the background"""
+        self.frame_timer += self.dt
+        if self.frame_timer >= self.frame_time:
+            self.frame_timer -= self.frame_time
+            self.background = next(self.frames)
 
     def draw(self):
         """Draw content"""
-        self.screen.blit(self.background, (0, 0))
+        super().draw_elements("Credits")
+        self.back_btn.draw()
+        self.screen.blit(self.win, (0, 0))
