@@ -2,6 +2,7 @@
 
 from os import path
 import json
+from sprites.animated import Chandelier
 import pygame as pg
 from logger import logger
 from window import _Elements
@@ -20,6 +21,10 @@ class Options(_Elements):
         super(Options, self).__init__(self.name, self.next, 'options', "background.jpg", self.create_buttons_dict())
 
         self.create_back_button(self.background, self.load_next_state, [MENU])
+
+        self.animated = pg.sprite.Group()
+        Chandelier(self, WIDTH // 4, 0, 200)
+        Chandelier(self, 3 * WIDTH // 4, 0, 200)
 
         self.states_dict = self.make_states_dict()
 
@@ -106,6 +111,7 @@ class Options(_Elements):
     def normal_run(self):
         """Run the normal state"""
         super().events_buttons(back=True)
+        self.animated.update()
         self.draw()
 
     def screen_run(self):
@@ -127,3 +133,4 @@ class Options(_Elements):
     def draw(self):
         """Draw content"""
         super().draw_elements("Options", back=True)
+        self.animated.draw(self.screen)
