@@ -2,7 +2,7 @@
 
 from sprites.animated import CampFire
 from sprites.chest import Chest
-from inventory.inventory import Armor, Consumable, Weapon
+from inventory.inventory import Armor, Consumable, Inventory, Weapon
 from config.sprites import ASSETS_SPRITES, ITEMS, ITEMS_NAMES
 from os import path
 from sprites.item import PlacableItem
@@ -90,7 +90,7 @@ class Game(_State):
         if self.game_data["loaded"]:
             logger.info("Load from a file")
             for hero in self.game_data["game_data"]["heros"]:
-                self.turn_manager.players.append(Player(
+                player = Player(
                     self, hero["pos"]["x"],
                     hero["pos"]["y"],
                     hero["class"],
@@ -98,7 +98,12 @@ class Game(_State):
                     hero["health"],
                     hero["xp"],
                     hero["gold"],
-                    ASSETS_SPRITES[hero["class"]]))
+                    ASSETS_SPRITES[hero["class"]])
+
+                for item in Inventory.create_inventory(hero["inventory"]):
+                    player.inventory.add_item(item)
+                self.turn_manager.players.append(player)
+                logger.debug("ajouter l'inventaire")
             for item in self.game_data["game_data"]["items"]:
                 PlacableItem(self, vec(item["pos"]["x"], item["pos"]["y"]), item["name"], item["properties"],
                              ITEMS[item["image_name"]], item["image_name"])

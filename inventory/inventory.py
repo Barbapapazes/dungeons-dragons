@@ -47,22 +47,43 @@ class Inventory:
     def create_inventory(cls, data):
         items = list()
         for item in data:
-            if item.object_type == "item":
-                items.append(Item(item.name, ITEMS[item.image_name], item.image_name, item.price, item.weight))
-            elif item.object_type == "armor":
+            logger.debug(item)
+            if item["object_type"] == "item":
+                items.append(
+                    Item(
+                        item["name"],
+                        ITEMS[item["image_name"]],
+                        item["image_name"],
+                        item["price"],
+                        item["weight"]))
+            elif item["object_type"] == "armor":
                 items.append(
                     Armor(
-                        item.name, ITEMS[item.image_name],
-                        item.image_name, item.price, item.weight, item.shield, item.slot))
-            elif item.object_type == "weapon":
+                        item["name"], ITEMS[item["image_name"]],
+                        item["image_name"], item["price"], item["weight"], item["shield"], item["slot"]))
+            elif item["object_type"] == "weapon":
                 items.append(
                     Weapon(
-                        item.name, ITEMS[item.image_name],
-                        item.price, item.slot, item.wpn_type, item.weight, item.nb_d, item.val_d, item.scope))
-            elif item.object_type == "consomable":
-                items.append(Consumable(
-                    item.name, ITEMS[item.image_name], item.price, item.weight, item.hp_gain, item.shield_gain
-                ))
+                        item["name"],
+                        ITEMS[item["image_name"]],
+                        item["image_name"],
+                        item["price"],
+                        item["slot"],
+                        item["wpn_type"],
+                        item["weight"],
+                        item["nb_d"],
+                        item["val_d"],
+                        item["scope"]))
+            elif item["object_type"] == "consumable":
+                items.append(
+                    Consumable(
+                        item["name"],
+                        ITEMS[item["image_name"]],
+                        item["image_name"],
+                        item["price"],
+                        item["weight"],
+                        item["hp_gain"],
+                        item["shield_gain"]))
 
         return items
 
@@ -261,14 +282,14 @@ class Inventory:
             item (Item)
         """
         logger.info("throw %s", item)
-        logger.debug("ajuster les properites")
+        logger.debug("ajuster les properties")
         properties = dict()
         if isinstance(item, Weapon):
             properties['object_type'] = "weapon"
         elif isinstance(item, Armor):
             properties['object_type'] = "armor"
         elif isinstance(item, Consumable):
-            properties['object_type'] = "consomable"
+            properties['object_type'] = "consumable"
         else:
             properties['object_type'] = "other"
 
