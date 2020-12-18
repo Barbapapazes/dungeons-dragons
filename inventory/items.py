@@ -22,6 +22,7 @@ class Item:
 
     def save(self):
         return {
+            "object_type": "item",
             "name": self.name,
             "price": self.price,
             "weight": self.weight,

@@ -42,6 +42,18 @@ class Inventory:
 
         self.menu_data = MENU_DATA
 
+    @classmethod
+    def create_inventory(self, data):
+        for item in data:
+            if item.object_type == "item":
+                pass
+            elif item.object_type == "armor":
+                pass
+            elif item.object_type == "weapon":
+                pass
+            elif item.object_type == "consomable":
+                pass
+
     def save(self):
         inventory_list = list()
         for slot in self.slots:
@@ -392,10 +404,11 @@ class Consumable(Item):
         self.shield_gain = shield_gain
 
     def save(self):
-        return {
+        return super().save() | {
+            "object_type": "consumable",
             "hp_gain":  self.hp_gain,
             "shield_gain":  self.shield_gain
-        } | super().save()
+        }
 
     def use(self, inventory, target):
         """remove the consumable from the inventory inv and uses it on the target player
@@ -444,10 +457,11 @@ class Armor(Equipable):
         self.slot = slot
 
     def save(self):
-        return {
+        return super().save() | {
+            "object_type": "armor",
             "shield": self.shield,
             "slot": self.slot
-        } | super().save()
+        }
 
     def equip(self, inventory, target):
         """Equip the Armor on the right player's armor slot,
@@ -491,13 +505,14 @@ class Weapon(Equipable):
         self.scope = scope*TILESIZE
 
     def save(self):
-        return {
+        return super().save() | {
+            "object_type": "weapon",
             "wpn_type": self.wpn_type,
             "nb_d": self.nb_d,
             "val_d": self.val_d,
             "scope": self.scope,
             "slot": self.slot
-        } | super().save()
+        }
 
     def equip(self, inventory, target):
         """Equip the weapon in the target's weapon slot
