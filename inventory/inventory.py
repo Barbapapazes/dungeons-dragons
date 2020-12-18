@@ -1,5 +1,6 @@
 """Inventory"""
 
+from config.sprites import ITEMS
 from random import randint
 from sprites.item import PlacableItem
 import pygame as pg
@@ -43,16 +44,27 @@ class Inventory:
         self.menu_data = MENU_DATA
 
     @classmethod
-    def create_inventory(self, data):
+    def create_inventory(cls, data):
+        items = list()
         for item in data:
             if item.object_type == "item":
-                pass
+                items.append(Item(item.name, ITEMS[item.image_name], item.image_name, item.price, item.weight))
             elif item.object_type == "armor":
-                pass
+                items.append(
+                    Armor(
+                        item.name, ITEMS[item.image_name],
+                        item.image_name, item.price, item.weight, item.shield, item.slot))
             elif item.object_type == "weapon":
-                pass
+                items.append(
+                    Weapon(
+                        item.name, ITEMS[item.image_name],
+                        item.price, item.slot, item.wpn_type, item.weight, item.nb_d, item.val_d, item.scope))
             elif item.object_type == "consomable":
-                pass
+                items.append(Consumable(
+                    item.name, ITEMS[item.image_name], item.price, item.weight, item.hp_gain, item.shield_gain
+                ))
+
+        return items
 
     def save(self):
         inventory_list = list()
