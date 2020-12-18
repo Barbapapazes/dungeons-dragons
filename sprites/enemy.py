@@ -63,7 +63,7 @@ class Enemy(Character):
     def throw_inventory(self):
         for slot in self.inventory.slots:
             if slot.item:
-                self.inventory.throw_item(slot)
+                self.inventory.throw_item(slot.item)
 
     def update(self):
         if self.health <= 0:

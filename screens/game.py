@@ -99,7 +99,6 @@ class Game(_State):
                     hero["xp"],
                     hero["gold"],
                     ASSETS_SPRITES[hero["class"]])
-
                 for item in Inventory.create_inventory(hero["inventory"]):
                     player.inventory.add_item(item)
                 self.turn_manager.players.append(player)
@@ -108,13 +107,17 @@ class Game(_State):
                 PlacableItem(self, vec(item["pos"]["x"], item["pos"]["y"]), item["name"], item["properties"],
                              ITEMS[item["image_name"]], item["image_name"])
             for enemy in self.game_data["game_data"]["enemies"]:
+                enemy_obj = Enemy(
+                    self, enemy["pos"]["x"],
+                    enemy["pos"]["y"],
+                    enemy["class"],
+                    enemy["health"],
+                    ASSETS_SPRITES[enemy["class"]])
+                for item in Inventory.create_inventory(enemy["inventory"]):
+                    print(item.name)
+                    enemy_obj.inventory.add_item(item)
                 self.turn_manager.enemies.append(
-                    Enemy(
-                        self, enemy["pos"]["x"],
-                        enemy["pos"]["y"],
-                        enemy["class"],
-                        enemy["health"],
-                        ASSETS_SPRITES[enemy["class"]]))
+                    enemy_obj)
             for chest in self.game_data["game_data"]["chests"]:
                 Chest(self, chest["pos"]["x"], chest["pos"]["y"], is_open=chest["is_open"])
                 logger.debug("il faut ajotuer l'ajout du contenu du coffre")
