@@ -158,6 +158,9 @@ ASSETS_SPRITES = {
     } for _type in TYPES
 }
 
+ASSETS_MERCHANT = [pg.image.load(path.join(sprites_folder, "merchant", f"{i}.png"))
+                   for i in range(4)]
+
 ASSETS_DOOR = [pg.transform.scale(
     pg.image.load(path.join(sprites_folder, "door", "opening", f"{i}.png")),
     (TILESIZE, TILESIZE)) for i in range(14)]

@@ -1,5 +1,6 @@
 """Game screen"""
 
+from sprites.merchant import Merchant
 from sprites.animated import CampFire
 from sprites.chest import Chest
 from inventory.inventory import Armor, Consumable, Inventory, Weapon
@@ -51,6 +52,8 @@ class Game(_State):
         self.press_space = False
         self.chest_open = False
         self.opened_chest = None
+        self.merchant_open = False
+        self.opened_merchant = None
         self.seller = False
 
         self.states_dict = self.make_states_dict()
@@ -61,6 +64,7 @@ class Game(_State):
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
         self.doors = pg.sprite.Group()
+        self.merchants = pg.sprite.Group()
         self.chests = pg.sprite.Group()
         self.items = pg.sprite.Group()
         self.zoneEffect = pg.sprite.Group()
@@ -198,6 +202,8 @@ class Game(_State):
                         TILESIZE * 0.4)
                 if tile_object.name == "camp_fire":
                     CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
+                if tile_object.name == "merchant":
+                    Merchant(self, obj_center.x, obj_center.y, TILESIZE)
                 if tile_object.name in ITEMS_NAMES.keys():
                     PlacableItem(self, obj_center, tile_object.name, tile_object.properties,
                                  ITEMS[ITEMS_NAMES[tile_object.name]], ITEMS_NAMES[tile_object.name])
@@ -243,7 +249,8 @@ class Game(_State):
                        'menu': self.menu_run,
                        'inventory': self.inventory_run,
                        'shop': self.shop_run,
-                       'chest': self.chest_run
+                       'chest': self.chest_run,
+                       'merchant': self.merchant_run,
                        }
 
         return states_dict
@@ -257,6 +264,9 @@ class Game(_State):
             if event.key == pg.K_RIGHT:
                 self.next = CREDITS
                 super().set_state(TRANSITION_OUT)
+
+            if event.key == pg.K_ESCAPE:
+                logger.debug("close submenu")
 
         if event.type == pg.KEYUP:
             self.toggle_states(event)
@@ -361,25 +371,25 @@ class Game(_State):
 
     def events_shop(self, event):
         """When the shop state is running"""
-        if self.state == 'shop':  # faudrait foutre tout ça dans une fonction du shop et de l'inventaire
+        if self.state == 'merchant':  # faudrait foutre tout ça dans une fonction du shop et de l'inventaire
             if event.type == pg.MOUSEBUTTONUP:
                 if event.button == 3:
                     self.mouse_pos = pg.mouse.get_pos()
-                    if self.turn_manager.active_character().shop.is_clicked(self.mouse_pos):
-                        PopupMenu(self.turn_manager.active_character().shop.menu_data)
+                    if self.opened_merchant.shop.is_clicked(self.mouse_pos):
+                        PopupMenu(self.opened_merchant.shop.menu_data)
                     elif self.turn_manager.active_character().inventory.is_clicked(self.mouse_pos):
                         PopupMenu(self.turn_manager.active_character().inventory.menu_data)
                 elif event.button == 1:
-                    self.turn_manager.active_character().shop.place_item(self.turn_manager.active_character().inventory)
+                    self.opened_merchant.shop.place_item(self.turn_manager.active_character().inventory)
                     self.turn_manager.active_character().inventory.place_item()
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    self.turn_manager.active_character().shop.move_item()
+                    self.opened_merchant.shop.move_item()
                     self.turn_manager.active_character().inventory.move_item()
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
-                    if event.name == 'shop' and event.text in self.turn_manager.active_character().shop.menu_data:
-                        self.turn_manager.active_character().shop.check_slot(
+                    if event.name == 'shop' and event.text in self.opened_merchant.shop.menu_data:
+                        self.opened_merchant.shop.check_slot(
                             event.text, self.screen, self.turn_manager.active_character(), self.mouse_pos)
                     self.inventory_events(event)
 
@@ -495,6 +505,14 @@ class Game(_State):
         self.turn_manager.active_character().inventory.draw(self.screen)
         self.opened_chest.store.draw(self.screen)
 
+    def merchant_run(self):
+        self.draw()
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.screen.blit(self.dim_screen, (0, 0))
+        self.turn_manager.active_character().inventory.draw(self.screen)
+        self.opened_merchant.shop.draw(self.screen)
+
     # def versus_action(self):
 
     #     if self.turn_manager.active_character().numberOfAction > 0:
@@ -535,6 +553,11 @@ class Game(_State):
             for hit in hits:
                 hit.try_open(self.turn_manager.active_character())
             self.press_space = False
+        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.merchants, False)
+        if self.press_space and hits:
+            for hit in hits:
+                hit.try_open()
+            self.press_space = False
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.animated, False)
         if self.press_space and hits:
             for hit in hits:
@@ -568,6 +591,7 @@ class Game(_State):
         self.turn_manager.update()
         self.doors.update()
         self.chests.update()
+        self.merchants.update()
         for animated in self.animated:
             if isinstance(animated, CampFire):
                 animated.update()
@@ -576,6 +600,7 @@ class Game(_State):
         self.minimap.update(self.turn_manager.active_character())
         # self.update_game_data()
         self.check_for_chest()
+        self.check_for_merchant()
 
     def check_for_chest(self):
         if self.chest_open:
@@ -585,6 +610,14 @@ class Game(_State):
             self.turn_manager.active_character().inventory.display_inventory = True
             super().toggle_sub_state('chest')
 
+    def check_for_merchant(self):
+        if self.merchant_open:
+            self.merchant_open = False
+            self.seller = False
+            self.opened_merchant.shop.display_shop = True
+            self.turn_manager.active_character().inventory.display_inventory = True
+            super().toggle_sub_state('merchant')
+
     def save_data(self):
         self.game_data["minimap"] = self.minimap.create_minimap_data()
         self.game_data["game_data"]["heros"] = self.save_players()
@@ -592,6 +625,7 @@ class Game(_State):
         self.game_data["game_data"]["enemies"] = self.save_enemies()
         self.game_data["game_data"]["chests"] = self.save_chests()
         self.game_data["game_data"]["doors"] = self.save_doors()
+        logger.debug("add merchants")
 
     def save_doors(self):
         doors_list = list()
