@@ -13,12 +13,8 @@ vec = pg.math.Vector2
 class Player(Character):
     """Create a player"""
 
-<<<<<<< HEAD
     def __init__(self, game, x, y, _type, characteristics, health, xp, gold, images):
-=======
-    def __init__(self, game, x, y, _type, characteristics, images):
         self.groups = players        
->>>>>>> d3ca57e (merged code into pathfinding branch)
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
         self.can_move = True
 

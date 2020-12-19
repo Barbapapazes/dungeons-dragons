@@ -1,12 +1,7 @@
-<<<<<<< HEAD
 """Define a enemy"""
 
-
-from inventory.inventory import Inventory
-=======
-"""Define an enemy"""
 from sprites.character import *
->>>>>>> d3ca57e (merged code into pathfinding branch)
+from inventory.inventory import Inventory
 from config.colors import GREEN, YELLOW, RED
 from config.window import TILESIZE
 from utils.cell import Cell
@@ -26,30 +21,25 @@ CLASSES = ["Fighter","Mage","Rogue"]
 
 
 class Enemy(Character):
-<<<<<<< HEAD
     def __init__(self, game, x, y, _type, health, images):
-=======
-    def __init__(self, game, x, y, _type, images):
-        self.groups = enemies
->>>>>>> d3ca57e (merged code into pathfinding branch)
         super(Enemy, self).__init__(game, x, y, _type, images, MOB_HIT_RECT)
 
         self.pos = vec(x, y)
         self.vel = vec(1, 1).rotate(uniform(0, 360))
         self.acc = vec(0, 0)
-<<<<<<< HEAD
-        self.speed = 3
-        self.targets = game.turn_manager.players
-        self.target = None
 
-        self.goto = None
-
-        self.last_target = 0
+        self.last_timestamp = 0
+        self.now = self.last_timestamp
 
         self.inventory = Inventory(self, 5, 8)
 
         self.health = health
 
+        self.speed = 2
+        
+        self.target = self.pos
+        self.player_spotted = None
+        
     def save(self):
         return {
             "class": self.type,
@@ -60,21 +50,8 @@ class Enemy(Character):
             "health": self.health,
             "inventory": self.inventory.save()
         }
-=======
-        self.speed = 2
-        
-        self.target = self.pos
-        self.player_spotted = None
-        self.view_range = TILESIZE*2
 
-        self.last_timestamp = 0
-        self.now = self.last_timestamp
-        self.classe = CLASSES[(randint(0,len(CLASSES)-1))]
-        self.goto = []
     
-        self.health = 50
->>>>>>> d3ca57e (merged code into pathfinding branch)
-
     def draw_health(self):
         if self.health > 60:
             col = GREEN
