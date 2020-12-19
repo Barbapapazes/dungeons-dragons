@@ -24,9 +24,12 @@ TYPE = {
 
 class Enemy(Character):
     def __init__(self, game, x, y, _type, health, images):
+<<<<<<< HEAD
 
         self.groups = enemies
         pg.sprite.Sprite.__init__(self, self.groups)
+=======
+>>>>>>> 1d46b80 (rebased pathfinding on dev)
         super(Enemy, self).__init__(game, x, y, _type, images, MOB_HIT_RECT)
         
         self.pos = vec(x, y)
@@ -34,8 +37,12 @@ class Enemy(Character):
         self.acc = vec(0, 0)
 
         self.last_timestamp = 0
+<<<<<<< HEAD
         self.last_timestamp2 = 0
         self.now = 0
+=======
+        self.now = self.last_timestamp
+>>>>>>> 1d46b80 (rebased pathfinding on dev)
 
         self.inventory = Inventory(self, 5, 8)
 
@@ -64,6 +71,11 @@ class Enemy(Character):
         """
         return self.type
 
+        self.speed = 2
+        
+        self.target = self.pos
+        self.player_spotted = None
+        
     def save(self):
         """saves the enemy's characteristic into game_data
 
@@ -77,21 +89,8 @@ class Enemy(Character):
             "health": self.health,
             "inventory": self.inventory.save()
         }
-=======
-        self.speed = 2
-        
-        self.target = self.pos
-        self.player_spotted = None
-        self.view_range = TILESIZE*2
 
-        self.last_timestamp = 0
-        self.now = self.last_timestamp
-        self.classe = CLASSES[(randint(0,len(CLASSES)-1))]
-        self.goto = []
     
-        self.health = 50
->>>>>>> d3ca57e (merged code into pathfinding branch)
-
     def draw_health(self):
         """draw healthbar onto the screen
         """

@@ -13,8 +13,8 @@ vec = pg.math.Vector2
 class Player(Character):
     """Create a player"""
 
-<<<<<<< HEAD
     def __init__(self, game, x, y, _type, characteristics, health, xp, gold, images):
+<<<<<<< HEAD
 <<<<<<< HEAD
         self.groups = players
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -24,6 +24,9 @@ class Player(Character):
         self.groups = players        
 >>>>>>> d3ca57e (merged code into pathfinding branch)
 >>>>>>> c3b9e22 (merged code into pathfinding branch)
+=======
+        self.groups = players        
+>>>>>>> 1d46b80 (rebased pathfinding on dev)
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
         
         self.can_move = True
