@@ -1,17 +1,13 @@
 """Start the server"""
-from server.main import close, threaded_client, s
+from server.main import threaded_client, S, _id, connections
 from _thread import start_new_thread
+from logger import logger
 
 if __name__ == '__main__':
     while True:
-        # close()
-        try:
-            conn, addr = s.accept()
-            print(conn, addr)
+        conn, addr = S.accept()
+        logger.info("Connexion : %s | Address:  %s", conn, addr)
 
-            start_new_thread(threaded_client, (conn, ))
-
-        except KeyboardInterrupt:
-            print("[!] Keyboard Interrupted!")
-            close()
-            break
+        connections += 1
+        start_new_thread(threaded_client, (conn, _id))
+        _id += 1

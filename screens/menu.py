@@ -45,6 +45,11 @@ class Menu(_Elements):
                 "on_click": self.load_next_state,
                 "on_click_params": [LOAD_GAME],
             },
+            "online_game": {
+                "text": "Online game",
+                "on_click": self.load_next_state,
+                "on_click_params": ["online_game"],
+            },
             "options": {
                 "text": "Options",
                 "on_click": self.load_next_state,
