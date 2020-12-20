@@ -18,7 +18,7 @@ class Character(pg.sprite.Sprite):
         self.type = _type
         self.images = images
 
-        self.direction = "left"
+        self.direction = "idle"
 
         self.x = x
         self.y = y
@@ -75,4 +75,3 @@ class Character(pg.sprite.Sprite):
         score = randint(0, valueOfDice)
         logger.info("Your dice is %i / 100 and the succes is under %i", score, Val+modificateur)
         return score <= Val + modificateur
-

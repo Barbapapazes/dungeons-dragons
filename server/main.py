@@ -29,7 +29,16 @@ def threaded_client(conn, _id):
 
     # setup properties for each new player
     current_id = _id
-    players[current_id] = {"x": 5, "y": 5}
+    players[current_id] = {
+        "pos": {
+            "x": 300,
+            "y": 300
+        },
+        "vel": {
+            "x": 0,
+            "y": 0
+        },
+    }
 
     # pickle data and send initial info to clients
     conn.send(str.encode(str(current_id)))
@@ -47,10 +56,14 @@ def threaded_client(conn, _id):
 
             if data.split(" ")[0] == "move":
                 split_data = data.split(" ")
-                x = int(split_data[1])
-                y = int(split_data[2])
-                players[current_id]["x"] = x
-                players[current_id]["y"] = y
+                pos_x = int(split_data[1])
+                pos_y = int(split_data[2])
+                players[current_id]["pos"]["x"] = pos_x
+                players[current_id]["pos"]["y"] = pos_y
+                vel_x = int(split_data[3])
+                vel_y = int(split_data[4])
+                players[current_id]["vel"]["x"] = vel_x
+                players[current_id]["vel"]["y"] = vel_y
 
                 send_data = pickle.dumps((players))
 

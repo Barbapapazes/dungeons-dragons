@@ -90,6 +90,28 @@ class Player(Character):
         self.get_keys()
         super().update()
 
+    def get_direction(self):
+        angle = self.vel.angle_to(vec(0, 1))
+        if 180 - 45 <= angle < 180 + 45:
+            self.direction = "up"
+        if 90 - 45 <= angle < 90 + 45:
+            self.direction = "right"
+        if -90 - 45 <= angle < -90 + 45:
+            self.direction = "left"
+        if 0 - 45 <= angle < 0 + 45:
+            self.direction = "down"
+
+    def set_vel(self, vel):
+        self.direction = "idle"
+        if vel[0] != 0 or vel[1] != 0:
+            self.vel = vec(vel)
+            self.get_direction()
+        self.update_image()
+
+    def set_pos(self, pos):
+        self.pos = pos
+        self.rect.center = self.pos
+
     def equip_armor(self, item):
         """Equip a passed armor item in the right armor slot,
         if an item is already in the needed armor slot, it will be unequipped
