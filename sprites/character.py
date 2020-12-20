@@ -6,6 +6,7 @@ from config.sprites import PLAYER_HIT_RECT
 from logger import logger
 
 vec = pg.math.Vector2
+
 players = pg.sprite.Group()
 enemies = pg.sprite.Group()
 
@@ -14,8 +15,7 @@ class Character(pg.sprite.Sprite):
     def __init__(self, game, x, y, _type, images, hit_rect):
         self._layer = y
         self.groups = game.all_sprites
-        super(Character, self).__init__(self.groups)
-
+        pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.type = _type
         self.images = images
@@ -78,3 +78,20 @@ class Character(pg.sprite.Sprite):
         logger.info("Your dice is %i / 100 and the succes is under %i", score, Val+modificateur)
         return score <= Val + modificateur
 
+    def groupCount(self, grouplist, count=0):
+        """computes the number of entities belonging to the same group that can see one another
+        Args:
+            grouplist (list): list containing the entities of "self's group"
+            count (int, optional): counter
+        Returns:
+            int: number of entities that can see one another
+        """
+        for someone in grouplist:
+            if someone == self:
+                grouplist.remove(someone)
+                count += 1
+            if (someone.pos - self.pos).length_squared() <= self.view_range:
+                if hasattr(someone, "goto"):
+                    someone.player_spotted = self.player_spotted
+                return Character.groupCount(someone, grouplist, count)
+        return count
