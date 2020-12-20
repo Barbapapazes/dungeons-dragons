@@ -1,5 +1,6 @@
 """Online game screen"""
 
+from utils.tilemap import Camera, Minimap, TiledMap
 from config.sprites import ASSETS_SPRITES
 import pygame as pg
 from os import path
@@ -27,6 +28,16 @@ class OnlineGame(_State):
         self.server = None
 
         self.all_sprites = None
+
+        self.map = TiledMap(path.join(self.saved_maps, 'level1.tmx'))
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()
+        # self.minimap = Minimap(
+        #     self.map_img,
+        #     225,
+        #     self.map_rect.width /
+        #     self.map_rect.height, self.game_data["minimap"]["fog"], self.game_data["minimap"]["cover"])
+        self.camera = Camera(self.map.width, self.map.height)
 
     def startup(self, dt, game_data):
         self.dt = dt
@@ -88,9 +99,6 @@ class OnlineGame(_State):
                     100, 0, 100, ASSETS_SPRITES["soldier"])
                 p.set_vel((player["vel"]["x"], player["vel"]["y"]))
                 players_dict[key] = p
-
-            # il faut ajouter une fonction set pos et set vel pour changer l'image du player
-
         return players_dict
 
     def update(self):
@@ -100,6 +108,8 @@ class OnlineGame(_State):
         self.current_players = self.server.send(data)
         self.players = self.create_players(self.current_players)
         self.current_player = self.current_players[self.current_id]
+        self.camera.update(self.player)
+
         self.player.update()
 
         # for key, player in self.players.items():
@@ -113,10 +123,9 @@ class OnlineGame(_State):
         # logger.info(self.all_sprites)
 
     def draw(self):
-        self.screen.fill(BLACK)
-        self.draw_grid(self.screen)
-        self.screen.blit(self.player.image, self.player.rect)
+        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+        self.screen.blit(self.player.image, self.camera.apply(self.player))
         for _, player in self.players.items():
-            self.screen.blit(player.image, player.rect)
+            self.screen.blit(player.image, self.camera.apply(player))
 
         super().transtition_active(self.screen)
