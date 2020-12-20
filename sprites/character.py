@@ -1,11 +1,6 @@
 """Define a character"""
-<<<<<<< HEAD
-
-from random import randint
-=======
 from random import randint, uniform
 import pygame as pg
->>>>>>> 206fbfa (merged code into pathfinding branch)
 from utils.tilemap import collide_with_walls
 from config.sprites import PLAYER_HIT_RECT
 from logger import logger
