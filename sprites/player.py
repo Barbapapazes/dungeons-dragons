@@ -16,6 +16,7 @@ class Player(Character):
     def __init__(self, game, x, y, _type, characteristics, health, xp, gold, images):
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.groups = players
         pg.sprite.Sprite.__init__(self, self.groups)
 =======
@@ -27,6 +28,10 @@ class Player(Character):
 =======
         self.groups = players        
 >>>>>>> 1d46b80 (rebased pathfinding on dev)
+=======
+        self.groups = players
+        pg.sprite.Sprite.__init__(self, self.groups)
+>>>>>>> 114ff68 (included sprites to their respective groups)
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
         
         self.can_move = True

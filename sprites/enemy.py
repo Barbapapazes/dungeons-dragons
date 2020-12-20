@@ -17,6 +17,7 @@ APPROACH_RADIUS = 50
 WANDER_RING_DISTANCE = 500
 WANDER_RING_RADIUS = 150
 CLASSES = ["Fighter","Mage","Rogue"]
+<<<<<<< HEAD
 TYPE = {
     "Skeleton" : {"health":80, "STR":10, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5},
     "Goblin" :   {"health":80, "STR":10, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5}
@@ -30,6 +31,13 @@ class Enemy(Character):
         pg.sprite.Sprite.__init__(self, self.groups)
 =======
 >>>>>>> 1d46b80 (rebased pathfinding on dev)
+=======
+
+class Enemy(Character):
+    def __init__(self, game, x, y, _type, health, images):
+        self.groups = enemies
+        pg.sprite.Sprite.__init__(self, self.groups)
+>>>>>>> 114ff68 (included sprites to their respective groups)
         super(Enemy, self).__init__(game, x, y, _type, images, MOB_HIT_RECT)
         
         self.pos = vec(x, y)
@@ -75,6 +83,8 @@ class Enemy(Character):
         
         self.target = self.pos
         self.player_spotted = None
+        self.goto = []
+        self.view_range = 3000
         
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -90,7 +100,6 @@ class Enemy(Character):
             "inventory": self.inventory.save()
         }
 
-    
     def draw_health(self):
         """draw healthbar onto the screen
         """
@@ -184,14 +193,14 @@ class Enemy(Character):
                 self.flee(self.player_spotted.pos)
             else:
                 if not self.goto:
-                    self.goto = self.pathfinding2(self.player_spotted.pos)
+                    self.goto = self.path_finding(self.player_spotted.pos)
                     if self.goto:
                         del self.goto[0]
                 
                 # if self.now - self.last_timestamp > 150:
                 #     self.last_timestamp = self.now
                 
-                # logger.debug(self.goto)
+                logger.debug(self.goto)
                 
                 if self.goto:
                     for i in self.goto:
@@ -200,7 +209,7 @@ class Enemy(Character):
                     self.acc = self.seek(self.goto[0].coor)
                     if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
                         del self.goto[0]
-                    # logger.debug("enemy proche, utilisation du A* et avancement que de X case")
+                    logger.debug("enemy proche, utilisation du A* et avancement que de X case")
 
             """if there is no player in range, just move around
             """
@@ -408,9 +417,13 @@ class Enemy(Character):
                 if (player.pos - self.pos).length() < self.view_range:
                     self.player_spotted = player
 <<<<<<< HEAD
+<<<<<<< HEAD
                     logger.info("player spotted")
 =======
 >>>>>>> c3b9e22 (merged code into pathfinding branch)
+=======
+                    logger.info("ok")
+>>>>>>> 114ff68 (included sprites to their respective groups)
                     return True
             return False
         return True
@@ -429,6 +442,7 @@ class Enemy(Character):
         return False
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def health_percentage(self):
         """returns the percentage of health left
         """
@@ -436,6 +450,13 @@ class Enemy(Character):
 
 =======
 >>>>>>> c3b9e22 (merged code into pathfinding branch)
+=======
+    def HP_percent(self):
+        """returns the percentage of HP left
+        """
+        return self.health / MOB_HEALTH * 100
+
+>>>>>>> 114ff68 (included sprites to their respective groups)
     def evaluation(self):
         """evaluates whether the ennemi should rush or flee the player.
 

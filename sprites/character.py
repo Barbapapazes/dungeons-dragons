@@ -6,6 +6,7 @@ from config.sprites import PLAYER_HIT_RECT
 from logger import logger
 
 vec = pg.math.Vector2
+
 players = pg.sprite.Group()
 enemies = pg.sprite.Group()
 
@@ -14,6 +15,7 @@ class Character(pg.sprite.Sprite):
     def __init__(self, game, x, y, _type, images, hit_rect):
         self._layer = y
         self.groups = game.all_sprites
+<<<<<<< HEAD
         super(Character, self).__init__(self.groups)
 
         self.characteristics = {
@@ -25,6 +27,9 @@ class Character(pg.sprite.Sprite):
             "cha": 0
         }
 
+=======
+        pg.sprite.Sprite.__init__(self, self.groups)
+>>>>>>> 114ff68 (included sprites to their respective groups)
         self.game = game
         self.type = _type
         self.images = images
