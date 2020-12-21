@@ -100,6 +100,11 @@ class Enemy(Character):
                     """ if player out of reach, "pathfind" him
                     """
                     if self.move_or_attack():
+                        if self.now - self.last_timestamp > 2000 and self.vel == vec(0,0):
+                            self.last_timestamp = self.now
+                            self.goto = []
+                            self.moving = False
+                            self.game.versus_manager.add_turn()
                         #bug à la ligne juste dessous si l'ennemi est juste à côté du joueur
                         if not self.goto and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
                             self.goto = self.path_finding(self.player_spotted.pos)
