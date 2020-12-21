@@ -158,11 +158,16 @@ class Enemy(Character):
                     """ if player out of reach, "pathfind" him
                     """
                     if self.move_or_attack():
+<<<<<<< HEAD
                         if self.now - self.last_timestamp2 > 2000 and self.vel == vec(0,0):
+=======
+                        if self.now - self.last_timestamp > 2000 and self.vel == vec(0,0):
+>>>>>>> 6e8bcc7 (racolage du bug où l'ennemi reste blocké)
                             self.last_timestamp = self.now
                             self.goto = []
                             self.moving = False
                             self.game.versus_manager.add_turn()
+<<<<<<< HEAD
                         #bug à la ligne juste dessous si l'ennemi est juste à côté du joueur
                         if not self.goto and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
                             self.goto = self.path_finding(self.player_spotted.pos)
@@ -214,6 +219,8 @@ class Enemy(Character):
                     """ if player out of reach, "pathfind" him
                     """
                     if self.move_or_attack():
+=======
+>>>>>>> 6e8bcc7 (racolage du bug où l'ennemi reste blocké)
                         #bug à la ligne juste dessous si l'ennemi est juste à côté du joueur
                         if not self.goto and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
                             self.goto = self.path_finding(self.player_spotted.pos)
