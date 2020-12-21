@@ -625,7 +625,14 @@ class Game(_State):
         self.game_data["game_data"]["enemies"] = self.save_enemies()
         self.game_data["game_data"]["chests"] = self.save_chests()
         self.game_data["game_data"]["doors"] = self.save_doors()
-        logger.debug("add merchants")
+        self.game_data["game_data"]["merchants"] = self.save_merchants()
+
+    def save_merchants(self):
+        merchants_list = list()
+        for merchant in self.merchants:
+            merchants_list.append(merchant.save())
+
+        return merchants_list
 
     def save_doors(self):
         doors_list = list()
