@@ -1,5 +1,10 @@
 """Settings for the store"""
+import pygame as pg
+from os import path
 
+game_folder = path.dirname('.')
+assets_folder = path.join(game_folder, 'assets')
+img_folfer = path.join(assets_folder, 'img')
 
 # store
 STORE_ACTIONS = {
@@ -14,6 +19,9 @@ STORE_SLOT_GAP = 2
 
 STORE_CATEGORIES = ['consumables', 'weapons', 'armor']
 
+STORE_BG = pg.image.load(path.join(img_folfer, 'store', 'background.png'))
+
+# shop
 SHOP_ACTIONS = {
     "buy": "buy",
     "buy_equip": "buy and equip",
