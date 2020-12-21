@@ -7,16 +7,16 @@ from logger import logger
 from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, InventorySlot, Equipable
 from utils.container import Container
 from config.window import HEIGHT, WIDTH
-from config.colors import WHITE
+from config.colors import WHITE, YELLOW_LIGHT
 from config.store import STORE_TILESIZE, STORE_SLOT_GAP, STORE_CATEGORIES, STORE_ACTIONS, STORE_MENU
 from config.sprites import CONSUMABLE, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
-from config.inventory import ACTIONS as INVENTORY_ACTIONS
+from config.inventory import ACTIONS as INVENTORY_ACTIONS, INVENTORY_SLOT_GAP, INVENTORY_TILESIZE
 
 
 class Store:
     """Represent a store"""
 
-    def __init__(self, menu_data=STORE_MENU):
+    def __init__(self, game, menu_data=STORE_MENU):
         """Create the store
         """
 
@@ -39,6 +39,7 @@ class Store:
         self.moving_item_slot = None
 
         self.menu_data = menu_data
+        self.game = game
 
         self.create_all_slots()  # utiliser un randint avec un choix ensuite dans un dictionnaire d'items
         self.add_all_items()
@@ -176,6 +177,7 @@ class Store:
             screen (Surface)
         """
         if self.display_shop:
+            self.draw_title(screen)
             for slot in self.get_all_slots():
                 slot.draw(screen)
             slot_moving = None
@@ -186,6 +188,11 @@ class Store:
                     slot_moving = slot
             if slot_moving:
                 slot_moving.draw_items(screen)
+
+    def draw_title(self, screen):
+        self.game.draw_text(
+            "Items", self.game.title_font, 48, YELLOW_LIGHT, 1 * WIDTH // 4, HEIGHT // 3 -
+            ((STORE_TILESIZE + STORE_SLOT_GAP) * 3) // 2 + STORE_SLOT_GAP, align="n", screen=screen)
 
     def move_item(self):
         """Drag function, makes an item following the mouse

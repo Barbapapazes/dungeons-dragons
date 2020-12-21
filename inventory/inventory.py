@@ -8,7 +8,7 @@ from logger import logger
 from utils.container import Container
 from inventory.items import Item
 from config.window import HEIGHT, WIDTH, TILESIZE
-from config.colors import WHITE, GOLD, BLUE_SKY, PINK
+from config.colors import WHITE, GOLD, BLUE_SKY, PINK, YELLOW_LIGHT
 from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP, SORT_SLOTS
 vec = pg.Vector2
 
@@ -377,6 +377,12 @@ class Inventory:
             screen (Surface)
         """
         if self.display_inventory:
+            self.player.game.draw_text(
+                "Inventory", self.player.game.title_font, 48, YELLOW_LIGHT, 3 * WIDTH // 4, HEIGHT // 2 -
+                ((INVENTORY_TILESIZE + INVENTORY_SLOT_GAP) * (self.rows + 2)) // 2, align="n", screen=screen)
+            self.player.game.draw_text(
+                "Equipment", self.player.game.title_font, 48, YELLOW_LIGHT, WIDTH // 2, HEIGHT // 2 -
+                ((INVENTORY_TILESIZE + INVENTORY_SLOT_GAP) * (5 + 2)) // 2, align="n", screen=screen)
             for slot in self.get_all_slots():
                 slot.draw(screen)
             for slot in self.get_all_slots():

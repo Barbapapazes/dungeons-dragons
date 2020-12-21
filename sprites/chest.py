@@ -29,7 +29,7 @@ class Chest(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
-        self.store = Store()
+        self.store = Store(game)
 
         self.frame_count = 0
 
