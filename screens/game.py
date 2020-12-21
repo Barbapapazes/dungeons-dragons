@@ -4,7 +4,7 @@ from sprites.merchant import Merchant
 from sprites.animated import CampFire
 from sprites.chest import Chest
 from inventory.inventory import Armor, Consumable, Inventory, Weapon
-from config.sprites import ASSETS_SPRITES, ITEMS, ITEMS_NAMES
+from config.sprites import ASSETS_SPRITES, ITEMS, ITEMS_NAMES, ITEMS_PROPERTIES
 from os import path
 from sprites.item import PlacableItem
 from inventory.items import Item as InventoryItem
@@ -206,9 +206,9 @@ class Game(_State):
                     CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
                 if tile_object.name == "merchant":
                     Merchant(self, obj_center.x, obj_center.y, TILESIZE)
-                if tile_object.name in ITEMS_NAMES.keys():
+                if tile_object.name in ITEMS_NAMES:
                     PlacableItem(self, obj_center, tile_object.name, tile_object.properties,
-                                 ITEMS[ITEMS_NAMES[tile_object.name]], ITEMS_NAMES[tile_object.name])
+                                 ITEMS[ITEMS_PROPERTIES[tile_object.name]["image_name"]],ITEMS_PROPERTIES[tile_object.name]["image_name"])
             self.save_data()
             self.save_data_in_file()
 

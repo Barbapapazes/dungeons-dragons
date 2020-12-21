@@ -9,8 +9,8 @@ from utils.container import Container
 from config.window import HEIGHT, WIDTH
 from config.colors import WHITE, YELLOW_LIGHT
 from config.store import STORE_TILESIZE, STORE_SLOT_GAP, STORE_CATEGORIES, STORE_ACTIONS, STORE_MENU
-from config.sprites import CONSUMABLE, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
-from config.inventory import ACTIONS as INVENTORY_ACTIONS, INVENTORY_SLOT_GAP, INVENTORY_TILESIZE
+from config.sprites import CONSUMABLE, ITEMS, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
+from config.inventory import ACTIONS as INVENTORY_ACTIONS
 
 
 class Store:
@@ -111,7 +111,7 @@ class Store:
         for key, value in WEAPONS.items():  # il va falloir utiliser des variables pour que l'implémentation soit smart
             data = Weapon(
                 key,
-                value['image'],
+                ITEMS[value['image_name']],
                 value['image_name'],
                 value['price'],
                 value['slot'],
@@ -134,7 +134,7 @@ class Store:
         for key, value in ARMOR.items():
             data = Armor(
                 key,
-                value['image'],
+                ITEMS[value['image_name']],
                 value['image_name'],
                 value['price'],
                 value['weight'],
@@ -156,7 +156,7 @@ class Store:
         for key, value in CONSUMABLE.items():
             data = Consumable(
                 key,
-                value['image'],
+                ITEMS[value['image_name']],
                 value['image_name'],
                 value['price'],
                 value['weight'])

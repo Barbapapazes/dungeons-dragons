@@ -24,10 +24,8 @@ ITEMS = {
     f.split('.png')[0]: pg.image.load(path.join(items_folder, f))
     for f in os.listdir(items_folder) if f.endswith('.png')}
 
-ITEMS_NAMES = {
-    "silver_key_small": "key_02c",
-    "potion_health_medium": "potion_02b"
-}
+# OBJECTS = ['armor', '']
+# SIZES = ['small', 'medium', 'large']
 # ajouter dans la doc la création de la carte
 
 # equipables
@@ -92,40 +90,151 @@ WEAPONS = {
     }
 }
 
-ARMOR = {
-    "steel helmet": {
-        "image": ITEMS["helmet_01b"],
+ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création depuis la map et là on va mettre des randints et pour l'attribution au marchant, on va en prendre entre 1 et 5 aléatoires
+    "bronze_helmet_small": {
+        "image_name": "helmet_01a",
+        "price": 10,
+        "weight": 10,
+        "armor": 20,
+        "slot": 'head'
+    },
+    "steal_helmet_small": {
         "image_name": "helmet_01b",
         "price": 10,
         "weight": 10,
         "armor": 20,
         "slot": 'head'
     },
-    "gold helmet": {
-        "image": ITEMS["helmet_01d"],
+    "sapphire_helmet_small": {
+        "image_name": "helmet_01c",
+        "price": 10,
+        "weight": 10,
+        "armor": 20,
+        "slot": 'head'
+    },
+    "gold_helmet_small": {
         "image_name": "helmet_01d",
         "price": 10,
         "weight": 15,
         "armor": 30,
         "slot": "head"
     },
-    "steel chest": {
-        "image": ITEMS["armor_01a"],
+    "ruby_helmet_small": {
+        "image_name": "helmet_01e",
+        "price": 10,
+        "weight": 15,
+        "armor": 30,
+        "slot": "head"
+    },
+    "bronze_helmet_medium": {
+        "image_name": "helmet_02a",
+        "price": 10,
+        "weight": 10,
+        "armor": 20,
+        "slot": 'head'
+    },
+    "steal_helmet_medium": {
+        "image_name": "helmet_02b",
+        "price": 10,
+        "weight": 10,
+        "armor": 20,
+        "slot": 'head'
+    },
+    "sapphire_helmet_medium": {
+        "image_name": "helmet_02c",
+        "price": 10,
+        "weight": 10,
+        "armor": 20,
+        "slot": 'head'
+    },
+    "gold_helmet_medium": {
+        "image_name": "helmet_02d",
+        "price": 10,
+        "weight": 15,
+        "armor": 30,
+        "slot": "head"
+    },
+    "ruby_helmet_medium": {
+        "image_name": "helmet_02e",
+        "price": 10,
+        "weight": 15,
+        "armor": 30,
+        "slot": "head"
+    },
+    "bronze_chest_small": {
         "image_name": "armor_01a",
         "price": 10,
         "weight": 20,
         "armor": 40,
         "slot": "chest"
     },
-    "gold chest": {
-        "image": ITEMS["armor_01d"],
+    "steal_chest_small": {
+        "image_name": "armor_01b",
+        "price": 10,
+        "weight": 20,
+        "armor": 40,
+        "slot": "chest"
+    },
+    "sapphire_chest_small": {
+        "image_name": "armor_01c",
+        "price": 10,
+        "weight": 20,
+        "armor": 40,
+        "slot": "chest"
+    },
+    "gold_chest_small": {
         "image_name": "armor_01d",
+        "price": 10,
+        "weight": 20,
+        "armor": 40,
+        "slot": "chest"
+    },
+    "ruby_chest_small": {
+        "image_name": "armor_01e",
         "price": 10,
         "weight": 30,
         "armor": 70,
         "slot": "chest"
+    },
+    "bronze_boots_small": {
+        "image_name": "boots_01a",
+        "price": 10,
+        "weight": 20,
+        "armor": 40,
+        "slot": "feet"
+    },
+    "steal_boots_small": {
+        "image_name": "boots_01b",
+        "price": 10,
+        "weight": 20,
+        "armor": 40,
+        "slot": "feet"
+    },
+    "sapphire_boots_small": {
+        "image_name": "boots_01c",
+        "price": 10,
+        "weight": 20,
+        "armor": 40,
+        "slot": "feet"
+    },
+    "gold_boots_small": {
+        "image_name": "boots_01d",
+        "price": 10,
+        "weight": 20,
+        "armor": 40,
+        "slot": "feet"
+    },
+    "ruby_boots_small": {
+        "image_name": "boots_01e",
+        "price": 10,
+        "weight": 30,
+        "armor": 70,
+        "slot": "feet"
     }
 }
+
+ITEMS_PROPERTIES = ARMOR
+ITEMS_NAMES = ARMOR.keys()
 
 
 WEAPONS_COLS = 5
