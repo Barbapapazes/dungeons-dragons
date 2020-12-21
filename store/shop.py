@@ -125,13 +125,14 @@ class ShopSlot(Container):
             screen (Surface)
         """
         if self.item is not None:
-            image = pg.transform.scale(self.item.image, (self.size, self.size))
+            offset = 12
+            image = pg.transform.scale(self.item.image, (self.size - offset, self.size - offset))
             image_x = image.get_width()
             image_y = image.get_height()
 
-            pg.draw.rect(screen, (0, 255, 0), pg.Rect(self.x, self.y, image_x, image_y), 1)
+            pg.draw.rect(screen, (0, 255, 0), pg.Rect(self.x + offset / 2, self.y + offset / 2, image_x, image_y), 1)
 
-            screen.blit(image, (self.x, self.y))
+            screen.blit(image, (self.x + offset / 2, self.y + offset / 2))
 
         if self.item is not None and self.item.is_moving:
             mouse_pos = pg.mouse.get_pos()
