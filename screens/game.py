@@ -143,6 +143,8 @@ class Game(_State):
                         border,
                         border)
                 Door(self, door["pos"]["x"], door["pos"]["y"], wall, is_open=door["is_open"])
+            for merchant in self.game_data["game_data"]["merchants"]:
+                Merchant(self, merchant["pos"]["x"], merchant["pos"]["y"], TILESIZE)
             for tile_object in self.map.tmxdata.objects:
                 if tile_object.name == 'wall':
                     Obstacle(
