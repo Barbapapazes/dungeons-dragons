@@ -287,7 +287,13 @@ class Inventory:
         if isinstance(item, Weapon):
             properties['object_type'] = "weapon"
         elif isinstance(item, Armor):
-            properties['object_type'] = "armor"
+            properties = {
+                "object_type": "armor",
+                "price": item.price,
+                "weight": item.weight,
+                "shield": item.shield,
+                "slot": item.slot,
+            }
         elif isinstance(item, Consumable):
             properties['object_type'] = "consumable"
         else:

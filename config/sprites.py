@@ -95,141 +95,161 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_01a",
         "price": 10,
         "weight": 10,
-        "armor": 20,
-        "slot": 'head'
+        "shield": 20,
+        "slot": 'head',
+        "object_type": "armor"
     },
     "steal_helmet_small": {
         "image_name": "helmet_01b",
         "price": 10,
         "weight": 10,
-        "armor": 20,
-        "slot": 'head'
+        "shield": 20,
+        "slot": 'head',
+        "object_type": "armor"
     },
     "sapphire_helmet_small": {
         "image_name": "helmet_01c",
         "price": 10,
         "weight": 10,
-        "armor": 20,
-        "slot": 'head'
+        "shield": 20,
+        "slot": 'head',
+        "object_type": "armor"
     },
     "gold_helmet_small": {
         "image_name": "helmet_01d",
         "price": 10,
         "weight": 15,
-        "armor": 30,
-        "slot": "head"
+        "shield": 30,
+        "slot": "head",
+        "object_type": "armor"
     },
     "ruby_helmet_small": {
         "image_name": "helmet_01e",
         "price": 10,
         "weight": 15,
-        "armor": 30,
-        "slot": "head"
+        "shield": 30,
+        "slot": "head",
+        "object_type": "armor"
     },
     "bronze_helmet_medium": {
         "image_name": "helmet_02a",
         "price": 10,
         "weight": 10,
-        "armor": 20,
-        "slot": 'head'
+        "shield": 20,
+        "slot": 'head',
+        "object_type": "armor"
     },
     "steal_helmet_medium": {
         "image_name": "helmet_02b",
         "price": 10,
         "weight": 10,
-        "armor": 20,
-        "slot": 'head'
+        "shield": 20,
+        "slot": 'head',
+        "object_type": "armor"
     },
     "sapphire_helmet_medium": {
         "image_name": "helmet_02c",
         "price": 10,
         "weight": 10,
-        "armor": 20,
-        "slot": 'head'
+        "shield": 20,
+        "slot": 'head',
+        "object_type": "armor"
     },
     "gold_helmet_medium": {
         "image_name": "helmet_02d",
         "price": 10,
         "weight": 15,
-        "armor": 30,
-        "slot": "head"
+        "shield": 30,
+        "slot": "head",
+        "object_type": "armor"
     },
     "ruby_helmet_medium": {
         "image_name": "helmet_02e",
         "price": 10,
         "weight": 15,
-        "armor": 30,
-        "slot": "head"
+        "shield": 30,
+        "slot": "head",
+        "object_type": "armor"
     },
     "bronze_chest_small": {
         "image_name": "armor_01a",
         "price": 10,
         "weight": 20,
-        "armor": 40,
-        "slot": "chest"
+        "shield": 40,
+        "slot": "chest",
+        "object_type": "armor"
     },
     "steal_chest_small": {
         "image_name": "armor_01b",
         "price": 10,
         "weight": 20,
-        "armor": 40,
-        "slot": "chest"
+        "shield": 40,
+        "slot": "chest",
+        "object_type": "armor"
     },
     "sapphire_chest_small": {
         "image_name": "armor_01c",
         "price": 10,
         "weight": 20,
-        "armor": 40,
-        "slot": "chest"
+        "shield": 40,
+        "slot": "chest",
+        "object_type": "armor"
     },
     "gold_chest_small": {
         "image_name": "armor_01d",
         "price": 10,
         "weight": 20,
-        "armor": 40,
-        "slot": "chest"
+        "shield": 40,
+        "slot": "chest",
+        "object_type": "armor"
     },
     "ruby_chest_small": {
         "image_name": "armor_01e",
         "price": 10,
         "weight": 30,
-        "armor": 70,
-        "slot": "chest"
+        "shield": 70,
+        "slot": "chest",
+        "object_type": "armor"
     },
     "bronze_boots_small": {
         "image_name": "boots_01a",
         "price": 10,
         "weight": 20,
-        "armor": 40,
-        "slot": "feet"
+        "shield": 40,
+        "slot": "feet",
+        "object_type": "armor"
     },
     "steal_boots_small": {
         "image_name": "boots_01b",
         "price": 10,
         "weight": 20,
-        "armor": 40,
-        "slot": "feet"
+        "shield": 40,
+        "slot": "feet",
+        "object_type": "armor"
     },
     "sapphire_boots_small": {
         "image_name": "boots_01c",
         "price": 10,
         "weight": 20,
-        "armor": 40,
-        "slot": "feet"
+        "shield": 40,
+        "slot": "feet",
+        "object_type": "armor"
     },
     "gold_boots_small": {
         "image_name": "boots_01d",
         "price": 10,
         "weight": 20,
-        "armor": 40,
-        "slot": "feet"
+        "shield": 40,
+        "slot": "feet",
+        "object_type": "armor"
     },
     "ruby_boots_small": {
         "image_name": "boots_01e",
         "price": 10,
         "weight": 30,
-        "armor": 70,
-        "slot": "feet"
+        "shield": 70,
+        "slot": "feet",
+        "object_type": "armor"
     }
 }
 

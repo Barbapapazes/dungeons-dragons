@@ -138,7 +138,7 @@ class Store:
                 value['image_name'],
                 value['price'],
                 value['weight'],
-                value['armor'],
+                value['shield'],
                 value['slot'])
             self.armors.append(data)
 

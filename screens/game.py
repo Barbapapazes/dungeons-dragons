@@ -207,8 +207,19 @@ class Game(_State):
                 if tile_object.name == "merchant":
                     Merchant(self, obj_center.x, obj_center.y, TILESIZE)
                 if tile_object.name in ITEMS_NAMES:
-                    PlacableItem(self, obj_center, tile_object.name, tile_object.properties,
-                                 ITEMS[ITEMS_PROPERTIES[tile_object.name]["image_name"]],ITEMS_PROPERTIES[tile_object.name]["image_name"])
+                    properties = dict()
+                    if ITEMS_PROPERTIES[tile_object.name]["object_type"] == "armor":
+                        properties = {
+                            "object_type": ITEMS_PROPERTIES[tile_object.name]["object_type"],
+                            "price": ITEMS_PROPERTIES[tile_object.name]["price"],
+                            "weight": ITEMS_PROPERTIES[tile_object.name]["weight"],
+                            "shield": ITEMS_PROPERTIES[tile_object.name]["shield"],
+                            "slot": ITEMS_PROPERTIES[tile_object.name]["slot"],
+                        }
+                    logger.debug(properties)
+                    PlacableItem(self, obj_center, tile_object.name, properties,
+                                 ITEMS[ITEMS_PROPERTIES[tile_object.name]["image_name"]],
+                                 ITEMS_PROPERTIES[tile_object.name]["image_name"])
             self.save_data()
             self.save_data_in_file()
 
@@ -431,7 +442,7 @@ class Game(_State):
                    ["inventory"]["keys"], event):
             logger.info("Toggle inventory from turn_manager.active_character()")
             self.seller = False
-            self.turn_manager.active_character().shop.display_shop = False
+            # self.turn_manager.active_character().shop.display_shop = False
             self.turn_manager.active_character().inventory.display_inventory = True
             super().toggle_sub_state('inventory')
         if event.key == pg.K_p:
@@ -569,6 +580,7 @@ class Game(_State):
                     self.press_space = False
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.items, False)
         for hit in hits:
+            logger.debug("faire les properties")
             if hit.properties["object_type"] == "other":
                 hit.kill()
                 self.turn_manager.active_character().inventory.add_item(InventoryItem(
@@ -584,9 +596,13 @@ class Game(_State):
                 ))  # ajouter des choses aux properties des items : le proce, le slot, le wp tupe le weight
             if hit.properties["object_type"] == "armor":
                 hit.kill()
-                self.turn_manager.active_character().inventory.add_item(Armor(
-                    hit.name, hit.image.copy(), hit.image_name, 15, 10, 10, "head"
-                ))  # ajouter des choses aux properties des items : le slot, le shield, le weight et le price
+                self.turn_manager.active_character().inventory.add_item(
+                    Armor(
+                        hit.name, hit.image.copy(),
+                        hit.image_name, hit.properties["price"],
+                        hit.properties["weight"],
+                        hit.properties["shield"],
+                        hit.properties["slot"]))  # ajouter des choses aux properties des items : le slot, le shield, le weight et le price
 
         # collisionZoneEffect(self.turn_manager.active_character(), self)
         self.versus_manager.update()
