@@ -49,7 +49,7 @@ class Player(Character):
         self.inventory = Inventory(self, 5, 8)
 
         # shop, temporary here, to put in a seller
-        self.shop = Shop()
+        # self.shop = Shop()
 
     def save(self):
         return {

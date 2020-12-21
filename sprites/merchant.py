@@ -27,7 +27,7 @@ class Merchant(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
-        self.shop = Shop()
+        self.shop = Shop(game)
 
         self.frame_count = 0
 
