@@ -177,7 +177,7 @@ class Game(_State):
                             Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
                 if tile_object.name == "enemy":
                     self.turn_manager.enemies.append(
-                        Enemy(self, obj_center.x, obj_center.y, "enemy_1", 100, ASSETS_SPRITES["enemy_1"])
+                        Enemy(self, obj_center.x, obj_center.y, "Skeleton", 100, ASSETS_SPRITES["enemy_1"])
                     )
                 if tile_object.name == 'wall':
                     Obstacle(

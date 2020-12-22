@@ -77,8 +77,6 @@ class Character(pg.sprite.Sprite):
         score = randint(0, valueOfDice)
         logger.info("Your dice is %i / 100 and the succes is under %i", score, Val+modificateur)
         return score <= Val + modificateur
-<<<<<<< HEAD
-=======
 
     def groupCount(self, grouplist, count=0):
         """computes the number of entities belonging to the same group that can see one another
@@ -97,4 +95,3 @@ class Character(pg.sprite.Sprite):
                     someone.player_spotted = self.player_spotted
                 return Character.groupCount(someone, grouplist, count)
         return count
->>>>>>> 114ff68 (included sprites to their respective groups)
