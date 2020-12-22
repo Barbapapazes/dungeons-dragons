@@ -59,9 +59,14 @@ class Enemy(Character):
         self.CHA = TYPE.get(self.type).get("CHA")
         
     def __repr__(self):
-        return f('{self.type}')
+        """default displayed text whenever printing the enemy
+        """
+        return self.type
 
     def save(self):
+        """saves the enemy's characteristic into game_data
+
+        """
         return {
             "class": self.type,
             "pos": {
@@ -73,6 +78,8 @@ class Enemy(Character):
         }
 
     def draw_health(self):
+        """draw healthbar onto the screen
+        """
         if self.health > 60:
             col = GREEN
         elif self.health > 30:
@@ -85,6 +92,8 @@ class Enemy(Character):
             pg.draw.rect(self.image, col, self.health_bar)
 
     def throw_inventory(self):
+        """drop every item stored inside the enemy's inventory
+        """
         for slot in self.inventory.slots:
             if slot.item:
                 self.inventory.throw_item(slot.item)
@@ -171,6 +180,8 @@ class Enemy(Character):
         # super().update()
 
     def get_direction(self):
+        """get the direction which the sprite is currently facing
+        """
         angle = self.vel.angle_to(vec(0, 1))
         self.direction = "down"
         if 180 - 45 <= angle < 180 + 45:
@@ -362,8 +373,8 @@ class Enemy(Character):
                     return Enemy.flee(self, sprite.pos)
         return False
 
-    def HP_percent(self):
-        """returns the percentage of HP left
+    def health_percentage(self):
+        """returns the percentage of health left
         """
         return self.health / TYPE.get(self.type).get("health") * 100
 
@@ -374,11 +385,13 @@ class Enemy(Character):
             vec(x,y): acceleration vector following [the shortest path to the player / the optimal fleeing curve]
         """
         # linear : lambda x : x/25 - 2
-        return self.HP_percent()/25 - 2 < (self.groupCount(enemies.sprites()) - Character.groupCount(self.player_spotted, players.sprites()))
+        return self.health_percentage()/25 - 2 < (self.groupCount(enemies.sprites()) - Character.groupCount(self.player_spotted, players.sprites()))
         #     return npc.flee(self, self.player_spotted.pos)
         # else: return npc.moveto(self, npc.pathfinding2(self, self.player_spotted.pos))
 
     def move_or_attack(self):
+        """decide whether to attack or move this turn
+        """
         if self.moving is True:
             return True
         elif (self.player_spotted.pos - self.pos).length() > self.attack_range:
@@ -388,6 +401,8 @@ class Enemy(Character):
             return False
 
     def attack(self):
+        """attack instructions
+        """
         self.player_spotted.health -= self.STR
         self.game.versus_manager.logs.add_log(f'{self} attacked {self.player_spotted} dealing {self.STR} damages !')
         self.game.versus_manager.add_turn()
