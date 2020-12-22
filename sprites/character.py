@@ -98,3 +98,24 @@ class Character(pg.sprite.Sprite):
             f"Dice {_type}, result {result_dice}/{value_dice}, under {self.characteristics[base_value] + mod} to success")
         logger.info("Result dice : %d / %d (must be under %s to success)",
                     result_dice, value_dice, self.characteristics[base_value] + mod)
+        score = randint(0, valueOfDice)
+        logger.info("Your dice is %i / 100 and the succes is under %i", score, Val+modificateur)
+        return score <= Val + modificateur
+
+    def groupCount(self, grouplist, count=0):
+        """computes the number of entities belonging to the same group that can see one another
+        Args:
+            grouplist (list): list containing the entities of "self's group"
+            count (int, optional): counter
+        Returns:
+            int: number of entities that can see one another
+        """
+        for someone in grouplist:
+            if someone == self:
+                grouplist.remove(someone)
+                count += 1
+            if (someone.pos - self.pos).length_squared() <= self.view_range:
+                if hasattr(someone, "goto"):
+                    someone.player_spotted = self.player_spotted
+                return Character.groupCount(someone, grouplist, count)
+        return count

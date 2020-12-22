@@ -12,12 +12,15 @@ vec = pg.math.Vector2
 # npc settings
 MOB_HIT_RECT = pg.Rect(0, 0, TILESIZE-16, TILESIZE-16)
 SIZE = 8
-MOB_HEALTH = 100
 SEEK_FORCE = 0.1
 APPROACH_RADIUS = 50
 WANDER_RING_DISTANCE = 500
 WANDER_RING_RADIUS = 150
 CLASSES = ["Fighter","Mage","Rogue"]
+TYPE = {
+    "Skeleton" : {"health":80, "STR":10, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5},
+    "Goblin" :   {"health":80, "STR":10, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5}
+}
 
 class Enemy(Character):
     def __init__(self, game, x, y, _type, health, images):
@@ -30,11 +33,11 @@ class Enemy(Character):
         self.acc = vec(0, 0)
 
         self.last_timestamp = 0
-        self.now = self.last_timestamp
+        self.last_timestamp2 = 0
+        self.now = 0
 
         self.inventory = Inventory(self, 5, 8)
 
-        self.health = health
         self.attack_range = TILESIZE * 2
 
         logger.error("il y a un souci d'update avec la camera")
@@ -46,7 +49,18 @@ class Enemy(Character):
         self.goto = []
         self.view_range = TILESIZE * 6
         self.moving = False
+
+        self.health = TYPE.get(self.type).get("health")
+        self.STR = TYPE.get(self.type).get("STR")
+        self.DEX = TYPE.get(self.type).get("DEX")
+        self.CON = TYPE.get(self.type).get("CON")
+        self.INT = TYPE.get(self.type).get("INT")
+        self.WIS = TYPE.get(self.type).get("WIS")
+        self.CHA = TYPE.get(self.type).get("CHA")
         
+    def __repr__(self):
+        return f('{self.type}')
+
     def save(self):
         return {
             "class": self.type,
@@ -65,9 +79,9 @@ class Enemy(Character):
             col = YELLOW
         else:
             col = RED
-        width = int(self.rect.width * self.health / MOB_HEALTH)
+        width = int(self.rect.width * self.health / TYPE.get(self.type).get("health"))
         self.health_bar = pg.Rect(0, 0, width, 7)
-        if self.health < MOB_HEALTH:
+        if self.health < TYPE.get(self.type).get("health"):
             pg.draw.rect(self.image, col, self.health_bar)
 
     def throw_inventory(self):
@@ -100,7 +114,7 @@ class Enemy(Character):
                     """ if player out of reach, "pathfind" him
                     """
                     if self.move_or_attack():
-                        if self.now - self.last_timestamp > 2000 and self.vel == vec(0,0):
+                        if self.now - self.last_timestamp2 > 2000 and self.vel == vec(0,0):
                             self.last_timestamp = self.now
                             self.goto = []
                             self.moving = False
@@ -124,19 +138,18 @@ class Enemy(Character):
                             self.moving = False
                             self.goto = []
                             self.game.versus_manager.add_turn()
-                    else: # if self.moving is False:
-                            self.game.versus_manager.logs.add_log(f'{self.moving}')
-                            self.game.versus_manager.logs.add_log(f'Enemy attacked {self.player_spotted} dealing 30 damages !')
-                            self.player_spotted.health -= 30
-                            self.game.versus_manager.add_turn()
+                    else:
+                        self.attack()
                 """if there is no player in range, just move around
                 """
             else:
-                temp = self.avoidnpc()
-                if temp is False:
-                    self.acc = self.wander()
-                else:
-                    self.acc = temp
+                self.game.versus_manager.add_turn()
+
+                # temp = self.avoidnpc()
+                # if temp is False:
+                #     self.acc = self.wander()
+                # else:
+                #     self.acc = temp
 
             
         """actual movement update
@@ -331,7 +344,7 @@ class Enemy(Character):
             for player in players:
                 if (player.pos - self.pos).length() < self.view_range:
                     self.player_spotted = player
-                    logger.info("ok")
+                    logger.info("player spotted")
                     return True
             return False
         return True
@@ -352,7 +365,7 @@ class Enemy(Character):
     def HP_percent(self):
         """returns the percentage of HP left
         """
-        return self.health / MOB_HEALTH * 100
+        return self.health / TYPE.get(self.type).get("health") * 100
 
     def evaluation(self):
         """evaluates whether the ennemi should rush or flee the player.
@@ -373,3 +386,8 @@ class Enemy(Character):
             return True
         else:
             return False
+
+    def attack(self):
+        self.player_spotted.health -= self.STR
+        self.game.versus_manager.logs.add_log(f'{self} attacked {self.player_spotted} dealing {self.STR} damages !')
+        self.game.versus_manager.add_turn()
