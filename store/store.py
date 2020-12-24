@@ -10,7 +10,7 @@ from utils.container import Container
 from config.window import HEIGHT, WIDTH
 from config.colors import WHITE, YELLOW_LIGHT
 from config.store import STORE_TILESIZE, STORE_SLOT_GAP, STORE_CATEGORIES, STORE_ACTIONS, STORE_MENU
-from config.sprites import CONSUMABLE, ITEMS, WEAPONS, ARMOR, WEAPONS_COLS, WEAPONS_ROWS, CONSUMABLE_COLS, CONSUMABLE_ROWS, ARMOR_COLS, ARMOR_ROWS
+from config.sprites import CONSUMABLE, ITEMS, WEAPONS, ARMOR, WEAPONS_COLS,  CONSUMABLE_COLS,  ARMOR_COLS
 from config.inventory import ACTIONS as INVENTORY_ACTIONS
 
 

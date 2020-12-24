@@ -26,8 +26,7 @@ ITEMS = {
 
 # equipables
 CONSUMABLE = {
-    "potion red": {
-        "image": ITEMS["potion_02a"],
+    "red_potion_small": {
         "image_name": "potion_02a",
         "price": 10,
         "weight": 2,
