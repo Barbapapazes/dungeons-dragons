@@ -24,10 +24,6 @@ ITEMS = {
     f.split('.png')[0]: pg.image.load(path.join(items_folder, f))
     for f in os.listdir(items_folder) if f.endswith('.png')}
 
-# OBJECTS = ['armor', '']
-# SIZES = ['small', 'medium', 'large']
-# ajouter dans la doc la création de la carte
-
 # equipables
 CONSUMABLE = {
     "potion red": {
@@ -40,8 +36,7 @@ CONSUMABLE = {
 }
 
 WEAPONS = {
-    "sword wood": {
-        "image": ITEMS["sword_01a"],  # on peut enlerver ce champs là
+    "bronze_sword_small": {
         "image_name": "sword_01a",
         "price": 10,
         "weight": 10,
@@ -51,20 +46,96 @@ WEAPONS = {
         "val_d": 3,
         "scope": 2
     },
-    "sword steel": {
-        "image": ITEMS["sword_01c"],
-        "image_name": "sword_01c",
+    "steal_sword_small": {
+        "image_name": "sword_01b",
         "price": 10,
-        "weight": 20,
+        "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "nb_d": 4,
-        "val_d": 6,
-        "scope": 3
-
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
     },
-    "arc": {
-        "image": ITEMS["bow_01a"],
+    "sapphire_sword_small": {
+        "image_name": "sword_01c",
+        "price": 10,
+        "weight": 10,
+        "slot": "weapon",
+        "type": "sword",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    },
+    "gold_sword_small": {
+        "image_name": "sword_01d",
+        "price": 10,
+        "weight": 10,
+        "slot": "weapon",
+        "type": "sword",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    },
+    "ruby_sword_small": {
+        "image_name": "sword_01e",
+        "price": 10,
+        "weight": 10,
+        "slot": "weapon",
+        "type": "sword",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    }, "bronze_sword_medium": {
+        "image_name": "sword_02a",
+        "price": 10,
+        "weight": 10,
+        "slot": "weapon",
+        "type": "sword",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    },
+    "steal_sword_medium": {
+        "image_name": "sword_02b",
+        "price": 10,
+        "weight": 10,
+        "slot": "weapon",
+        "type": "sword",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    },
+    "sapphire_sword_medium": {
+        "image_name": "sword_02c",
+        "price": 10,
+        "weight": 10,
+        "slot": "weapon",
+        "type": "sword",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    },
+    "gold_sword_medium": {
+        "image_name": "sword_02d",
+        "price": 10,
+        "weight": 10,
+        "slot": "weapon",
+        "type": "sword",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    },
+    "ruby_sword_medium": {
+        "image_name": "sword_02e",
+        "price": 10,
+        "weight": 10,
+        "slot": "weapon",
+        "type": "sword",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    },
+    "bronze_arc_small": {
         "image_name": "bow_01a",
         "weight": 15,
         "slot": "weapon",
@@ -73,21 +144,197 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
-
     },
-    "dagger": {
-        "image": ITEMS["sword_03a"],
+    "steal_arc_small": {
+        "image_name": "bow_01b",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "sapphire_arc_small": {
+        "image_name": "bow_01c",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "gold_arc_small": {
+        "image_name": "bow_01d",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "ruby_arc_small": {
+        "image_name": "bow_01e",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "bronze_arc_medium": {
+        "image_name": "bow_02a",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "steal_arc_medium": {
+        "image_name": "bow_02b",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "sapphire_arc_medium": {
+        "image_name": "bow_02c",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "gold_arc_medium": {
+        "image_name": "bow_02d",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "ruby_arc_medium": {
+        "image_name": "bow_02e",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "bronze_arc_large": {
+        "image_name": "bow_03a",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "steal_arc_large": {
+        "image_name": "bow_03b",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "sapphire_arc_large": {
+        "image_name": "bow_03c",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "gold_arc_large": {
+        "image_name": "bow_03d",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "ruby_arc_large": {
+        "image_name": "bow_03e",
+        "weight": 15,
+        "slot": "weapon",
+        "type": "arc",
+        "nb_d": 2,
+        "val_d": 10,
+        "scope": 5,
+        "price": 10,
+    },
+    "bronze_dagger_small": {
         "image_name": "sword_03a",
         "price": 10,
-        "weight": 5,
+        "weight": 10,
         "slot": "weapon",
         "type": "dagger",
-        "nb_d": 7,
+        "nb_d": 1,
         "val_d": 3,
-        "scope": 3,
+        "scope": 2
+    },
+    "steal_dagger_small": {
+        "image_name": "sword_03b",
         "price": 10,
-
-    }
+        "weight": 10,
+        "slot": "weapon",
+        "type": "dagger",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    },
+    "sapphire_dagger_small": {
+        "image_name": "sword_03c",
+        "price": 10,
+        "weight": 10,
+        "slot": "weapon",
+        "type": "dagger",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    },
+    "gold_dagger_small": {
+        "image_name": "sword_03d",
+        "price": 10,
+        "weight": 10,
+        "slot": "weapon",
+        "type": "dagger",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    },
+    "ruby_dagger_small": {
+        "image_name": "sword_03e",
+        "price": 10,
+        "weight": 10,
+        "slot": "weapon",
+        "type": "dagger",
+        "nb_d": 1,
+        "val_d": 3,
+        "scope": 2
+    },
 }
 
 ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création depuis la map et là on va mettre des randints et pour l'attribution au marchant, on va en prendre entre 1 et 5 aléatoires
@@ -253,18 +500,15 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
     }
 }
 
-ITEMS_PROPERTIES = ARMOR
-ITEMS_NAMES = ARMOR.keys()
+ITEMS_PROPERTIES = ARMOR | WEAPONS
+ITEMS_NAMES = list(ARMOR.keys()) + list(WEAPONS.keys())
 
 
 WEAPONS_COLS = 5
-WEAPONS_ROWS = len(WEAPONS.keys()) // WEAPONS_COLS + 1
 
 ARMOR_COLS = WEAPONS_COLS
-ARMOR_ROWS = len(ARMOR.keys()) // WEAPONS_COLS + 1
 
 CONSUMABLE_COLS = WEAPONS_COLS
-CONSUMABLE_ROWS = len(CONSUMABLE.keys()) // WEAPONS_COLS + 1
 
 # Character
 WIDTH_CHARACTER = 150

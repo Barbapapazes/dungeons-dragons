@@ -2,6 +2,7 @@
 
 from os import path
 from copy import deepcopy
+from random import randint, choice
 import pygame as pg
 from logger import logger
 from inventory.inventory import Consumable, Weapon, Armor, EquipableSlot, InventorySlot, Equipable
@@ -34,6 +35,11 @@ class Store:
         self.weapon_slots = []
         self.armor_slots = []
         self.consumable_slots = []
+
+        logger.debug("si on passe paramètre, alors on les prends, sinon, on fait l'aléatoire")
+        self.chosen_weapons = [choice(list(WEAPONS.items())) for _ in range(randint(0, 5))]
+        self.chosen_armor = [choice(list(ARMOR.items())) for _ in range(randint(0, 5))]
+        self.chosen_consumables = [choice(list(CONSUMABLE.items())) for _ in range(randint(0, 5))]
 
         self.moving_item = None
         self.moving_item_slot = None
@@ -79,21 +85,24 @@ class Store:
 
     def create_weapon_slots(self):
         """Create slots for the Weapon category"""
-        step, min_x, max_x, min_y, max_y = self.create_slots(WEAPONS_COLS, WEAPONS_ROWS, 0)
+        step, min_x, max_x, min_y, max_y = self.create_slots(
+            WEAPONS_COLS, len(self.chosen_weapons) // WEAPONS_COLS + 1, 0)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
                 self.weapon_slots.append(StoreSlot(x, y, STORE_TILESIZE, WHITE))
 
     def create_armor_slots(self):
         """Create slots for the Armor category"""
-        step, min_x, max_x, min_y, max_y = self.create_slots(ARMOR_COLS, ARMOR_ROWS, 100)
+        step, min_x, max_x, min_y, max_y = self.create_slots(
+            ARMOR_COLS, len(self.chosen_armor) // ARMOR_COLS + 1, 100)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
                 self.armor_slots.append(StoreSlot(x, y, STORE_TILESIZE, WHITE))
 
     def create_consumable_slots(self):
         """Create slots for the Consumable category"""
-        step, min_x, max_x, min_y, max_y = self.create_slots(CONSUMABLE_COLS, CONSUMABLE_ROWS, 200)
+        step, min_x, max_x, min_y, max_y = self.create_slots(
+            CONSUMABLE_COLS, len(self.chosen_consumables) // CONSUMABLE_COLS + 1, 200)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
                 self.consumable_slots.append(StoreSlot(x, y, STORE_TILESIZE, WHITE))
@@ -108,7 +117,8 @@ class Store:
         """Add all items to the weapon category
         """
         self.weapons = list()
-        for key, value in WEAPONS.items():  # il va falloir utiliser des variables pour que l'implémentation soit smart
+        # il va falloir utiliser des variables pour que l'implémentation soit smart
+        for key, value in self.chosen_weapons:
             data = Weapon(
                 key,
                 ITEMS[value['image_name']],
@@ -131,7 +141,7 @@ class Store:
     def add_all_armors(self):
         """Add all items to the armor category"""
         self.armors = list()
-        for key, value in ARMOR.items():
+        for key, value in self.chosen_armor:
             data = Armor(
                 key,
                 ITEMS[value['image_name']],
