@@ -30,10 +30,12 @@ CONSUMABLE = {
         "image_name": "potion_02a",
         "price": 10,
         "weight": 2,
-        "heal": 30
+        "heal": 30,
+        "shield": 0,
+        "object_type": "consumable"
     }
 }
-
+# il faut ajouter l'item type
 WEAPONS = {
     "bronze_sword_small": {
         "image_name": "sword_01a",
@@ -43,7 +45,8 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "object_type": "weapon"
     },
     "steal_sword_small": {
         "image_name": "sword_01b",
@@ -53,7 +56,8 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "object_type": "weapon"
     },
     "sapphire_sword_small": {
         "image_name": "sword_01c",
@@ -63,7 +67,8 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "object_type": "weapon"
     },
     "gold_sword_small": {
         "image_name": "sword_01d",
@@ -73,7 +78,9 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "object_type": "weapon"
+
     },
     "ruby_sword_small": {
         "image_name": "sword_01e",
@@ -83,8 +90,10 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
-    }, "bronze_sword_medium": {
+        "scope": 2,
+        "object_type": "weapon"
+    },
+    "bronze_sword_medium": {
         "image_name": "sword_02a",
         "price": 10,
         "weight": 10,
@@ -92,7 +101,8 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "object_type": "weapon"
     },
     "steal_sword_medium": {
         "image_name": "sword_02b",
@@ -102,7 +112,8 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "object_type": "weapon"
     },
     "sapphire_sword_medium": {
         "image_name": "sword_02c",
@@ -112,7 +123,8 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "object_type": "weapon"
     },
     "gold_sword_medium": {
         "image_name": "sword_02d",
@@ -122,7 +134,8 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "object_type": "weapon"
     },
     "ruby_sword_medium": {
         "image_name": "sword_02e",
@@ -132,7 +145,8 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "object_type": "weapon"
     },
     "bronze_arc_small": {
         "image_name": "bow_01a",
@@ -143,6 +157,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "steal_arc_small": {
         "image_name": "bow_01b",
@@ -153,6 +168,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "sapphire_arc_small": {
         "image_name": "bow_01c",
@@ -163,6 +179,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "gold_arc_small": {
         "image_name": "bow_01d",
@@ -173,6 +190,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "ruby_arc_small": {
         "image_name": "bow_01e",
@@ -183,6 +201,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "bronze_arc_medium": {
         "image_name": "bow_02a",
@@ -193,6 +212,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "steal_arc_medium": {
         "image_name": "bow_02b",
@@ -203,6 +223,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "sapphire_arc_medium": {
         "image_name": "bow_02c",
@@ -213,6 +234,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "gold_arc_medium": {
         "image_name": "bow_02d",
@@ -223,6 +245,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "ruby_arc_medium": {
         "image_name": "bow_02e",
@@ -233,6 +256,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "bronze_arc_large": {
         "image_name": "bow_03a",
@@ -243,6 +267,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "steal_arc_large": {
         "image_name": "bow_03b",
@@ -253,6 +278,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "sapphire_arc_large": {
         "image_name": "bow_03c",
@@ -263,6 +289,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "gold_arc_large": {
         "image_name": "bow_03d",
@@ -273,6 +300,7 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "ruby_arc_large": {
         "image_name": "bow_03e",
@@ -283,56 +311,62 @@ WEAPONS = {
         "val_d": 10,
         "scope": 5,
         "price": 10,
+        "object_type": "weapon"
     },
     "bronze_dagger_small": {
         "image_name": "sword_03a",
-        "price": 10,
         "weight": 10,
         "slot": "weapon",
         "type": "dagger",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "price": 10,
+        "object_type": "weapon",
     },
     "steal_dagger_small": {
         "image_name": "sword_03b",
-        "price": 10,
         "weight": 10,
         "slot": "weapon",
         "type": "dagger",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "price": 10,
+        "object_type": "weapon"
     },
     "sapphire_dagger_small": {
         "image_name": "sword_03c",
-        "price": 10,
         "weight": 10,
         "slot": "weapon",
         "type": "dagger",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "price": 10,
+        "object_type": "weapon"
     },
     "gold_dagger_small": {
         "image_name": "sword_03d",
-        "price": 10,
         "weight": 10,
         "slot": "weapon",
         "type": "dagger",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "price": 10,
+        "object_type": "weapon"
     },
     "ruby_dagger_small": {
         "image_name": "sword_03e",
-        "price": 10,
         "weight": 10,
         "slot": "weapon",
         "type": "dagger",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2
+        "scope": 2,
+        "price": 10,
+        "object_type": "weapon"
     },
 }
 

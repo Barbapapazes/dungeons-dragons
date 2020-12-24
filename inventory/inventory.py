@@ -256,6 +256,7 @@ class Inventory:
                 if slot.rect.collidepoint(mouse_pos):
                     self.throw_item(slot.item)
             if isinstance(slot, InventorySlot):
+                logger.debug("%s, %s", type(slot.item), isinstance(slot.item, Consumable))
                 if slot.rect.collidepoint(mouse_pos):
                     if isinstance(slot.item, Equipable):
                         if action == ACTIONS['equip']:
@@ -346,6 +347,7 @@ class Inventory:
         Args:
             item (Item)
         """
+        logger.debug(item)
         if isinstance(item, Consumable):
             logger.info("Use %s from inventory", item)
             item.use(self, self.player)
@@ -466,6 +468,11 @@ class Consumable(Item):
         inventory.remove_item(self)
         target.addHp(self.hp_gain)
         target.addShield(self.shield_gain)
+
+    def __deepcopy__(self, memo):
+        return Consumable(
+            self.name, self.image.copy(),
+            self.image_name, self.price, self.weight, self.hp_gain, self.shield_gain)
 
 
 class Equipable(Item):

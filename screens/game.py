@@ -207,15 +207,10 @@ class Game(_State):
                 if tile_object.name == "merchant":
                     Merchant(self, obj_center.x, obj_center.y, TILESIZE)
                 if tile_object.name in ITEMS_NAMES:
-                    properties = dict()
-                    if ITEMS_PROPERTIES[tile_object.name]["object_type"] == "armor":
-                        properties = {
-                            "object_type": ITEMS_PROPERTIES[tile_object.name]["object_type"],
-                            "price": ITEMS_PROPERTIES[tile_object.name]["price"],
-                            "weight": ITEMS_PROPERTIES[tile_object.name]["weight"],
-                            "shield": ITEMS_PROPERTIES[tile_object.name]["shield"],
-                            "slot": ITEMS_PROPERTIES[tile_object.name]["slot"],
-                        }
+                    logger.debug("utiliser la liste des items")
+                    properties = {key: value for key, value in ITEMS_PROPERTIES[tile_object.name] if not (key in [
+                        "image_name"])}
+                    properties["object_type"] = ITEMS_PROPERTIES[tile_object.name]["object_type"]
                     logger.debug(properties)
                     PlacableItem(self, obj_center, tile_object.name, properties,
                                  ITEMS[ITEMS_PROPERTIES[tile_object.name]["image_name"]],

@@ -163,13 +163,15 @@ class Store:
     def add_all_consumables(self):
         """Add all items to the consumable category"""
         self.consumables = list()
-        for key, value in CONSUMABLE.items():
+        for key, value in self.chosen_consumables:
             data = Consumable(
                 key,
                 ITEMS[value['image_name']],
                 value['image_name'],
                 value['price'],
-                value['weight'])
+                value['weight'],
+                value["heal"],
+                value["shield"])
             self.consumables.append(data)
 
         for item in self.consumables:
@@ -276,6 +278,7 @@ class Store:
         """
         logger.info("Get %s from store", item)
         data = deepcopy(item)
+        logger.debug("%s", type(data))
         return data
 
     def find_item(self, item):
