@@ -46,44 +46,46 @@ class Inventory:
     @classmethod
     def create_inventory(cls, data):
         items = list()
+        logger.debug(data)
         for item in data:
-            logger.debug(item)
-            if item["object_type"] == "item":
+            key, value = list(item.items())[0]
+            logger.debug(value)
+            if value["object_type"] == "item":
                 items.append(
                     Item(
-                        item["name"],
-                        ITEMS[item["image_name"]],
-                        item["image_name"],
-                        item["price"],
-                        item["weight"]))
-            elif item["object_type"] == "armor":
+                        key,
+                        ITEMS[value["image_name"]],
+                        value["image_name"],
+                        value["price"],
+                        value["weight"]))
+            elif value["object_type"] == "armor":
                 items.append(
                     Armor(
-                        item["name"], ITEMS[item["image_name"]],
-                        item["image_name"], item["price"], item["weight"], item["shield"], item["slot"]))
-            elif item["object_type"] == "weapon":
+                        key, ITEMS[value["image_name"]],
+                        value["image_name"], value["price"], value["weight"], value["shield"], value["slot"]))
+            elif value["object_type"] == "weapon":
                 items.append(
                     Weapon(
-                        item["name"],
-                        ITEMS[item["image_name"]],
-                        item["image_name"],
-                        item["price"],
-                        item["slot"],
-                        item["type"],
-                        item["weight"],
-                        item["nb_d"],
-                        item["val_d"],
-                        item["scope"]))
-            elif item["object_type"] == "consumable":
+                        key,
+                        ITEMS[value["image_name"]],
+                        value["image_name"],
+                        value["price"],
+                        value["slot"],
+                        value["type"],
+                        value["weight"],
+                        value["nb_d"],
+                        value["val_d"],
+                        value["scope"]))
+            elif value["object_type"] == "consumable":
                 items.append(
                     Consumable(
-                        item["name"],
-                        ITEMS[item["image_name"]],
-                        item["image_name"],
-                        item["price"],
-                        item["weight"],
-                        item["hp_gain"],
-                        item["shield_gain"]))
+                        key,
+                        ITEMS[value["image_name"]],
+                        value["image_name"],
+                        value["price"],
+                        value["weight"],
+                        value["hp_gain"],
+                        value["shield_gain"]))
 
         return items
 
