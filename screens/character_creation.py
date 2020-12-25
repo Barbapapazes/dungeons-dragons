@@ -438,7 +438,7 @@ class CharacterCreation(_Elements):
             24,
             BEIGE,
             19 * WIDTH // 20,
-            HEIGHT // 10,
+            2 * HEIGHT // 10,
             align="e")
 
     def draw_title(self):
