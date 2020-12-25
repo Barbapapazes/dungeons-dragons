@@ -104,7 +104,7 @@ class Store:
     def create_weapon_slots(self):
         """Create slots for the Weapon category"""
         step, min_x, max_x, min_y, max_y = self.create_slots(
-            WEAPONS_COLS, len(self.chosen_weapons) // WEAPONS_COLS + 1, 0)
+            WEAPONS_COLS, (len(self.chosen_weapons) - 1) // WEAPONS_COLS + 1, 0)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
                 self.weapon_slots.append(StoreSlot(x, y, STORE_TILESIZE, WHITE))
@@ -112,7 +112,7 @@ class Store:
     def create_armor_slots(self):
         """Create slots for the Armor category"""
         step, min_x, max_x, min_y, max_y = self.create_slots(
-            ARMOR_COLS, len(self.chosen_armor) // ARMOR_COLS + 1, 100)
+            ARMOR_COLS, (len(self.chosen_armor) - 1) // ARMOR_COLS + 1, 100)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
                 self.armor_slots.append(StoreSlot(x, y, STORE_TILESIZE, WHITE))
@@ -120,7 +120,7 @@ class Store:
     def create_consumable_slots(self):
         """Create slots for the Consumable category"""
         step, min_x, max_x, min_y, max_y = self.create_slots(
-            CONSUMABLE_COLS, len(self.chosen_consumables) // CONSUMABLE_COLS + 1, 200)
+            CONSUMABLE_COLS, (len(self.chosen_consumables) - 1) // CONSUMABLE_COLS + 1, 200)
         for x in range(min_x, max_x, step):
             for y in range(min_y, max_y, step):
                 self.consumable_slots.append(StoreSlot(x, y, STORE_TILESIZE, WHITE))
