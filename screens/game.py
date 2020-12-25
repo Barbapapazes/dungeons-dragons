@@ -123,8 +123,13 @@ class Game(_State):
                 self.turn_manager.enemies.append(
                     enemy_obj)
             for chest in self.game_data["game_data"]["chests"]:
-                Chest(self, chest["pos"]["x"], chest["pos"]["y"], is_open=chest["is_open"])
-                logger.debug("il faut ajotuer l'ajout du contenu du coffre")
+                Chest(
+                    self, chest["pos"]["x"],
+                    chest["pos"]["y"],
+                    consumable=chest["store"]["consumable"],
+                    weapons=chest["store"]["weapons"],
+                    armor=chest["store"]["armor"],
+                    is_open=chest["is_open"])
                 border = TILESIZE * 0.4
                 Obstacle(
                     self,
@@ -144,7 +149,7 @@ class Game(_State):
                         border)
                 Door(self, door["pos"]["x"], door["pos"]["y"], wall, is_open=door["is_open"])
             for merchant in self.game_data["game_data"]["merchants"]:
-                Merchant(self, merchant["pos"]["x"], merchant["pos"]["y"], TILESIZE)
+                Merchant(self, merchant["pos"]["x"], merchant["pos"]["y"], TILESIZE, consumable=merchant["shop"]["consumable"], weapons=merchant["shop"]["weapons"], armor=merchant["shop"]["armor"])
             for tile_object in self.map.tmxdata.objects:
                 if tile_object.name == 'wall':
                     Obstacle(
@@ -208,7 +213,7 @@ class Game(_State):
                     Merchant(self, obj_center.x, obj_center.y, TILESIZE)
                 if tile_object.name in ITEMS_NAMES:
                     logger.debug("utiliser la liste des items")
-                    properties = {key: value for key, value in ITEMS_PROPERTIES[tile_object.name] if not (key in [
+                    properties = {key: value for key, value in ITEMS_PROPERTIES[tile_object.name].items() if not (key in [
                         "image_name"])}
                     properties["object_type"] = ITEMS_PROPERTIES[tile_object.name]["object_type"]
                     logger.debug(properties)
@@ -586,6 +591,7 @@ class Game(_State):
                     hit.name, hit.image.copy(), hit.image_name, 15, 10,  hp_gain=15))
             if hit.properties["object_type"] == "weapon":
                 hit.kill()
+                logger.debug("mettre à jour les properties")
                 self.turn_manager.active_character().inventory.add_item(Weapon(
                     hit.name, hit.image.copy(), hit.image_name, 15, "weapon", "sword", 10
                 ))  # ajouter des choses aux properties des items : le proce, le slot, le wp tupe le weight

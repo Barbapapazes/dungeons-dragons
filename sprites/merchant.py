@@ -7,7 +7,7 @@ from store.shop import Shop
 
 
 class Merchant(pg.sprite.Sprite):
-    def __init__(self, game, x, y, width):
+    def __init__(self, game, x, y, width, consumable=None, weapons=None, armor=None):
         self._layer = y
         self.groups = game.all_sprites, game.merchants
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -27,7 +27,7 @@ class Merchant(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
-        self.shop = Shop(game)
+        self.shop = Shop(game, consumable, weapons, armor)
 
         self.frame_count = 0
 

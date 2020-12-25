@@ -12,10 +12,10 @@ from config.inventory import ACTIONS as INVENTORY_ACTIONS
 class Shop(Store):
     """Represent a shop"""
 
-    def __init__(self, game):
+    def __init__(self, game, consumable=None, weapons=None, armor=None):
         """Create the shop
         """
-        super(Shop, self).__init__(game, SHOP_MENU)
+        super(Shop, self).__init__(game, consumable, weapons, armor, menu_data=SHOP_MENU)
         # il va falloir adapter les actions et utiliser un flag
 
     def place_item(self, inventory):

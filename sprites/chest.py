@@ -9,7 +9,7 @@ from store.store import Store
 
 
 class Chest(pg.sprite.Sprite):
-    def __init__(self, game, x, y, is_open=False):
+    def __init__(self, game, x, y, consumable=False, weapons=False, armor=False, is_open=False):
         self._layer = y
         self.groups = game.all_sprites, game.chests
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -29,7 +29,7 @@ class Chest(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
-        self.store = Store(game)
+        self.store = Store(game, consumable, weapons, armor)
 
         self.frame_count = 0
 

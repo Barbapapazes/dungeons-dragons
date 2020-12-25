@@ -22,11 +22,12 @@ class Item:
 
     def save(self):
         return {
-            "object_type": "item",
-            "name": self.name,
-            "price": self.price,
-            "weight": self.weight,
-            "image_name": self.image_name
+            self.name: {
+                "object_type": "item",
+                "price": self.price,
+                "weight": self.weight,
+                "image_name": self.image_name
+            }
         }
 
     def __str__(self):

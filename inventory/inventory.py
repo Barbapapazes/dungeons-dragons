@@ -69,7 +69,7 @@ class Inventory:
                         item["image_name"],
                         item["price"],
                         item["slot"],
-                        item["wpn_type"],
+                        item["type"],
                         item["weight"],
                         item["nb_d"],
                         item["val_d"],
@@ -452,11 +452,13 @@ class Consumable(Item):
         self.shield_gain = shield_gain
 
     def save(self):
-        return super().save() | {
-            "object_type": "consumable",
-            "hp_gain":  self.hp_gain,
-            "shield_gain":  self.shield_gain
-        }
+        return {
+            self.name:
+            super().save()[self.name] | {
+                "object_type": "consumable",
+                "heal":  self.hp_gain,
+                "shield":  self.shield_gain
+            }}
 
     def use(self, inventory, target):
         """remove the consumable from the inventory inv and uses it on the target player
@@ -510,10 +512,13 @@ class Armor(Equipable):
         self.slot = slot
 
     def save(self):
-        return super().save() | {
-            "object_type": "armor",
-            "shield": self.shield,
-            "slot": self.slot
+        return {
+            self.name:
+            super().save()[self.name] | {
+                "object_type": "armor",
+                "shield": self.shield,
+                "slot": self.slot
+            }
         }
 
     def equip(self, inventory, target):
@@ -558,13 +563,16 @@ class Weapon(Equipable):
         self.scope = scope*TILESIZE
 
     def save(self):
-        return super().save() | {
-            "object_type": "weapon",
-            "wpn_type": self.wpn_type,
-            "nb_d": self.nb_d,
-            "val_d": self.val_d,
-            "scope": self.scope,
-            "slot": self.slot
+        return {
+            self.name:
+            super().save()[self.name] | {
+                "object_type": "weapon",
+                "type": self.wpn_type,
+                "nb_d": self.nb_d,
+                "val_d": self.val_d,
+                "scope": self.scope,
+                "slot": self.slot
+            }
         }
 
     def equip(self, inventory, target):

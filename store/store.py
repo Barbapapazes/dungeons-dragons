@@ -17,7 +17,7 @@ from config.inventory import ACTIONS as INVENTORY_ACTIONS
 class Store:
     """Represent a store"""
 
-    def __init__(self, game, menu_data=STORE_MENU):
+    def __init__(self, game, consumable, weapons, armor, menu_data=STORE_MENU):
         """Create the store
         """
 
@@ -37,9 +37,17 @@ class Store:
         self.consumable_slots = []
 
         logger.debug("si on passe paramètre, alors on les prends, sinon, on fait l'aléatoire")
-        self.chosen_weapons = [choice(list(WEAPONS.items())) for _ in range(randint(0, 5))]
-        self.chosen_armor = [choice(list(ARMOR.items())) for _ in range(randint(0, 5))]
-        self.chosen_consumables = [choice(list(CONSUMABLE.items())) for _ in range(randint(0, 5))]
+        if weapons:
+            weapons = [list(value.items())[0] for value in weapons]
+        if armor:
+            armor = [list(value.items())[0] for value in armor]
+        if consumable:
+            consumable = [list(value.items())[0] for value in consumable]
+        self.chosen_weapons = [choice(list(WEAPONS.items())) for _ in range(
+            randint(0, 5))] if not weapons else weapons
+        self.chosen_armor = [choice(list(ARMOR.items())) for _ in range(randint(0, 5))] if not armor else armor
+        self.chosen_consumables = [choice(list(CONSUMABLE.items()))
+                                   for _ in range(randint(0, 5))] if not consumable else consumable
 
         self.moving_item = None
         self.moving_item_slot = None
@@ -53,10 +61,20 @@ class Store:
         self.display_shop = False
 
     def save(self):
-        slots_list = list()
-        for slot in self.weapon_slots + self.armor_slots + self.consumable_slots:
+        slots_list = {
+            "weapons": list(),
+            "armor": list(),
+            "consumable": list()
+        }
+        for slot in self.weapon_slots:
             if slot.item:
-                slots_list.append(slot.item.save())
+                slots_list["weapons"].append(slot.item.save())
+        for slot in self.armor_slots:
+            if slot.item:
+                slots_list["armor"].append(slot.item.save())
+        for slot in self.consumable_slots:
+            if slot.item:
+                slots_list["consumable"].append(slot.item.save())
         return slots_list
 
     def set_all_categories(self):
@@ -118,6 +136,7 @@ class Store:
         """
         self.weapons = list()
         # il va falloir utiliser des variables pour que l'implémentation soit smart
+        logger.debug(self.chosen_weapons)
         for key, value in self.chosen_weapons:
             data = Weapon(
                 key,
@@ -163,6 +182,7 @@ class Store:
     def add_all_consumables(self):
         """Add all items to the consumable category"""
         self.consumables = list()
+        logger.debug(self.chosen_consumables)
         for key, value in self.chosen_consumables:
             data = Consumable(
                 key,
