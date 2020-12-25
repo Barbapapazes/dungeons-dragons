@@ -252,12 +252,21 @@ class Inventory:
             mouse_pos (tuple):
         """
         for slot in self.get_all_slots():
-            if action == ACTIONS['throw']:
+            if isinstance(
+                    slot, EquipableSlot):
                 if slot.rect.collidepoint(mouse_pos):
-                    self.throw_item(slot.item)
-            if isinstance(slot, InventorySlot):
-                logger.debug("%s, %s", type(slot.item), isinstance(slot.item, Consumable))
+                    if slot.item is not None:
+                        if action == ACTIONS['unequip']:
+                            self.unequip_item(slot.item)
+                        else:
+                            logger.info('Action can not be done')
+                        if action == ACTIONS['throw']:
+                            logger.info('Action can not be done')
+            elif isinstance(slot, InventorySlot):
                 if slot.rect.collidepoint(mouse_pos):
+                    logger.debug(type(slot))
+                    if action == ACTIONS['throw']:
+                        self.throw_item(slot.item)
                     if isinstance(slot.item, Equipable):
                         if action == ACTIONS['equip']:
                             self.equip_item(slot.item)
@@ -266,13 +275,6 @@ class Inventory:
                     if isinstance(slot.item, Consumable):
                         if action == ACTIONS['use']:
                             self.use_item(slot.item)
-                        else:
-                            logger.info('Action can not be done')
-            if isinstance(slot, EquipableSlot):
-                if slot.rect.collidepoint(mouse_pos):
-                    if slot.item is not None:
-                        if action == ACTIONS['unequip']:
-                            self.unequip_item(slot.item)
                         else:
                             logger.info('Action can not be done')
 
