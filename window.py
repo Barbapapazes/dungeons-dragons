@@ -391,7 +391,7 @@ class _Elements(_State):
         # button
         self.fontsize = 50
 
-        offset = kwargs.get('btns_offset', 100)
+        offset = kwargs.get('btns_offset', 80)
         width = kwargs.get('btns_width', WIDTH_BUTTON)
         start_y_offset = kwargs.get('btns_start_y_offset', 250)
         self.create_buttons(self.background, start_y_offset=start_y_offset, offset=offset, width=width)
@@ -404,7 +404,7 @@ class _Elements(_State):
             background, _x, _y, WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2, "Back", self.button_font, self.fontsize // 2,
             MARGIN_BUTTON, RADIUS_BUTTON, BEIGE, YELLOW_LIGHT, GREEN_DARK, on_click, on_click_params)
 
-    def create_buttons(self, background, start_y_offset=250, offset=100, width=WIDTH_BUTTON):
+    def create_buttons(self, background, start_y_offset=250, offset=80, width=WIDTH_BUTTON):
         """Create buttons"""
         _x = WIDTH // 2 - WIDTH_BUTTON // 2
         y_base = start_y_offset
