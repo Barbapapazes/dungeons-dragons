@@ -81,7 +81,8 @@ class Game(_State):
 
     def new(self):
         """Create a new game"""
-        self.map = TiledMap(path.join(self.saved_maps, 'level1.tmx'))
+        self.map = TiledMap(path.join(self.saved_maps, self.game_data["game_data"]["map"]))
+        logger.debug("changer le nom du fichier avec le map name de game data et faire le choix si c'est une custom ou non et revoir pour dans le map data pour mettre des bjets et tout² parfait bob mais je ne suis pas sur de ce que vous me proposer là, je pense qu'il est prréférabel de continuer à bosser debout, cependant, je ne suis pas certain que cela va convenir à tout le monde!")
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.minimap = Minimap(
@@ -149,7 +150,12 @@ class Game(_State):
                         border)
                 Door(self, door["pos"]["x"], door["pos"]["y"], wall, is_open=door["is_open"])
             for merchant in self.game_data["game_data"]["merchants"]:
-                Merchant(self, merchant["pos"]["x"], merchant["pos"]["y"], TILESIZE, consumable=merchant["shop"]["consumable"], weapons=merchant["shop"]["weapons"], armor=merchant["shop"]["armor"])
+                Merchant(
+                    self, merchant["pos"]["x"],
+                    merchant["pos"]["y"],
+                    TILESIZE, consumable=merchant["shop"]["consumable"],
+                    weapons=merchant["shop"]["weapons"],
+                    armor=merchant["shop"]["armor"])
             for tile_object in self.map.tmxdata.objects:
                 if tile_object.name == 'wall':
                     Obstacle(
