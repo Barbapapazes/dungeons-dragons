@@ -36,13 +36,13 @@ class Store:
         self.armor_slots = []
         self.consumable_slots = []
 
-        logger.debug("si on passe paramètre, alors on les prends, sinon, on fait l'aléatoire")
         if weapons:
-            weapons = [list(value.items())[0] for value in weapons]
+            weapons = weapons.items()
         if armor:
-            armor = [list(value.items())[0] for value in armor]
+            armor = armor.items()
         if consumable:
-            consumable = [list(value.items())[0] for value in consumable]
+            consumable = consumable.items()
+
         self.chosen_weapons = [choice(list(WEAPONS.items())) for _ in range(
             randint(0, 5))] if not weapons else weapons
         self.chosen_armor = [choice(list(ARMOR.items())) for _ in range(randint(0, 5))] if not armor else armor
@@ -55,27 +55,30 @@ class Store:
         self.menu_data = menu_data
         self.game = game
 
-        self.create_all_slots()  # utiliser un randint avec un choix ensuite dans un dictionnaire d'items
+        self.create_all_slots()
         self.add_all_items()
 
         self.display_shop = False
 
     def save(self):
-        slots_list = {
-            "weapons": list(),
-            "armor": list(),
-            "consumable": list()
+        slots = {
+            "weapons": dict(),
+            "armor": dict(),
+            "consumable": dict()
         }
         for slot in self.weapon_slots:
             if slot.item:
-                slots_list["weapons"].append(slot.item.save())
+                key, value = list(slot.item.save().items())[0]
+                slots["weapons"][key] = value
         for slot in self.armor_slots:
             if slot.item:
-                slots_list["armor"].append(slot.item.save())
+                key, value = list(slot.item.save().items())[0]
+                slots["armor"][key] = value
         for slot in self.consumable_slots:
             if slot.item:
-                slots_list["consumable"].append(slot.item.save())
-        return slots_list
+                key, value = list(slot.item.save().items())[0]
+                slots["consumable"][key] = value
+        return slots
 
     def set_all_categories(self):
         """Used to define the different categories of items"""

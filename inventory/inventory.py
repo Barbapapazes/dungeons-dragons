@@ -46,10 +46,7 @@ class Inventory:
     @classmethod
     def create_inventory(cls, data):
         items = list()
-        logger.debug(data)
-        for item in data:
-            key, value = list(item.items())[0]
-            logger.debug(value)
+        for key, value in data.items():
             if value["object_type"] == "item":
                 items.append(
                     Item(
@@ -90,10 +87,11 @@ class Inventory:
         return items
 
     def save(self):
-        inventory_list = list()
+        inventory_list = dict()
         for slot in self.slots:
             if slot.item:
-                inventory_list.append(slot.item.save())
+                key, value = list(slot.item.save().items())[0]
+                inventory_list[key] = value
 
         return inventory_list
 
