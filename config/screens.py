@@ -17,6 +17,7 @@ CHARACTER_CREATION = "character_creation"
 OPTIONS = "options"
 NEW_GAME = "new_game"
 INTRODUCTION = "introduction"
+CHOOSE_MAP = "choose_map"
 
 # states
 TRANSITION_IN = 'transition in'
