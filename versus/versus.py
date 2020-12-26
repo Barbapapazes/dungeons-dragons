@@ -106,10 +106,9 @@ class VersusManager:
                     self.check_characters_actions()
 
     def check_characters_actions(self):
+        self.turn_manager.active_character().number_actions -= 1
         if self.turn_manager.active_character().number_actions == 0:
             self.add_turn()
-        else:
-            self.turn_manager.active_character().number_actions -= 1
 
     def select_enemy(self, pos):
         if self.action == "attack":
