@@ -19,6 +19,7 @@ class ChooseMap(_Elements):
         game_folder = path.dirname('.')
         assets_folder = path.join(game_folder, 'assets')
         self.levels_maps = path.join(assets_folder, 'levels_maps')
+        self.custom_maps = path.join(assets_folder, 'saved_maps')
 
         self.maps = [
             f for f in os.listdir(
@@ -44,9 +45,14 @@ class ChooseMap(_Elements):
                 "on_click": self.toggle_sub_state,
                 "on_click_params": ['levels_maps'],
             },
+            "custom_maps": {
+                "text": "Custom Maps",
+                "on_click": self.toggle_sub_state,
+                "on_click_params": ['custom_maps'],
+            },
         }
 
-    def create_levels_buttons_dict(self):
+    def create_maps_buttons_dict(self):
         """Create the dict for all buttons"""
         btns_dict = dict()
         for index, game in enumerate(self.maps):
@@ -70,8 +76,20 @@ class ChooseMap(_Elements):
         super().toggle_sub_state(state)
         pg.event.wait()
         if state == "levels_maps":
+            self.maps = [
+                f for f in os.listdir(
+                    self.levels_maps) if f.endswith('.tmx')]
             self.image_screen = self.image.copy()
-            self.btns_dict = self.create_levels_buttons_dict()
+            self.btns_dict = self.create_maps_buttons_dict()
+            self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
+            self.btns = list()
+            self.create_buttons(self.image_screen)
+        elif state == 'custom_maps':
+            self.maps = [
+                f for f in os.listdir(
+                    self.custom_maps) if f.endswith('.tmx')]
+            self.image_screen = self.image.copy()
+            self.btns_dict = self.create_maps_buttons_dict()
             self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
             self.btns = list()
             self.create_buttons(self.image_screen)
@@ -85,6 +103,7 @@ class ChooseMap(_Elements):
         previous_dict = super().make_states_dict().copy()
         add_dict = {
             "levels_maps": self.levels_maps_run,
+            "custom_maps": self.custom_maps_run,
         }
         return previous_dict | add_dict
 
@@ -108,6 +127,12 @@ class ChooseMap(_Elements):
         self.screen.blit(self.image_screen, (0, 0))
         super().events_buttons(back=True)
         super().draw_title("Levels")
+        self.back_btn.draw()
+
+    def custom_maps_run(self):
+        self.screen.blit(self.image_screen, (0, 0))
+        super().events_buttons(back=True)
+        super().draw_title("Custom maps")
         self.back_btn.draw()
 
     def draw(self):
