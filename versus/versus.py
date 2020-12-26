@@ -33,9 +33,14 @@ class VersusManager:
     def start_versus(self):
         self.active = True
         self.set_move_player(False)
-        logger.debug("il faut faire commencer le thief, et pour cela, il faut le(s) trouver parmis tous les parsonnages et les mettre au debut. Ensuite, on tire le dé pour chacun des personnages afin de les mettres dans l'ordre de tirage. Il faut faire celà dès lors qu'un enemy est trop proche de l'un des 3 joueurs. Afin de détecter cela, on fera un fontion de check dans le versus manager")
+        logger.debug("Ensuite, on tire le dé pour chacun des personnages afin de les mettres dans l'ordre de tirage. Il faut faire celà dès lors qu'un enemy est trop proche de l'un des 3 joueurs. Afin de détecter cela, on fera un fontion de check dans le versus manager")
         logger.debug("il faut donner au joueur actif ses actions, via le number of actions")
         self.logs.add_log("Start the versus")
+        self.add_actions()
+
+    def add_actions(self):
+        self.turn_manager.active_character().number_actions = 2
+        self.logs.add_log("Add 2 actions")
 
     def finish_versus(self):
         self.active = False
@@ -92,15 +97,19 @@ class VersusManager:
                         "il faut utiliser STR pour le type sword alors que on va utiliser DEX pour le type arc, pour le type arc, on peut tirer n'importe où mais plus c'est loin, plus on réduit le DEX")
                     self.remove_action()
                     self.logs.add_log("Enemy attacked")
-                    self.selected_enemy.health -= 30
-                    self.add_turn()
+                    self.check_characters_actions()
             if self.action == 'move':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
                     logger.debug("Pour la distance, il faut voir si on utiliser l'une des charactéritiques")
                     self.remove_action()
                     self.remove_last_player_pos()
-                    self.add_turn()
-        logger.debug("il faut enlever une action au joueur pour si c'est à 0, alors on passe au tour suivant")
+                    self.check_characters_actions()
+
+    def check_characters_actions(self):
+        if self.turn_manager.active_character().number_actions == 0:
+            self.add_turn()
+        else:
+            self.turn_manager.active_character().number_actions -= 1
 
     def select_enemy(self, pos):
         if self.action == "attack":
@@ -180,3 +189,5 @@ class VersusManager:
         self.border_enemy = None
         self.logs.add_log("Next turn")
         self.turn_manager.add_turn()
+        # add actions to the next character
+        self.add_actions()

@@ -1,5 +1,6 @@
 """Define a character"""
 
+from random import randint
 from utils.tilemap import collide_with_walls
 from config.sprites import PLAYER_HIT_RECT
 import pygame as pg
@@ -20,11 +21,15 @@ class Character(pg.sprite.Sprite):
 
         self.direction = "idle"
 
+        self.dice_success = None
+
         self.x = x
         self.y = y
 
         self.vel = vec(0, 0)
         self.pos = vec(x, y)
+
+        self.number_actions = 0
 
         self.image = next(self.images[self.direction])
         self.rect = self.image.get_rect()
@@ -65,12 +70,12 @@ class Character(pg.sprite.Sprite):
         """Throw of dice like D&D
 
         Args:
-            Val (int): [characteristic use for test like STR or INT]
-            modificateur (int): [malus or bonus on your characteristic]. Defaults to 0.
-            valueOfDice (int): [value of dice]. Defaults to 100.
+            Val (int): characteristic use for test like STR or INT
+            modificateur (int): malus or bonus on your characteristic. Defaults to 0.
+            valueOfDice (int): value of dice. Defaults to 100.
 
         Returns:
-            [Boolean]: [Your reussit of test]
+            Boolean: Your reussit of test
         """
         score = randint(0, valueOfDice)
         logger.info("Your dice is %i / 100 and the succes is under %i", score, Val+modificateur)

@@ -13,6 +13,8 @@ class TurnManager:
         self.players = list()
         self.enemies = list()
 
+        self.sorted = None
+
         self.turn = turn_number
 
     def add_turn(self):
@@ -25,7 +27,21 @@ class TurnManager:
         Returns:
             list
         """
-        return self.players + self.enemies
+        if not self.sorted:
+            self.sort_characters()
+        return self.sorted
+
+    def sort_characters(self):
+        logger.debug("il faut trier les personnages en prenant en compte les voleurs et le lancé de dé")
+        self.sorted = self.players + self.enemies
+
+        # used to sort characters using the dexterity
+
+        # used to add thief in the begining
+        for character in self.sorted:
+            if character.type == "thief":
+                self.sorted.remove(character)
+                self.sorted.insert(0, character)
 
     def get_relative_turn(self):
         """Get the relative turn
