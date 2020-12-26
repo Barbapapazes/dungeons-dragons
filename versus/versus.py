@@ -30,10 +30,19 @@ class VersusManager:
 
         logger.debug("il va falloir renommer ce fichier versus_manager")
 
+    def check_for_versus(self):
+        # il ne faut démarrer le versus que si il n'est pas déjà démarré et on ne l'arrête que si plus aucun joueur n'est à porté (pour la second partie, c'est intrasèque à la méthode utilisée)
+        # il faut ajouter un message d'avertissement dans le logger avant que versus ne démarre
+        for enemy in self.turn_manager.enemies:
+            for player in self.turn_manager.players:
+                if self.is_in_range(enemy.pos, player.pos, 500):
+                    # faut faire un check du versus avec le active
+                    logger.debug("start versus")
+
     def start_versus(self):
         self.active = True
         self.set_move_player(False)
-        logger.debug("Ensuite, on tire le dé pour chacun des personnages afin de les mettres dans l'ordre de tirage. Il faut faire celà dès lors qu'un enemy est trop proche de l'un des 3 joueurs. Afin de détecter cela, on fera un fontion de check dans le versus manager")
+        logger.debug("il faut faire celà dès lors qu'un enemy est trop proche de l'un des 3 joueurs. Afin de détecter cela, on fera un fontion de check dans le versus manager (elle est en cours de création juste au dessus)")
         self.logs.add_log("Start the versus")
         self.add_actions()
 
@@ -59,9 +68,9 @@ class VersusManager:
     def remove_last_player_pos(self):
         self.last_player_pos = None
 
-    def is_in_range(self, pos, _range):
-        updated_pos = vec(pos) - vec(self.game.camera.camera.x, self.game.camera.camera.y)
-        dist = updated_pos - self.turn_manager.active_character().pos
+    def is_in_range(self, base_pos, target_pos, _range):
+        updated_pos = vec(target_pos) - vec(self.game.camera.camera.x, self.game.camera.camera.y)
+        dist = updated_pos - base_pos
         return dist.length_squared() < _range * _range
 
     def events(self, pos):
@@ -114,7 +123,8 @@ class VersusManager:
 
     def select_enemy(self, pos):
         if self.action == "attack":
-            if self.is_in_range(pos, 200):  # warning, c'est la moitier de la taille du cercle
+            if self.is_in_range(
+                    self.turn_manager.active_character().pos, pos, 200):  # warning, c'est la moitier de la taille du cercle
                 # il faut utiliser le rayon d'action en fonction de l'arme, si pas d'arme, on va utiliser un rayer par défault qui est le même pour tous
                 for enemy in self.turn_manager.enemies:
                     _x = pos[0] - self.game.camera.camera.x

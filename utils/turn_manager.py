@@ -32,8 +32,10 @@ class TurnManager:
         return self.sorted
 
     def sort_characters(self):
-        logger.debug("il faut trier les personnages en prenant en compte les voleurs et le lancé de dé")
         self.sorted = self.players + self.enemies
+
+        logger.debug(
+            "il faut enregistrer la configuration (depuis le save_game dans game.py) via la position des players j'imagine")
 
         # used to sort characters using the dexterity
         self.sorted.sort(key=get_dice)

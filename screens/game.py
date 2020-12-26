@@ -481,7 +481,7 @@ class Game(_State):
         # else:
         self.update()
         self.draw()
-
+        self.versus_manager.check_for_versus()
         self.check_for_menu()
 
     def menu_run(self):
