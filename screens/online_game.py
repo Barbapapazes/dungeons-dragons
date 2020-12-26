@@ -29,7 +29,7 @@ class OnlineGame(_State):
 
         self.all_sprites = None
 
-        self.map = TiledMap(path.join(self.saved_maps, 'level1.tmx'))
+        self.map = TiledMap(path.join(self.levels_maps, 'level1.tmx'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         # self.minimap = Minimap(

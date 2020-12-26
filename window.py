@@ -221,6 +221,7 @@ class _State():
         self.assets_folder = path.join(game_folder, 'assets')
         self.saved_games = path.join(self.assets_folder, 'saved_games')
         self.saved_maps = path.join(self.assets_folder, 'saved_maps')
+        self.levels_maps = path.join(self.assets_folder, 'levels_maps')
         self.saved_minimap = path.join(self.assets_folder, 'saved_minimap')
         self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
         self.saved_settings = path.join(self.assets_folder, 'saved_settings')

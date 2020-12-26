@@ -22,6 +22,8 @@ class Sort(Equipable):
         self.scope = scope
         self.dammage = 0
 
+        logger.debug("ce fichier va dans les sprites")
+
     def equip(self, inventory, target):
         """Equip the sort in the target's sort slot
         and removes it from the inventory inventory

@@ -17,6 +17,7 @@ class VersusManager:
 
         self.attack_btn = pg.Rect((0, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.move_btn = pg.Rect((TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
+        logger.debug("il faut ajouter un bouton pour le mage, pour son pouvoir")
         self.validate_btn = pg.Rect((2 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.action = None
         self.last_player_pos = None
@@ -27,9 +28,13 @@ class VersusManager:
 
         self.active = False
 
+        logger.debug("il va falloir renommer ce fichier versus_manager")
+
     def start_versus(self):
         self.active = True
         self.set_move_player(False)
+        logger.debug("il faut faire commencer le thief, et pour cela, il faut le(s) trouver parmis tous les parsonnages et les mettre au debut. Ensuite, on tire le dé pour chacun des personnages afin de les mettres dans l'ordre de tirage. Il faut faire celà dès lors qu'un enemy est trop proche de l'un des 3 joueurs. Afin de détecter cela, on fera un fontion de check dans le versus manager")
+        logger.debug("il faut donner au joueur actif ses actions, via le number of actions")
         self.logs.add_log("Start the versus")
 
     def finish_versus(self):
@@ -81,19 +86,26 @@ class VersusManager:
                     self.set_move_player(True)
             if self.action == 'attack':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
+                    logger.debug(
+                        "il n'y a que 2 type d'armes, et on fera le choix que pour les players, ou alors, on met la même structure dans l'enemy pour avoir le même accès à nos valeurs")
+                    logger.debug(
+                        "il faut utiliser STR pour le type sword alors que on va utiliser DEX pour le type arc, pour le type arc, on peut tirer n'importe où mais plus c'est loin, plus on réduit le DEX")
                     self.remove_action()
                     self.logs.add_log("Enemy attacked")
                     self.selected_enemy.health -= 30
                     self.add_turn()
             if self.action == 'move':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
+                    logger.debug("Pour la distance, il faut voir si on utiliser l'une des charactéritiques")
                     self.remove_action()
                     self.remove_last_player_pos()
                     self.add_turn()
+        logger.debug("il faut enlever une action au joueur pour si c'est à 0, alors on passe au tour suivant")
 
     def select_enemy(self, pos):
         if self.action == "attack":
             if self.is_in_range(pos, 200):  # warning, c'est la moitier de la taille du cercle
+                # il faut utiliser le rayon d'action en fonction de l'arme, si pas d'arme, on va utiliser un rayer par défault qui est le même pour tous
                 for enemy in self.turn_manager.enemies:
                     _x = pos[0] - self.game.camera.camera.x
                     _y = pos[1] - self.game.camera.camera.y
