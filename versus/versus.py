@@ -34,7 +34,6 @@ class VersusManager:
         self.active = True
         self.set_move_player(False)
         logger.debug("Ensuite, on tire le dé pour chacun des personnages afin de les mettres dans l'ordre de tirage. Il faut faire celà dès lors qu'un enemy est trop proche de l'un des 3 joueurs. Afin de détecter cela, on fera un fontion de check dans le versus manager")
-        logger.debug("il faut donner au joueur actif ses actions, via le number of actions")
         self.logs.add_log("Start the versus")
         self.add_actions()
 
@@ -79,6 +78,7 @@ class VersusManager:
                     self.action = 'attack'
                     self.logs.add_log("Attack is selected")
                     self.logs.add_log("Select a enemy")
+                    logger.debug("il faut utiliser les caracts de l'arme pour connaitre la distance")
                     self.circle.set_width(400)
                     self.circle.set_pos(self.turn_manager.active_character().pos)
                     self.set_move_player(False)
@@ -101,12 +101,14 @@ class VersusManager:
             if self.action == 'move':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
                     logger.debug("Pour la distance, il faut voir si on utiliser l'une des charactéritiques")
+                    self.logs.add_log("Hero moved")
                     self.remove_action()
                     self.remove_last_player_pos()
                     self.check_characters_actions()
 
     def check_characters_actions(self):
         self.turn_manager.active_character().number_actions -= 1
+        self.logs.add_log(f"Action remaining : {self.turn_manager.active_character().number_actions}")
         if self.turn_manager.active_character().number_actions == 0:
             self.add_turn()
 

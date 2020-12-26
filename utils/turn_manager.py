@@ -36,6 +36,7 @@ class TurnManager:
         self.sorted = self.players + self.enemies
 
         # used to sort characters using the dexterity
+        self.sorted.sort(key=get_dice)
 
         # used to add thief in the begining
         for character in self.sorted:
@@ -83,3 +84,11 @@ class TurnManager:
             elif isinstance(character, Player):
                 list_pos += 1
         return list_pos
+
+
+def get_dice(character):
+    character.throw_dice("dex")
+    if not character.dice["sucess"]:
+        # add 101 to be able to sort without using true or false
+        character.dice["result"] += 101
+    return character.dice["result"]

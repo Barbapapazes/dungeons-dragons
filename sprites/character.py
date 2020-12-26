@@ -15,13 +15,25 @@ class Character(pg.sprite.Sprite):
         self.groups = game.all_sprites,
         super(Character, self).__init__(self.groups)
 
+        self.characteristics = {
+            "str": 0,
+            "dex": 0,
+            "con": 0,
+            "int": 0,
+            "wis": 0,
+            "cha": 0
+        }
+
         self.game = game
         self.type = _type
         self.images = images
 
         self.direction = "idle"
 
-        self.dice_success = None
+        self.dice = {
+            "success": False,
+            "result": 0
+        }
 
         self.x = x
         self.y = y
@@ -66,17 +78,19 @@ class Character(pg.sprite.Sprite):
     def __str__(self):
         return f"Sprite {self.type}"
 
-    def throwDice(self, Val, modificateur=0, valueOfDice=100):
-        """Throw of dice like D&D
+    def throw_dice(self, base_value, mod=0, value_dice=100):
+        """Throw a dice
 
         Args:
-            Val (int): characteristic use for test like STR or INT
-            modificateur (int): malus or bonus on your characteristic. Defaults to 0.
-            valueOfDice (int): value of dice. Defaults to 100.
+            base_value (str)
+            mod (int, optional) Defaults to 0.
+            value_dice (int, optional) Defaults to 100.
 
         Returns:
-            Boolean: Your reussit of test
+            bool: success if the result of the dice is under le base value plus the mod
         """
-        score = randint(0, valueOfDice)
-        logger.info("Your dice is %i / 100 and the succes is under %i", score, Val+modificateur)
-        return score <= Val + modificateur
+        result_dice = randint(0, value_dice)
+        self.dice["result"] = result_dice
+        self.dice["sucess"] = result_dice <= self.characteristics[base_value] + mod
+        logger.info("Result dice : %d / %d (must be under %s to success)",
+                    result_dice, value_dice, self.characteristics[base_value] + mod)
