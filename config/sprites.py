@@ -35,6 +35,9 @@ CONSUMABLE = {
         "object_type": "consumable"
     }
 }
+SCOPE_HAND = 3 * TILESIZE
+SCOPE_SWORD = 5 * TILESIZE
+SCOPE_ARC = 13 * TILESIZE
 # il faut ajouter l'item type
 WEAPONS = {
     "bronze_sword_small": {
@@ -45,7 +48,7 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
     "steal_sword_small": {
@@ -56,7 +59,7 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
     "sapphire_sword_small": {
@@ -67,7 +70,7 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
     "gold_sword_small": {
@@ -78,7 +81,7 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "object_type": "weapon"
 
     },
@@ -90,7 +93,7 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
     "bronze_sword_medium": {
@@ -101,7 +104,7 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
     "steal_sword_medium": {
@@ -112,7 +115,7 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
     "sapphire_sword_medium": {
@@ -123,7 +126,7 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
     "gold_sword_medium": {
@@ -134,7 +137,7 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
     "ruby_sword_medium": {
@@ -145,7 +148,7 @@ WEAPONS = {
         "type": "sword",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
     "bronze_arc_small": {
@@ -155,7 +158,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -166,7 +169,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -177,7 +180,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -188,7 +191,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -199,7 +202,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -210,7 +213,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -221,7 +224,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -232,7 +235,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -243,7 +246,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -254,7 +257,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -265,7 +268,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -276,7 +279,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -287,7 +290,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -298,7 +301,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -309,7 +312,7 @@ WEAPONS = {
         "type": "arc",
         "nb_d": 2,
         "val_d": 10,
-        "scope": 5,
+        "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
     },
@@ -320,7 +323,7 @@ WEAPONS = {
         "type": "dagger",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon",
     },
@@ -331,7 +334,7 @@ WEAPONS = {
         "type": "dagger",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
     },
@@ -342,7 +345,7 @@ WEAPONS = {
         "type": "dagger",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
     },
@@ -353,7 +356,7 @@ WEAPONS = {
         "type": "dagger",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
     },
@@ -364,7 +367,7 @@ WEAPONS = {
         "type": "dagger",
         "nb_d": 1,
         "val_d": 3,
-        "scope": 2,
+        "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
     },

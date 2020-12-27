@@ -1,6 +1,7 @@
 """Used to manage the turn based gameplay"""
 
 
+from config.sprites import SCOPE_HAND
 from sprites.enemy import Enemy
 from sprites.player import Player
 from logger import logger
@@ -64,6 +65,15 @@ class TurnManager:
             Player
         """
         return self.get_characters()[self.get_relative_turn()]
+
+    def get_active_scope(self):
+        scope = None
+        if self.is_active_player():
+            scope = SCOPE_HAND
+            if self.active_character().weapon:
+                scope = self.active_character().weapon.scope
+        logger.debug(scope)
+        return scope
 
     def is_active_player(self):
         return isinstance(self.active_character(), Player)

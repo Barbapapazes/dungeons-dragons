@@ -1,5 +1,5 @@
 """Create the versus mananger"""
-from config.sprites import ITEMS
+from config.sprites import ITEMS, SCOPE_HAND
 from config.colors import ENERGOS, RED_PIGMENT, BLUE_MARTINA
 from config.window import HEIGHT, TILESIZE
 import pygame as pg
@@ -32,8 +32,6 @@ class VersusManager:
         logger.debug("il va falloir renommer ce fichier versus_manager")
 
     def check_for_versus(self):
-        # il ne faut démarrer le versus que si il n'est pas déjà démarré et on ne l'arrête que si plus aucun joueur n'est à porté (pour la second partie, c'est intrasèque à la méthode utilisée)
-        # il faut ajouter un message d'avertissement dans le logger avant que versus ne démarre
         start = False
         for enemy in self.turn_manager.enemies:
             for player in self.turn_manager.players:
@@ -76,7 +74,6 @@ class VersusManager:
     def start_versus(self):
         self.active = True
         self.set_move_player(False)
-        logger.debug("il faut faire celà dès lors qu'un enemy est trop proche de l'un des 3 joueurs. Afin de détecter cela, on fera un fontion de check dans le versus manager (elle est en cours de création juste au dessus)")
         self.logs.add_log("Start the versus")
         self.add_actions()
 
@@ -122,7 +119,7 @@ class VersusManager:
                     self.logs.add_log("Attack is selected")
                     self.logs.add_log("Select a enemy")
                     logger.debug("il faut utiliser les caracts de l'arme pour connaitre la distance")
-                    self.circle.set_width(400)
+                    self.circle.set_width(self.turn_manager.get_active_scope())
                     self.circle.set_pos(self.turn_manager.active_character().pos)
                     self.set_move_player(False)
                 if self.move_btn.collidepoint(pos[0], pos[1]):
@@ -133,6 +130,7 @@ class VersusManager:
                     self.circle.set_pos(self.turn_manager.active_character().pos)
                     self.set_move_player(True)
             if self.action == 'attack':
+                logger.debug("Si on touche en dehors, alors on pert une action")
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
                     logger.debug(
                         "il n'y a que 2 type d'armes, et on fera le choix que pour les players, ou alors, on met la même structure dans l'enemy pour avoir le même accès à nos valeurs")
@@ -158,7 +156,8 @@ class VersusManager:
 
     def select_enemy(self, pos):
         if self.action == "attack":
-            if self.is_in_range(pos, 200):  # warning, c'est la moitier de la taille du cercle
+            if self.is_in_range(
+                    pos, self.turn_manager.get_active_scope() // 2):  # warning, c'est la moitier de la taille du cercle
                 # il faut utiliser le rayon d'action en fonction de l'arme, si pas d'arme, on va utiliser un rayer par défault qui est le même pour tous
                 for enemy in self.turn_manager.enemies:
                     _x = pos[0] - self.game.camera.camera.x

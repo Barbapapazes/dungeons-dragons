@@ -149,6 +149,7 @@ class Store:
                 value['slot'],
                 value['type'],
                 value['weight'],
+                scope=value['scope']
             )
             self.weapons.append(data)
 

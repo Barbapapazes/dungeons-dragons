@@ -1,6 +1,6 @@
 """Inventory"""
 
-from config.sprites import ITEMS
+from config.sprites import ITEMS, SCOPE_HAND
 from random import randint
 from sprites.item import PlacableItem
 import pygame as pg
@@ -556,13 +556,13 @@ class Armor(Equipable):
 class Weapon(Equipable):
     """Weapon"""
 
-    def __init__(self, name, image, image_name, price, slot, wpn_type, weight, nb_d=1, val_d=5, scope=2):
+    def __init__(self, name, image, image_name, price, slot, wpn_type, weight, nb_d=1, val_d=5, scope=SCOPE_HAND):
         super(Weapon, self).__init__(name, image, image_name, price, weight)
         self.slot = slot
         self.wpn_type = wpn_type
         self.nb_d = nb_d
         self.val_d = val_d
-        self.scope = scope*TILESIZE
+        self.scope = scope
 
     def save(self):
         return {
@@ -612,4 +612,4 @@ class Weapon(Equipable):
     def __deepcopy__(self, memo):
         return Weapon(
             self.name, self.image.copy(), self.image_name,
-            self.price, self.slot, self.wpn_type, self.weight, self.nb_d, self.val_d, self.scope // TILESIZE)
+            self.price, self.slot, self.wpn_type, self.weight, nb_d=self.nb_d, val_d=self.val_d, scope=self.scope)
