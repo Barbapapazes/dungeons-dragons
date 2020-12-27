@@ -1,6 +1,6 @@
 """Create the versus mananger"""
 from config.sprites import ITEMS, SCOPE_HAND
-from config.colors import ENERGOS, RED_PIGMENT, BLUE_MARTINA
+from config.colors import ENERGOS, GLOOMY_PURPLE, RED_PIGMENT, BLUE_MARTINA
 from config.window import HEIGHT, TILESIZE
 import pygame as pg
 from logger import logger
@@ -17,8 +17,8 @@ class VersusManager:
 
         self.attack_btn = pg.Rect((0, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.move_btn = pg.Rect((TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
-        logger.debug("il faut ajouter un bouton pour le mage, pour son pouvoir")
-        self.validate_btn = pg.Rect((2 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
+        self.spell_btn = pg.Rect((2 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
+        self.validate_btn = pg.Rect((3 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.action = None
         self.last_player_pos = None
         self.selected_enemy = None
@@ -129,11 +129,10 @@ class VersusManager:
                     self.circle.set_width(800)
                     self.circle.set_pos(self.turn_manager.active_character().pos)
                     self.set_move_player(True)
+                if self.spell_btn.collidepoint(pos[0], pos[1]):
+                    logger.debug('spell')
             if self.action == 'attack':
-                logger.debug("Si on touche en dehors, alors on pert une action")
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
-                    logger.debug(
-                        "il n'y a que 2 type d'armes, et on fera le choix que pour les players, ou alors, on met la même structure dans l'enemy pour avoir le même accès à nos valeurs")
                     logger.debug(
                         "il faut utiliser STR pour le type sword alors que on va utiliser DEX pour le type arc, pour le type arc, on peut tirer n'importe où mais plus c'est loin, plus on réduit le DEX")
                     self.remove_action()
@@ -146,7 +145,6 @@ class VersusManager:
                         self.turn_manager.remove_health()
                     else:
                         self.logs.add_log("Missed dice roll")
-                    # il faut faire le lancer de dé et vérifier que la valeur est la bonne (que l'attaque est un succès)
                     self.check_characters_actions()
             if self.action == 'move':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
@@ -241,6 +239,9 @@ class VersusManager:
             surface.fill(BLUE_MARTINA)
             screen.blit(surface, self.move_btn)
             screen.blit(pg.transform.scale(ITEMS["move"], (TILESIZE, TILESIZE)), self.move_btn)
+            surface.fill(GLOOMY_PURPLE)
+            screen.blit(surface, self.spell_btn)
+            # screen.blit(pg.transform.scale(spell_image, (TILESIZE, TILESIZE)), self.spell_btn)
             surface.fill(ENERGOS)
             screen.blit(surface, self.validate_btn)
             screen.blit(pg.transform.scale(ITEMS["validate"], (TILESIZE, TILESIZE)), self.validate_btn)
