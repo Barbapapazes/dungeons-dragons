@@ -26,6 +26,7 @@ class VersusManager:
 
         self.circle = Circle(game, 0, 0, 0)
 
+        self.warn = False
         self.active = False
 
         logger.debug("il va falloir renommer ce fichier versus_manager")
@@ -33,11 +34,44 @@ class VersusManager:
     def check_for_versus(self):
         # il ne faut démarrer le versus que si il n'est pas déjà démarré et on ne l'arrête que si plus aucun joueur n'est à porté (pour la second partie, c'est intrasèque à la méthode utilisée)
         # il faut ajouter un message d'avertissement dans le logger avant que versus ne démarre
+        start = False
         for enemy in self.turn_manager.enemies:
             for player in self.turn_manager.players:
-                if self.is_in_range(enemy.pos, player.pos, 500):
-                    # faut faire un check du versus avec le active
-                    logger.debug("start versus")
+                if self.is_distance(enemy.pos, player.pos, 500):
+                    start = True
+
+        warning = False
+        warn_list = list()
+        for player in self.turn_manager.players:
+            for enemy in self.turn_manager.enemies:
+                if self.is_distance(player.pos, enemy.pos, 700):
+                    warn_list.append(True)
+                    warning = True
+                    break
+                else:
+                    warn_list.append(False)
+            if warning:
+                break
+
+        found = False
+        for warn in warn_list:
+            if warn:
+                found = True
+
+        if not found and self.warn:
+            self.warn = False
+
+        if warning and not self.warn:
+            self.logs.add_log("You're near a battle")
+            self.warn = True
+        if start and not self.active:
+            self.start_versus()
+        elif not start and self.active:
+            self.finish_versus()
+
+    def is_distance(self, base_pos, target_pos, _range):
+        dist = target_pos - base_pos
+        return dist.length_squared() < _range * _range
 
     def start_versus(self):
         self.active = True
