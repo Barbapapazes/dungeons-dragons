@@ -54,7 +54,7 @@ class TurnManager:
             int
         """
         len_characters = len(self.get_characters())
-        # logger.debug("si il n'y a plus de partie, c'est game over")
+        # logger.debug("si il n'y a plus de players, c'est game over")
         turn_to_number = self.turn % len_characters
         return turn_to_number
 
@@ -74,6 +74,19 @@ class TurnManager:
                 scope = self.active_character().weapon.scope
         logger.debug(scope)
         return scope
+
+    def get_active_weapon(self):
+        return self.active_character().weapon
+
+    def get_active_weapon_type(self):
+        if self.get_active_weapon() is None:
+            return "hand"
+        return self.get_active_weapon().wpn_type
+
+    def remove_health(self):
+        logger.debug("remove health")
+        pass
+    # il faut enlever de la vie en fonction le l'arme choisi mais aussi en fonction du joueur actif, on va donc passer en paramètre le joueur sélectionner, le signaler dans le logs et on va aussi utiliser l'arme pour savoir si c'est un arc et donc faire le calcul dégresif ou si c'est une arme classique
 
     def is_active_player(self):
         return isinstance(self.active_character(), Player)
@@ -100,7 +113,7 @@ class TurnManager:
 
 def get_dice(character):
     character.throw_dice("dex")
-    if not character.dice["sucess"]:
+    if not character.dice["success"]:
         # add 101 to be able to sort without using true or false
         character.dice["result"] += 101
     return character.dice["result"]

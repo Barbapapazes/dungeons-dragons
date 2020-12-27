@@ -118,9 +118,9 @@ class VersusManager:
                     self.action = 'attack'
                     self.logs.add_log("Attack is selected")
                     self.logs.add_log("Select a enemy")
-                    logger.debug("il faut utiliser les caracts de l'arme pour connaitre la distance")
-                    self.circle.set_width(self.turn_manager.get_active_scope())
-                    self.circle.set_pos(self.turn_manager.active_character().pos)
+                    if self.turn_manager.get_active_weapon_type() in ["hand", "sword"]:
+                        self.circle.set_width(self.turn_manager.get_active_scope())
+                        self.circle.set_pos(self.turn_manager.active_character().pos)
                     self.set_move_player(False)
                 if self.move_btn.collidepoint(pos[0], pos[1]):
                     self.action = 'move'
@@ -137,15 +137,28 @@ class VersusManager:
                     logger.debug(
                         "il faut utiliser STR pour le type sword alors que on va utiliser DEX pour le type arc, pour le type arc, on peut tirer n'importe où mais plus c'est loin, plus on réduit le DEX")
                     self.remove_action()
+                    logger.debug("on ne remove de la vie que si on a sélectionner un enemie")
+                    self.selected_enemy.health -= 30
+                    logger.debug(
+                        "il faut enlever de la vie ici, en utilisant une fonction de turn_manager pour gérer le fait de remove un caracter et on y met aussi le tirage du dé")
                     self.logs.add_log("Enemy attacked")
+                    if self.check_dice():
+                        self.turn_manager.remove_health()
+                    else:
+                        self.logs.add_log("Missed dice roll")
+                    # il faut faire le lancer de dé et vérifier que la valeur est la bonne (que l'attaque est un succès)
                     self.check_characters_actions()
             if self.action == 'move':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
-                    logger.debug("Pour la distance, il faut voir si on utiliser l'une des charactéritiques")
                     self.logs.add_log("Hero moved")
                     self.remove_action()
                     self.remove_last_player_pos()
                     self.check_characters_actions()
+
+    def check_dice(self):
+        self.turn_manager.active_character().throw_dice('str')
+
+        return self.turn_manager.active_character().dice["success"]
 
     def check_characters_actions(self):
         self.turn_manager.active_character().number_actions -= 1
@@ -156,9 +169,21 @@ class VersusManager:
 
     def select_enemy(self, pos):
         if self.action == "attack":
-            if self.is_in_range(
-                    pos, self.turn_manager.get_active_scope() // 2):  # warning, c'est la moitier de la taille du cercle
-                # il faut utiliser le rayon d'action en fonction de l'arme, si pas d'arme, on va utiliser un rayer par défault qui est le même pour tous
+            if self.turn_manager.get_active_weapon_type() in ["hand", "sword"]:
+                if self.is_in_range(
+                        pos, self.turn_manager.get_active_scope() // 2):  # warning, c'est la moitier de la taille du cercle
+                    for enemy in self.turn_manager.enemies:
+                        _x = pos[0] - self.game.camera.camera.x
+                        _y = pos[1] - self.game.camera.camera.y
+                        if enemy.rect.collidepoint(_x, _y):
+                            self.selected_enemy = enemy
+                            self.logs.add_log("Enemy selected")
+                            break
+                else:
+                    self.logs.add_log("Select an enemy in the range")
+                    # ça pose des soucis de redondances de click
+                    # self.check_characters_actions()
+            elif self.turn_manager.get_active_weapon_type() in ["arc"]:
                 for enemy in self.turn_manager.enemies:
                     _x = pos[0] - self.game.camera.camera.x
                     _y = pos[1] - self.game.camera.camera.y
@@ -166,8 +191,6 @@ class VersusManager:
                         self.selected_enemy = enemy
                         self.logs.add_log("Enemy selected")
                         break
-            else:
-                logger.info("Select inside the range")
 
     def update(self):
         if self.active:
@@ -204,7 +227,7 @@ class VersusManager:
 
     def draw_btns(self, screen):
         if self.active and self.turn_manager.is_active_player():
-            weapon_item = self.turn_manager.active_character().weapon
+            weapon_item = self.turn_manager.get_active_weapon()
             weapon_image = None
             if weapon_item:
                 weapon_image = weapon_item.image
@@ -223,7 +246,9 @@ class VersusManager:
             screen.blit(pg.transform.scale(ITEMS["validate"], (TILESIZE, TILESIZE)), self.validate_btn)
 
     def draw_range(self, screen):
-        if self.action in ['attack', "move"]:
+        if self.action == "move" or (
+                self.action ==
+                "attack" and self.turn_manager.get_active_weapon_type() in ["hand", "sword"]):
             for animated in self.game.animated:
                 if isinstance(animated, Circle):
                     screen.blit(animated.image, self.game.camera.apply(animated))
