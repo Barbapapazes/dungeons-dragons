@@ -290,7 +290,8 @@ class Game(_State):
         if event.type == pg.KEYUP:
             self.toggle_states(event)
             if event.key == pg.K_t:
-                self.turn_manager.add_turn()
+                self.logs.add_log("Manual next turn")
+                self.versus_manager.add_turn()
             if event.key == pg.K_SPACE:
                 self.press_space = True
 

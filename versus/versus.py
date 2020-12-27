@@ -102,9 +102,9 @@ class VersusManager:
     def remove_last_player_pos(self):
         self.last_player_pos = None
 
-    def is_in_range(self, base_pos, target_pos, _range):
-        updated_pos = vec(target_pos) - vec(self.game.camera.camera.x, self.game.camera.camera.y)
-        dist = updated_pos - base_pos
+    def is_in_range(self, pos, _range):
+        updated_pos = vec(pos) - vec(self.game.camera.camera.x, self.game.camera.camera.y)
+        dist = updated_pos - self.turn_manager.active_character().pos
         return dist.length_squared() < _range * _range
 
     def events(self, pos):
@@ -152,13 +152,13 @@ class VersusManager:
     def check_characters_actions(self):
         self.turn_manager.active_character().number_actions -= 1
         self.logs.add_log(f"Action remaining : {self.turn_manager.active_character().number_actions}")
+        self.set_move_player(False)
         if self.turn_manager.active_character().number_actions == 0:
             self.add_turn()
 
     def select_enemy(self, pos):
         if self.action == "attack":
-            if self.is_in_range(
-                    self.turn_manager.active_character().pos, pos, 200):  # warning, c'est la moitier de la taille du cercle
+            if self.is_in_range(pos, 200):  # warning, c'est la moitier de la taille du cercle
                 # il faut utiliser le rayon d'action en fonction de l'arme, si pas d'arme, on va utiliser un rayer par défault qui est le même pour tous
                 for enemy in self.turn_manager.enemies:
                     _x = pos[0] - self.game.camera.camera.x
@@ -235,4 +235,5 @@ class VersusManager:
         self.logs.add_log("Next turn")
         self.turn_manager.add_turn()
         # add actions to the next character
+        self.set_move_player(False)
         self.add_actions()

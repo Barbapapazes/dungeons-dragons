@@ -37,6 +37,8 @@ class Enemy(Character):
 
         self.health = health
 
+        logger.error("il y a un souci d'update avec la camera")
+
     def save(self):
         return {
             "class": self.type,
