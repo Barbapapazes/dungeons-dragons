@@ -131,16 +131,19 @@ class VersusManager:
                     logger.debug('spell')
             if self.action == 'attack':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
+                    if not self.selected_enemy:
+                        self.logs.add_log("Select an enemy")
+                        return
+
                     logger.debug(
                         "il faut utiliser STR pour le type sword alors que on va utiliser DEX pour le type arc, pour le type arc, on peut tirer n'importe où mais plus c'est loin, plus on réduit le DEX")
                     self.remove_action()
-                    logger.debug("on ne remove de la vie que si on a sélectionner un enemie")
-                    self.selected_enemy.health -= 30
                     logger.debug(
                         "il faut enlever de la vie ici, en utilisant une fonction de turn_manager pour gérer le fait de remove un caracter et on y met aussi le tirage du dé")
                     self.logs.add_log("Enemy attacked")
                     if self.check_dice():
-                        self.turn_manager.remove_health()
+                        damage = self.calc_damage()
+                        self.turn_manager.remove_health(damage, self.selected_enemy)
                     else:
                         self.logs.add_log("Missed dice roll")
                     self.check_characters_actions()
@@ -150,6 +153,15 @@ class VersusManager:
                     self.remove_action()
                     self.remove_last_player_pos()
                     self.check_characters_actions()
+
+    def calc_damage(self):
+        damage = 0
+        if self.turn_manager.get_active_weapon_type() == "hand":
+            damage = 10
+        else:
+            damage = 20
+            logger.debug("il faut déterminer la quantité de dégats")
+        return damage
 
     def check_dice(self):
         self.turn_manager.active_character().throw_dice('str')

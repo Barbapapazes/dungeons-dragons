@@ -83,9 +83,10 @@ class TurnManager:
             return "hand"
         return self.get_active_weapon().wpn_type
 
-    def remove_health(self):
+    def remove_health(self, damage, enemy):
         logger.debug("remove health")
-        pass
+        enemy.health -= damage
+        self.active_character().game.logs.add_log(f"Remove {damage}, remaining {enemy.health}")
     # il faut enlever de la vie en fonction le l'arme choisi mais aussi en fonction du joueur actif, on va donc passer en paramètre le joueur sélectionner, le signaler dans le logs et on va aussi utiliser l'arme pour savoir si c'est un arc et donc faire le calcul dégresif ou si c'est une arme classique
 
     def is_active_player(self):
