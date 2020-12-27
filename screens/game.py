@@ -26,7 +26,7 @@ from utils.turn_manager import TurnManager
 # from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON
 # from inventory.inventory import Armor, Weapon
 from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON, NUM_ACT_BEGIN
-from versus.versus import VersusManager
+from versus.versus_manager import VersusManager
 from versus.sort import Sort
 from versus.sort import collisionZoneEffect
 from sprites.enemy import Enemy

@@ -29,8 +29,6 @@ class VersusManager:
         self.warn = False
         self.active = False
 
-        logger.debug("il va falloir renommer ce fichier versus_manager")
-
     def check_for_versus(self):
         start = False
         for enemy in self.turn_manager.enemies:
