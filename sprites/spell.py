@@ -22,6 +22,7 @@ class Spell(pg.sprite.Sprite):
 
     def update(self):
         pass
+        # il faut donner un nombre de tour à un spell et vérifier à chaque tour si on doit l'enlever ou lui retirer un tour. ensuite il faut mettre des dégats dès que un enemy le touche. ajouter aussi un image animée
 
     def draw(self):
         pass
