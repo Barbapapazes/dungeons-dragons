@@ -1,5 +1,6 @@
 """Game screen"""
 
+from sprites.spell import Spell
 from sprites.merchant import Merchant
 from sprites.animated import CampFire
 from sprites.chest import Chest
@@ -67,7 +68,10 @@ class Game(_State):
         self.merchants = pg.sprite.Group()
         self.chests = pg.sprite.Group()
         self.items = pg.sprite.Group()
+        self.spells = pg.sprite.Group()
         self.zoneEffect = pg.sprite.Group()
+
+        Spell(self, 1000, 300)
 
         # self.en1 = Enemy(self, 10, 4, "Boot n1")
         # self.en2 = Enemy(self, 11, 7, "Boot n2")
