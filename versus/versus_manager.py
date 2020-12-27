@@ -138,10 +138,8 @@ class VersusManager:
                     logger.debug(
                         "il faut utiliser STR pour le type sword alors que on va utiliser DEX pour le type arc, pour le type arc, on peut tirer n'importe où mais plus c'est loin, plus on réduit le DEX")
                     self.remove_action()
-                    logger.debug(
-                        "il faut enlever de la vie ici, en utilisant une fonction de turn_manager pour gérer le fait de remove un caracter et on y met aussi le tirage du dé")
-                    self.logs.add_log("Enemy attacked")
                     if self.check_dice():
+                        self.logs.add_log("Enemy attacked")
                         damage = self.calc_damage()
                         self.turn_manager.remove_health(damage, self.selected_enemy)
                     else:
