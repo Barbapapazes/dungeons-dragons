@@ -37,20 +37,20 @@ module.exports = {
     docsBranch: 'master',
     editLinkText: 'Aidez nous à améliorer cette page',
     lastUpdated: true,
-    // nav: [
-    //   {
-    //     text: 'Présentation',
-    //     link: '/presentation/',
-    //   },
-    //   {
-    //     text: 'Config',
-    //     link: '/config/',
-    //   },
-    //   {
-    //     text: 'Guide',
-    //     link: '/guide/',
-    //   },
-    // ],
+    nav: [
+      {
+        text: 'Jouer au jeu',
+        link: '/play/',
+      },
+      // {
+      //   text: 'Config',
+      //   link: '/config/',
+      // },
+      // {
+      //   text: 'Guide',
+      //   link: '/guide/',
+      // },
+    ],
     sidebar: [
       // voir pour faire une partie avec les écrans (en ajoutant un lien dans le header)
       '/presentation.md',
@@ -60,6 +60,7 @@ module.exports = {
       '/game.md',
       '/shortcuts.md',
       '/map_editor.md',
+      '/online_game.md',
     ],
     // {
     //   '/presentation/': [
