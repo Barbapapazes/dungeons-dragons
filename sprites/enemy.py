@@ -37,6 +37,7 @@ class Enemy(Character):
 
         self.health = health
 
+        logger.debug("il faut leur mettre une défence par default pour contrer les attaques")
         logger.error("il y a un souci d'update avec la camera")
 
     def save(self):
@@ -49,6 +50,10 @@ class Enemy(Character):
             "health": self.health,
             "inventory": self.inventory.save()
         }
+
+    def get_protection(self):
+        logger.debug("il faut ajouter de la protection aux personnages")
+        return 2
 
     def draw_health(self):
         if self.health > 60:

@@ -70,8 +70,8 @@ class Inventory:
                         value["slot"],
                         value["type"],
                         value["weight"],
-                        value["nb_d"],
-                        value["val_d"],
+                        value["number_dice"],
+                        value["dice_value"],
                         value["scope"]))
             elif value["object_type"] == "consumable":
                 items.append(
@@ -556,12 +556,14 @@ class Armor(Equipable):
 class Weapon(Equipable):
     """Weapon"""
 
-    def __init__(self, name, image, image_name, price, slot, wpn_type, weight, nb_d=1, val_d=5, scope=SCOPE_HAND):
+    def __init__(
+            self, name, image, image_name, price, slot, wpn_type, weight, number_dice=1, dice_value=5,
+            scope=SCOPE_HAND):
         super(Weapon, self).__init__(name, image, image_name, price, weight)
         self.slot = slot
         self.wpn_type = wpn_type
-        self.nb_d = nb_d
-        self.val_d = val_d
+        self.number_dice = number_dice
+        self.dice_value = dice_value
         self.scope = scope
 
     def save(self):
@@ -570,10 +572,10 @@ class Weapon(Equipable):
             super().save()[self.name] | {
                 "object_type": "weapon",
                 "type": self.wpn_type,
-                "nb_d": self.nb_d,
-                "val_d": self.val_d,
+                "number_dice": self.number_dice,
+                "dice_value": self.dice_value,
                 "scope": self.scope,
-                "slot": self.slot
+                "slot": self.slot,
             }
         }
 
@@ -604,12 +606,13 @@ class Weapon(Equipable):
         inventory.get_equip_slot(self).item = None
 
     def attack(self):
-        dmg = 0
-        for _ in range(self.nb_d):
-            dmg += randint(1, self.val_d)
-        return dmg
+        damage = 0
+        for _ in range(self.number_dice):
+            damage += randint(1, self.dice_value)
+        return damage
 
     def __deepcopy__(self, memo):
         return Weapon(
-            self.name, self.image.copy(), self.image_name,
-            self.price, self.slot, self.wpn_type, self.weight, nb_d=self.nb_d, val_d=self.val_d, scope=self.scope)
+            self.name, self.image.copy(),
+            self.image_name, self.price, self.slot, self.wpn_type, self.weight,
+            number_dice=self.number_dice, dice_value=self.dice_value, scope=self.scope)

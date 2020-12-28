@@ -1,5 +1,5 @@
 """Create the versus mananger"""
-from config.sprites import ITEMS, SCOPE_HAND
+from config.sprites import ITEMS, MALUS_ARC, SCOPE_HAND
 from config.colors import ENERGOS, GLOOMY_PURPLE, RED_PIGMENT, BLUE_MARTINA
 from config.window import HEIGHT, TILESIZE
 import pygame as pg
@@ -135,8 +135,6 @@ class VersusManager:
                         self.logs.add_log("Select an enemy")
                         return
 
-                    logger.debug(
-                        "il faut utiliser STR pour le type sword alors que on va utiliser DEX pour le type arc, pour le type arc, on peut tirer n'importe où mais plus c'est loin, plus on réduit le DEX")
                     self.remove_action()
                     if self.check_dice():
                         self.logs.add_log("Enemy attacked")
@@ -153,13 +151,16 @@ class VersusManager:
                     self.check_characters_actions()
 
     def calc_damage(self):
-        damage = 0
-        if self.turn_manager.get_active_weapon_type() == "hand":
-            damage = 10
-        else:
-            damage = 20
-            logger.debug("il faut déterminer la quantité de dégats")
-        return damage
+        damage = self.turn_manager.get_active_weapon_damage()
+        if self.turn_manager.get_active_weapon_type() == "arc":
+            dist = self.selected_enemy.pos - self.turn_manager.active_character().pos
+            logger.debug("il faut ajuster la valuer de malus arc")
+            scope = self.turn_manager.get_active_weapon().scope
+            if dist.length_squared() > scope:
+                malus = -((dist.length_squared() - scope) // TILESIZE) * MALUS_ARC
+                damage -= malus
+        protection = self.selected_enemy.get_protection()
+        return max(0, damage - protection)
 
     def check_dice(self):
         self.turn_manager.active_character().throw_dice('str')

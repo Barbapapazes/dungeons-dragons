@@ -11,14 +11,14 @@ from logger import logger
 
 class Sort(Equipable):
 
-    def __init__(self, name, img, price, slot, manaCost, srt_type, timeSort, nb_d, val_d, scope, weight=0):
+    def __init__(self, name, img, price, slot, manaCost, srt_type, timeSort, number_dice, dice_value, scope, weight=0):
         super(Sort, self).__init__(name, img, price, weight)
         self.slot = slot
         self.manaCost = manaCost
         self.srt_type = srt_type
         self.timeSort = timeSort
-        self.nb_d = nb_d
-        self.val_d = val_d
+        self.number_dice = number_dice
+        self.dice_value = dice_value
         self.scope = scope
         self.dammage = 0
 
@@ -53,8 +53,8 @@ class Sort(Equipable):
     def DefineDMG(self):
         """Define dammage zone"""
         dammage = 0
-        for _ in range(self.nb_d):
-            dammage += randint(1, self.val_d)
+        for _ in range(self.number_dice):
+            dammage += randint(1, self.dice_value)
         return dammage
 
     def placeSort(self, mouse_pos, game):

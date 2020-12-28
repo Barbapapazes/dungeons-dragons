@@ -244,8 +244,8 @@ class Game(_State):
         #         value['weight'],
         #         value['slot'],
         #         value['type'],
-        #         value['nb_d'],
-        #         value['val_d'],
+        #         value['number_dice'],
+        #         value['dice_value'],
         #         value['scope'])
         #     weapons.append(data)
         #     self.player.inventory.add_item(data)
