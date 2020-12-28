@@ -46,7 +46,7 @@ class Logs:
         Args:
             message (str)
         """
-        if len(self.messages) > 4:
+        if len(self.messages) > 5:
             self.messages.pop()
         logger.info("Logs: %s", message)
         self.messages.insert(0, message)

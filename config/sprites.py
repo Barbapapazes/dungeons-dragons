@@ -5,6 +5,7 @@ import pygame as pg
 from config.window import HEIGHT, TILESIZE, WIDTH
 from tools import strip_from_sheet as strip
 from itertools import cycle
+from logger import logger
 
 game_folder = path.dirname('.')
 assets_folder = path.join(game_folder, 'assets')
@@ -541,6 +542,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
 ITEMS_PROPERTIES = ARMOR | WEAPONS
 ITEMS_NAMES = list(ARMOR.keys()) + list(WEAPONS.keys())
 
+logger.debug("il faut ajouter ici les spells qui seront géré comme un équipable mais dans sa zone si c'est un wizard et les dé et donc on va avoir le sprite, que l'on peut ramasser et la zone d'éffet")
 
 WEAPONS_COLS = 5
 

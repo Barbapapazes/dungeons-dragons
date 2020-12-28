@@ -46,6 +46,7 @@ class Inventory:
     @classmethod
     def create_inventory(cls, data):
         items = list()
+        logger.debug("il faut ajouter les spells")
         for key, value in data.items():
             if value["object_type"] == "item":
                 items.append(
@@ -285,7 +286,7 @@ class Inventory:
             item (Item)
         """
         logger.info("throw %s", item)
-        logger.debug("ajuster les properties")
+        logger.debug("ajuster les properties et ajouter les spells")
         properties = dict()
         if isinstance(item, Weapon):
             properties['object_type'] = "weapon"

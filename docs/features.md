@@ -12,6 +12,8 @@
 - gestion de 3 héros
 - polyvalence des modes de jeu, temps réel et tour par tour
 - ramassage d'items au sol
+- développement d'écran facilité
+- débogage simplifié
 - enemies intelligents
 - gestion du dragndrop dans le shop, l'inventaire et le store
 - gestion des portes

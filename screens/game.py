@@ -1,6 +1,6 @@
 """Game screen"""
 
-from sprites.spell import Spell
+from sprites.effects_zone import EffectsZone
 from sprites.merchant import Merchant
 from sprites.animated import CampFire
 from sprites.chest import Chest
@@ -69,9 +69,9 @@ class Game(_State):
         self.chests = pg.sprite.Group()
         self.items = pg.sprite.Group()
         self.spells = pg.sprite.Group()
-        self.zoneEffect = pg.sprite.Group()
+        self.effects_zones = pg.sprite.Group()
 
-        Spell(self, 1000, 300)
+        EffectsZone(self, 500, 300, "heal", 2, 2, 20)
 
         # self.en1 = Enemy(self, 10, 4, "Boot n1")
         # self.en2 = Enemy(self, 11, 7, "Boot n2")
@@ -563,6 +563,7 @@ class Game(_State):
     def update(self):
         """Update all"""
         # self.all_sprites.update()
+        # logger.debug("il faut chercher si le active touche un spell, alors il pert de la vie au début de son tour, quand on incrémente le tour finalement, il faut aussi enlever 1 au ttl et si on arrête le versus, alors on remove tous les sorts")
         self.items.update()
         for sprite in self.all_sprites:
             self.all_sprites.change_layer(sprite, sprite.rect.bottom)
@@ -723,9 +724,9 @@ class Game(_State):
 
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
-        for zone in self.zoneEffect:
-            zone.rect = self.camera.apply_rect(zone.rect)
-            # zone.draw()  ça marche pas de ouf mais c'est pas loin
+        # for zone in self.zoneEffect:
+        #     zone.rect = self.camera.apply_rect(zone.rect)
+        #     # zone.draw()  ça marche pas de ouf mais c'est pas loin
 
         self.screen.blit(
             self.minimap.create(

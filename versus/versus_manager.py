@@ -85,7 +85,13 @@ class VersusManager:
         self.remove_selected_enemy()
         self.remove_last_player_pos()
         self.remove_action()
+        self.remove_spells()
         self.logs.add_log("Finish the versus")
+
+    def remove_spells(self):
+        for zone in self.game.effects_zones:
+            zone.kill()
+        logger.info("Remove all effects zones")
 
     def remove_selected_enemy(self):
         self.selected_enemy = None
@@ -128,7 +134,7 @@ class VersusManager:
                     self.circle.set_pos(self.turn_manager.active_character().pos)
                     self.set_move_player(True)
                 if self.spell_btn.collidepoint(pos[0], pos[1]):
-                    logger.debug('spell')
+                    logger.debug('on vient de sélectionner le spell, il faut donc tracer la zone d\'effect')
             if self.action == 'attack':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
                     if not self.selected_enemy:
@@ -149,6 +155,9 @@ class VersusManager:
                     self.remove_action()
                     self.remove_last_player_pos()
                     self.check_characters_actions()
+            if self.action == 'spell':
+                logger.debug(
+                    "on doit confirmer que on vient de sélectionner un spell, tant que on confirme pas, ça blit un petit cercle au sol")
 
     def calc_damage(self):
         damage = self.turn_manager.get_active_weapon_damage()
@@ -175,6 +184,8 @@ class VersusManager:
             self.add_turn()
 
     def select_enemy(self, pos):
+        logger.debug(
+            "si c'est un spell, alors, on doit choisir une zone dans la zone et ça permet de créer le spell avec la pos passée en paramètre")
         if self.action == "attack":
             if self.turn_manager.get_active_weapon_type() in ["hand", "sword"]:
                 if self.is_in_range(
@@ -271,3 +282,16 @@ class VersusManager:
         # add actions to the next character
         self.set_move_player(False)
         self.add_actions()
+        self.check_effects_zones_hits()
+        logger.debug("il faut tout check, si le nouveau joueur actif touche un power")
+
+    def check_effects_zones_hits(self):
+        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.game.effects_zones, False)
+        for hit in hits:
+            logger.debug("il faut utiliser les fonctions pour faire perdre et gagner des points de vies")
+            value = hit.get_dice_value()
+            if hit.type == "heal":
+                self.turn_manager.active_character().health += value
+            elif hit.type == "attack":
+                self.turn_manager.active_character().health -= value
+            self.logs.add_log(f"{self.turn_manager.active_character()} touch a {hit.type} zone ({value} points)")
