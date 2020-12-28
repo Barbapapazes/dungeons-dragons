@@ -539,8 +539,21 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
     }
 }
 
-ITEMS_PROPERTIES = ARMOR | WEAPONS
-ITEMS_NAMES = list(ARMOR.keys()) + list(WEAPONS.keys())
+SPELLS = {
+    "fire_ball": {
+        "image_name": "fireBall",
+        "type": "heal",
+        "scope": 3 * TILESIZE,
+        "slot": "spell",
+        "object_type": "spell",
+        "time_to_live": 2,
+        "number_dice": 2,
+        "dice_value": 10
+    }
+}
+
+ITEMS_PROPERTIES = ARMOR | WEAPONS | SPELLS
+ITEMS_NAMES = list(ARMOR.keys()) + list(WEAPONS.keys()) + list(SPELLS.keys())
 
 logger.debug("il faut ajouter ici les spells qui seront géré comme un équipable mais dans sa zone si c'est un wizard et les dé et donc on va avoir le sprite, que l'on peut ramasser et la zone d'éffet")
 

@@ -45,7 +45,7 @@ class Player(Character):
         # Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
-        self.sort = None
+        self.spell = None
         self.inventory = Inventory(self, 5, 8)
 
         # shop, temporary here, to put in a seller
@@ -199,21 +199,21 @@ class Player(Character):
         """
         self.shield += shield_gain
 
-    def equip_sort(self, sort):
-        """Put a passed sort in the sort slot
+    def equip_spell(self, spell):
+        """Put a passed spell in the spell slot
 
         Args:
             weapon (Weapon)
         """
-        if self.sort is not None:
-            self.unequip_sort()
-        self.sort = sort
+        if self.spell is not None:
+            self.unequip_spell()
+        self.spell = spell
 
-    def unequip_sort(self):
-        """Set sort to None if it wasn't
+    def unequip_spell(self):
+        """Set spell to None if it wasn't
         """
-        if self.sort is not None:
-            self.sort = None
+        if self.spell is not None:
+            self.spell = None
 
         # self.frame_count += 1
         # if self.frame_count >= 27:

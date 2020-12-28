@@ -4,7 +4,7 @@ from sprites.effects_zone import EffectsZone
 from sprites.merchant import Merchant
 from sprites.animated import CampFire
 from sprites.chest import Chest
-from inventory.inventory import Armor, Consumable, Inventory, Weapon
+from inventory.inventory import Armor, Consumable, Inventory, Spell, Weapon
 from config.sprites import ASSETS_SPRITES, ITEMS, ITEMS_NAMES, ITEMS_PROPERTIES
 from os import path
 from sprites.item import PlacableItem
@@ -616,6 +616,18 @@ class Game(_State):
                         hit.properties["weight"],
                         hit.properties["shield"],
                         hit.properties["slot"]))  # ajouter des choses aux properties des items : le slot, le shield, le weight et le price
+            if hit.properties["object_type"] == "spell":
+                hit.kill()
+                self.turn_manager.active_character().inventory.add_item(
+                    Spell(
+                        hit.name, hit.image.copy(),
+                        hit.image_name,
+                        hit.properties["slot"],
+                        hit.properties["type"],
+                        hit.properties["scope"],
+                        hit.properties["time_to_live"],
+                        hit.properties["number_dice"],
+                        hit.properties["dice_value"]))
 
         # collisionZoneEffect(self.turn_manager.active_character(), self)
         self.versus_manager.update()

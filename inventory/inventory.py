@@ -9,7 +9,7 @@ from utils.container import Container
 from inventory.items import Item
 from config.window import HEIGHT, WIDTH, TILESIZE
 from config.colors import WHITE, GOLD, BLUE_SKY, PINK, YELLOW_LIGHT
-from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP, SORT_SLOTS
+from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP, SPELL_SLOTS
 vec = pg.Vector2
 
 
@@ -30,7 +30,7 @@ class Inventory:
         self.slots = []
         self.armor_slots = []
         self.weapon_slots = []
-        self.sort_slots = []
+        self.spell_slots = []
 
         self.player = player
 
@@ -118,8 +118,8 @@ class Inventory:
         self.weapon_slots.append(EquipableSlot(min_x - step,
                                                max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, PINK))
 
-        self.sort_slots.append(EquipableSlot(min_x - 2*step,
-                                             max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, BLUE_SKY))
+        self.spell_slots.append(EquipableSlot(min_x - 2*step,
+                                              max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, BLUE_SKY))
 
     def create_bag(self):
         """Create a bag to store item"""
@@ -141,8 +141,8 @@ class Inventory:
             self.armor_slots[index].slot_type = value
         for index, value in enumerate(WEAPON_SLOTS):
             self.weapon_slots[index].slot_type = value
-        for index, value in enumerate(SORT_SLOTS):
-            self.sort_slots[index].slot_type = value
+        for index, value in enumerate(SPELL_SLOTS):
+            self.spell_slots[index].slot_type = value
 
     def get_all_slots(self):
         """Get all slots fro the inventory
@@ -150,7 +150,7 @@ class Inventory:
         Returns:
             list: All slots from an inventory
         """
-        return self.slots + self.weapon_slots + self.armor_slots + self.sort_slots
+        return self.slots + self.weapon_slots + self.armor_slots + self.spell_slots
 
     def get_equip_slot(self, item):
         """Return the slot related to the Item if it's an Equipable
@@ -161,7 +161,7 @@ class Inventory:
         Returns:
             EquipableSlot
         """
-        for slot in self.armor_slots + self.weapon_slots + self.sort_slots:
+        for slot in self.armor_slots + self.weapon_slots + self.spell_slots:
             if slot.slot_type == item.slot:
                 return slot
 
@@ -617,3 +617,61 @@ class Weapon(Equipable):
             self.name, self.image.copy(),
             self.image_name, self.price, self.slot, self.wpn_type, self.weight,
             number_dice=self.number_dice, dice_value=self.dice_value, scope=self.scope)
+
+
+class Spell(Equipable):
+    """Spell"""
+
+    def __init__(self, name, image, image_name, slot, _type, scope,  time_to_live, number_dice, dice_value):
+        super().__init__(name, image, image_name, 0, 0)
+
+        self.slot = slot
+        self.type = _type
+        self.scope = scope
+        self.time_to_live = time_to_live
+        self.number_dice = number_dice
+        self.dice_value = dice_value
+
+    def save(self):
+        return {
+            self.name: super().save()[self.name] | {
+                "object_type": "spell",
+                "slot": self.slot,
+                "type": self.type,
+                "scope": self.scope,
+                "time_to_live": self.time_to_live,
+                "number_dice": self.number_dice,
+                "dice_value": self.dice_value,
+            }
+        }
+
+    def equip(self, inventory, target):
+        """Equip the spell in the target's spell slot
+        and removes it from the inventory inventory
+
+        Args:
+            inventory(Inventory)
+            target(Player)
+        """
+        if inventory.get_equip_slot(self).item is not None:
+            inventory.get_equip_slot(self).item.unequip(inventory)
+        super().equip(target)
+        target.equip_spell(self)
+        inventory.remove_item(self)
+        inventory.get_equip_slot(self).item = self
+
+    def unequip(self, inventory):
+        """Unequip the spell and add it to the Inventory
+
+        Args:
+            inventory(Inventory)
+        """
+        self.equipped_to.unequip_spell()
+        super().unequip()
+        inventory.add_item(self)
+        inventory.get_equip_slot(self).item = None
+
+    def __deepcopy__(self, memo):
+        return Spell(self.name, self.image.copy(),
+                     self.image_name, self.price, self.weight, self.slot, self.type, self.scope, self.time_to_live,
+                     self.number_dice, self.dice_value)

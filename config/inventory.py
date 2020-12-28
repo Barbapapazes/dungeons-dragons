@@ -3,13 +3,13 @@
 
 ARMOR_SLOTS = ['head', 'chest', 'legs', 'feet']
 WEAPON_SLOTS = ['weapon']
-SORT_SLOTS = ['sort']
+SPELL_SLOTS = ['spell']
 
 INVENTORY_TILESIZE = 48
 INVENTORY_SLOT_GAP = 2
 
 EQUIPMENT_COLS = len(WEAPON_SLOTS)
-EQUIPMENT_ROWS = len(ARMOR_SLOTS) + len(SORT_SLOTS)
+EQUIPMENT_ROWS = len(ARMOR_SLOTS) + len(SPELL_SLOTS)
 
 ACTIONS = {
     "sell": "sell",
