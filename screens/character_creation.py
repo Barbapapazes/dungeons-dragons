@@ -53,23 +53,6 @@ class CharacterCreation(_Elements):
         self.remaining_heros_to_create = game_data["num_heros"]
         super().startup(dt, game_data)
 
-        # textbox
-        # self.name = TextBox(
-        #     self.background,
-        #     20,
-        #     100,
-        #     400,
-        #     40,
-        #     fontSize=50,
-        #     borderColour=RED,
-        #     textColour=(
-        #         0,
-        #         200,
-        #         0),
-        #     onSubmit=self.output,
-        #     radius=10,
-        #     borderThickness=4)
-
     def new(self):
         """Create new variables"""
         self.selected = 0
@@ -199,6 +182,7 @@ class CharacterCreation(_Elements):
         Returns:
             dict
         """
+        logger.debug("il faut ajuster les valeurs pa default")
         return {
             "soldier": {
                 "name": "soldier",
@@ -209,22 +193,22 @@ class CharacterCreation(_Elements):
                 "characteristics": {
                     "str": {
                         "base": 3,
-                        "max": 12},
+                        "max": 100},
                     "dex": {
                         "base": 0,
-                        "max": 4},
+                        "max": 100},
                     "con": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "int": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "wis": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "cha": {
                         "base": 2,
-                        "max": 12}}},
+                        "max": 100}}},
             "wizard": {
                 "name": "wizard",
                 "image": path.join(
@@ -234,22 +218,22 @@ class CharacterCreation(_Elements):
                 "characteristics": {
                     "str": {
                         "base": 0,
-                        "max": 7},
+                        "max": 100},
                     "dex": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "con": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "int": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "wis": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "cha": {
                         "base": 2,
-                        "max": 12}}},
+                        "max": 100}}},
             "thief": {
                 "name": "thief",
                 "image": path.join(
@@ -259,22 +243,22 @@ class CharacterCreation(_Elements):
                 "characteristics": {
                     "str": {
                         "base": 0,
-                        "max": 7},
+                        "max": 100},
                     "dex": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "con": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "int": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "wis": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "cha": {
                         "base": 2,
-                        "max": 12}}}}
+                        "max": 100}}}}
 
     def sum_points(self):
         """Sum off the added points, remove the offset (start points)
