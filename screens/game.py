@@ -10,7 +10,7 @@ from os import path
 from sprites.item import PlacableItem
 from inventory.items import Item as InventoryItem
 from sprites.door import Door
-from versus.logs import Logs
+from managers.logs_manager import LogsManager
 import pygame as pg
 from components.popup_menu import PopupMenu
 from window import _State
@@ -22,14 +22,12 @@ from utils.shortcuts import key_for
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
-from utils.turn_manager import TurnManager
+from managers.turn_manager import TurnManager
 # from config.sprites import WEAPONS, ARMOR
 # from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON
 # from inventory.inventory import Armor, Weapon
 from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON, NUM_ACT_BEGIN
-from versus.versus_manager import VersusManager
-from versus.sort import Sort
-from versus.sort import collisionZoneEffect
+from managers.versus_manager import VersusManager
 from sprites.enemy import Enemy
 
 vec = pg.math.Vector2
@@ -45,7 +43,7 @@ class Game(_State):
 
         self.all_sprites = None
 
-        self.logs = Logs(0, 0, 300, 100, self.text_font, 16,  self.draw_text)
+        self.logs = LogsManager(0, 0, 300, 100, self.text_font, 16,  self.draw_text)
         self.turn_manager = TurnManager()
         self.animated = pg.sprite.Group()
         self.versus_manager = VersusManager(self)

@@ -5,7 +5,7 @@ import pygame as pg
 from logger import logger
 
 
-class Logs:
+class LogsManager:
     """Used to create an in-game logger"""
 
     def __init__(self, x, y, width, height, font, fontsize, draw_text):
