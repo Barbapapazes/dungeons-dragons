@@ -635,6 +635,7 @@ class Game(_State):
         self.doors.update()
         self.chests.update()
         self.merchants.update()
+        self.effects_zones.update()
         for animated in self.animated:
             if isinstance(animated, CampFire):
                 animated.update()

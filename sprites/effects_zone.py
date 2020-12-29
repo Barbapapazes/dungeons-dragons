@@ -1,8 +1,12 @@
 """Define a spell"""
 
+from pytmx.pytmx import TiledElement
+from config.sprites import ASSETS_FIRE_BALL
 import pygame as pg
 from config.window import TILESIZE
 from random import randint
+
+default_fn = lambda *args: None
 
 
 class EffectsZone(pg.sprite.Sprite):
@@ -20,10 +24,27 @@ class EffectsZone(pg.sprite.Sprite):
         self.number_dice = number_dice
         self.dice_value = dice_value
 
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill((0, 0, 255))
+        frames = list()
+        for frame in ASSETS_FIRE_BALL:
+            frames.append(pg.transform.scale(frame, (TILESIZE, int(TILESIZE * frame.get_height() / frame.get_width()))))
+
+        self.frames = frames
+        self.image = frames[0]
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
+
+        self.frame_per_image = 12
+        self.frame_total = (len(frames) - 1) * 12
+        self.frame_count = 0
+
+    def update(self, fn=default_fn, *args):
+        """Update the sprite"""
+        self.frame_count += 1
+        if self.frame_count > self.frame_total + 0:
+            self.frame_count = 0
+            fn(*args)
+        else:
+            self.image = self.frames[self.frame_count // self.frame_per_image]
 
     def get_dice_value(self):
         value = 0
