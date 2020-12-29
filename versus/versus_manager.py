@@ -76,8 +76,12 @@ class VersusManager:
         self.add_actions()
 
     def add_actions(self):
-        self.turn_manager.active_character().number_actions = 2
-        self.logs.add_log("Add 2 actions")
+        if self.turn_manager.active_character().type == "Boss":
+            self.turn_manager.active_character().number_actions = 1
+            self.logs.add_log("Add 1 action")
+        else:
+            self.turn_manager.active_character().number_actions = 2
+            self.logs.add_log("Add 2 actions")
 
     def finish_versus(self):
         self.active = False

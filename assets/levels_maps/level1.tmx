@@ -146,6 +146,7 @@
   <object id="3" name="chest" x="536" y="208" width="32" height="32"/>
   <object id="3" name="enemy" x="512" y="112" width="32" height="32"/>
   <object id="3" name="enemy" x="128" y="240" width="32" height="32"/>
+  <object id="3" name="boss" x="256" y="64" width="64" height="64"/>
   <object id="3" name="potion_health_medium" type="consumable" x="400" y="80" width="32" height="32">
    <properties>
     <property name="object_type" value="consumable"/>

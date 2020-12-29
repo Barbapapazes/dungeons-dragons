@@ -30,7 +30,7 @@ from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON, NUM_ACT_BEGIN
 from versus.versus_manager import VersusManager
 from versus.sort import Sort
 from versus.sort import collisionZoneEffect
-from sprites.enemy import Enemy
+from sprites.enemy import Enemy, Boss
 from random import randint # very temporary (just to create multiple type of enemies)
 
 vec = pg.math.Vector2
@@ -198,6 +198,10 @@ class Game(_State):
                         )
                     else: self.turn_manager.enemies.append(
                         Enemy(self, obj_center.x, obj_center.y, "Goblin", ASSETS_SPRITES["enemy_2"])
+                        )
+                if tile_object.name == "boss":
+                    self.turn_manager.enemies.append(
+                        Boss(self, obj_center.x, obj_center.y, "Boss", ASSETS_SPRITES["boss"])
                         )
                 if tile_object.name == 'wall':
                     Obstacle(

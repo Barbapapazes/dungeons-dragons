@@ -19,7 +19,8 @@ WANDER_RING_RADIUS = 150
 CLASSES = ["Fighter","Mage","Rogue"]
 TYPE = {
     "Skeleton" : {"health":80, "STR":10, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5},
-    "Goblin" :   {"health":80, "STR":15, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5}
+    "Goblin" :   {"health":80, "STR":15, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5},
+    "Boss"  : {"health":250, "STR":20, "DEX":5, "CON":10, "INT":5, "WIS":10, "CHA":15}
 }
 
 class Enemy(Character):
@@ -80,7 +81,6 @@ class Enemy(Character):
             "inventory": self.inventory.save()
         }
 
-    
     def draw_health(self):
         """draw healthbar onto the screen
         """
@@ -418,3 +418,24 @@ class Enemy(Character):
         self.last_timestamp2 = None
         self.goto = []
         self.game.versus_manager.check_characters_actions()
+
+class Boss(Enemy):
+    def __init__(self, game, x, y, _type, images):
+        super(Boss, self).__init__(game, x, y, _type, images)
+        
+        self.vel = vec(0, 0)
+
+        self.attack_range = TILESIZE * 3
+
+    def update(self):
+        if self.game.versus_manager.active:
+            if self.player_detection():
+                if (self.player_spotted.pos - self.pos).length() < self.attack_range:
+                    self.attack()
+                else:
+                    self.end_turn()
+            else:
+                self.end_turn()
+        else:
+            self.update_image()
+            self.update_collisions()
