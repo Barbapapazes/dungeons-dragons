@@ -417,4 +417,4 @@ class Enemy(Character):
     def end_turn(self):
         self.last_timestamp2 = None
         self.goto = []
-        self.game.versus_manager.add_turn()
+        self.game.versus_manager.check_characters_actions()
