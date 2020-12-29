@@ -29,6 +29,12 @@ class Credits(_Elements):
         self.win.fill((0, 0, 0, 0))
         self.create_back_button(self.win, self.load_next_state, [MENU])
 
+    def all_events(self, events):
+        for event in events:
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_ESCAPE:
+                    self.load_next_state(MENU)
+
     def run(self, surface, keys, mouse, dt):
         """Run states"""
         self.screen = surface

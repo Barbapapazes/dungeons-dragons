@@ -37,6 +37,12 @@ class ChooseMap(_Elements):
         self.create_buttons(self.background)
         self.create_back_button(self.background, self.load_next_state, [CHARACTER_CREATION])
 
+    def all_events(self, events):
+        for event in events:
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_ESCAPE:
+                    self.load_next_state(CHARACTER_CREATION)
+
     def create_buttons_dict(self):
         """Create the dict for the main screen"""
         return {

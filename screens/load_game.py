@@ -37,6 +37,12 @@ class LoadGame(_Elements):
         self.create_delete_buttons()
         self.create_back_button(self.background, self.load_next_state, [MENU])
 
+    def all_events(self, events):
+        for event in events:
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_ESCAPE:
+                    self.load_next_state(MENU)
+
     def startup(self, dt, game_data):
         super().startup(dt, game_data)
         self.refresh()
