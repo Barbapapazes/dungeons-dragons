@@ -15,7 +15,6 @@ class Character(pg.sprite.Sprite):
     def __init__(self, game, x, y, _type, images, hit_rect):
         self._layer = y
         self.groups = game.all_sprites
-<<<<<<< HEAD
         super(Character, self).__init__(self.groups)
 
         self.characteristics = {
@@ -27,9 +26,6 @@ class Character(pg.sprite.Sprite):
             "cha": 0
         }
 
-=======
-        pg.sprite.Sprite.__init__(self, self.groups)
->>>>>>> 114ff68 (included sprites to their respective groups)
         self.game = game
         self.type = _type
         self.images = images
@@ -103,9 +99,6 @@ class Character(pg.sprite.Sprite):
             f"Dice {_type}, result {result_dice}/{value_dice}, under {self.characteristics[base_value] + mod} to success")
         logger.info("Result dice : %d / %d (must be under %s to success)",
                     result_dice, value_dice, self.characteristics[base_value] + mod)
-        score = randint(0, valueOfDice)
-        logger.info("Your dice is %i / 100 and the succes is under %i", score, Val+modificateur)
-        return score <= Val + modificateur
 
     def groupCount(self, grouplist, count=0):
         """computes the number of entities belonging to the same group that can see one another

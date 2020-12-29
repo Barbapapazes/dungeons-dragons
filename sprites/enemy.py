@@ -17,7 +17,6 @@ APPROACH_RADIUS = 50
 WANDER_RING_DISTANCE = 500
 WANDER_RING_RADIUS = 150
 CLASSES = ["Fighter","Mage","Rogue"]
-<<<<<<< HEAD
 TYPE = {
     "Skeleton" : {"health":80, "STR":10, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5},
     "Goblin" :   {"health":80, "STR":10, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5}
@@ -25,19 +24,9 @@ TYPE = {
 
 class Enemy(Character):
     def __init__(self, game, x, y, _type, health, images):
-<<<<<<< HEAD
 
         self.groups = enemies
         pg.sprite.Sprite.__init__(self, self.groups)
-=======
->>>>>>> 1d46b80 (rebased pathfinding on dev)
-=======
-
-class Enemy(Character):
-    def __init__(self, game, x, y, _type, health, images):
-        self.groups = enemies
-        pg.sprite.Sprite.__init__(self, self.groups)
->>>>>>> 114ff68 (included sprites to their respective groups)
         super(Enemy, self).__init__(game, x, y, _type, images, MOB_HIT_RECT)
         
         self.pos = vec(x, y)
@@ -45,16 +34,13 @@ class Enemy(Character):
         self.acc = vec(0, 0)
 
         self.last_timestamp = 0
-<<<<<<< HEAD
-        self.last_timestamp2 = 0
+        self.last_timestamp2 = None
         self.now = 0
-=======
-        self.now = self.last_timestamp
->>>>>>> 1d46b80 (rebased pathfinding on dev)
+
+        self.numberOfAction = 0
 
         self.inventory = Inventory(self, 5, 8)
 
-<<<<<<< HEAD
         self.attack_range = TILESIZE * 2
 
         logger.error("il y a un souci d'update avec la camera")
@@ -79,22 +65,6 @@ class Enemy(Character):
         """default displayed text whenever printing the enemy
         """
         return self.type
-=======
-        self.health = health
-<<<<<<< HEAD
-        self.attack_range = TILESIZE # * 2
->>>>>>> c523753 (added combat beahiavourto enemies)
-=======
-        self.attack_range = TILESIZE * 2
->>>>>>> ca63f16 (fixed move and attack on same turn)
-
-        self.speed = 2
-        
-        self.target = self.pos
-        self.player_spotted = None
-        self.goto = []
-        self.view_range = TILESIZE * 6
-        self.moving = False
         
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -110,6 +80,7 @@ class Enemy(Character):
             "inventory": self.inventory.save()
         }
 
+    
     def draw_health(self):
         """draw healthbar onto the screen
         """
@@ -139,11 +110,11 @@ class Enemy(Character):
 
         #if trap nearby: flee(trap)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
         """ reset player spotted every 10 seconds
         """
         self.now = pg.time.get_ticks()
+        if self.last_timestamp2 is None:
+            self.last_timestamp2 = self.now
         if self.now - self.last_timestamp > 10000:
             self.last_timestamp = self.now
             self.player_spotted = None
@@ -154,20 +125,17 @@ class Enemy(Character):
             if self.player_detection():
                 if self.evaluation():
                     self.flee(self.player_spotted.pos)
+                    #need to skip turn after some time
                 else:
                     """ if player out of reach, "pathfind" him
                     """
+                    
                     if self.move_or_attack():
-<<<<<<< HEAD
-                        if self.now - self.last_timestamp2 > 2000 and self.vel == vec(0,0):
-=======
-                        if self.now - self.last_timestamp > 2000 and self.vel == vec(0,0):
->>>>>>> 6e8bcc7 (racolage du bug où l'ennemi reste blocké)
+                        if self.now - self.last_timestamp2 > 1500 and self.vel == vec(0,0): # skip if stuck on a wall
+                            logger.info(self.last_timestamp2)
                             self.last_timestamp = self.now
-                            self.goto = []
                             self.moving = False
-                            self.game.versus_manager.add_turn()
-<<<<<<< HEAD
+                            self.end_turn()
                         #bug à la ligne juste dessous si l'ennemi est juste à côté du joueur
                         if not self.goto and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
                             self.goto = self.path_finding(self.player_spotted.pos)
@@ -185,79 +153,19 @@ class Enemy(Character):
                         else:
                             self.vel = vec(0,0)
                             self.moving = False
-                            self.goto = []
-                            self.game.versus_manager.add_turn()
+                            self.end_turn()
                     else:
                         self.attack()
                 """if there is no player in range, just move around
                 """
             else:
-                self.game.versus_manager.add_turn()
+                self.end_turn()
 
                 # temp = self.avoidnpc()
                 # if temp is False:
                 #     self.acc = self.wander()
                 # else:
                 #     self.acc = temp
-=======
-=======
-        """ reset player spotted every 10 seconds
-        """
->>>>>>> c523753 (added combat beahiavourto enemies)
-        self.now = pg.time.get_ticks()
-        if self.now - self.last_timestamp > 10000:
-            self.last_timestamp = self.now
-            self.player_spotted = None
-
-        if self.game.versus_manager.active:
-            """ If a player is in sight, evaluate whether he is worth attacking or not
-            """
-            if self.player_detection():
-                if self.evaluation():
-                    self.flee(self.player_spotted.pos)
-                else:
-                    """ if player out of reach, "pathfind" him
-                    """
-                    if self.move_or_attack():
-=======
->>>>>>> 6e8bcc7 (racolage du bug où l'ennemi reste blocké)
-                        #bug à la ligne juste dessous si l'ennemi est juste à côté du joueur
-                        if not self.goto and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
-                            self.goto = self.path_finding(self.player_spotted.pos)
-                            if self.goto:
-                                del self.goto[0]
-                        # logger.debug(self.goto)
-                        if self.goto:
-                            for i in self.goto:
-                                rect = pg.Rect(i.coor, (SIZE, SIZE))
-                                pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
-                            self.acc = self.seek(self.goto[0].coor)
-                            if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
-                                del self.goto[0]
-                            # logger.debug("enemy proche, utilisation du A* et avancement que de X case")
-                        else:
-                            self.vel = vec(0,0)
-                            self.moving = False
-                            self.goto = []
-                            self.game.versus_manager.add_turn()
-                    else: # if self.moving is False:
-                            self.game.versus_manager.logs.add_log(f'{self.moving}')
-                            self.game.versus_manager.logs.add_log(f'Enemy attacked {self.player_spotted} dealing 30 damages !')
-                            self.player_spotted.health -= 30
-                            self.game.versus_manager.add_turn()
-                """if there is no player in range, just move around
-                """
-            else:
-<<<<<<< HEAD
-                self.acc = temp
->>>>>>> c3b9e22 (merged code into pathfinding branch)
-=======
-                temp = self.avoidnpc()
-                if temp is False:
-                    self.acc = self.wander()
-                else:
-                    self.acc = temp
->>>>>>> c523753 (added combat beahiavourto enemies)
 
             
         """actual movement update
@@ -454,14 +362,7 @@ class Enemy(Character):
             for player in players:
                 if (player.pos - self.pos).length() < self.view_range:
                     self.player_spotted = player
-<<<<<<< HEAD
-<<<<<<< HEAD
                     logger.info("player spotted")
-=======
->>>>>>> c3b9e22 (merged code into pathfinding branch)
-=======
-                    logger.info("ok")
->>>>>>> 114ff68 (included sprites to their respective groups)
                     return True
             return False
         return True
@@ -479,22 +380,11 @@ class Enemy(Character):
                     return Enemy.flee(self, sprite.pos)
         return False
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     def health_percentage(self):
         """returns the percentage of health left
         """
         return self.health / TYPE.get(self.type).get("health") * 100
 
-=======
->>>>>>> c3b9e22 (merged code into pathfinding branch)
-=======
-    def HP_percent(self):
-        """returns the percentage of HP left
-        """
-        return self.health / MOB_HEALTH * 100
-
->>>>>>> 114ff68 (included sprites to their respective groups)
     def evaluation(self):
         """evaluates whether the ennemi should rush or flee the player.
 
@@ -502,7 +392,6 @@ class Enemy(Character):
             vec(x,y): acceleration vector following [the shortest path to the player / the optimal fleeing curve]
         """
         # linear : lambda x : x/25 - 2
-<<<<<<< HEAD
         return self.health_percentage()/25 - 2 < (self.groupCount(enemies.sprites()) - Character.groupCount(self.player_spotted, players.sprites()))
         #     return npc.flee(self, self.player_spotted.pos)
         # else: return npc.moveto(self, npc.pathfinding2(self, self.player_spotted.pos))
@@ -523,21 +412,9 @@ class Enemy(Character):
         """
         self.player_spotted.health -= self.STR
         self.game.versus_manager.logs.add_log(f'{self} attacked {self.player_spotted} dealing {self.STR} damages !')
+        self.end_turn()
+        
+    def end_turn(self):
+        self.last_timestamp2 = None
+        self.goto = []
         self.game.versus_manager.add_turn()
-=======
-        return self.HP_percent()/25 - 2 < (self.groupCount(enemies.sprites()) - Character.groupCount(self.player_spotted, players.sprites()))
-        #     return npc.flee(self, self.player_spotted.pos)
-        # else: return npc.moveto(self, npc.pathfinding2(self, self.player_spotted.pos))
-
-<<<<<<< HEAD
->>>>>>> c3b9e22 (merged code into pathfinding branch)
-=======
-    def move_or_attack(self):
-        if self.moving is True:
-            return True
-        elif (self.player_spotted.pos - self.pos).length() > self.attack_range:
-            self.moving = True
-            return True
-        else:
-            return False
->>>>>>> ca63f16 (fixed move and attack on same turn)

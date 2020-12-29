@@ -14,24 +14,8 @@ class Player(Character):
     """Create a player"""
 
     def __init__(self, game, x, y, _type, characteristics, health, xp, gold, images):
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        self.groups = players
-        pg.sprite.Sprite.__init__(self, self.groups)
-=======
-=======
-    def __init__(self, game, x, y, _type, characteristics, images):
         self.groups = players        
->>>>>>> d3ca57e (merged code into pathfinding branch)
->>>>>>> c3b9e22 (merged code into pathfinding branch)
-=======
-        self.groups = players        
->>>>>>> 1d46b80 (rebased pathfinding on dev)
-=======
-        self.groups = players
         pg.sprite.Sprite.__init__(self, self.groups)
->>>>>>> 114ff68 (included sprites to their respective groups)
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
         
         self.can_move = True
