@@ -22,8 +22,6 @@ class Logs:
 
         self.create_screen()
 
-        logger.debug("il va falloir renommer le logs_manager et faire un dossier avec tous les managers")
-
     def create_screen(self):
         """Create the log screen"""
         self.screen_logs = pg.Surface((self.width, self.height)).convert_alpha()
