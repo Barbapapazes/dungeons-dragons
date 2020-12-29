@@ -45,8 +45,15 @@ class Inventory:
 
     @classmethod
     def create_inventory(cls, data):
+        """Used to create an inventory using a dict
+
+        Args:
+            data (dict): raw data
+
+        Returns:
+            list : all items in the inventory
+        """
         items = list()
-        logger.debug("il faut ajouter les spells")
         for key, value in data.items():
             if value["object_type"] == "item":
                 items.append(
@@ -84,6 +91,18 @@ class Inventory:
                         value["weight"],
                         value["hp_gain"],
                         value["shield_gain"]))
+            elif value["object_type"] == "spell":
+                items.append(
+                    Spell(
+                        key, ITEMS[value["image_name"]],
+                        value["image_name"],
+                        value["slot"],
+                        value["type"],
+                        value["scope"],
+                        value["time_to_live"],
+                        value["number_dice"],
+                        value["dice_value"])
+                )
 
         return items
 
