@@ -19,7 +19,7 @@ WANDER_RING_RADIUS = 150
 CLASSES = ["Fighter","Mage","Rogue"]
 TYPE = {
     "Skeleton" : {"health":80, "STR":10, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5},
-    "Goblin" :   {"health":80, "STR":10, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5}
+    "Goblin" :   {"health":80, "STR":15, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5}
 }
 
 class Enemy(Character):

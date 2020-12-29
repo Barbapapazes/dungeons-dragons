@@ -31,6 +31,7 @@ from versus.versus_manager import VersusManager
 from versus.sort import Sort
 from versus.sort import collisionZoneEffect
 from sprites.enemy import Enemy
+from random import randint # very temporary (just to create multiple type of enemies)
 
 vec = pg.math.Vector2
 
@@ -191,9 +192,13 @@ class Game(_State):
                         self.turn_manager.players.append(
                             Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
                 if tile_object.name == "enemy":
-                    self.turn_manager.enemies.append(
+                    if randint(0,1):
+                        self.turn_manager.enemies.append(
                         Enemy(self, obj_center.x, obj_center.y, "Skeleton", 100, ASSETS_SPRITES["enemy_1"])
-                    )
+                        )
+                    else: self.turn_manager.enemies.append(
+                        Enemy(self, obj_center.x, obj_center.y, "Goblin", 100, ASSETS_SPRITES["enemy_2"])
+                        )
                 if tile_object.name == 'wall':
                     Obstacle(
                         self,
