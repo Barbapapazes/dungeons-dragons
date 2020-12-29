@@ -23,7 +23,7 @@ TYPE = {
 }
 
 class Enemy(Character):
-    def __init__(self, game, x, y, _type, health, images):
+    def __init__(self, game, x, y, _type, images):
 
         self.groups = enemies
         pg.sprite.Sprite.__init__(self, self.groups)

@@ -194,10 +194,10 @@ class Game(_State):
                 if tile_object.name == "enemy":
                     if randint(0,1):
                         self.turn_manager.enemies.append(
-                        Enemy(self, obj_center.x, obj_center.y, "Skeleton", 100, ASSETS_SPRITES["enemy_1"])
+                        Enemy(self, obj_center.x, obj_center.y, "Skeleton", ASSETS_SPRITES["enemy_1"])
                         )
                     else: self.turn_manager.enemies.append(
-                        Enemy(self, obj_center.x, obj_center.y, "Goblin", 100, ASSETS_SPRITES["enemy_2"])
+                        Enemy(self, obj_center.x, obj_center.y, "Goblin", ASSETS_SPRITES["enemy_2"])
                         )
                 if tile_object.name == 'wall':
                     Obstacle(
