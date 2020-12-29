@@ -25,15 +25,13 @@ class EffectsZone(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
 
-    def update(self):
-        pass
-        # il faut donner un nombre de tour à un spell et vérifier à chaque tour si on doit l'enlever ou lui retirer un tour. ensuite il faut mettre des dégats dès que un enemy le touche. ajouter aussi un image animée (pour les dégets c'est uniquement au tour de la personne et il faut tout remove lorsque on quitte ce mode)
-
-    def draw(self):
-        pass
-
     def get_dice_value(self):
         value = 0
         for _ in range(self.number_dice):
             value += randint(1, self.dice_value)
         return value
+
+    def check_time_to_live(self):
+        self.time_to_live -= 1
+        if self.time_to_live == 0:
+            self.kill()

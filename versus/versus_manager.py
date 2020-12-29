@@ -1,4 +1,5 @@
 """Create the versus mananger"""
+from sprites.effects_zone import EffectsZone
 from config.sprites import ITEMS, MALUS_ARC, SCOPE_HAND
 from config.colors import ENERGOS, GLOOMY_PURPLE, RED_PIGMENT, BLUE_MARTINA
 from config.window import HEIGHT, TILESIZE
@@ -28,6 +29,8 @@ class VersusManager:
 
         self.warn = False
         self.active = False
+
+        self.spell_pos = None
 
     def check_for_versus(self):
         start = False
@@ -133,8 +136,13 @@ class VersusManager:
                     self.circle.set_width(800)
                     self.circle.set_pos(self.turn_manager.active_character().pos)
                     self.set_move_player(True)
-                if self.spell_btn.collidepoint(pos[0], pos[1]):
-                    logger.debug('on vient de sélectionner le spell, il faut donc tracer la zone d\'effect')
+                if self.spell_btn.collidepoint(pos[0], pos[1]) and not self.turn_manager.get_active_spell() is None:
+                    self.action = "spell"
+                    self.logs.add_log("Spell selected")
+                    self.logs.add_log("Select a zone")
+                    self.circle.set_width(self.turn_manager.get_active_spell().scope)
+                    self.circle.set_pos(self.turn_manager.active_character().pos)
+                    self.set_move_player(False)
             if self.action == 'attack':
                 if self.validate_btn.collidepoint(pos[0], pos[1]):
                     if not self.selected_enemy:
@@ -156,8 +164,17 @@ class VersusManager:
                     self.remove_last_player_pos()
                     self.check_characters_actions()
             if self.action == 'spell':
-                logger.debug(
-                    "on doit confirmer que on vient de sélectionner un spell, tant que on confirme pas, ça blit un petit cercle au sol")
+                if not self.spell_pos:
+                    self.logs.add_log("Select a zone")
+                    return
+
+                EffectsZone(
+                    self.game, self.spell_pos[0],
+                    self.spell_pos[1],
+                    self.turn_manager.get_active_spell().type, self.turn_manager.get_active_spell().time_to_live, self.
+                    turn_manager.get_active_spell().number_dice, self.turn_manager.get_active_spell().dice_value)
+                self.remove_action()
+                self.check_characters_actions()
 
     def calc_damage(self):
         damage = self.turn_manager.get_active_weapon_damage()
@@ -184,8 +201,6 @@ class VersusManager:
             self.add_turn()
 
     def select_enemy(self, pos):
-        logger.debug(
-            "si c'est un spell, alors, on doit choisir une zone dans la zone et ça permet de créer le spell avec la pos passée en paramètre")
         if self.action == "attack":
             if self.turn_manager.get_active_weapon_type() in ["hand", "sword"]:
                 if self.is_in_range(
@@ -212,16 +227,29 @@ class VersusManager:
 
     def update(self):
         if self.active:
-            if self.action in ["attack", "move"]:
+            if self.action in ["attack", "move", "spell"]:
                 self.circle.update()
             if self.action == "move":
                 dist = self.last_player_pos - self.turn_manager.active_character().pos
                 if dist.length_squared() > 370 * 370:
                     self.turn_manager.active_character().pos -= self.turn_manager.active_character().vel * self.game.dt
+            if self.action == "spell":
+                mouse_click = pg.mouse.get_pressed()
+                pos = pg.mouse.get_pos()
+                if mouse_click[0] and self.is_in_range(pos, self.turn_manager.get_active_spell().scope // 2):
+                    self.spell_pos = pos
+                elif mouse_click[2]:
+                    self.spell_pos = None
 
     def draw(self, screen):
         self.draw_range(screen)
         self.draw_btns(screen)
+        if self.action == "spell":
+            if self.spell_pos:
+                pg.draw.circle(screen, GLOOMY_PURPLE, self.spell_pos, TILESIZE, width=2)
+            pos = pg.mouse.get_pos()
+            if self.is_in_range(pos, self.turn_manager.get_active_spell().scope // 2):
+                pg.draw.circle(screen, GLOOMY_PURPLE, pos, TILESIZE, width=2)
         self.draw_enemy_border(screen)
 
     def draw_enemy_border(self, screen):
@@ -252,6 +280,11 @@ class VersusManager:
             else:
                 weapon_image = ITEMS["punch"]
 
+            spell_item = self.turn_manager.get_active_spell()
+            spell_image = None
+            if spell_item:
+                spell_image = spell_item.image
+
             surface = pg.Surface((TILESIZE, TILESIZE))
             surface.fill(RED_PIGMENT)
             screen.blit(surface, self.attack_btn)
@@ -261,13 +294,14 @@ class VersusManager:
             screen.blit(pg.transform.scale(ITEMS["move"], (TILESIZE, TILESIZE)), self.move_btn)
             surface.fill(GLOOMY_PURPLE)
             screen.blit(surface, self.spell_btn)
-            # screen.blit(pg.transform.scale(spell_image, (TILESIZE, TILESIZE)), self.spell_btn)
+            if spell_image:
+                screen.blit(pg.transform.scale(spell_image, (TILESIZE, TILESIZE)), self.spell_btn)
             surface.fill(ENERGOS)
             screen.blit(surface, self.validate_btn)
             screen.blit(pg.transform.scale(ITEMS["validate"], (TILESIZE, TILESIZE)), self.validate_btn)
 
     def draw_range(self, screen):
-        if self.action == "move" or (
+        if self.action in["move", "spell"] or (
                 self.action ==
                 "attack" and self.turn_manager.get_active_weapon_type() in ["hand", "sword"]):
             for animated in self.game.animated:
@@ -283,7 +317,11 @@ class VersusManager:
         self.set_move_player(False)
         self.add_actions()
         self.check_effects_zones_hits()
-        logger.debug("il faut tout check, si le nouveau joueur actif touche un power")
+        self.check_for_effects_zones()
+
+    def check_for_effects_zones(self):
+        for zone in self.game.effects_zones:
+            zone.check_time_to_live()
 
     def check_effects_zones_hits(self):
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.game.effects_zones, False)

@@ -78,6 +78,9 @@ class TurnManager:
     def get_active_weapon(self):
         return self.active_character().weapon
 
+    def get_active_spell(self):
+        return self.active_character().spell
+
     def get_active_weapon_damage(self):
         damage = 0
         if self.get_active_weapon() is None:
