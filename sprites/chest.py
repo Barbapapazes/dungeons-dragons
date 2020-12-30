@@ -1,14 +1,16 @@
 """Define a chest"""
 
-from config.window import TILESIZE
 from os import path
 import pygame as pg
-from logger import logger
+from config.window import TILESIZE
 from config.sprites import ASSETS_CHEST
 from store.store import Store
+from logger import logger
 
 
 class Chest(pg.sprite.Sprite):
+    """Create a chest"""
+
     def __init__(self, game, x, y, consumable=False, weapons=False, armor=False, is_open=False):
         self._layer = y
         self.groups = game.all_sprites, game.chests
@@ -34,6 +36,11 @@ class Chest(pg.sprite.Sprite):
         self.frame_count = 0
 
     def save(self):
+        """Used to save the chest data
+
+        Returns:
+            dict
+        """
         return {
             "pos": {
                 "x": self.x,
@@ -45,6 +52,7 @@ class Chest(pg.sprite.Sprite):
         }
 
     def update(self):
+        """Update the chest"""
         if not self.is_open:
             self.frame_count += 1
             if self.frame_count > 47:
@@ -55,7 +63,14 @@ class Chest(pg.sprite.Sprite):
             self.image = self.open_image
 
     def try_open(self, player):
+        """Try to open the chest if it's closed
+
+        Args:
+            player (Player)
+        """
         if not self.is_open:
+            logger.debug(
+                "il faut ajuster le nom de la clé en fonction du type de coffre et donc faire un dict avec les type de coffre en key et le nom de la clé en value")
             for slot in player.inventory.slots:
                 if slot.item and slot.item.name == "key":
                     logger.info("Open a chest")

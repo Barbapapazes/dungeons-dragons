@@ -61,6 +61,11 @@ class Store:
         self.display_shop = False
 
     def save(self):
+        """Used to save the store
+
+        Returns:
+            dict
+        """
         slots = {
             "weapons": dict(),
             "armor": dict(),
@@ -225,6 +230,11 @@ class Store:
                 slot_moving.draw_items(screen)
 
     def draw_title(self, screen):
+        """Used to draw title
+
+        Args:
+            screen (Surface)
+        """
         self.game.draw_text(
             "Items", self.game.title_font, 48, YELLOW_LIGHT, 1 * WIDTH // 4, HEIGHT // 3 -
             ((STORE_TILESIZE + STORE_SLOT_GAP) * 3) // 2 + STORE_SLOT_GAP, align="n", screen=screen)

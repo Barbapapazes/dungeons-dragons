@@ -1,15 +1,16 @@
 """Create the versus mananger"""
+import pygame as pg
 from sprites.effects_zone import EffectsZone
-from config.sprites import ITEMS, MALUS_ARC, SCOPE_HAND
+from config.sprites import ITEMS, MALUS_ARC
 from config.colors import ENERGOS, GLOOMY_PURPLE, RED_PIGMENT, BLUE_MARTINA
 from config.window import HEIGHT, TILESIZE
-import pygame as pg
-from logger import logger
 from sprites.animated import Circle
+from logger import logger
 vec = pg.Vector2
 
 
 class VersusManager:
+    """Create a versus"""
 
     def __init__(self, game):
         self.game = game
@@ -33,6 +34,7 @@ class VersusManager:
         self.spell_pos = None
 
     def check_for_versus(self):
+        """Check if the is a versus and activate it"""
         start = False
         for enemy in self.turn_manager.enemies:
             for player in self.turn_manager.players:
@@ -69,56 +71,97 @@ class VersusManager:
             self.finish_versus()
 
     def is_distance(self, base_pos, target_pos, _range):
+        """Check if the target pos is in the range
+
+        Args:
+            base_pos (tuple)
+            target_pos (tuple)
+            _range (int)
+
+        Returns:
+            bool
+        """
         dist = target_pos - base_pos
         return dist.length_squared() < _range * _range
 
     def start_versus(self):
+        """Start the versus"""
         self.active = True
         self.set_move_player(False)
         self.logs.add_log("Start the versus")
         self.add_actions()
 
     def add_actions(self):
+        """Add actions the the active character"""
         self.turn_manager.active_character().number_actions = 2
         self.logs.add_log("Add 2 actions")
 
     def finish_versus(self):
+        """Finish the versus"""
         self.active = False
         self.set_move_player(True)
         self.remove_selected_enemy()
         self.remove_last_player_pos()
         self.remove_action()
-        self.remove_spells()
+        self.remove_zones_effects()
         self.logs.add_log("Finish the versus")
 
-    def remove_spells(self):
+    def remove_zones_effects(self):
+        """Remove all zones"""
         for zone in self.game.effects_zones:
             zone.kill()
         logger.info("Remove all effects zones")
 
     def remove_selected_enemy(self):
+        """Remove the selected enemy"""
         self.selected_enemy = None
         self.border_enemy = None
 
     def remove_action(self):
+        """Remove the current action"""
         self.action = None
 
     def remove_last_player_pos(self):
+        """Remove the last player pos"""
         self.last_player_pos = None
 
     def is_in_range(self, pos, _range):
+        """Check if the pos in in the range relatively of the active character
+
+        Args:
+            pos (tuple)
+            _range (int)
+
+        Returns:
+            bool
+        """
         updated_pos = vec(pos) - vec(self.game.camera.camera.x, self.game.camera.camera.y)
         dist = updated_pos - self.turn_manager.active_character().pos
         return dist.length_squared() < _range * _range
 
     def events(self, pos):
+        """Manage the events to
+
+        Args:
+            pos (tuple)
+        """
         self.select_action(pos)
         self.select_enemy(pos)
 
     def set_move_player(self, _bool):
+        """Set if the player can move
+
+        Args:
+            _bool (bool)
+        """
         self.turn_manager.active_character().can_move = _bool
 
     def select_action(self, pos):
+        """Select the action using buttons
+
+        Args:
+            pos (tuple): the pos of the mouse when clicked
+        """
         if self.active and self.turn_manager.is_active_player():
             if not self.action:
                 if self.attack_btn.collidepoint(pos[0], pos[1]):
@@ -177,6 +220,11 @@ class VersusManager:
                 self.check_characters_actions()
 
     def calc_damage(self):
+        """Calc the damage depending of the weapon and the protection of the selected enemy
+
+        Returns:
+            int: damage, can be under 0
+        """
         damage = self.turn_manager.get_active_weapon_damage()
         if self.turn_manager.get_active_weapon_type() == "arc":
             dist = self.selected_enemy.pos - self.turn_manager.active_character().pos
@@ -189,11 +237,17 @@ class VersusManager:
         return max(0, damage - protection)
 
     def check_dice(self):
+        """Check the str success
+
+        Returns:
+            bool
+        """
         self.turn_manager.active_character().throw_dice('str')
 
         return self.turn_manager.active_character().dice["success"]
 
     def check_characters_actions(self):
+        """Check the action of the active character"""
         self.turn_manager.active_character().number_actions -= 1
         self.logs.add_log(f"Action remaining : {self.turn_manager.active_character().number_actions}")
         self.set_move_player(False)
@@ -201,6 +255,11 @@ class VersusManager:
             self.add_turn()
 
     def select_enemy(self, pos):
+        """Select an enemy
+
+        Args:
+            pos (tuple)
+        """
         if self.action == "attack":
             if self.turn_manager.get_active_weapon_type() in ["hand", "sword"]:
                 if self.is_in_range(
@@ -226,6 +285,7 @@ class VersusManager:
                         break
 
     def update(self):
+        """Mnage the update"""
         if self.active:
             if self.action in ["attack", "move", "spell"]:
                 self.circle.update()
@@ -242,6 +302,7 @@ class VersusManager:
                     self.spell_pos = None
 
     def draw(self, screen):
+        """Draw the versus"""
         self.draw_range(screen)
         self.draw_btns(screen)
         logger.debug("si c'est pas un wizrad, alors on ne dessine pas le bouton des spells")
@@ -254,6 +315,11 @@ class VersusManager:
         self.draw_enemy_border(screen)
 
     def draw_enemy_border(self, screen):
+        """Draw the enemy border
+
+        Args:
+            screen (Surface)
+        """
         if self.selected_enemy:
             image = self.selected_enemy.image.copy()
             image = image.convert_alpha()
@@ -265,6 +331,12 @@ class VersusManager:
             screen.blit(image, self.game.camera.apply_rect(rect))
 
     def create_border(self, surface, color):
+        """Create the enemy border
+
+        Args:
+            surface (Surface)
+            color (tuple): the color of the border
+        """
         w, h = surface.get_size()
         r, g, b = color
         for x in range(w):
@@ -273,6 +345,11 @@ class VersusManager:
                 surface.set_at((x, y), pg.Color(r, g, b, a))
 
     def draw_btns(self, screen):
+        """Draw the buttons
+
+        Args:
+            screen (Surface)
+        """
         if self.active and self.turn_manager.is_active_player():
             weapon_item = self.turn_manager.get_active_weapon()
             weapon_image = None
@@ -302,6 +379,11 @@ class VersusManager:
             screen.blit(pg.transform.scale(ITEMS["validate"], (TILESIZE, TILESIZE)), self.validate_btn)
 
     def draw_range(self, screen):
+        """Draw the range
+
+        Args:
+            screen (Surface)
+        """
         if self.action in["move", "spell"] or (
                 self.action ==
                 "attack" and self.turn_manager.get_active_weapon_type() in ["hand", "sword"]):
@@ -310,6 +392,7 @@ class VersusManager:
                     screen.blit(animated.image, self.game.camera.apply(animated))
 
     def add_turn(self):
+        """Add a turn"""
         self.selected_enemy = None
         self.border_enemy = None
         self.logs.add_log("Next turn")
@@ -321,10 +404,12 @@ class VersusManager:
         self.check_for_effects_zones()
 
     def check_for_effects_zones(self):
+        """Check if the effets zone can live"""
         for zone in self.game.effects_zones:
             zone.check_time_to_live()
 
     def check_effects_zones_hits(self):
+        """Check for hit between characters and effects zone"""
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.game.effects_zones, False)
         for hit in hits:
             value = hit.get_dice_value()

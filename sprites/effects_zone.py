@@ -1,10 +1,9 @@
 """Define a spell"""
 
-from pytmx.pytmx import TiledElement
-from config.sprites import ASSETS_FIRE_BALL
-import pygame as pg
-from config.window import TILESIZE
 from random import randint
+import pygame as pg
+from config.sprites import ASSETS_FIRE_BALL
+from config.window import TILESIZE
 
 default_fn = lambda *args: None
 
@@ -47,12 +46,14 @@ class EffectsZone(pg.sprite.Sprite):
             self.image = self.frames[self.frame_count // self.frame_per_image]
 
     def get_dice_value(self):
+        """Get the dice value after the throw"""
         value = 0
         for _ in range(self.number_dice):
             value += randint(1, self.dice_value)
         return value
 
     def check_time_to_live(self):
+        """Check and update the time to live of the effects zone"""
         self.time_to_live -= 1
         if self.time_to_live == 0:
             self.kill()

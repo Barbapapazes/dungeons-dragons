@@ -33,6 +33,7 @@ class TurnManager:
         return self.sorted
 
     def sort_characters(self):
+        """Sort the characters"""
         self.sorted = self.players + self.enemies
 
         logger.debug("il faut charger la configuration")
@@ -66,6 +67,11 @@ class TurnManager:
         return self.get_characters()[self.get_relative_turn()]
 
     def get_active_scope(self):
+        """Get the scope of the active player
+
+        Returns:
+            int
+        """
         scope = None
         if self.is_active_player():
             scope = SCOPE_HAND
@@ -74,42 +80,84 @@ class TurnManager:
         return scope
 
     def get_active_weapon(self):
+        """Get the active weapon
+
+        Returns:
+            Weapon
+        """
         return self.active_character().weapon
 
     def get_active_spell(self):
+        """Get the active spell
+
+        Returns:
+            Spell
+        """
         return self.active_character().spell
 
     def get_active_weapon_damage(self):
+        """Get the damage of the active weapon
+
+        Returns:
+            int
+        """
         damage = 0
         if self.get_active_weapon() is None:
+            logger.debug("[sofiane] il faut ajuster les dégats de l'attaque sans arme")
             damage = 10
         else:
             damage = self.get_active_weapon().attack()
         return damage
 
     def get_active_weapon_type(self):
+        """Get the type of the active weapon
+
+        Returns:
+            str
+        """
         if self.get_active_weapon() is None:
             return "hand"
         return self.get_active_weapon().wpn_type
 
     def remove_health(self, damage, enemy):
+        """Remove life to enemy
+
+        Args:
+            damage (int)
+            enemy (Enemy)
+        """
         enemy.health -= damage
         self.active_character().game.logs.add_log(f"Remove {damage}, remaining {enemy.health}")
 
     def is_active_player(self):
+        """Check if the active character is a player
+
+        Returns:
+            bool
+        """
         return isinstance(self.active_character(), Player)
 
     def is_active_enemy(self):
+        """Check if the active character is a enemy
+
+        Returns:
+            bool
+        """
         return isinstance(self.active_character(), Enemy)
 
     def update(self):
+        """Used to update the turn manager"""
         if self.is_active_player():
             self.active_character().update()
         if self.is_active_enemy():
             self.active_character().update()
 
-            # mettre la logique de l'enemy ici
     def get_pos_player(self):
+        """Get the player position in the characters list, but count only the player
+
+        Returns:
+            int: the position of the player in the list
+        """
         list_pos = 0
         for character in self.get_characters():
             if self.active_character() == character:
@@ -120,6 +168,14 @@ class TurnManager:
 
 
 def get_dice(character):
+    """Get the result of the dice dex of a character
+
+    Args:
+        character (Character)
+
+    Returns:
+        int
+    """
     character.throw_dice("dex")
     if not character.dice["success"]:
         # add 101 to be able to sort without using true or false

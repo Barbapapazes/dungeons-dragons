@@ -1,15 +1,15 @@
 """Inventory"""
 
-from config.sprites import ITEMS, SCOPE_HAND
 from random import randint
-from sprites.item import PlacableItem
 import pygame as pg
-from logger import logger
+from sprites.item import PlacableItem
 from utils.container import Container
 from inventory.items import Item
-from config.window import HEIGHT, WIDTH, TILESIZE
+from config.sprites import ITEMS
+from config.window import HEIGHT, WIDTH
 from config.colors import WHITE, GOLD, BLUE_SKY, PINK, YELLOW_LIGHT
 from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP, SPELL_SLOTS
+from logger import logger
 vec = pg.Vector2
 
 
@@ -107,6 +107,11 @@ class Inventory:
         return items
 
     def save(self):
+        """Save the inventory data
+
+        Returns:
+            dict
+        """
         inventory_list = dict()
         for slot in self.slots:
             if slot.item:
@@ -644,6 +649,11 @@ class Weapon(Equipable):
         inventory.get_equip_slot(self).item = None
 
     def attack(self):
+        """Throw dice to calculate the attack
+
+        Returns:
+            int: the attack
+        """
         damage = 0
         for _ in range(self.number_dice):
             damage += randint(1, self.dice_value)

@@ -124,6 +124,7 @@ class Window():
                         self.save()
 
     def save(self):
+        """Used to save the game data"""
         self.save_game_data()
         self.save_minimap_data()
 

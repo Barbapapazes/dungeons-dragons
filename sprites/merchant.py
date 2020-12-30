@@ -7,6 +7,8 @@ from store.shop import Shop
 
 
 class Merchant(pg.sprite.Sprite):
+    """Create a merchant"""
+
     def __init__(self, game, x, y, width, consumable=None, weapons=None, armor=None):
         self._layer = y
         self.groups = game.all_sprites, game.merchants
@@ -32,6 +34,11 @@ class Merchant(pg.sprite.Sprite):
         self.frame_count = 0
 
     def save(self):
+        """Used to save the merchant data
+
+        Returns:
+            dict
+        """
         return {
             "pos": {
                 "x": self.x,
@@ -41,6 +48,7 @@ class Merchant(pg.sprite.Sprite):
         }
 
     def update(self):
+        """Used to update the merchant"""
         self.frame_count += 1
         if self.frame_count > 59:
             self.frame_count = 0
@@ -48,6 +56,7 @@ class Merchant(pg.sprite.Sprite):
             self.image = self.idles_images[self.frame_count // 15]
 
     def try_open(self):
-        logger.info("Open a marchant")
+        """Try to open a merchant"""
+        logger.info("Open a merchant")
         self.game.merchant_open = True
         self.game.opened_merchant = self

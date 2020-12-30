@@ -48,6 +48,3 @@ class LogsManager:
             self.messages.pop()
         logger.info("Logs: %s", message)
         self.messages.insert(0, message)
-
-    def update(self):
-        pass

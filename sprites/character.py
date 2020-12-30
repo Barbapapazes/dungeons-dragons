@@ -1,14 +1,13 @@
 """Define a character"""
 
 from random import randint
-from utils.tilemap import collide_with_walls
-from config.sprites import PLAYER_HIT_RECT
 import pygame as pg
-from logger import logger
+from utils.tilemap import collide_with_walls
 vec = pg.Vector2
 
 
 class Character(pg.sprite.Sprite):
+    """Used to define a character"""
 
     def __init__(self, game, x, y, _type, images, hit_rect):
         self._layer = y
@@ -53,6 +52,7 @@ class Character(pg.sprite.Sprite):
         self.frame_timer = 0
 
     def update(self):
+        """Update the sprite"""
         self.update_image()
 
         self.pos += self.vel * self.game.dt
@@ -62,6 +62,7 @@ class Character(pg.sprite.Sprite):
         self.update_collisions()
 
     def update_image(self):
+        """Update the image sprite"""
         self.frame_timer += self.game.dt
         if self.frame_timer >= self.frame_time:
             self.frame_timer -= self.frame_time

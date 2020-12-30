@@ -48,10 +48,12 @@ class Player(Character):
         self.spell = None
         self.inventory = Inventory(self, 5, 8)
 
-        # shop, temporary here, to put in a seller
-        # self.shop = Shop()
-
     def save(self):
+        """Used to save the player data
+
+        Returns:
+            dict
+        """
         return {
             "class": self.type,
             "pos": {
@@ -68,6 +70,11 @@ class Player(Character):
         }
 
     def save_equipments(self):
+        """Save the equipments of the player
+
+        Returns:
+            dict
+        """
         armor = {key: value.save() if value else None for key, value in self.armor.items()}
         return {
             "armor": armor,
@@ -76,6 +83,7 @@ class Player(Character):
         }
 
     def get_keys(self):
+        """Used to check the keys"""
         self.vel = vec(0, 0)
         keys = pg.key.get_pressed()
         self.direction = "idle"
@@ -96,10 +104,12 @@ class Player(Character):
                 self.vel *= 0.7071
 
     def update(self):
+        """Used to update the player"""
         self.get_keys()
         super().update()
 
     def get_direction(self):
+        """Used to create the direction of the sprite, when in auto-mode"""
         angle = self.vel.angle_to(vec(0, 1))
         if 180 - 45 <= angle < 180 + 45:
             self.direction = "up"
@@ -111,6 +121,11 @@ class Player(Character):
             self.direction = "down"
 
     def set_vel(self, vel):
+        """Set the velocity of the player
+
+        Args:
+            vel ([type]): [description]
+        """
         self.direction = "idle"
         if vel[0] != 0 or vel[1] != 0:
             self.vel = vec(vel)
@@ -118,6 +133,11 @@ class Player(Character):
         self.update_image()
 
     def set_pos(self, pos):
+        """Set the pos of the player
+
+        Args:
+            pos (tuple)
+        """
         self.pos = pos
         self.rect.center = self.pos
 
