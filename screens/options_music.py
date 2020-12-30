@@ -4,7 +4,7 @@ import pygame as pg
 from window import _Elements
 from config.screens import GAME, MENU, NEW_GAME, OPTIONS, LOAD_GAME,OPTIONS_MUSIC
 from utils.shortcuts import load_shortcuts
-from data.music_data import DATA_MUSIC
+from data.music_data import DATA_MUSIC,DATA_SOUND
 from logger import logger
 from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
 from components.cursor import Cursor
@@ -34,7 +34,7 @@ class Options_music(_Elements):
             },
             "sound": {
                 "text": "Sound : On/Off",
-                "on_click": self.status_music,
+                "on_click": self.status_sound,
                 "on_click_params": "1",
             },
         }
@@ -95,6 +95,13 @@ class Options_music(_Elements):
             logger.info("Musique true")
         self.create_buttons_dict()
         self.load_next_state(OPTIONS_MUSIC)
+
+    def  status_sound(self,none):
+        if(DATA_SOUND["is_enable"]):
+            DATA_SOUND["is_enable"]=False
+        else: 
+            DATA_SOUND["is_enable"] = True
+        print(DATA_SOUND["is_enable"])
         
 
     def run(self, surface, keys, mouse, dt):

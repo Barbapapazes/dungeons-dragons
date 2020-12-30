@@ -1,6 +1,6 @@
 
 DATA_MUSIC = {
-    "is_enable" : False,
+    "is_enable" : True,
     "volume" :0.15,
     "current_playing":None,
     "piste":{
@@ -11,7 +11,7 @@ DATA_MUSIC = {
 }
 
 DATA_SOUND= {
-    "is_enable" : False,
+    "is_enable" : True,
     "volume" :0.15,
     "go":False,
     "piste":{
