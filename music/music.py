@@ -1,6 +1,6 @@
 import pygame as pg
 from os import path
-from data.music_data import DATA_MUSIC
+from data.music_data import DATA_MUSIC,DATA_SOUND
 
 
 class Music():
@@ -53,6 +53,16 @@ class Music():
         #appeler en boucle qui modifie le volume 
         pg.mixer.music.set_volume(DATA_MUSIC["volume"])
         #print("je met a jour le volume", DATA_MUSIC["volume"])
+    
+    def click_sound(self):
+        #appeler en boucle qui va lancer un son 
+        if(DATA_SOUND["go"]):
+            click=pg.mixer.Sound(path.join(self.lib_music,DATA_SOUND["piste"]["click"]))
+            click.play()
+            DATA_SOUND["go"]=False
+        
+        
+
 
 
 
