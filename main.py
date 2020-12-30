@@ -18,7 +18,8 @@ from screens.shortcuts import Shortcuts
 from window import Window
 from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME
 from screens.options_music import Options_music
-from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME,OPTIONS_MUSIC
+from screens.introduction import Introduction
+from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME,OPTIONS_MUSIC,INTRODUCTION
 from logger import logger
 
 if __name__ == '__main__':

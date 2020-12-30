@@ -49,6 +49,11 @@ class Music():
         else:
             self.stop()
 
+    def update_volume(self):
+        #appeler en boucle qui modifie le volume 
+        pg.mixer.music.set_volume(DATA_MUSIC["volume"])
+        #print("je met a jour le volume", DATA_MUSIC["volume"])
+
 
 
 
