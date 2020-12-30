@@ -47,14 +47,14 @@ class Options_music(_Elements):
         """
         return {
             "Music": {
-                "name": "str",
-                "max": 3,
-                "start": 2,
+                "name": "music",
+                "max": 100,
+                "start": DATA_MUSIC["volume"],
             },
             "Sound": {
-                "name": "dex",
-                "max": 3,
-                "start": 2,
+                "name": "sound",
+                "max": 100,
+                "start": DATA_MUSIC["volume"],
             },
         }
 
@@ -64,12 +64,8 @@ class Options_music(_Elements):
         logger.info("Create all sliders from character creation")
         for index, (key, value) in enumerate(
                 self.create_sliders_dict().items()):
-            x = 0
             y = 6 * HEIGHT // 10 + (index % 3) * 70
-            if index in [0, 1, 2]:
-                x = 13 * WIDTH // 20
-            else:
-                x = 1 * WIDTH // 20
+            x=420
             self.sliders.append(
                 self.create_slider(
                     key.upper(),
@@ -80,8 +76,8 @@ class Options_music(_Elements):
                     HEIGHT_SLIDER,
                     self.background,
                     0,
-                    100,
                     1,
+                    0.02,
                     value["start"],
                     self.text_font,
                     self.draw_text, BLACK, LIGHTGREY
@@ -122,8 +118,7 @@ class Options_music(_Elements):
 
     def update(self):
         """Update the content"""
-        for slider in self.sliders:
-            slider.update()
+        pass
 
 
     def draw_sliders(self):
@@ -136,6 +131,9 @@ class Options_music(_Elements):
         events = pg.event.get()
         for slider in self.sliders:
             slider.listen(events)
+        DATA_MUSIC["volume"]=self.sliders[0].getValue()
+        #print(DATA_MUSIC["volume"])
+            
 
     def draw(self):
         """Draw content"""
