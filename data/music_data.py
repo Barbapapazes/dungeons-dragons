@@ -9,3 +9,12 @@ DATA_MUSIC = {
         "options_music":"test.wav",
             },
 }
+
+DATA_SOUND= {
+    "is_enable" : False,
+    "volume" :0.15,
+    "go":False,
+    "piste":{
+        "click": "button_click.mp3"
+            },
+}

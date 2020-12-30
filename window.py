@@ -11,6 +11,7 @@ from config.window import WIDTH, HEIGHT, FPS, TITLE
 from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
 from utils.shortcuts import key_for, load_shortcuts
 from music.music import Music
+from data.music_data import DATA_SOUND
 
 
 class Window():
@@ -86,6 +87,7 @@ class Window():
         self.state.run(self.screen, self.keys, self.mouse, self.dt)
         self.show_fps_caption()
         self.M.update_volume()
+        self.M.click_sound()
 
     def events(self):
         """Manage the event"""
@@ -440,6 +442,7 @@ class _Elements(_State):
     def load_next_state(self, *next_state):
         """Load the new state"""
         self.next = next_state[0]
+        DATA_SOUND["go"]=True
         super().set_state(TRANSITION_OUT)
 
     def events_buttons(self, back=False):
