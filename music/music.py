@@ -56,7 +56,8 @@ class Music():
     
     def click_sound(self):
         #appeler en boucle qui va lancer un son 
-        if(DATA_SOUND["go"]):
+        if(DATA_SOUND["go"] and DATA_SOUND["is_enable"]):
+            print("je joue le click")
             click=pg.mixer.Sound(path.join(self.lib_music,DATA_SOUND["piste"]["click"]))
             click.play()
             DATA_SOUND["go"]=False
