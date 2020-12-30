@@ -44,6 +44,7 @@ class OnlineGame(_State):
         self.game_data = game_data
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.arrows = pg.sprite.Group()
 
         self.server = Network()
         self.current_id = self.server.connect()
@@ -111,21 +112,15 @@ class OnlineGame(_State):
         self.camera.update(self.player)
 
         self.player.update()
-
-        # for key, player in self.players.items():
-        # logger.debug(self.players)
-        #     if key != self.current_id:
-        #         Player(
-        #             self, player["x"] * TILESIZE - TILESIZE // 2, player["y"] * TILESIZE -
-        #             TILESIZE // 2, '', {},
-        #             100, 0, 100, ASSETS_SPRITES["soldier"])
-
-        # logger.info(self.all_sprites)
+        self.arrows.update()
 
     def draw(self):
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         self.screen.blit(self.player.image, self.camera.apply(self.player))
         for _, player in self.players.items():
             self.screen.blit(player.image, self.camera.apply(player))
+
+        for arrow in self.arrows:
+            self.screen.blit(arrow.image, self.camera.apply(arrow))
 
         super().transtition_active(self.screen)

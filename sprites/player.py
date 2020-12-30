@@ -1,11 +1,11 @@
 """Define a player"""
 from sprites.character import Character
 import pygame as pg
-from random import randint
+from random import randint, uniform
 from logger import logger
 from config.colors import YELLOW
 from config.window import TILESIZE
-from config.sprites import ASSETS_SPRITES, PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT, PLAYER_MAX_MP
+from config.sprites import ASSETS_SPRITES, ITEMS, PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT, PLAYER_MAX_MP
 from inventory.inventory import Inventory
 from utils.tilemap import collide_with_walls
 from os import path
@@ -102,6 +102,22 @@ class Player(Character):
                 self.vel.y = PLAYER_SPEED
             if self.vel.x != 0 and self.vel.y != 0:
                 self.vel *= 0.7071
+            if self.game.name == "online_game":
+                if keys[pg.K_SPACE]:
+                    self.shoot()
+
+    def shoot(self):
+        """Used to launch an arrow"""
+        direction = {
+            "idle": -90,
+            "left": 180,
+            "right": 0,
+            "up": -90,
+            "down": 90
+        }
+        logger.debug("on va utiliser la position de la sourie pour envoyer la flèche à partir de la position du joueur")
+        dir = vec(1, 0).rotate(-direction[self.direction])
+        Arrow(self.game, self.pos, dir, 10)
 
     def update(self):
         """Used to update the player"""
@@ -263,3 +279,31 @@ class Player(Character):
         #     if 45 < self.rot <= 135:
         #         self.image = pg.transform.rotate(
         #             self.run_back_images[self.frame_count // 9], self.rot - 90)
+
+
+class Arrow(pg.sprite.Sprite):
+    """Create an arrow"""
+
+    def __init__(self, game, pos, dir, damage):
+        self._layer = 20
+        self.groups = game.all_sprites, game.arrows,
+        super(Arrow, self).__init__(self.groups)
+        self.game = game
+
+        self.image = pg.transform.rotate(ITEMS["arrow_01e"], vec(1, 1).angle_to(dir))
+        self.rect = self.image.get_rect()
+        self.hit_rect = self.rect
+        self.pos = vec(pos)
+        self.rect.center = pos
+        self.vel = dir * 300 * uniform(0.9, 1.1)
+        self.spawn_time = pg.time.get_ticks()
+        self.damage = damage
+
+    def update(self):
+        """Update the arrow"""
+        self.pos += self.vel * self.game.dt
+        self.rect.center = self.pos
+        if pg.sprite.spritecollide(self, self.game.walls, False):
+            self.kill()
+        if pg.time.get_ticks() - self.spawn_time > 1000:
+            self.kill()
