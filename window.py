@@ -84,6 +84,7 @@ class Window():
             self.flip_state()
         self.state.run(self.screen, self.keys, self.mouse, self.dt)
         self.show_fps_caption()
+        self.M.update_volume()
 
     def events(self):
         """Manage the event"""

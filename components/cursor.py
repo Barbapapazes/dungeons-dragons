@@ -42,6 +42,7 @@ class Cursor(Slider):
         self.height = height
         self.draw_text = draw_text
         self.previous = start
+        self.value
 
     def draw(self):
 
@@ -71,7 +72,7 @@ class Cursor(Slider):
     
     def draw_without_text(self):
 
-        value = super().getValue() - self.start
+        value = super().getValue() 
 
         self.draw_text(
             self.title.upper(),
