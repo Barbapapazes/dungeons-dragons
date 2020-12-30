@@ -51,11 +51,7 @@ class Options_music(_Elements):
                 "max": 100,
                 "start": DATA_MUSIC["volume"],
             },
-            "Sound": {
-                "name": "sound",
-                "max": 100,
-                "start": DATA_MUSIC["volume"],
-            },
+            
         }
 
     def create_sliders(self):
