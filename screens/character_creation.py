@@ -188,7 +188,7 @@ class CharacterCreation(_Elements):
         Returns:
             dict
         """
-        logger.debug("il faut ajuster les valeurs pa default")
+        # logger.debug("[sofiane] il faut ajuster les valeurs par default dans les personnages")
         return {
             "soldier": {
                 "name": "soldier",

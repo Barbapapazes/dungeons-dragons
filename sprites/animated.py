@@ -136,7 +136,6 @@ class Circle(Animated):
         self.rect.center = (self.x, self.y)
 
     def set_pos(self, pos):
-        logger.debug(pos)
         self.x = pos[0]
         self.y = pos[1]
         self.rect.center = pos

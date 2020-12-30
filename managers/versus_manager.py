@@ -180,7 +180,7 @@ class VersusManager:
         damage = self.turn_manager.get_active_weapon_damage()
         if self.turn_manager.get_active_weapon_type() == "arc":
             dist = self.selected_enemy.pos - self.turn_manager.active_character().pos
-            logger.debug("il faut ajuster la valuer de malus arc")
+            logger.debug("[sofiane] il faut ajuster la valuer de MALUS_ARC")
             scope = self.turn_manager.get_active_weapon().scope
             if dist.length_squared() > scope:
                 malus = -((dist.length_squared() - scope) // TILESIZE) * MALUS_ARC
@@ -244,6 +244,7 @@ class VersusManager:
     def draw(self, screen):
         self.draw_range(screen)
         self.draw_btns(screen)
+        logger.debug("si c'est pas un wizrad, alors on ne dessine pas le bouton des spells")
         if self.action == "spell":
             if self.spell_pos:
                 pg.draw.circle(screen, GLOOMY_PURPLE, self.spell_pos, TILESIZE, width=2)
@@ -326,10 +327,9 @@ class VersusManager:
     def check_effects_zones_hits(self):
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.game.effects_zones, False)
         for hit in hits:
-            logger.debug("il faut utiliser les fonctions pour faire perdre et gagner des points de vies")
             value = hit.get_dice_value()
             if hit.type == "heal":
-                self.turn_manager.active_character().health += value
+                self.turn_manager.active_character().addHp(value)
             elif hit.type == "attack":
-                self.turn_manager.active_character().health -= value
+                self.turn_manager.active_character().subHp(value)
             self.logs.add_log(f"{self.turn_manager.active_character()} touch a {hit.type} zone ({value} points)")

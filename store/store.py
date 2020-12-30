@@ -138,8 +138,6 @@ class Store:
         """Add all items to the weapon category
         """
         self.weapons = list()
-        # il va falloir utiliser des variables pour que l'implémentation soit smart
-        logger.debug(self.chosen_weapons)
         for key, value in self.chosen_weapons:
             data = Weapon(
                 key,
@@ -149,7 +147,9 @@ class Store:
                 value['slot'],
                 value['type'],
                 value['weight'],
-                scope=value['scope']
+                value['number_dice'],
+                value['dice_value'],
+                value['scope']
             )
             self.weapons.append(data)
 
@@ -186,7 +186,6 @@ class Store:
     def add_all_consumables(self):
         """Add all items to the consumable category"""
         self.consumables = list()
-        logger.debug(self.chosen_consumables)
         for key, value in self.chosen_consumables:
             data = Consumable(
                 key,
@@ -302,7 +301,6 @@ class Store:
         """
         logger.info("Get %s from store", item)
         data = deepcopy(item)
-        logger.debug("%s", type(data))
         return data
 
     def find_item(self, item):

@@ -95,8 +95,6 @@ class Enemy(Character):
             if self.game.dt - self.last_target > 150:
                 self.last_target = self.now
 
-            # logger.debug(self.goto)
-
             for i in self.goto:
                 rect = pg.Rect(i.coor, (SIZE, SIZE))
                 pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
@@ -105,7 +103,6 @@ class Enemy(Character):
                 self.acc = self.seek(self.goto[0].coor)
                 if self.goto[0].coor.x - SIZE <= self.pos.x <= self.goto[0].coor.x + SIZE and self.goto[0].coor.y - SIZE <= self.pos.y <= self.goto[0].coor.y + SIZE:
                     del self.goto[0]
-            # logger.debug("enemy proche, utilisation du A* et avancement que de X case")
 
             self.vel += self.acc
             if self.vel.length() > self.speed:

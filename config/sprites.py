@@ -552,10 +552,17 @@ SPELLS = {
     }
 }
 
-ITEMS_PROPERTIES = ARMOR | WEAPONS | SPELLS
-ITEMS_NAMES = list(ARMOR.keys()) + list(WEAPONS.keys()) + list(SPELLS.keys())
+OTHERS = {
+    "bronze_key_small": {
+        "object_type": "other",
+        "image_name": "key_01a",
+        "weight": 10,
+        "price": 10
+    }
+}
 
-logger.debug("il faut ajouter ici les spells qui seront géré comme un équipable mais dans sa zone si c'est un wizard et les dé et donc on va avoir le sprite, que l'on peut ramasser et la zone d'éffet")
+ITEMS_PROPERTIES = ARMOR | WEAPONS | SPELLS | OTHERS
+ITEMS_NAMES = list(ARMOR.keys()) + list(WEAPONS.keys()) + list(SPELLS.keys()) + list(OTHERS.keys())
 
 WEAPONS_COLS = 5
 
@@ -584,7 +591,8 @@ ASSETS_SPRITES = {
     } for _type in TYPES
 }
 
-ASSETS_FIRE_BALL = [pg.image.load(path.join(sprites_folder, "effects_zone", "fire_ball", "{:04d}.png".format(i))) for i in range(1, 11)]
+ASSETS_FIRE_BALL = [pg.image.load(path.join(sprites_folder, "effects_zone", "fire_ball",
+                                            "{:04d}.png".format(i))) for i in range(1, 11)]
 
 ASSETS_MERCHANT = [pg.image.load(path.join(sprites_folder, "merchant", f"{i}.png"))
                    for i in range(4)]

@@ -141,6 +141,7 @@
  </layer>
  <objectgroup id="5" name="Obstacles">
   <object id="1" name="player" x="336" y="208" width="32" height="32"/>
+  <object id="1" name="bronze_key_small" x="336" y="400" width="32" height="32"/>
   <object id="2" name="player" x="436" y="208" width="32" height="32"/>
   <object id="3" name="player" x="536" y="208" width="32" height="32"/>
   <object id="3" name="chest" x="536" y="208" width="32" height="32"/>

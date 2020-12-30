@@ -1,5 +1,6 @@
 """Menu screen"""
 
+from config.buttons import WIDTH_BUTTON
 from config.window import HEIGHT, WIDTH
 import pygame as pg
 from window import _Elements
@@ -21,6 +22,8 @@ class ChooseMap(_Elements):
         self.levels_maps = path.join(assets_folder, 'levels_maps')
         self.custom_maps = path.join(assets_folder, 'saved_maps')
 
+        self.type_maps = None
+
         self.maps = [
             f for f in os.listdir(
                 self.levels_maps) if f.endswith('.tmx')]
@@ -34,7 +37,7 @@ class ChooseMap(_Elements):
 
         self.btns_dict = self.create_buttons_dict()
         self.btns = list()
-        self.create_buttons(self.background)
+        self.create_buttons(self.background, width=WIDTH_BUTTON + 50)
         self.create_back_button(self.background, self.load_next_state, [CHARACTER_CREATION])
 
     def all_events(self, events):
@@ -72,8 +75,10 @@ class ChooseMap(_Elements):
 
     def load(self, index):
         selected = self.maps[index]
-        self.game_data["game_data"]["map"] = selected
-        logger.debug("%s", self.game_data["game_data"]["map"])
+        self.game_data["game_data"]["map"] = {
+            "filename": selected,
+            "folder": self.type_maps
+        }
         logger.info("Select %s", selected)
         self.next = INTRODUCTION
         super().set_state(TRANSITION_OUT)
@@ -88,8 +93,9 @@ class ChooseMap(_Elements):
             self.image_screen = self.image.copy()
             self.btns_dict = self.create_maps_buttons_dict()
             self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
+            self.type_maps = "levels_maps"
             self.btns = list()
-            self.create_buttons(self.image_screen)
+            self.create_buttons(self.image_screen, width=WIDTH_BUTTON + 50)
         elif state == 'custom_maps':
             self.maps = [
                 f for f in os.listdir(
@@ -97,12 +103,13 @@ class ChooseMap(_Elements):
             self.image_screen = self.image.copy()
             self.btns_dict = self.create_maps_buttons_dict()
             self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
+            self.type_maps = "saved_maps"
             self.btns = list()
-            self.create_buttons(self.image_screen)
+            self.create_buttons(self.image_screen, width=WIDTH_BUTTON + 50)
         else:
             self.btns_dict = self.create_buttons_dict()
             self.btns = list()
-            self.create_buttons(self.background)
+            self.create_buttons(self.background, width=WIDTH_BUTTON + 50)
             self.create_back_button(self.background, self.load_next_state, [CHARACTER_CREATION])
 
     def make_states_dict(self):

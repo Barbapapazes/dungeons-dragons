@@ -35,8 +35,7 @@ class TurnManager:
     def sort_characters(self):
         self.sorted = self.players + self.enemies
 
-        logger.debug(
-            "il faut enregistrer la configuration (depuis le save_game dans game.py) via la position des players j'imagine")
+        logger.debug("il faut charger la configuration")
 
         # used to sort characters using the dexterity
         self.sorted.sort(key=get_dice)
@@ -72,7 +71,6 @@ class TurnManager:
             scope = SCOPE_HAND
             if self.active_character().weapon:
                 scope = self.active_character().weapon.scope
-        logger.debug(scope)
         return scope
 
     def get_active_weapon(self):

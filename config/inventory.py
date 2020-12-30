@@ -8,7 +8,6 @@ SPELL_SLOTS = ['spell']
 INVENTORY_TILESIZE = 48
 INVENTORY_SLOT_GAP = 2
 
-logger.debug("il faut mettre la case de spell que si c'est un wizard")
 EQUIPMENT_COLS = len(WEAPON_SLOTS)
 EQUIPMENT_ROWS = len(ARMOR_SLOTS) + len(SPELL_SLOTS)
 
