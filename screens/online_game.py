@@ -6,7 +6,7 @@ import pygame as pg
 from os import path
 from window import _State
 from logger import logger
-from sprites.player import Player
+from sprites.player import Arrow, Player
 from server.network import Network
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import LIGHTGREY, BLACK, WHITE, YELLOW
@@ -50,7 +50,7 @@ class OnlineGame(_State):
         self.current_id = self.server.connect()
 
         # brut data from the server
-        self.current_players = self.server.send("get")
+        self.current_players, self.current_arrows = self.server.send("get")
         # dict with all players
         self.players = self.create_players(self.current_players)
         self.current_player = self.current_players[self.current_id]
@@ -58,6 +58,8 @@ class OnlineGame(_State):
             self, self.current_player["pos"]["x"], self.current_player["pos"]["y"],
             '', {},
             100, 0, 100, ASSETS_SPRITES["soldier"])
+        # create all arrows
+        self.new_arrows = dict()
 
         super().setup_transition()
 
@@ -102,25 +104,55 @@ class OnlineGame(_State):
                 players_dict[key] = p
         return players_dict
 
+    def create_arrows(self, arrows):
+        arrows_dict = dict()
+        logger.debug(self.new_arrows.keys())
+        for key, value in arrows.items():
+            if key in self.new_arrows.keys():
+                self.new_arrows[key].update()
+                # il faut ajouter le current id pour que le current joueur mette à jour les arrows et envoie l'update au server
+                if not self.new_arrows[key].is_deleted:
+                    arrows_dict[key] = self.new_arrows[key]
+            else:
+                logger.debug(value)
+                logger.debug(arrows)
+                pos = vec(int(value["pos"]["x"]), int(value["pos"]["y"]))
+                dir = vec(float(value["dir"]["x"]), float(value["dir"]["y"]))
+                logger.debug("on a un souci avec le dir, il vaut 0 et dont la velocity est null")
+                a = Arrow(self,
+                          pos,
+                          dir,
+                          int(value["damage"]), key, self.current_id)
+                arrows_dict[key] = a
+
+        return arrows_dict
+
     def update(self):
         # il va falloir faire une fonction send data en plus de update et draw je pense
         data = "move " + str(int(self.player.pos.x)) + " " + str(int(self.player.pos.y)
                                                                  ) + " " + str(int(self.player.vel.x)) + " " + str(int(self.player.vel.y))
-        self.current_players = self.server.send(data)
+        self.current_players, self.current_arrows = self.server.send(data)
         self.players = self.create_players(self.current_players)
+        self.new_arrows = self.create_arrows(self.current_arrows)
         self.current_player = self.current_players[self.current_id]
         self.camera.update(self.player)
 
         self.player.update()
-        self.arrows.update()
+        # for _, arrow in self.new_arrows.items():
+        #     arrow.update()
 
     def draw(self):
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         self.screen.blit(self.player.image, self.camera.apply(self.player))
+
         for _, player in self.players.items():
             self.screen.blit(player.image, self.camera.apply(player))
 
-        for arrow in self.arrows:
+        # on peut utiliser value
+        for _, arrow in self.new_arrows.items():
             self.screen.blit(arrow.image, self.camera.apply(arrow))
+
+        # for arrow in self.arrows:
+        #     self.screen.blit(arrow.image, self.camera.apply(arrow))
 
         super().transtition_active(self.screen)
