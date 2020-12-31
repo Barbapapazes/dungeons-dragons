@@ -298,4 +298,3 @@ def generate_map(height,width):
 
 
 
-generate_map(40,22)
