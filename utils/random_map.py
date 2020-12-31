@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import os
+from random import randint
 #from config.random import MAP,IMAGE,TILE
 
 os.chdir('./assets/map_random/')
@@ -75,7 +76,7 @@ def out_xml(out,width,height,data_Ground,data_Wall,data_Object):
 
 
 
-def fusion_two_map(map1,map2,direction):      # direction prend la valeur right or down (c'est pour savoir comment on place la map 1 par rapport a la deuxieme)
+def fusion_two_map(map1,map2,out,direction):      # direction prend la valeur right or down (c'est pour savoir comment on place la map 1 par rapport a la deuxieme)
     id_obj=2
 
     tree1= ET.parse(map1)
@@ -151,8 +152,9 @@ def fusion_two_map(map1,map2,direction):      # direction prend la valeur right 
         widthF = max(width1,width2)
         heightF = height1 + height2
         i=1
-
+        
         for M1 in range(width1*height1):
+
             listdata_groundF.append(listdata_ground1[M1])
             listdata_groundF.append(',')
 
@@ -198,10 +200,102 @@ def fusion_two_map(map1,map2,direction):      # direction prend la valeur right 
 
 
 
-    out_xml('out2.tmx',str(widthF),str(heightF),data_groundF,data_wallF,listObjF)
+    out_xml(out,str(widthF),str(heightF),data_groundF,data_wallF,listObjF)
 
     
     
 
-fusion_two_map('out.tmx','out1.tmx','down')
 
+
+def generate_map(height,width):
+    list_10 = ['LD','LR']
+    list_11 = ['LT','TRDL']
+    list_00 = ['RD']
+    list_01 = ['TD','TR']
+
+    list_R1 = ['LR','RD','TR','TRDL']
+    list_D1 = ['LD','RD','TD','TRDL']
+    
+    ligneUP = list(x-x for x in range(width))
+    ligneCUR_R = list(x-x for x in range(width))
+    ligneCUR_D = list(x-x for x in range(width))
+    
+    os.chdir('./preset')
+
+    dir = './S/'
+    listDir = os.listdir(dir)
+    
+    dirChild = listDir[randint(0,len(listDir)-1)]
+    dir = dir + dirChild +'/'
+
+    if dirChild == 'R':
+        ligneCUR_R[0] = 1
+    elif dirChild == 'D':
+        ligneCUR_D[0] = 1
+
+    listDir = os.listdir(dir)
+    map1Select = dir +listDir[randint(0,len(listDir)-1)]
+    #END INITIALISATION 
+
+    for k in range(height):
+        if k == 0:
+            init= 1
+        else:
+            init=0
+
+        for i in range(width-init):
+            
+            if ligneCUR_R[i] == 1 and ligneUP[i] == 0:
+                list_cur = list_10   
+            elif ligneCUR_R[i] == 1 and ligneUP[i] == 1:
+                list_cur = list_11  
+            elif ligneCUR_R[i] == 0 and ligneUP[i] == 0:
+                list_cur = list_00
+            elif ligneCUR_R[i] == 0 and ligneUP[i] == 1:
+                list_cur = list_01
+
+            dirMap = list_cur[randint(0,len(list_cur)-1)]
+            dir = './' + dirMap + '/'
+            listMap = os.listdir(dir)
+            
+            
+            if i != width-1:
+
+                if dirMap in list_R1:
+                    ligneCUR_R[i+1] = 1
+                
+                if dirMap in list_D1:
+                    ligneCUR_D[i+1] = 1
+
+            if i == 0 and k!=0:
+                map1Select = dir + listMap[randint(0,len(listMap)-1)]
+            else:
+
+                map2Select = dir + listMap[randint(0,len(listMap)-1)]
+                
+                fusion_two_map(map1Select,map2Select,'./GENERATED/ligne'+str(k)+'.tmx','right')
+                map1Select = './GENERATED/ligne'+str(k)+'.tmx'
+
+        ligneUP = ligneCUR_D
+        ligneCUR_R = list(x-x for x in range(width))
+        ligneCUR_D = list(x-x for x in range(width))
+        
+
+
+
+    map1Select='./GENERATED/ligne0.tmx'
+
+    for k in range(1,height):
+        #print(k,'  ',height)
+        if k != height-1:
+            fusion_two_map(map1Select,'./GENERATED/ligne'+str(k)+'.tmx','./GENERATED/Untildown.tmx','down')
+            map1Select='./GENERATED/Untildown.tmx'
+        else:
+            fusion_two_map(map1Select,'./GENERATED/ligne'+str(k)+'.tmx','../test_final.tmx','down')
+
+    #print(map2Select)
+    #print(ligneUP,'\n',ligneCUR_R,'\n',ligneCUR_D)
+
+
+
+generate_map(40,22)
