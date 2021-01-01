@@ -128,10 +128,10 @@ class Player(Character):
              str(dir.x),
              str(dir.y),
              str(damage), str(self.game.current_id)])
-        logger.debug(data)
+        # logger.debug(data)
         logger.debug("si on est en mode server, on envoie, sinon non, on fait une flèche en local")
         self.game.server.send(data)
-        logger.debug(dir)
+        # logger.debug(dir)
         # Arrow(self.game, self.pos, dir, 10)
 
     def update(self):

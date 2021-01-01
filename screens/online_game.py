@@ -9,7 +9,7 @@ from logger import logger
 from sprites.player import Arrow, Player
 from server.network import Network
 from config.window import WIDTH, HEIGHT, TILESIZE
-from config.colors import LIGHTGREY, BLACK, WHITE, YELLOW
+from config.colors import GREEN, LIGHTGREY, BLACK, RED, WHITE, YELLOW
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 vec = pg.Vector2
 
@@ -94,6 +94,10 @@ class OnlineGame(_State):
             if key in self.players.keys():
                 self.players[key].set_pos(vec(player["pos"]["x"], player["pos"]["y"]))
                 self.players[key].set_vel((player["vel"]["x"], player["vel"]["y"]))
+                self.players[key].health = player["health"]
+                if key == self.current_id:
+                    logger.error(player["health"])
+                    self.player.health = player["health"]
                 players_dict[key] = self.players[key]
             elif key != self.current_id:
                 p = Player(
@@ -117,11 +121,11 @@ class OnlineGame(_State):
                                      str(self.new_arrows[key].pos.x), str(self.new_arrows[key].pos.y)])
                     self.server.send(data)
             else:
-                logger.debug(value)
-                logger.debug(arrows)
+                # logger.debug(value)
+                # logger.debug(arrows)
                 pos = vec(int(value["pos"]["x"]), int(value["pos"]["y"]))
                 dir = vec(float(value["dir"]["x"]), float(value["dir"]["y"]))
-                logger.debug("on a un souci avec le dir, il vaut 0 et dont la velocity est null")
+                # logger.debug("on a un souci avec le dir, il vaut 0 et dont la velocity est null")
                 a = Arrow(self,
                           pos,
                           dir,
@@ -134,7 +138,10 @@ class OnlineGame(_State):
         # il va falloir faire une fonction send data en plus de update et draw je pense
         data = "move " + str(int(self.player.pos.x)) + " " + str(int(self.player.pos.y)
                                                                  ) + " " + str(int(self.player.vel.x)) + " " + str(int(self.player.vel.y))
-        self.current_players, self.current_arrows = self.server.send(data)
+        try:
+            self.current_players, self.current_arrows = self.server.send(data)
+        except:
+            pass
         self.players = self.create_players(self.current_players)
         self.new_arrows = self.create_arrows(self.current_arrows)
         self.current_player = self.current_players[self.current_id]
@@ -159,7 +166,30 @@ class OnlineGame(_State):
         for _, arrow in self.new_arrows.items():
             self.screen.blit(arrow.image, self.camera.apply(arrow))
 
+        # logger.debug(self.player.health)
+        draw_player_health(self.screen, 10, 10, self.current_player["health"] / 100)
+        # il faut mettre une constante sur le 100
+
         # for arrow in self.arrows:
         #     self.screen.blit(arrow.image, self.camera.apply(arrow))
 
         super().transtition_active(self.screen)
+
+
+def draw_player_health(surf, x, y, pct):
+    if pct < 0:
+        pct = 0
+    # logger.debug(pct)
+    BAR_LENGTH = 100
+    BAR_HEIGHT = 20
+    fill = pct * BAR_LENGTH
+    outlined_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
+    if pct > 0.6:
+        col = GREEN
+    elif pct > 0.3:
+        col = YELLOW
+    else:
+        col = RED
+    pg.draw.rect(surf, col, fill_rect)
+    pg.draw.rect(surf, WHITE, outlined_rect, 2)

@@ -32,15 +32,24 @@ _id = 0
 def check_collisions():
     # on utilise le hit rect du player dans le sprite config et on check à une collision avec un point (la position de la flèche, faudra lui faire une hitbox dans la config), il faut checker si le owner de la flèche est différente du current_id alors on remove de la vie
     # ou alors on le fait dans le client si c'est une flèche qui lui appartient (c'est un peu relou)
+    global arrows, players
     try:
-        for key, value_arrow in arrows.items():
-            for key, value_player in players.items():
-                hit_rect = PLAYER_HIT_RECT.copy()
-                hit_rect.center = (float(value_player["pos"]["x"]), float(value_player["pos"]["y"]))
-                # logger.debug("%s, %s, %s", hit_rect, value_arrow["pos"]["x"], value_arrow["pos"]["y"])
-                if hit_rect.collidepoint((float(value_arrow["pos"]["x"]), float(value_arrow["pos"]["y"]))):
-                    # si on touche, alors il faut delete la flèche et remove de la  vie à la personne touchée
-                    logger.debug("touch")
+        for key_arrow, value_arrow in arrows.items():
+            for key_player, value_player in players.items():
+                if key_player != value_arrow["player_id"]:
+                    hit_rect = PLAYER_HIT_RECT.copy()
+                    hit_rect.center = (float(value_player["pos"]["x"]), float(value_player["pos"]["y"]))
+                    # logger.debug("%s, %s, %s", hit_rect, value_arrow["pos"]["x"], value_arrow["pos"]["y"])
+                    if hit_rect.collidepoint((float(value_arrow["pos"]["x"]), float(value_arrow["pos"]["y"]))):
+                        # si on touche, alors il faut delete la flèche et remove de la  vie à la personne touchée
+                        # il faut faire attention à bien check à qui appartient la arrow
+                        if value_arrow["player_id"] != key_player:
+                            value_player["health"] -= 10
+                            try:
+                                del arrows[key_arrow]
+                            except:
+                                pass
+                            logger.debug("touch")
     except:
         logger.error("erreur dans les collisions")
 
@@ -59,6 +68,7 @@ def threaded_client(conn, _id):
             "x": 0,
             "y": 0
         },
+        "health": 100
     }
 
     # pickle data and send initial info to clients
@@ -78,6 +88,8 @@ def threaded_client(conn, _id):
 
             check_collisions()
 
+            # logger.debug(players)
+
             if data.split(" ")[0] == "move":
                 split_data = data.split(" ")
                 pos_x = int(split_data[1])
@@ -95,33 +107,35 @@ def threaded_client(conn, _id):
 
                 if data.split(" ")[1] == "remove":
                     split_data = data.split(" ")
-                    id = split_data[2]
-                    player_id = split_data[3]
-                    if int(id) in arrows.keys() and arrows[int(id)]["player_id"] == player_id:
-                        del arrows[int(id)]
+                    id = int(split_data[2])
+                    player_id = int(split_data[3])
+                    if id in arrows.keys() and arrows[id]["player_id"] == player_id:
+                        logger.debug("delete arrow")
+                        del arrows[id]
 
                     # logger.debug(
                         # "il faut checker que c'est bien le owner qui veut la delete, et on le check dans le client directement, si c'set le joueur qui la détient qui veut la delete, alors on supprime")
                 elif data.split(" ")[1] == "update":
                     split_data = data.split(" ")
-                    id = split_data[2]
-                    pos_x = split_data[3]
-                    pos_y = split_data[4]
-                    logger.debug("update")
-                    arrows[int(id)]["pos"] = {
-                        "x": float(pos_x),
-                        "y": float(pos_y),
-                    }
+                    id = int(split_data[2])
+                    pos_x = float(split_data[3])
+                    pos_y = float(split_data[4])
+                    # logger.debug("update")
+                    if id in arrows.keys():
+                        arrows[id]["pos"] = {
+                            "x": pos_x,
+                            "y": pos_y,
+                        }
 
                 else:
                     split_data = data.split(" ")
-                    logger.debug(split_data)
-                    pos_x = split_data[1]
-                    pos_y = split_data[2]
-                    dir_x = split_data[3]
-                    dir_y = split_data[4]
-                    damage = split_data[5]
-                    _id = split_data[6]
+                    # logger.debug(split_data)
+                    pos_x = float(split_data[1])
+                    pos_y = float(split_data[2])
+                    dir_x = float(split_data[3])
+                    dir_y = float(split_data[4])
+                    damage = int(split_data[5])
+                    _id = int(split_data[6])
 
                     arrows[arrows_id] = {
                         "pos": {
@@ -138,7 +152,7 @@ def threaded_client(conn, _id):
 
                     arrows_id += 1
 
-                logger.debug(arrows)
+                # logger.debug(arrows)
 
             if data.split(" ")[0] == "get":
                 send_data = pickle.dumps((players, arrows))
