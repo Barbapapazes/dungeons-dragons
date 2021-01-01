@@ -328,7 +328,8 @@ class Arrow(pg.sprite.Sprite):
             if self.game.name == "online_game":
                 data = " ".join(["arrow", "remove", str(self.id), str(self.player_id)])
                 self.is_deleted = True
-                logger.debug("on peut faire ça en dehors pour éviter d'avoir trop de choses dans la flèche")
+                logger.debug(
+                    "on peut faire ça en dehors pour éviter d'avoir trop de choses dans la flèche, le is_deleted se suffit à lui même")
                 self.game.server.send(data)
             else:
                 self.kill()

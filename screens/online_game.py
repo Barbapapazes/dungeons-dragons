@@ -106,13 +106,16 @@ class OnlineGame(_State):
 
     def create_arrows(self, arrows):
         arrows_dict = dict()
-        logger.debug(self.new_arrows.keys())
         for key, value in arrows.items():
             if key in self.new_arrows.keys():
                 self.new_arrows[key].update()
+                # il faut mettre à jour la flèche dans le server
                 # il faut ajouter le current id pour que le current joueur mette à jour les arrows et envoie l'update au server
                 if not self.new_arrows[key].is_deleted:
                     arrows_dict[key] = self.new_arrows[key]
+                    data = " ".join(["arrow", "update", str(self.new_arrows[key].id),
+                                     str(self.new_arrows[key].pos.x), str(self.new_arrows[key].pos.y)])
+                    self.server.send(data)
             else:
                 logger.debug(value)
                 logger.debug(arrows)
@@ -140,6 +143,10 @@ class OnlineGame(_State):
         self.player.update()
         # for _, arrow in self.new_arrows.items():
         #     arrow.update()
+        # hits = pg.sprite.spritecollide(self.player, self.new_arrows, False)
+        # for hit in hits:
+        #     if hit.player_id == self.current_id:
+        #         logger.debug(hit)
 
     def draw(self):
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
