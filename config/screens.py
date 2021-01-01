@@ -18,6 +18,7 @@ OPTIONS = "options"
 NEW_GAME = "new_game"
 INTRODUCTION = "introduction"
 CHOOSE_MAP = "choose_map"
+ONLINE_GAME = "online_game"
 
 # states
 TRANSITION_IN = 'transition in'

@@ -1,19 +1,21 @@
 """Main file"""
 
-from screens.choose_map import ChooseMap
-from window import Window
-from screens.online_game import OnlineGame
-from screens.credits import Credits
-from screens.menu import Menu
-from screens.game import Game
-from screens.load_game import LoadGame
-from screens.shortcuts import Shortcuts
-from screens.character_creation import CharacterCreation
-from screens.options import Options
-from screens.new_game import NewGame
-from screens.introduction import Introduction
-from config.screens import CHOOSE_MAP, INTRODUCTION, MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME
+from config.screens import (CHARACTER_CREATION, CHOOSE_MAP, CREDITS, GAME,
+                            INTRODUCTION, LOAD_GAME, MENU, NEW_GAME,
+                            ONLINE_GAME, OPTIONS, SHORTCUTS)
 from logger import logger
+from screens.character_creation import CharacterCreation
+from screens.choose_map import ChooseMap
+from screens.credits import Credits
+from screens.game import Game
+from screens.introduction import Introduction
+from screens.load_game import LoadGame
+from screens.menu import Menu
+from screens.new_game import NewGame
+from screens.online_game import OnlineGame
+from screens.options import Options
+from screens.shortcuts import Shortcuts
+from window import Window
 
 if __name__ == '__main__':
     logger.info("Create states")
@@ -22,7 +24,7 @@ if __name__ == '__main__':
         LOAD_GAME: LoadGame(),
         MENU: Menu(),
         GAME: Game(),
-        "online_game": OnlineGame(),
+        ONLINE_GAME: OnlineGame(),
         CREDITS: Credits(),
         OPTIONS: Options(),
         SHORTCUTS: Shortcuts(),
