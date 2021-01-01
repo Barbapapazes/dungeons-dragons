@@ -4,22 +4,23 @@ from utils.tilemap import Camera, Minimap, TiledMap
 from config.sprites import ASSETS_SPRITES
 import pygame as pg
 from os import path
-from window import _State
+from window import _Elements
 from logger import logger
 from sprites.player import Arrow, Player
 from server.network import Network
 from config.window import WIDTH, HEIGHT, TILESIZE
-from config.colors import GREEN, LIGHTGREY, BLACK, RED, WHITE, YELLOW
+from config.colors import BEIGE, GREEN, LIGHTGREY, BLACK, RED, WHITE, YELLOW
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 vec = pg.Vector2
 
 
-class OnlineGame(_State):
+class OnlineGame(_Elements):
     """Online game screen"""
 
     def __init__(self):
         self.name = "online_game"
-        super(OnlineGame, self).__init__(self.name)
+        self.next = MENU
+        super(OnlineGame, self).__init__(self.name, self.next, 'menu', '0.png', {})
 
         self.current_id = None
         self.player = None
@@ -63,6 +64,28 @@ class OnlineGame(_State):
 
         super().setup_transition()
 
+    def make_states_dict(self):
+        previous_dict = super().make_states_dict().copy()
+        add_dict = {
+            "dead": self.dead_run
+        }
+        return previous_dict | add_dict
+
+    def create_buttons_dict(self):
+        """Create the dict for all buttons
+
+
+        Returns:
+            dict
+        """
+        return {
+            "menu": {
+                "text": "Menu",
+                "on_click": self.load_next_state,
+                "on_click_params": [MENU]
+            }
+        }
+
     def get_events(self, event):
         pass
 
@@ -80,6 +103,15 @@ class OnlineGame(_State):
         """Run the normal state"""
         self.update()
         self.draw()
+
+    def dead_run(self):
+        self.draw()
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.screen.blit(self.dim_screen, (0, 0))
+        self.draw_text("Game over", self.title_font, 128, BEIGE, WIDTH // 2, HEIGHT // 2, align="center")
+        super().events_buttons()
+        super().draw_buttons()
 
     @staticmethod
     def draw_grid(surface):
@@ -148,6 +180,12 @@ class OnlineGame(_State):
         self.camera.update(self.player)
 
         self.player.update()
+        if self.current_player["health"] <= 0:
+            self.server.disconnect()
+            self.btns_dict = self.create_buttons_dict()
+            self.create_buttons(self.screen, start_y_offset=8 * HEIGHT / 10)
+            self.toggle_sub_state("dead")
+        # il faut vérifier si le jouer est mort, s'il est dead, on change de subscreen pour un sub avec vous êtes mort et retourner au menu
         # for _, arrow in self.new_arrows.items():
         #     arrow.update()
         # hits = pg.sprite.spritecollide(self.player, self.new_arrows, False)

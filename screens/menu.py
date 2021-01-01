@@ -33,7 +33,12 @@ class Menu(_Elements):
         self.startup(0, load_shortcuts())
 
     def create_buttons_dict(self):
-        """Create the dict for all buttons"""
+        """Create the dict for all buttons
+
+
+        Returns:
+            dict
+        """
         return {
             "new_game": {
                 "text": "New Game",
