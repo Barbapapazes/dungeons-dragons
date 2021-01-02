@@ -291,7 +291,7 @@ def generate_map(height,width):
             fusion_two_map(map1Select,'./GENERATED/ligne'+str(k)+'.tmx','./GENERATED/Untildown.tmx','down')
             map1Select='./GENERATED/Untildown.tmx'
         else:
-            fusion_two_map(map1Select,'./GENERATED/ligne'+str(k)+'.tmx','../test_final.tmx','down')
+            fusion_two_map(map1Select,'./GENERATED/ligne'+str(k)+'.tmx','../map_generated.tmx','down')
 
     #print(map2Select)
     #print(ligneUP,'\n',ligneCUR_R,'\n',ligneCUR_D)
