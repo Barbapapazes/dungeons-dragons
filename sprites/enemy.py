@@ -18,9 +18,9 @@ WANDER_RING_DISTANCE = 500
 WANDER_RING_RADIUS = 150
 CLASSES = ["Fighter","Mage","Rogue"]
 TYPE = {
-    "Skeleton" : {"health":80, "STR":10, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5},
-    "Goblin" :   {"health":80, "STR":15, "DEX":5, "CON":5, "INT":5, "WIS":5, "CHA":5},
-    "Boss"  : {"health":250, "STR":20, "DEX":5, "CON":10, "INT":5, "WIS":10, "CHA":15}
+    "Skeleton" : {"health":80, "STR":35, "DEX":20, "CON":30, "INT":50, "WIS":30, "CHA":30},
+    "Goblin" :   {"health":70, "STR":45, "DEX":50, "CON":35, "INT":20, "WIS":15, "CHA":10},
+    "Boss"  : {"health":250, "STR":70, "DEX":25, "CON":55, "INT":20, "WIS":10, "CHA":40}
 }
 
 class Enemy(Character):
@@ -41,7 +41,8 @@ class Enemy(Character):
         self.numberOfAction = 0
 
         self.inventory = Inventory(self, 5, 8)
-
+        self.weapon = None
+        
         self.attack_range = TILESIZE * 2
 
         logger.error("il y a un souci d'update avec la camera")
@@ -55,12 +56,20 @@ class Enemy(Character):
         self.moving = False
 
         self.health = TYPE.get(self.type).get("health")
-        self.STR = TYPE.get(self.type).get("STR")
-        self.DEX = TYPE.get(self.type).get("DEX")
-        self.CON = TYPE.get(self.type).get("CON")
-        self.INT = TYPE.get(self.type).get("INT")
-        self.WIS = TYPE.get(self.type).get("WIS")
-        self.CHA = TYPE.get(self.type).get("CHA")
+        self.characteristics = {
+            "str": TYPE.get(self.type).get("STR"),
+            "dex": TYPE.get(self.type).get("DEX"),
+            "con": TYPE.get(self.type).get("CON"),
+            "int": TYPE.get(self.type).get("INT"),
+            "wis": TYPE.get(self.type).get("WIS"),
+            "cha": TYPE.get(self.type).get("CHA")
+        }
+        # self.STR = TYPE.get(self.type).get("STR")
+        # self.DEX = TYPE.get(self.type).get("DEX")
+        # self.CON = TYPE.get(self.type).get("CON")
+        # self.INT = TYPE.get(self.type).get("INT")
+        # self.WIS = TYPE.get(self.type).get("WIS")
+        # self.CHA = TYPE.get(self.type).get("CHA")
         
     def __repr__(self):
         """default displayed text whenever printing the enemy
@@ -410,8 +419,14 @@ class Enemy(Character):
     def attack(self):
         """attack instructions
         """
-        self.player_spotted.health -= self.STR
-        self.game.versus_manager.logs.add_log(f'{self} attacked {self.player_spotted} dealing {self.STR} damages !')
+        if self.game.versus_manager.check_dice():
+            damage = self.game.versus_manager.calc_damage()
+            self.game.versus_manager.logs.add_log(f'Enemy {self} attacked {self.player_spotted}, dealing {damage}')
+            self.turn_manager.remove_health(damage, self.player_spotted)
+        else:
+            self.game.versus_manager.logs.add_log("Missed dice roll")
+        # self.player_spotted.health -= self.STR
+        # self.game.versus_manager.logs.add_log(f'{self} attacked {self.player_spotted} dealing {self.STR} damages !')
         self.end_turn()
         
     def end_turn(self):
