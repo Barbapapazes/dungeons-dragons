@@ -121,7 +121,6 @@ class Game(_State):
                     self, enemy["pos"]["x"],
                     enemy["pos"]["y"],
                     enemy["class"],
-                    enemy["health"],
                     ASSETS_SPRITES[enemy["class"]])
                 for item in Inventory.create_inventory(enemy["inventory"]):
                     print(item.name)
@@ -191,15 +190,15 @@ class Game(_State):
                         _images = ASSETS_SPRITES[_class]
                         self.turn_manager.players.append(
                             Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
-                if tile_object.name == "enemy":
-                    if randint(0,1):
+                if tile_object.name == "Skeleton":
                         self.turn_manager.enemies.append(
                         Enemy(self, obj_center.x, obj_center.y, "Skeleton", ASSETS_SPRITES["enemy_1"])
                         )
-                    else: self.turn_manager.enemies.append(
+                if tile_object.name == "Goblin":
+                        self.turn_manager.enemies.append(
                         Enemy(self, obj_center.x, obj_center.y, "Goblin", ASSETS_SPRITES["enemy_2"])
                         )
-                if tile_object.name == "boss":
+                if tile_object.name == "Boss":
                     self.turn_manager.enemies.append(
                         Boss(self, obj_center.x, obj_center.y, "Boss", ASSETS_SPRITES["boss"])
                         )
