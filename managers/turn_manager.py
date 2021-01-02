@@ -17,6 +17,36 @@ class TurnManager:
         self.sorted = None
 
         self.turn = turn_number
+        self.vision = 0
+        self.playable = 0
+
+    def get_vision_character(self):
+        """Get the character where the camera have to point
+
+        Returns:
+            Player
+        """
+        len_players = len(self.players)
+        vision_to_number = self.vision % len_players
+        return self.players[vision_to_number]
+
+    def get_playable_character(self):
+        """Get the character where the camera have to point
+
+        Returns:
+            Player
+        """
+        len_players = len(self.players)
+        playable_to_number = self.playable % len_players
+        return self.players[playable_to_number]
+
+    def add_vision(self):
+        """Add a vision"""
+        self.vision += 1
+
+    def add_playable(self):
+        """Add a playable"""
+        self.playable += 1
 
     def add_turn(self):
         """Add a turn"""
@@ -46,6 +76,17 @@ class TurnManager:
             if character.type == "thief":
                 self.sorted.remove(character)
                 self.sorted.insert(0, character)
+
+        # sort the player
+        players = list()
+        # on regarde chaque player de la liste de players, si on le trouve dans les sorted et qu'il n'est pas déjà placé, on le place et on continue et à la fin la liste des players est triées
+        for character in self.sorted:
+            if isinstance(character, Player):
+                for player in self.players:
+                    if player == character and player in self.players:
+                        players.append(player)
+
+        self.players = players
 
     def get_relative_turn(self):
         """Get the relative turn
@@ -124,8 +165,8 @@ class TurnManager:
         """Remove life to enemy
 
         Args:
-            damage (int)
-            enemy (Enemy)
+            damage(int)
+            enemy(Enemy)
         """
         enemy.health -= damage
         self.active_character().game.logs.add_log(f"Remove {damage}, remaining {enemy.health}")
@@ -146,12 +187,15 @@ class TurnManager:
         """
         return isinstance(self.active_character(), Enemy)
 
-    def update(self):
+    def update(self, is_versus_active):
         """Used to update the turn manager"""
-        if self.is_active_player():
-            self.active_character().update()
-        if self.is_active_enemy():
-            self.active_character().update()
+        if is_versus_active:
+            if self.is_active_player():
+                self.active_character().update()
+            if self.is_active_enemy():
+                self.active_character().update()
+        else:
+            self.get_playable_character().update()
 
     def get_pos_player(self):
         """Get the player position in the characters list, but count only the player
@@ -172,7 +216,7 @@ def get_dice(character):
     """Get the result of the dice dex of a character
 
     Args:
-        character (Character)
+        character(Character)
 
     Returns:
         int

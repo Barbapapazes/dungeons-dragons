@@ -99,7 +99,9 @@ class VersusManager:
     def finish_versus(self):
         """Finish the versus"""
         self.active = False
-        self.set_move_player(True)
+        self.free_all_players()
+        self.turn_manager.playable = self.turn_manager.players.index(self.turn_manager.active_character())
+        self.turn_manager.vision = self.turn_manager.playable
         self.remove_selected_enemy()
         self.remove_last_player_pos()
         self.remove_action()
@@ -155,6 +157,11 @@ class VersusManager:
             _bool (bool)
         """
         self.turn_manager.active_character().can_move = _bool
+
+    def free_all_players(self):
+        """All payers can move"""
+        for player in self.turn_manager.players:
+            player.can_move = True
 
     def select_action(self, pos):
         """Select the action using buttons
@@ -305,7 +312,7 @@ class VersusManager:
         """Draw the versus"""
         self.draw_range(screen)
         self.draw_btns(screen)
-        logger.debug("si c'est pas un wizrad, alors on ne dessine pas le bouton des spells")
+        # logger.debug("si c'est pas un wizrad, alors on ne dessine pas le bouton des spells")
         if self.action == "spell":
             if self.spell_pos:
                 pg.draw.circle(screen, GLOOMY_PURPLE, self.spell_pos, TILESIZE, width=2)
@@ -397,6 +404,8 @@ class VersusManager:
         self.border_enemy = None
         self.logs.add_log("Next turn")
         self.turn_manager.add_turn()
+        if self.turn_manager.is_active_player():
+            self.turn_manager.add_vision()
         # add actions to the next character
         self.set_move_player(False)
         self.add_actions()

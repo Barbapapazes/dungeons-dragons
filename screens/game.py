@@ -286,10 +286,18 @@ class Game(_State):
             if self.turn_manager.is_active_player():
                 self.toggle_states(event)
             if event.key == pg.K_t:
-                self.logs.add_log("Manual next turn")
-                self.versus_manager.add_turn()
+                if self.versus_manager.active:
+                    self.logs.add_log("Manual next turn")
+                    self.versus_manager.add_turn()
             if event.key == pg.K_SPACE:
                 self.press_space = True
+            if event.key == pg.K_v:
+                logger.info("Change the vision")
+                self.turn_manager.add_vision()
+            if event.key == pg.K_c:
+                logger.info("Change the playable")
+                self.turn_manager.add_playable()
+                self.turn_manager.vision = self.turn_manager.playable
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
@@ -503,6 +511,7 @@ class Game(_State):
     def shop_run(self):
         """Run the shop state"""
         self.draw()
+
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
         self.screen.blit(self.dim_screen, (0, 0))
@@ -541,14 +550,14 @@ class Game(_State):
         self.check_hits()
         self.update_sprites()
         # if self.turn_manager.is_active_player():
-        self.camera.update(self.turn_manager.active_character())
-        self.minimap.update(self.turn_manager.active_character())
+        self.camera.update(self.turn_manager.get_vision_character())
+        self.minimap.update(self.turn_manager.get_vision_character())
         self.check_for_chest_open()
         self.check_for_merchant_open()
 
     def update_sprites(self):
         self.versus_manager.update()
-        self.turn_manager.update()
+        self.turn_manager.update(self.versus_manager.active)
         self.doors.update()
         self.chests.update()
         self.merchants.update()
