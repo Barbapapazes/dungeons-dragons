@@ -208,13 +208,23 @@ def fusion_two_map(map1,map2,out,direction):      # direction prend la valeur ri
 
 
 def generate_map(height,width):
-    list_10 = ['LD','LR']
-    list_11 = ['LT','TRDL']
+    list_10 = ['LD','LR','LDR']
+    list_11 = ['LT','TRDL','LDR','LTR','LTD']
     list_00 = ['RD']
-    list_01 = ['TD','TR']
+    list_01 = ['TD','TR','TRD']
+    
+    endw_10 = ['LD']
+    endw_11 = ['LT']
+    endw_00 = ['D']
+    endw_01 = ['TD']
 
-    list_R1 = ['LR','RD','TR','TRDL']
-    list_D1 = ['LD','RD','TD','TRDL']
+    endh_10 = ['LR']
+    endh_11 = ['LT','LR','LTR']
+    endh_00 = ['R']
+    endh_01 = ['TR']
+
+    list_R1 = ['LR','RD','TR','TRDL','R','LDR','LTR']
+    list_D1 = ['LD','RD','TD','TRDL','D','LDR','LTD','TRD']
     
     ligneUP = list(x-x for x in range(width))
     ligneCUR_R = list(x-x for x in range(width))
@@ -245,6 +255,7 @@ def generate_map(height,width):
 
         for i in range(width-init):
             
+            
             if ligneCUR_R[i] == 1 and ligneUP[i] == 0:
                 list_cur = list_10   
             elif ligneCUR_R[i] == 1 and ligneUP[i] == 1:
@@ -254,18 +265,40 @@ def generate_map(height,width):
             elif ligneCUR_R[i] == 0 and ligneUP[i] == 1:
                 list_cur = list_01
 
+            if i== width-1:
+                if ligneCUR_R[i] == 1 and ligneUP[i] == 0:
+                    list_cur = endw_10   
+                elif ligneCUR_R[i] == 1 and ligneUP[i] == 1:
+                    list_cur = endw_11  
+                elif ligneCUR_R[i] == 0 and ligneUP[i] == 0:
+                    list_cur = endw_00
+                elif ligneCUR_R[i] == 0 and ligneUP[i] == 1:
+                    list_cur = endw_01
+
+            if k== height-1:
+                if ligneCUR_R[i] == 1 and ligneUP[i] == 0:
+                    list_cur = endh_10   
+                elif ligneCUR_R[i] == 1 and ligneUP[i] == 1:
+                    list_cur = endh_11  
+                elif ligneCUR_R[i] == 0 and ligneUP[i] == 0:
+                    list_cur = endh_00
+                elif ligneCUR_R[i] == 0 and ligneUP[i] == 1:
+                    list_cur = endh_01
+
+            if k == height-1 and i == width - 1:
+                list_cur = ['WALL']
+
             dirMap = list_cur[randint(0,len(list_cur)-1)]
             dir = './' + dirMap + '/'
             listMap = os.listdir(dir)
             
             
             if i != width-1:
-
                 if dirMap in list_R1:
                     ligneCUR_R[i+1] = 1
                 
-                if dirMap in list_D1:
-                    ligneCUR_D[i+1] = 1
+            if dirMap in list_D1:
+                ligneCUR_D[i] = 1
 
             if i == 0 and k!=0:
                 map1Select = dir + listMap[randint(0,len(listMap)-1)]
@@ -276,6 +309,7 @@ def generate_map(height,width):
                 fusion_two_map(map1Select,map2Select,'./GENERATED/ligne'+str(k)+'.tmx','right')
                 map1Select = './GENERATED/ligne'+str(k)+'.tmx'
 
+   
         ligneUP = ligneCUR_D
         ligneCUR_R = list(x-x for x in range(width))
         ligneCUR_D = list(x-x for x in range(width))
@@ -293,8 +327,8 @@ def generate_map(height,width):
         else:
             fusion_two_map(map1Select,'./GENERATED/ligne'+str(k)+'.tmx','../map_generated.tmx','down')
 
-    #print(map2Select)
-    #print(ligneUP,'\n',ligneCUR_R,'\n',ligneCUR_D)
+
+
 
 
 
