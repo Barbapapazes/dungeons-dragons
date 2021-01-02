@@ -551,7 +551,7 @@ class Game(_State):
         self.update_sprites()
         # if self.turn_manager.is_active_player():
         self.camera.update(self.turn_manager.get_vision_character())
-        self.minimap.update(self.turn_manager.get_vision_character())
+        self.minimap.update(self.turn_manager.players)
         self.check_for_chest_open()
         self.check_for_merchant_open()
 
@@ -768,7 +768,7 @@ class Game(_State):
 
         self.screen.blit(
             self.minimap.create(
-                self.turn_manager.active_character(), self.turn_manager.players),
+                self.turn_manager.get_vision_character(), self.turn_manager.players),
             (WIDTH -
              self.minimap.width,
              HEIGHT -

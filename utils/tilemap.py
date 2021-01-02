@@ -168,16 +168,19 @@ class Minimap:
         for player in players:
             self.draw_player(_map, player.pos * self.img_ratio)
 
-    def update(self, player):
-        """Update the frog using a pos
+    def update(self, players):
+        """Update the frog using a players list
 
         Args:
-            pos (list): the x and y of the player
+            players (list(Player))
         """
-        pos = player.pos * self.img_ratio
-        pg.draw.circle(self.cover, pg.Color(0, 0, 0, 0), pos, self.size)
+        for player in players:
+            pos = player.pos * self.img_ratio
+            pg.draw.circle(self.cover, pg.Color(0, 0, 0, 0), pos, self.size)
         self.fog.fill(self.fog_color)
-        pg.draw.circle(self.fog, pg.Color(0, 0, 0, 0), pos, self.size)
+        for player in players:
+            pos = player.pos * self.img_ratio
+            pg.draw.circle(self.fog, pg.Color(0, 0, 0, 0), pos, self.size)
 
     def create_minimap_data(self):
         """Create a dict to save minimap data
