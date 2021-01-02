@@ -191,9 +191,11 @@ class OnlineGame(_Elements):
                 # create a new arrow
                 pos = vec(int(value["pos"]["x"]), int(value["pos"]["y"]))
                 dir = vec(float(value["dir"]["x"]), float(value["dir"]["y"]))
+                vel = vec(float(value["vel"]["x"]), float(value["vel"]["y"]))
                 a = Arrow(self,
                           pos,
                           dir,
+                          vel,
                           int(value["damage"]), key, self.current_id)
                 arrows_dict[key] = a
 

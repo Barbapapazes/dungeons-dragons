@@ -1,15 +1,16 @@
 """Define a player"""
-from sprites.character import Character
+from random import uniform
+
 import pygame as pg
-from random import randint, uniform
-from logger import logger
-from config.colors import YELLOW
-from config.window import TILESIZE
-from config.sprites import ASSETS_SPRITES, ITEMS, PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT, PLAYER_MAX_MP
+from config.screens import ONLINE_GAME
+from config.sprites import (ITEMS, PLAYER_HIT_RECT,
+                            PLAYER_MAX_HP, PLAYER_MAX_MP,
+                            PLAYER_SPEED)
 from inventory.inventory import Inventory
-from utils.tilemap import collide_with_walls
-from os import path
-from store.shop import Shop
+from logger import logger
+
+from sprites.character import Character
+
 vec = pg.math.Vector2
 
 
@@ -26,6 +27,7 @@ class Player(Character):
         self.gold = gold
 
         self.numberOfAction = 0
+        self.last_shot = 0
 
         # Stats
         self.HP = 100
@@ -102,37 +104,33 @@ class Player(Character):
                 self.vel.y = PLAYER_SPEED
             if self.vel.x != 0 and self.vel.y != 0:
                 self.vel *= 0.7071
-            if self.game.name == "online_game":
+            if self.game.name == ONLINE_GAME:
                 if keys[pg.K_SPACE]:
                     self.shoot()
 
     def shoot(self):
         """Used to launch an arrow"""
-        direction = {
-            "idle": -90,
-            "left": 180,
-            "right": 0,
-            "up": -90,
-            "down": 90
-        }
-        logger.debug("on va utiliser la position de la sourie pour envoyer la flèche à partir de la position du joueur")
-        mouse_pos = pg.mouse.get_pos()
-        # dir = vec(1, 0).rotate(-direction[self.direction])
-        dir = vec(mouse_pos[0] - self.pos[0] - self.game.camera.camera.x,
-                  mouse_pos[1] - self.pos[1] - self.game.camera.camera.y)
-        dir.scale_to_length(1.0)
-        damage = 10
-        data = " ".join(
-            ["arrow", str(int(self.pos.x)),
-             str(int(self.pos.y)),
-             str(dir.x),
-             str(dir.y),
-             str(damage), str(self.game.current_id)])
-        # logger.debug(data)
-        logger.debug("si on est en mode server, on envoie, sinon non, on fait une flèche en local")
-        self.game.server.send(data)
-        # logger.debug(dir)
-        # Arrow(self.game, self.pos, dir, 10)
+        now = pg.time.get_ticks()
+        if now - self.last_shot > 100:
+            self.last_shot = now
+            mouse_pos = pg.mouse.get_pos()
+            _dir = vec(mouse_pos[0] - self.pos[0] - self.game.camera.camera.x,
+                       mouse_pos[1] - self.pos[1] - self.game.camera.camera.y)
+            _dir.scale_to_length(1.0)
+            spread = uniform(-15, 15)
+            _dir = _dir.rotate(spread)
+            _vel = _dir * 300 * uniform(0.8, 1.2)
+            damage = 10
+            data = " ".join(
+                ["arrow", str(int(self.pos.x)),
+                 str(int(self.pos.y)),
+                 str(_dir.x),
+                 str(_dir.y),
+                 str(_vel.x),
+                 str(_vel.y),
+                 str(damage), str(self.game.current_id)])
+
+            self.game.server.send(data)
 
     def update(self):
         """Used to update the player"""
@@ -275,44 +273,24 @@ class Player(Character):
         if self.spell is not None:
             self.spell = None
 
-        # self.frame_count += 1
-        # if self.frame_count >= 27:
-        #     self.frame_count = 0
-
-        # self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
-
-        # if self.is_moving:
-        #     if 135 < self.rot <= 225:
-        #         self.image = pg.transform.flip(pg.transform.rotate(
-        #             self.run_right_images[self.frame_count // 9], -self.rot), False, True)
-        #     if 225 < self.rot <= 315:
-        #         self.image = pg.transform.rotate(
-        #             self.run_front_images[self.frame_count // 9], self.rot - 270)
-        #     if 315 < self.rot <= 360 or 0 <= self.rot < 45:
-        #         self.image = pg.transform.flip(pg.transform.rotate(
-        #             self.run_left_images[self.frame_count // 9], -self.rot), True, False)
-        #     if 45 < self.rot <= 135:
-        #         self.image = pg.transform.rotate(
-        #             self.run_back_images[self.frame_count // 9], self.rot - 90)
-
 
 class Arrow(pg.sprite.Sprite):
     """Create an arrow"""
 
-    def __init__(self, game, pos, dir, damage, id, player_id):
+    def __init__(self, game, pos, _dir, vel, damage, _id, player_id):
         self._layer = 20
         self.groups = game.all_sprites, game.arrows,
         super(Arrow, self).__init__(self.groups)
         self.game = game
-        self.id = id
+        self.id = _id
         self.player_id = player_id
 
-        self.image = ITEMS["arrow_01e"]
+        self.image = pg.transform.rotate(ITEMS["arrow_01e"], _dir.angle_to(vec(-1, -1)))
         self.rect = self.image.get_rect()
         self.hit_rect = self.rect
         self.pos = vec(pos)
         self.rect.center = pos
-        self.vel = dir * 300 * uniform(0.9, 1.1)
+        self.vel = vel
         self.spawn_time = pg.time.get_ticks()
         self.damage = damage
         self.is_deleted = False
@@ -320,16 +298,12 @@ class Arrow(pg.sprite.Sprite):
     def update(self):
         """Update the arrow"""
         self.pos += self.vel * self.game.dt
-        logger.debug("%s, %s, %s", self.pos, self.vel, self.game.dt)
         self.rect.center = self.pos
-        # if pg.sprite.spritecollide(self, self.game.walls, False):
-        #     self.kill()
         if pg.time.get_ticks() - self.spawn_time > 1000:
-            if self.game.name == "online_game":
-                data = " ".join(["arrow", "remove", str(self.id), str(self.player_id)])
+            if self.game.name == ONLINE_GAME:
                 self.is_deleted = True
-                logger.debug(
-                    "on peut faire ça en dehors pour éviter d'avoir trop de choses dans la flèche, le is_deleted se suffit à lui même")
+                # this can be done outside of this class and we can send data only for the owner
+                data = " ".join(["arrow", "remove", str(self.id), str(self.player_id)])
                 self.game.server.send(data)
             else:
                 self.kill()

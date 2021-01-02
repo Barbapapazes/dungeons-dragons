@@ -39,19 +39,15 @@ def check_collisions():
                 if key_player != value_arrow["player_id"]:
                     hit_rect = PLAYER_HIT_RECT.copy()
                     hit_rect.center = (float(value_player["pos"]["x"]), float(value_player["pos"]["y"]))
-                    # logger.debug("%s, %s, %s", hit_rect, value_arrow["pos"]["x"], value_arrow["pos"]["y"])
                     if hit_rect.collidepoint((float(value_arrow["pos"]["x"]), float(value_arrow["pos"]["y"]))):
-                        # si on touche, alors il faut delete la flèche et remove de la  vie à la personne touchée
-                        # il faut faire attention à bien check à qui appartient la arrow
                         if value_arrow["player_id"] != key_player:
                             value_player["health"] -= 10
                             try:
                                 del arrows[key_arrow]
                             except:
                                 pass
-                            logger.debug("touch")
     except:
-        logger.error("erreur dans les collisions")
+        pass
 
 
 def threaded_client(conn, _id):
@@ -77,7 +73,7 @@ def threaded_client(conn, _id):
     while True:
         try:
             # receive data from client
-            data = conn.recv(64)
+            data = conn.recv(128)
 
             if not data:
                 break
@@ -110,11 +106,8 @@ def threaded_client(conn, _id):
                     id = int(split_data[2])
                     player_id = int(split_data[3])
                     if id in arrows.keys() and arrows[id]["player_id"] == player_id:
-                        logger.debug("delete arrow")
                         del arrows[id]
 
-                    # logger.debug(
-                        # "il faut checker que c'est bien le owner qui veut la delete, et on le check dans le client directement, si c'set le joueur qui la détient qui veut la delete, alors on supprime")
                 elif data.split(" ")[1] == "update":
                     split_data = data.split(" ")
                     id = int(split_data[2])
@@ -129,13 +122,14 @@ def threaded_client(conn, _id):
 
                 else:
                     split_data = data.split(" ")
-                    # logger.debug(split_data)
                     pos_x = float(split_data[1])
                     pos_y = float(split_data[2])
                     dir_x = float(split_data[3])
                     dir_y = float(split_data[4])
-                    damage = int(split_data[5])
-                    _id = int(split_data[6])
+                    vel_x = float(split_data[5])
+                    vel_y = float(split_data[6])
+                    damage = int(split_data[7])
+                    _id = int(split_data[8])
 
                     arrows[arrows_id] = {
                         "pos": {
@@ -146,23 +140,21 @@ def threaded_client(conn, _id):
                             "x": dir_x,
                             "y": dir_y
                         },
+                        "vel": {
+                            "x": vel_x,
+                            "y": vel_y
+                        },
                         "damage": damage,
                         "player_id": _id
                     }
 
                     arrows_id += 1
 
-                # logger.debug(arrows)
-
             if data.split(" ")[0] == "get":
                 send_data = pickle.dumps((players, arrows))
 
             conn.send(send_data)
 
-            # else:
-            #     # print(data)
-
-            #     conn.sendall(pickle.dumps(data))
         except Exception as e:
             logger.exception(e)
             break
