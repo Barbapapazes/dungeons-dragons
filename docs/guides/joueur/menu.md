@@ -1,4 +1,4 @@
-# Présentation des écrans
+# Les écrans
 
 Sur le menu principal, on peut trouver plusieurs boutons qui permettent d'accéder à différentes fonctions de notre jeu.
 

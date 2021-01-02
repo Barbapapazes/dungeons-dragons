@@ -39,14 +39,9 @@ module.exports = {
     lastUpdated: true,
     nav: [
       {
-        text: 'Guide du joueur',
-        link: '/guide-joueur/',
+        text: 'Guides',
+        link: '/guides/',
       },
-      {
-        text: 'Guide du développeur',
-        link: '/guide-dev/',
-      },
-
       // {
       //   text: 'Config',
       //   link: '/config/',
@@ -76,17 +71,23 @@ module.exports = {
             children: ['presentation'],
           },
         ],
-        '/config/': [
-          {
-            title: 'Configuration',
-            collapsable: false,
-            children: [''],
-          },
-        ],
-        '/guide-joueur/': [
+        '/guides/': [
+          '',
           {
             title: 'Guide du joueur',
-            collapsable: false,
+            collapsable: true,
+            children: [
+              'joueur/',
+              'joueur/start-game',
+              'joueur/menu',
+              'joueur/create-game',
+              'joueur/how-play',
+              'joueur/shortcuts',
+            ],
+          },
+          {
+            title: 'Guide du développeur',
+            collapsable: true,
             children: [
               '',
               'start-game',
@@ -95,13 +96,6 @@ module.exports = {
               'how-play',
               'shortcuts',
             ],
-          },
-        ],
-        '/guide-dev/': [
-          {
-            title: 'Guide du développeur',
-            collapsable: false,
-            children: ['', 'window', 'map_editor'],
           },
         ],
       },

@@ -68,9 +68,3 @@ Le namespace window est global à l'ensemble des écrans. Ainsi, il ne faut pas 
 | save  |   alt+s   | Sauvegarder les shortcuts             |
 
 ## Panneau de configuration des shortcuts
-
-Il est possible de visualiser et de modifier l'ensemble des shortcuts depuis l'interface graphique directement.
-
-Pour naviguer, on va utiliser les touches `page up` et `page down`. Pour sélectionner un élément, on utilise la touche `entrer`. Une fois qu'on arrive à la sélection de l'un des shortcuts, la création du shortcut apparaît en bas de la fenêtre.
-
-Ensuite, il suffit de le créer en activant ou non les touches `ctrl`, `alt` et une autre touche. Puis pour l'activer, il suffit de cliquer sur la touche `entrer`. Cela modifie le shortcut dans la fenêtre. Pour conserver ces shortcuts, il suffit de les sauvegarder avec `alt+s`.
