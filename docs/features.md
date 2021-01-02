@@ -1,6 +1,6 @@
 # Features
 
-<!-- il faut lister ici l'ensemble des features de l'application -->
+<!-- il faut lister ici l'ensemble des features de l'application et les trier en mode pour les joueurs, et pour les développeurs -->
 
 - fond d'écran dynamique
 - choix du nom de la sauvegarde
@@ -29,4 +29,4 @@
 - personnalisation des shortcuts
 - mode de jeu multijoueur
 - code source commenté
-- documentation en ligne et accessible
+- documentation en ligne, riche et accessible

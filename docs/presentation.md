@@ -15,3 +15,11 @@ En ce qui concerne le rendu, l'idée est de créer un cRPG basé sur _D&G_. Ains
 Ce projet est un travail de groupe, à 7, proposé dans le cade du cours de projet de programmation. C'est un travail en collaboration avec le cours de python, de programmation orienté objet et celui de génie logiciel.
 
 Nous avons eu 5 mois pour mener à bien ce projet.
+
+## Guides
+
+### Guide du joueur
+
+Afin de vous permettre de comprendre l'ensemble des mécaniques du jeu et de pleinement profiter de l'expérience que nous avons créer, vous pouvez accéder [ici](/window.html) au guide du joueur.
+
+### Guide du développeur
