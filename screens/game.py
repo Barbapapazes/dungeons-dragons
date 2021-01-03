@@ -295,9 +295,10 @@ class Game(_State):
                 logger.info("Change the vision")
                 self.turn_manager.add_vision()
             if event.key == pg.K_c:
-                logger.info("Change the playable")
-                self.turn_manager.add_playable()
-                self.turn_manager.vision = self.turn_manager.playable
+                if not self.versus_manager.active:
+                    logger.info("Change the playable")
+                    self.turn_manager.add_playable()
+                    self.turn_manager.vision = self.turn_manager.playable
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
