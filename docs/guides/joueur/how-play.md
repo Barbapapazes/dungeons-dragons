@@ -72,4 +72,4 @@ console du jeu vous en avertira. Dès lors, quittez votre partie dans souci et r
 
 ## Camera
 
-Nul besoin d'essayer de déplacer la caméra, vous ne pourrez pas le faire manuellement. En effet, elle vous suit automatique lorsque vous vous déplacer. Cependant, en appuyant sur **v**, vous pourrez alterner entre tous les heros présents sur la carte afin de changer la vision active.
+Nul besoin d'essayer de déplacer la caméra, vous ne pourrez pas le faire manuellement. En effet, elle vous suit automatique lorsque vous vous déplacer. Cependant, en appuyant sur **v**, vous pourrez alterner entre tous les heros présents sur la carte afin de changer la vision active. Pour changer le héro actif en temps réel, il suffit d'appuyer sur **c**

@@ -20,13 +20,14 @@ Notre jeu s'utilise à la fois avec le clavier et la souris et combine les 2 la 
 
 ## Game
 
-|      Nom      | Raccourci | Aide                                            |
-| :-----------: | :-------: | ----------------------------------------------- |
-|   inventory   |     i     | Toggle l'inventaire                             |
-|     menu      |     m     | Toggle le sous menu                             |
-|      vue      |     v     | Permet de switcher de vue entre les personnages |
-| environnement |   space   | Permet d'interagir avec l'environnement         |
-|    retour     |  escape   | Permet de sortir des sous menu                  |
+|      Nom      | Raccourci | Aide                                                                |
+| :-----------: | :-------: | ------------------------------------------------------------------- |
+|   inventory   |     i     | Toggle l'inventaire                                                 |
+|     menu      |     m     | Toggle le sous menu                                                 |
+|      vue      |     v     | Permet de switcher de vue entre les personnages                     |
+|   playable    |     c     | Permet de switcher entre les personnages (en temps réel uniquement) |
+| environnement |   space   | Permet d'interagir avec l'environnement                             |
+|    retour     |  escape   | Permet de sortir des sous menu                                      |
 
 ## Online Game
 

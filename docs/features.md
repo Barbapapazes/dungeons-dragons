@@ -10,6 +10,7 @@
 - création de 3 héros
 - différentes classes de héros
 - gestion de 3 héros
+- gestion différentiée de la vision et du joueur actif
 - selection en surbrillance des enemies en combat
 - polyvalence des modes de jeu, temps réel et tour par tour
 - ramassage d'items au sol
