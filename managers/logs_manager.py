@@ -1,7 +1,9 @@
 """Create the game logger"""
 
-from config.colors import WHITE
+import time
+
 import pygame as pg
+from config.colors import WHITE
 from logger import logger
 
 
@@ -44,6 +46,9 @@ class LogsManager:
         Args:
             message (str)
         """
+        named_tuple = time.localtime()
+        time_string = time.strftime("%H:%M:%S", named_tuple)
+        message = f"{time_string} - {message}"
         if len(self.messages) > 5:
             self.messages.pop()
         logger.info("Logs: %s", message)

@@ -539,6 +539,7 @@ class Game(_State):
         """Check if the user want to access to the menu"""
 
     def save_data_in_file(self):
+        self.logs.add_log("Save the game")
         save_event = pg.event.Event(pg.USEREVENT, code="_State", name="save")
         pg.event.post(save_event)
 
