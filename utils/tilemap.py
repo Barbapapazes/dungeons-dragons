@@ -2,7 +2,7 @@
 
 import pygame as pg
 import pytmx
-from config.window import WIDTH, HEIGHT
+from config.window import HEIGHT, WIDTH
 from logger import logger
 
 
@@ -158,6 +158,16 @@ class Minimap:
         """
         pg.draw.circle(_map, (0, 255, 0), pos, 3, width=2)
 
+    @staticmethod
+    def draw_enemy(_map, pos):
+        """Draw the enemy on the minimap
+
+        Args:
+            _map (Surface)
+            pos (tuple)
+        """
+        pg.draw.circle(_map, (255, 0, 0), pos, 3, width=2)
+
     def create_all_players(self, _map, players):
         """Draw all players
 
@@ -167,6 +177,16 @@ class Minimap:
         """
         for player in players:
             self.draw_player(_map, player.pos * self.img_ratio)
+
+    def create_all_enemies(self, _map, enemies):
+        """Draw all enemies
+
+        Args:
+            _map (Surface)
+            enemies (Group)
+        """
+        for enemy in enemies:
+            self.draw_enemy(_map, enemy.pos * self.img_ratio)
 
     def update(self, players):
         """Update the frog using a players list
@@ -193,11 +213,13 @@ class Minimap:
             "cover": self.cover
         }
 
-    def create(self, player, players):
+    def create(self, player, players, enemies):
         """Create the minimap as a surface
 
         Args:
             player (Player)
+            players (list(Player))
+            enemies (list(Enemy))
 
         Returns:
             Surface
@@ -207,6 +229,7 @@ class Minimap:
 
         self.draw_player(temp_map, pos)
         self.create_all_players(temp_map, players)
+        self.create_all_enemies(temp_map, enemies)
 
         temp_map.blit(self.fog, (0, 0))
         temp_map.blit(self.cover, (0, 0))

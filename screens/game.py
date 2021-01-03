@@ -770,7 +770,7 @@ class Game(_State):
 
         self.screen.blit(
             self.minimap.create(
-                self.turn_manager.get_vision_character(), self.turn_manager.players),
+                self.turn_manager.get_vision_character(), self.turn_manager.players, self.turn_manager.enemies),
             (WIDTH -
              self.minimap.width,
              HEIGHT -
