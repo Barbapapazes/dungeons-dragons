@@ -17,6 +17,7 @@ ACTIONS = {
     "unequip": "unequip",
     "use": "use",
     "throw": "throw",
+    "view": "view",
 }
 
 MENU_DATA = ["inventory"] + list(ACTIONS.values())

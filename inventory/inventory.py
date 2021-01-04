@@ -6,7 +6,7 @@ from sprites.item import PlacableItem
 from utils.container import Container
 from inventory.items import Item
 from config.sprites import ITEMS
-from config.window import HEIGHT, WIDTH
+from config.window import HEIGHT, TILESIZE, WIDTH
 from config.colors import WHITE, GOLD, BLUE_SKY, PINK, YELLOW_LIGHT
 from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP, SPELL_SLOTS
 from logger import logger
@@ -37,6 +37,8 @@ class Inventory:
         self.display_inventory = False
         self.moving_item = None
         self.moving_item_slot = None
+
+        self.view_item = None
 
         self.create_slots()
         self.set_slot_types()
@@ -303,6 +305,9 @@ class Inventory:
                             logger.info('Action can not be done')
             elif isinstance(slot, InventorySlot):
                 if slot.rect.collidepoint(mouse_pos):
+                    if action == ACTIONS['view']:
+                        self.view_item = slot.item
+                        logger.debug(slot.item)
                     if action == ACTIONS['throw']:
                         self.throw_item(slot.item)
                     if isinstance(slot.item, Equipable):
@@ -446,13 +451,50 @@ class Inventory:
                 "Inventory", self.player.game.title_font, 48, YELLOW_LIGHT, 3 * WIDTH // 4, HEIGHT // 2 -
                 ((INVENTORY_TILESIZE + INVENTORY_SLOT_GAP) * (self.rows + 2)) // 2, align="n", screen=screen)
             self.player.game.draw_text(
-                "Equipment", self.player.game.title_font, 48, YELLOW_LIGHT, WIDTH // 2, HEIGHT // 2 -
+                "Equipment", self.player.game.title_font, 48, YELLOW_LIGHT, WIDTH // 2,  HEIGHT // 2 -
                 ((INVENTORY_TILESIZE + INVENTORY_SLOT_GAP) * (5 + 2)) // 2, align="n", screen=screen)
             for slot in self.get_all_slots():
                 slot.draw(screen)
             for slot in self.get_all_slots():
                 slot.draw_items(screen)
             self.draw_player_money()
+            if self.view_item:
+                self.player.game.draw_text("  ".join(self.view_item.name.split("_")).upper(),
+                                           self.player.game.title_font, 30, YELLOW_LIGHT, 2 * WIDTH // 4, 3 * HEIGHT //
+                                           4 + 40, align="center", screen=screen)
+                properties = None
+                if isinstance(self.view_item, Weapon):
+                    properties = {
+                        "Type": "type",
+                        "Scope": "scope",
+                        "Number of dice": "number_dice",
+                        "Value of dice": "dice_value",
+                    }
+                if isinstance(self.view_item, Spell):
+                    properties = {
+                        "Type": "type",
+                        "Scope": "scope",
+                        "Time to live": "time_to_live",
+                        "Number of dice": "number_dice",
+                        "Value of dice": "dice_value",
+                    }
+                if isinstance(self.view_item, Armor):
+                    properties = {
+                        "Slot": "slot",
+                        "Shield": "shield",
+                    }
+                if isinstance(self.view_item, Consumable):
+                    properties = {
+                        "Heal": "heal",
+                        "Shield": "shield",
+                    }
+                if properties:
+                    for index, (key, value) in enumerate(properties.items()):
+                        self.player.game.draw_text(key + " : " + str(getattr(self.view_item, value)),
+                                                   self.player.game.title_font, 24, YELLOW_LIGHT, 2 * WIDTH // 4, 3 *
+                                                   HEIGHT // 4 + index * 24 + 70, align="w", screen=screen)
+                screen.blit(pg.transform.scale(self.view_item.image, (TILESIZE, TILESIZE)),
+                            (2 * WIDTH // 4 - 75, 3 * HEIGHT // 4 + 60))
 
     def draw_player_money(self):
         """Used to draw the player's money
