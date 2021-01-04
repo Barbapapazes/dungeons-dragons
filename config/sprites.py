@@ -594,6 +594,9 @@ ASSETS_SPRITES = {
 ASSETS_FIRE_BALL = [pg.image.load(path.join(sprites_folder, "effects_zone", "fire_ball",
                                             "{:04d}.png".format(i))) for i in range(1, 11)]
 
+ASSETS_HEAL = [pg.image.load(path.join(sprites_folder, "effects_zone", "heal",
+                                       "{:04d}.png".format(i))) for i in range(1, 60)]
+
 ASSETS_MERCHANT = [pg.image.load(path.join(sprites_folder, "merchant", f"{i}.png"))
                    for i in range(4)]
 

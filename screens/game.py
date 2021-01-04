@@ -70,6 +70,7 @@ class Game(_State):
         self.effects_zones = pg.sprite.Group()
 
         EffectsZone(self, 500, 300, "heal", 2, 2, 20)
+        EffectsZone(self, 800, 300, "attack", 2, 2, 20)
 
         # self.en1 = Enemy(self, 10, 4, "Boot n1")
         # self.en2 = Enemy(self, 11, 7, "Boot n2")

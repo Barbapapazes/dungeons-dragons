@@ -2,7 +2,7 @@
 
 from random import randint
 import pygame as pg
-from config.sprites import ASSETS_FIRE_BALL
+from config.sprites import ASSETS_FIRE_BALL, ASSETS_HEAL
 from config.window import TILESIZE
 
 default_fn = lambda *args: None
@@ -24,8 +24,12 @@ class EffectsZone(pg.sprite.Sprite):
         self.dice_value = dice_value
 
         frames = list()
-        for frame in ASSETS_FIRE_BALL:
-            frames.append(pg.transform.scale(frame, (TILESIZE, int(TILESIZE * frame.get_height() / frame.get_width()))))
+        raw_frames = ASSETS_FIRE_BALL if _type == "attack" else ASSETS_HEAL
+        for frame in raw_frames:
+            frame = pg.transform.scale(frame, (TILESIZE, int(TILESIZE * frame.get_height() / frame.get_width())))
+            if _type == "heal":
+                frame.set_colorkey((1, 1, 1))
+            frames.append(frame)
 
         self.frames = frames
         self.image = frames[0]
