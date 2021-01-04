@@ -62,7 +62,7 @@ module.exports = {
             'joueur/menu',
             'joueur/create-game',
             'joueur/how-play',
-            'joueur/online-game',
+            'joueur/online_game',
             'joueur/shortcuts',
           ],
         },
