@@ -1,6 +1,6 @@
 # Features
 
-<!-- il faut lister ici l'ensemble des features de l'application et les trier en mode pour les joueurs, et pour les développeurs -->
+<!-- il faut lister ici l'ensemble des features de l'application et les trier en mode pour les joueurs, et pour les développeurs, le faire en passant dans tous les fichiers -->
 
 - fond d'écran dynamique
 - choix du nom de la sauvegarde
