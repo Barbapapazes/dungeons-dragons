@@ -158,8 +158,7 @@ class TurnManager:
         """
         if self.get_active_weapon() is None:
             return "hand"
-        logger.debug("il faut changer le wpn type en type")
-        return self.get_active_weapon().wpn_type
+        return self.get_active_weapon().type
 
     def remove_health(self, damage, enemy):
         """Remove life to enemy

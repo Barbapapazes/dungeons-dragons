@@ -44,6 +44,64 @@ class Inventory:
         self.menu_data = MENU_DATA
 
     @classmethod
+    def create_item(cls, key, value):
+        """Create an item
+
+        Args:
+            key (str)
+            value (dict)
+
+        Returns:
+            Item
+        """
+        item = None
+
+        if value["object_type"] == "item":
+            item = Item(
+                key,
+                ITEMS[value["image_name"]],
+                value["image_name"],
+                value["price"],
+                value["weight"])
+        elif value["object_type"] == "armor":
+            item = Armor(
+                key, ITEMS[value["image_name"]],
+                value["image_name"], value["price"], value["weight"], value["shield"], value["slot"])
+        elif value["object_type"] == "weapon":
+            item = Weapon(
+                key,
+                ITEMS[value["image_name"]],
+                value["image_name"],
+                value["price"],
+                value["slot"],
+                value["type"],
+                value["weight"],
+                value["number_dice"],
+                value["dice_value"],
+                value["scope"])
+        elif value["object_type"] == "consumable":
+            item = Consumable(
+                key,
+                ITEMS[value["image_name"]],
+                value["image_name"],
+                value["price"],
+                value["weight"],
+                value["heal"],
+                value["shield"])
+        elif value["object_type"] == "spell":
+            item = Spell(
+                key, ITEMS[value["image_name"]],
+                value["image_name"],
+                value["slot"],
+                value["type"],
+                value["scope"],
+                value["time_to_live"],
+                value["number_dice"],
+                value["dice_value"])
+
+        return item
+
+    @classmethod
     def create_inventory(cls, data):
         """Used to create an inventory using a dict
 
@@ -55,55 +113,9 @@ class Inventory:
         """
         items = list()
         for key, value in data.items():
-            if value["object_type"] == "item":
-                items.append(
-                    Item(
-                        key,
-                        ITEMS[value["image_name"]],
-                        value["image_name"],
-                        value["price"],
-                        value["weight"]))
-            elif value["object_type"] == "armor":
-                items.append(
-                    Armor(
-                        key, ITEMS[value["image_name"]],
-                        value["image_name"], value["price"], value["weight"], value["shield"], value["slot"]))
-            elif value["object_type"] == "weapon":
-                items.append(
-                    Weapon(
-                        key,
-                        ITEMS[value["image_name"]],
-                        value["image_name"],
-                        value["price"],
-                        value["slot"],
-                        value["type"],
-                        value["weight"],
-                        value["number_dice"],
-                        value["dice_value"],
-                        value["scope"]))
-            elif value["object_type"] == "consumable":
-                items.append(
-                    Consumable(
-                        key,
-                        ITEMS[value["image_name"]],
-                        value["image_name"],
-                        value["price"],
-                        value["weight"],
-                        value["heal"],
-                        value["shield"]))
-            elif value["object_type"] == "spell":
-                items.append(
-                    Spell(
-                        key, ITEMS[value["image_name"]],
-                        value["image_name"],
-                        value["slot"],
-                        value["type"],
-                        value["scope"],
-                        value["time_to_live"],
-                        value["number_dice"],
-                        value["dice_value"])
-                )
-
+            if value is None:
+                continue
+            items.append(cls.create_item(key, value))
         return items
 
     def save(self):
@@ -720,5 +732,5 @@ class Spell(Equipable):
 
     def __deepcopy__(self, memo):
         return Spell(self.name, self.image.copy(),
-                     self.image_name, self.price, self.weight, self.slot, self.type, self.scope, self.time_to_live,
+                     self.image_name, self.slot, self.type, self.scope, self.time_to_live,
                      self.number_dice, self.dice_value)

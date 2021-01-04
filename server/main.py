@@ -84,8 +84,6 @@ def threaded_client(conn, _id):
 
             check_collisions()
 
-            # logger.debug(players)
-
             if data.split(" ")[0] == "move":
                 split_data = data.split(" ")
                 pos_x = int(split_data[1])
@@ -113,7 +111,6 @@ def threaded_client(conn, _id):
                     id = int(split_data[2])
                     pos_x = float(split_data[3])
                     pos_y = float(split_data[4])
-                    # logger.debug("update")
                     if id in arrows.keys():
                         arrows[id]["pos"] = {
                             "x": pos_x,

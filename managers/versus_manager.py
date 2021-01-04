@@ -316,7 +316,6 @@ class VersusManager:
         """Draw the versus"""
         self.draw_range(screen)
         self.draw_btns(screen)
-        # logger.debug("si c'est pas un wizrad, alors on ne dessine pas le bouton des spells")
         if self.action == "spell":
             if self.spell_pos:
                 pg.draw.circle(screen, GLOOMY_PURPLE, self.spell_pos, TILESIZE, width=2)
@@ -381,10 +380,11 @@ class VersusManager:
             surface.fill(BLUE_MARTINA)
             screen.blit(surface, self.move_btn)
             screen.blit(pg.transform.scale(ITEMS["move"], (TILESIZE, TILESIZE)), self.move_btn)
-            surface.fill(GLOOMY_PURPLE)
-            screen.blit(surface, self.spell_btn)
-            if spell_image:
-                screen.blit(pg.transform.scale(spell_image, (TILESIZE, TILESIZE)), self.spell_btn)
+            if self.turn_manager.active_character().type == "wizard":
+                surface.fill(GLOOMY_PURPLE)
+                screen.blit(surface, self.spell_btn)
+                if spell_image:
+                    screen.blit(pg.transform.scale(spell_image, (TILESIZE, TILESIZE)), self.spell_btn)
             surface.fill(ENERGOS)
             screen.blit(surface, self.validate_btn)
             screen.blit(pg.transform.scale(ITEMS["validate"], (TILESIZE, TILESIZE)), self.validate_btn)

@@ -111,8 +111,17 @@ class Game(_State):
                     ASSETS_SPRITES[hero["class"]])
                 for item in Inventory.create_inventory(hero["inventory"]):
                     player.inventory.add_item(item)
+                for value in hero["equipments"]["armor"].values():
+                    if value is None:
+                        continue
+                    item = Inventory.create_inventory(value)[0]
+                    player.inventory.equip_item(item)
+                if hero["equipments"]["weapon"] is not None:
+                    player.inventory.equip_item(Inventory.create_inventory(hero["equipments"]["weapon"])[0])
+                if hero["equipments"]["spell"] is not None:
+                    player.inventory.equip_item(Inventory.create_inventory(hero["equipments"]["spell"])[0])
+
                 self.turn_manager.players.append(player)
-                logger.debug("ajouter l'équipment depuis la sauvegarde dans le player")
             for item in self.game_data["game_data"]["items"]:
                 PlacableItem(self, vec(item["pos"]["x"], item["pos"]["y"]), item["name"], item["properties"],
                              ITEMS[item["image_name"]], item["image_name"])
