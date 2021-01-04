@@ -42,63 +42,45 @@ module.exports = {
         text: 'Guides',
         link: '/guides/',
       },
-      // {
-      //   text: 'Config',
-      //   link: '/config/',
-      // },
-      // {
-      //   text: 'Guide',
-      //   link: '/guide/',
-      // },
     ],
-    sidebar:
-      //  [
-      //   // voir pour faire une partie avec les écrans (en ajoutant un lien dans le header)
-      //   '/presentation.md',
-      //   '/config.md',
-      //   '/window.md',
-      //   '/save_load.md',
-      //   '/game.md',
-      //   '/shortcuts.md',
-      //   '/map_editor.md',
-      //   '/online_game.md',
-      // ],
-      {
-        '/presentation/': [
-          {
-            title: 'Présentation',
-            collapsable: false,
-            children: ['presentation'],
-          },
-        ],
-        '/guides/': [
-          '',
-          {
-            title: 'Guide du joueur',
-            collapsable: true,
-            children: [
-              'joueur/',
-              'joueur/start-game',
-              'joueur/menu',
-              'joueur/create-game',
-              'joueur/how-play',
-              'joueur/shortcuts',
-            ],
-          },
-          {
-            title: 'Guide du développeur',
-            collapsable: true,
-            children: [
-              '',
-              'start-game',
-              'menu',
-              'create-game',
-              'how-play',
-              'shortcuts',
-            ],
-          },
-        ],
-      },
+    sidebar: {
+      '/presentation/': [
+        {
+          title: 'Présentation',
+          collapsable: false,
+          children: [''],
+        },
+      ],
+      '/guides/': [
+        '',
+        {
+          title: 'Guide du joueur',
+          collapsable: true,
+          children: [
+            'joueur/',
+            'joueur/start-game',
+            'joueur/menu',
+            'joueur/create-game',
+            'joueur/how-play',
+            'joueur/online-game',
+            'joueur/shortcuts',
+          ],
+        },
+        {
+          title: 'Guide du développeur',
+          collapsable: true,
+          children: [
+            'dev/',
+            'dev/config',
+            'dev/window',
+            'dev/versus',
+            'dev/map',
+            'dev/save_load',
+            'dev/shortcuts',
+          ],
+        },
+      ],
+    },
   },
 
   /**

@@ -30,6 +30,23 @@ Il existe 3 types de heros :
 
 Chacun de ses heros va se voir attribuer des capacités spéciales ainsi que des caractéristiques par défault différents.
 
+### Caractéristiques
+
+Chaque personnage possédé 6 attributs qui varient entre 30 et 90. Il s'agit des valeurs qui sont prises par effectuer un lancer de dé.
+
+- STR (strength) : On utilisera cette valeur pour attaquer avec une arme du type `sword` ou pour toute action demandant de la force (ex: briser une porte)
+
+- DEX (dexterity) : Utiliser pour attaquer avec un `arc` ou crocheter une porte.
+  Aussi utiliser pour un lancer d'inactivité dans un combats (cela permet de determiné dans quels ordre les joueur et enemies doivent combattre)
+
+- CON (constitution) : Quand on boit un potion de vie, on fait un lancer de `CON` pour determiner si le joueur à le droit à un bonus de vie. On peut aussi faire un test juste avant de mourir pour échapper à la mort (c'est la dernier chance). Ce nombre se limite en génerale à 1 mais peut varier en fonction de la difficulté.
+
+- INT (Intelligence) : Un bonus s'applique sur les sorts en cas de réussite du lancer de dé.
+
+- WIS (lucky) : Dans un coffre ou sur un ennemie , il y a deux types de loot . Le premier, loot ordinaire se trouvant dans la base de donné. Et le second qui est un loot qui apparaît seulement si le test est réussi, donc un meilleur loot.
+
+- CHA (charisme) : A la rencontre d'un NPC , on effectue ce test pour determiner si le personnage joué arrive à charmer le NPC et pouvoir avoir des réduction sur le shop si c'est un marchand ou avoir des indications (direction/clef/porte) si cela est un NPC classic
+
 ### Soldat
 
 Le soldat est un personnage sans capacité spécial. En revanche, il va être doté d'une grande force lui permettant de gagner ses combats et de mettre la misère à ses adversaires.

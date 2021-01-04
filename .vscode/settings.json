@@ -6,7 +6,7 @@
     "KEYUP",
     "blit",
     "btns",
-    "pylint"
+    "pylint",
   ],
   "python.linting.pylintEnabled": true,
 }

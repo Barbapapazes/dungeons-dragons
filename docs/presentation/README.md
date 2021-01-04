@@ -18,8 +18,12 @@ Nous avons eu 5 mois pour mener à bien ce projet.
 
 ## Guides
 
+Les guides sont accessibles [ici](/guides) !
+
 ### Guide du joueur
 
-Afin de vous permettre de comprendre l'ensemble des mécaniques du jeu et de pleinement profiter de l'expérience que nous avons créer, vous pouvez accéder [ici](/window.html) au guide du joueur.
+Afin de vous permettre de comprendre l'ensemble des mécaniques du jeu et de pleinement profiter de l'expérience que nous avons créer, vous pouvez accéder [ici](/guides/joueur) au guide du joueur.
 
 ### Guide du développeur
+
+Afin de vous permettre de comprendre l'ensemble des éléments techniques du jeu et de pouvoir parfaitement comprendre son architecture, ses spécificités et ce qui le rend unique, nous avons crée un guide pour le développeur accessible [ici](/guides/dev).

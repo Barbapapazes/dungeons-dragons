@@ -13,7 +13,7 @@ from sprites.character import Character
 
 vec = pg.math.Vector2
 
-# Le sprite c'est une boisson.
+
 class Player(Character):
     """Create a player"""
 
