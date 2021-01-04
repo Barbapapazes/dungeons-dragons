@@ -422,7 +422,7 @@ class Enemy(Character):
         if self.game.versus_manager.check_dice():
             damage = self.game.versus_manager.calc_damage()
             self.game.versus_manager.logs.add_log(f'Enemy {self} attacked {self.player_spotted}, dealing {damage}')
-            self.turn_manager.remove_health(damage, self.player_spotted)
+            self.game.turn_manager.remove_health(damage, self.player_spotted)
         else:
             self.game.versus_manager.logs.add_log("Missed dice roll")
         # self.player_spotted.health -= self.STR
