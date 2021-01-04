@@ -69,10 +69,8 @@ class Chest(pg.sprite.Sprite):
             player (Player)
         """
         if not self.is_open:
-            logger.debug(
-                "il faut ajuster le nom de la clé en fonction du type de coffre et donc faire un dict avec les type de coffre en key et le nom de la clé en value")
             for slot in player.inventory.slots:
-                if slot.item and slot.item.name == "key":
+                if slot.item and slot.item.name == "bronze_key_small":
                     logger.info("Open a chest")
                     player.inventory.remove_item(slot.item)
                     self.game.chest_open = True

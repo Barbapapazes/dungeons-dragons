@@ -204,6 +204,10 @@ class VersusManager:
                         self.logs.add_log("Enemy attacked")
                         damage = self.calc_damage()
                         self.turn_manager.remove_health(damage, self.selected_enemy)
+                        if self.selected_enemy.health <= 0:
+                            self.turn_manager.enemies.remove(self.selected_enemy)
+                            self.turn_manager.sorted.remove(self.selected_enemy)
+                            self.selected_enemy.kill()
                     else:
                         self.logs.add_log("Missed dice roll")
                     self.check_characters_actions()
@@ -292,7 +296,7 @@ class VersusManager:
                         break
 
     def update(self):
-        """Mnage the update"""
+        """Manage the update"""
         if self.active:
             if self.action in ["attack", "move", "spell"]:
                 self.circle.update()

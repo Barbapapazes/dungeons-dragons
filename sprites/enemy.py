@@ -75,8 +75,8 @@ class Enemy(Character):
     def update(self):
         if self.health <= 0:
             self.throw_inventory()
-            self.kill()
             self.game.turn_manager.enemies.remove(self)
+            self.kill()
         self.target = self.targets[0]
         target_min_dist = self.targets[0].pos - self.pos
         for target in self.targets:
