@@ -626,7 +626,10 @@ class Game(_State):
 
         # collisionZoneEffect(self.turn_manager.active_character(), self)
         self.versus_manager.update()
-        self.turn_manager.update()
+        if self.versus_manager.active:
+            self.turn_manager.update()
+        else:
+            self.all_sprites.update()
         self.doors.update()
         self.chests.update()
         self.merchants.update()

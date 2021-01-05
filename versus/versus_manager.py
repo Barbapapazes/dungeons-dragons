@@ -33,7 +33,7 @@ class VersusManager:
         start = False
         for enemy in self.turn_manager.enemies:
             for player in self.turn_manager.players:
-                if self.is_distance(enemy.pos, player.pos, 500):
+                if self.is_distance(enemy.pos, player.pos, 300):
                     start = True
 
         warning = False

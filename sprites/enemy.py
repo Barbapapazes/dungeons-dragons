@@ -175,6 +175,27 @@ class Enemy(Character):
                 #     self.acc = self.wander()
                 # else:
                 #     self.acc = temp
+        elif self.player_detection():
+            if self.evaluation():
+                self.flee(self.player_spotted.pos)
+            else:
+                if not self.goto:
+                    self.goto = self.path_finding(self.player_spotted.pos)
+                    if self.goto:
+                        del self.goto[0]
+
+                if self.goto:
+                    self.acc = self.seek(self.goto[0].coor)
+                    if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
+                        del self.goto[0]
+            """if there is no player in range, just move around
+            """
+        else:
+            temp = self.avoidnpc()
+            if temp is False:
+                self.acc = self.wander()
+            else:
+                self.acc = temp
 
             
         """actual movement update
