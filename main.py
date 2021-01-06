@@ -35,9 +35,8 @@ if __name__ == '__main__':
         SHORTCUTS: Shortcuts(),
         CHARACTER_CREATION: CharacterCreation(),
         NEW_GAME: NewGame(),
+        CHOOSE_MAP: ChooseMap(),
         INTRODUCTION: Introduction(),
-        CHOOSE_MAP: ChooseMap()
-        INTRODUCTION: Introduction()
         OPTIONS_MUSIC:Options_music(),
     }
     W.setup_states(STATES, MENU)
