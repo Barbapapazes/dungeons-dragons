@@ -18,12 +18,12 @@ SEEK_FORCE = 0.1
 APPROACH_RADIUS = 50
 WANDER_RING_DISTANCE = 500
 WANDER_RING_RADIUS = 150
-CLASSES = ["Fighter", "Rogue", "Wizard", "Boss"]
+CLASSES = ["fighter", "rogue", "wizard", "boss"]
 TYPE = {
-    "Skeleton" : {"health":80, "STR":35, "DEX":20, "CON":30, "INT":50, "WIS":30, "CHA":30},
-    "Goblin" :   {"health":70, "STR":45, "DEX":50, "CON":35, "INT":20, "WIS":15, "CHA":10},
-    "Phantom" :   {"health":100, "STR":30, "DEX":35, "CON":30, "INT":40, "WIS":30, "CHA":10},
-    "Boss"  : {"health":250, "STR":70, "DEX":25, "CON":55, "INT":20, "WIS":10, "CHA":40}
+    "skeleton" : {"health":80, "STR":35, "DEX":20, "CON":30, "INT":50, "WIS":30, "CHA":30},
+    "goblin" :   {"health":70, "STR":45, "DEX":50, "CON":35, "INT":20, "WIS":15, "CHA":10},
+    "phantom" :   {"health":100, "STR":30, "DEX":35, "CON":30, "INT":40, "WIS":30, "CHA":10},
+    "boss"  : {"health":250, "STR":70, "DEX":25, "CON":55, "INT":20, "WIS":10, "CHA":40}
 }
 
 class Enemy(Character):
@@ -46,6 +46,7 @@ class Enemy(Character):
         self.last_timestamp = 0
         self.last_timestamp2 = None
         self.now = 0
+        self.cooldown = 30000
 
         self.numberOfAction = 0
 
@@ -89,10 +90,10 @@ class Enemy(Character):
         # self.WIS = TYPE.get(self.type).get("WIS")
         # self.CHA = TYPE.get(self.type).get("CHA")
         
-    def __repr__(self):
+    def __str__(self):
         """default displayed text whenever printing the enemy
         """
-        return self.type
+        return f'{self.type} {self.classe}'
         
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -159,7 +160,7 @@ class Enemy(Character):
                     
                     if self.move_or_attack():
                         if self.now - self.last_timestamp2 > 1500 and self.vel == vec(0,0): # skip if stuck on a wall
-                            logger.info(self.last_timestamp2)
+                            # logger.info(self.last_timestamp2)
                             self.last_timestamp = self.now
                             self.moving = False
                             self.end_turn()
@@ -440,14 +441,17 @@ class Enemy(Character):
     def attack(self):
         """attack instructions
         """
+        if self.classe == CLASSES[2]:
+            if self.cooldown - self.now < 0:
+                self.game.versus_manager.logs.add_log(f"The {self} invoked a {Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE), self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')} !")
+                self.cooldown += 30000
+                self.end_turn()
         if self.game.versus_manager.check_dice():
-            damage = self.game.versus_manager.calc_damage()
-            self.game.versus_manager.logs.add_log(f'Enemy {self} attacked {self.player_spotted}, dealing {damage}')
-            self.game.turn_manager.remove_health(damage, self.player_spotted)
+                damage = self.game.versus_manager.calc_damage()
+                self.game.versus_manager.logs.add_log(f'The {self} attacked {self.player_spotted}, dealing {damage}.')
+                self.game.turn_manager.remove_health(damage, self.player_spotted)
         else:
-            self.game.versus_manager.logs.add_log("Missed dice roll")
-        # self.player_spotted.health -= self.STR
-        # self.game.versus_manager.logs.add_log(f'{self} attacked {self.player_spotted} dealing {self.STR} damages !')
+            self.game.versus_manager.logs.add_log(f'The {self} missed his attack...')
         self.end_turn()
         
     def end_turn(self):

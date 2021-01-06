@@ -190,21 +190,21 @@ class Game(_State):
                         _images = ASSETS_SPRITES[_class]
                         self.turn_manager.players.append(
                             Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
-                if tile_object.name == "Skeleton":
+                if tile_object.name == "skeleton":
                     self.turn_manager.enemies.append(
-                    Enemy(self, obj_center.x, obj_center.y, "Skeleton", choice(["skeleton_F","skeleton_R","skeleton_W"]))
+                    Enemy(self, obj_center.x, obj_center.y, "skeleton", choice(["skeleton_F","skeleton_R","skeleton_W"]))
                     )
-                if tile_object.name == "Goblin":
+                if tile_object.name == "goblin":
                     self.turn_manager.enemies.append(
-                    Enemy(self, obj_center.x, obj_center.y, "Goblin", choice(["goblin_F","goblin_R","goblin_W"]))
+                    Enemy(self, obj_center.x, obj_center.y, "goblin", choice(["goblin_F","goblin_R","goblin_W"]))
                     )
-                if tile_object.name == "Phantom":
+                if tile_object.name == "phantom":
                     self.turn_manager.enemies.append(
-                    Enemy(self, obj_center.x, obj_center.y, "Phantom", choice(["phantom_F","phantom_R","phantom_W"]))
+                    Enemy(self, obj_center.x, obj_center.y, "phantom", choice(["phantom_F","phantom_R","phantom_W"]))
                     )
-                if tile_object.name == "Boss":
+                if tile_object.name == "boss":
                     self.turn_manager.enemies.append(
-                        Boss(self, obj_center.x, obj_center.y, "Boss", "boss")
+                        Boss(self, obj_center.x, obj_center.y, "boss", "boss")
                         )
                 if tile_object.name == 'wall':
                     Obstacle(
