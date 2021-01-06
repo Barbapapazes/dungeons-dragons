@@ -28,8 +28,6 @@ class Character(pg.sprite.Sprite):
 
         self.game = game
         self.type = _type
-        self.images = images
-
         self.direction = "idle"
 
         self.dice = {
@@ -44,12 +42,13 @@ class Character(pg.sprite.Sprite):
         self.pos = vec(x, y)
 
         self.number_actions = 0
-
-        self.image = next(self.images[self.direction])
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.hit_rect = hit_rect
-        self.hit_rect.center = self.rect.center
+        if not hasattr(self, "goto"):
+            self.images = images
+            self.image = next(self.images[self.direction])
+            self.rect = self.image.get_rect()
+            self.rect.center = (x, y)
+            self.hit_rect = hit_rect
+            self.hit_rect.center = self.rect.center
 
         self.frame_time = 60 / 1000
         self.frame_timer = 0

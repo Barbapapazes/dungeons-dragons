@@ -31,7 +31,7 @@ from versus.versus_manager import VersusManager
 from versus.sort import Sort
 from versus.sort import collisionZoneEffect
 from sprites.enemy import Enemy, Boss
-from random import randint # very temporary (just to create multiple type of enemies)
+from random import choice # very temporary (just to create multiple type of enemies)
 
 vec = pg.math.Vector2
 
@@ -191,16 +191,20 @@ class Game(_State):
                         self.turn_manager.players.append(
                             Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
                 if tile_object.name == "Skeleton":
-                        self.turn_manager.enemies.append(
-                        Enemy(self, obj_center.x, obj_center.y, "Skeleton", ASSETS_SPRITES["enemy_1"])
-                        )
+                    self.turn_manager.enemies.append(
+                    Enemy(self, obj_center.x, obj_center.y, "Skeleton", choice(["skeleton_F","skeleton_R","skeleton_W"]))
+                    )
                 if tile_object.name == "Goblin":
-                        self.turn_manager.enemies.append(
-                        Enemy(self, obj_center.x, obj_center.y, "Goblin", ASSETS_SPRITES["enemy_2"])
-                        )
+                    self.turn_manager.enemies.append(
+                    Enemy(self, obj_center.x, obj_center.y, "Goblin", choice(["goblin_F","goblin_R","goblin_W"]))
+                    )
+                if tile_object.name == "Phantom":
+                    self.turn_manager.enemies.append(
+                    Enemy(self, obj_center.x, obj_center.y, "Phantom", choice(["phantom_F","phantom_R","phantom_W"]))
+                    )
                 if tile_object.name == "Boss":
                     self.turn_manager.enemies.append(
-                        Boss(self, obj_center.x, obj_center.y, "Boss", ASSETS_SPRITES["boss"])
+                        Boss(self, obj_center.x, obj_center.y, "Boss", "boss")
                         )
                 if tile_object.name == 'wall':
                     Obstacle(

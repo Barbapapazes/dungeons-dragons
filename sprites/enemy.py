@@ -7,6 +7,8 @@ from config.window import TILESIZE
 from utils.cell import Cell
 from random import uniform
 from random import randint
+import re
+from config.sprites import ASSETS_SPRITES
 vec = pg.math.Vector2
 
 # npc settings
@@ -16,20 +18,27 @@ SEEK_FORCE = 0.1
 APPROACH_RADIUS = 50
 WANDER_RING_DISTANCE = 500
 WANDER_RING_RADIUS = 150
-CLASSES = ["Fighter","Mage","Rogue"]
+CLASSES = ["Fighter", "Rogue", "Wizard", "Boss"]
 TYPE = {
     "Skeleton" : {"health":80, "STR":35, "DEX":20, "CON":30, "INT":50, "WIS":30, "CHA":30},
     "Goblin" :   {"health":70, "STR":45, "DEX":50, "CON":35, "INT":20, "WIS":15, "CHA":10},
+    "Phantom" :   {"health":100, "STR":30, "DEX":35, "CON":30, "INT":40, "WIS":30, "CHA":10},
     "Boss"  : {"health":250, "STR":70, "DEX":25, "CON":55, "INT":20, "WIS":10, "CHA":40}
 }
 
 class Enemy(Character):
     def __init__(self, game, x, y, _type, images):
-
+        self.goto = []
         self.groups = enemies
         pg.sprite.Sprite.__init__(self, self.groups)
         super(Enemy, self).__init__(game, x, y, _type, images, MOB_HIT_RECT)
-        
+        self.images = ASSETS_SPRITES[images]
+        self.image = next(self.images[self.direction])
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.hit_rect = MOB_HIT_RECT
+        self.hit_rect.center = self.rect.center
+
         self.pos = vec(x, y)
         self.vel = vec(1, 1).rotate(uniform(0, 360))
         self.acc = vec(0, 0)
@@ -51,9 +60,18 @@ class Enemy(Character):
         
         self.target = self.pos
         self.player_spotted = None
-        self.goto = []
+        
         self.view_range = TILESIZE * 6
         self.moving = False
+
+        if images[-1] == 'F':
+            self.classe = CLASSES[0]
+        elif images[-1] == 'R':
+            self.classe = CLASSES[1]
+        elif images[-1] == 'W':
+            self.classe = CLASSES[2]
+        else:
+            self.classe = CLASSES[3]
 
         self.health = TYPE.get(self.type).get("health")
         self.characteristics = {
@@ -298,10 +316,6 @@ class Enemy(Character):
 
         start.f = start.g + (self.pos - goalvec).length()
 
-        # test = open(r'C:\Users\valen\Desktop\projet python\dungeons-dragons-dev\dungeons-dragons\sprites\wx.txt', 'w')
-        # test.write(f'{start.coor//TILESIZE} is the start and my f is {start.f}, my g is {start.g}\n')
-        # test.write(f'{goal.coor//TILESIZE} is the objective and my f is {goal.f}, my g is {goal.g}\n')
-
         """boucle de recherche de chemin
         """
         while open_set:
@@ -317,12 +331,6 @@ class Enemy(Character):
             if goalvec.x-TILESIZE <= current.coor.x <= goalvec.x+TILESIZE and goalvec.y-TILESIZE <= current.coor.y <= goalvec.y+TILESIZE:
                 path = []
                 return current.reconstruct_path(path)
-
-            # for u in open_set:
-            #     test.write(f'{u.coor//TILESIZE} is in open and my f is {u.f}, my g is {u.g}\n')
-            # for y in closed_set:
-            #     test.write(f'{y.coor//TILESIZE} is in closed and my f is {y.f}, my g is {y.g}\n')
-            # test.write(f'{current.coor//TILESIZE} is the current cell and my f is {current.f}, i shoulf have a large {current.g} value\n')
 
             open_set.remove(current)
             closed_set.append(current)
@@ -350,7 +358,6 @@ class Enemy(Character):
                     for noeudexplored in closed_set:
                         if neigh.coor//TILESIZE == noeudexplored.coor//TILESIZE:
                             skip3 = True
-                            # test.write(f"{neigh.coor//TILESIZE} vire moi ça de là\n")
                             break
                 if skip3:
                     continue
@@ -358,7 +365,6 @@ class Enemy(Character):
                 """
                 gtry = current.g + (current.coor - neigh.coor).length()
                 if neigh.g == 0 or gtry < neigh.g:
-                    # test.write(f'{neigh.coor//TILESIZE} is a neighbor :D\n')
                     neigh.came_from = current
                     neigh.g = gtry
                     neigh.f = neigh.g + (neigh.coor - goalvec).length()
@@ -371,15 +377,9 @@ class Enemy(Character):
                         for noeudnonexplored in open_set:
                             if neigh.coor//TILESIZE == noeudnonexplored.coor//TILESIZE:
                                 skip2 = True
-                                # test.write(f'{neigh.coor//TILESIZE} hopla ça dégage\n')
                                 break
                         if not skip2:
                             open_set.append(neigh)
-
-            # if current.came_from is not None:
-            #     assert current.came_from.g < current.g
-            # assert closed_set.count(current) == 1, current
-            # assert not (current in open_set and current in closed_set)
         return []
 
     def player_detection(self):
