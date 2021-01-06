@@ -81,11 +81,13 @@ Pour accéder à l'inventaire du joueur actif, il suffit de cliquer sur **ctrl+i
 
 ## Sauvegarder le jeu
 
-En effet, il est possible de sauvegarder une partie en cours. Cependant, il n'y a pas de raccourcies claviers pour faire cela. En effet, il vous faudra trouver un feu de camps et de vous en approcher suffisamment pour que un appuie sur **espace** permettent de sauvegarder la partie. Un message dans le
+En effet, il est possible de sauvegarder une partie en cours. Cependant, il n'y a pas de raccourcies claviers pour faire cela. En effet, il vous faudra trouver un feu de camps et de vous en approcher suffisamment pour que un appuie sur **espace** permettent de sauvegarder la partie.
 
 ![un feu de camps](/camp-fire.jpg)
 
-console du jeu vous en avertira. Dès lors, quittez votre partie dans souci et revenez jouer plus tard.
+Un message dans la console du jeu vous en avertira. Dès lors, quittez votre partie dans souci et revenez jouer plus tard.
+
+Aussi, le feu de camps permet au joueur qui l'actionne de regagner tous ses points de vie.
 
 ## Camera
 

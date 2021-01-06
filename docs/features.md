@@ -15,6 +15,7 @@
 - polyvalence des modes de jeu, temps réel et tour par tour
 - ramassage d'items au sol
 - développement d'écran facilité
+- génération intelligente et automatique de la carte
 - débogage simplifié
 - enemies intelligents
 - gestion du dragndrop dans le shop, l'inventaire et le store
