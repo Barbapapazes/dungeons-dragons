@@ -38,7 +38,7 @@ class VersusManager:
         start = False
         for enemy in self.turn_manager.enemies:
             for player in self.turn_manager.players:
-                if self.is_distance(enemy.pos, player.pos, 500):
+                if self.is_distance(enemy.pos, player.pos, 300):
                     start = True
 
         warning = False
@@ -92,9 +92,12 @@ class VersusManager:
         self.add_actions()
 
     def add_actions(self):
-        """Add actions the the active character"""
-        self.turn_manager.active_character().number_actions = 2
-        self.logs.add_log("Add 2 actions")
+        if self.turn_manager.active_character().type == "Boss":
+            self.turn_manager.active_character().number_actions = 1
+            self.logs.add_log("Add 1 action")
+        else:
+            self.turn_manager.active_character().number_actions = 2
+            self.logs.add_log("Add 2 actions")
 
     def finish_versus(self):
         """Finish the versus"""

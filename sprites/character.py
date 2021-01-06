@@ -1,17 +1,21 @@
 """Define a character"""
-
-from random import randint
+from random import randint, uniform
 import pygame as pg
 from utils.tilemap import collide_with_walls
-vec = pg.Vector2
+from config.sprites import PLAYER_HIT_RECT
+from logger import logger
 
+vec = pg.math.Vector2
+
+players = pg.sprite.Group()
+enemies = pg.sprite.Group()
 
 class Character(pg.sprite.Sprite):
     """Used to define a character"""
 
     def __init__(self, game, x, y, _type, images, hit_rect):
         self._layer = y
-        self.groups = game.all_sprites,
+        self.groups = game.all_sprites
         super(Character, self).__init__(self.groups)
 
         self.characteristics = {
@@ -25,8 +29,6 @@ class Character(pg.sprite.Sprite):
 
         self.game = game
         self.type = _type
-        self.images = images
-
         self.direction = "idle"
 
         self.dice = {
@@ -41,12 +43,13 @@ class Character(pg.sprite.Sprite):
         self.pos = vec(x, y)
 
         self.number_actions = 0
-
-        self.image = next(self.images[self.direction])
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.hit_rect = hit_rect
-        self.hit_rect.center = self.rect.center
+        if not hasattr(self, "goto"):
+            self.images = images
+            self.image = next(self.images[self.direction])
+            self.rect = self.image.get_rect()
+            self.rect.center = (x, y)
+            self.hit_rect = hit_rect
+            self.hit_rect.center = self.rect.center
 
         self.frame_time = 60 / 1000
         self.frame_timer = 0
@@ -96,3 +99,23 @@ class Character(pg.sprite.Sprite):
         _type = "success" if self.dice["success"] else "failed"
         self.game.logs.add_log(
             f"Dice {_type}, result {result_dice}/{value_dice}, under {self.characteristics[base_value] + mod} to success")
+        logger.info("Result dice : %d / %d (must be under %s to success)",
+                    result_dice, value_dice, self.characteristics[base_value] + mod)
+
+    def groupCount(self, grouplist, count=0):
+        """computes the number of entities belonging to the same group that can see one another
+        Args:
+            grouplist (list): list containing the entities of "self's group"
+            count (int, optional): counter
+        Returns:
+            int: number of entities that can see one another
+        """
+        for someone in grouplist:
+            if someone == self:
+                grouplist.remove(someone)
+                count += 1
+            if (someone.pos - self.pos).length_squared() <= self.view_range:
+                if hasattr(someone, "goto"):
+                    someone.player_spotted = self.player_spotted
+                return Character.groupCount(someone, grouplist, count)
+        return count

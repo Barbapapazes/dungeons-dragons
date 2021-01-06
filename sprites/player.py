@@ -18,7 +18,10 @@ class Player(Character):
     """Create a player"""
 
     def __init__(self, game, x, y, _type, characteristics, health, xp, gold, images):
+        self.groups = players
+        pg.sprite.Sprite.__init__(self, self.groups)
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
+        
         self.can_move = True
 
         self.characteristics = characteristics
@@ -35,6 +38,7 @@ class Player(Character):
         self.shield = 0
         self.MP = 50  # mana
         self.max_MP = PLAYER_MAX_MP
+        self.view_range = 500
 
         # Attribut
         self.STR = 70  # strenght

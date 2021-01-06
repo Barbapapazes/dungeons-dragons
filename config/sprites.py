@@ -581,7 +581,7 @@ BOB_SPEED = 0.4
 
 
 # Heros
-TYPES = ["wizard", "soldier", "thief", "enemy_1"]
+TYPES = ["wizard", "soldier", "thief", "skeleton_F", "skeleton_R", "skeleton_W", "phantom_F", "phantom_R", "phantom_W", "goblin_F", "goblin_R", "goblin_W", "boss", "mini_boss"]
 DIRECTIONS = ["up", "down", "left", "right", "idle"]
 
 ASSETS_SPRITES = {
