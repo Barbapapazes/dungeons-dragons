@@ -433,6 +433,16 @@ class Game(_Elements):
                 #     self.versus.finish()
                 # else:
                 #     self.versus.start()
+            if self.turn_manager.is_active_player():
+                if event.key == pg.K_1:
+                    self.versus_manager.action_attack()
+                if event.key == pg.K_2:
+                    self.versus_manager.action_move()
+                if event.key == pg.K_3 and not self.turn_manager.get_active_spell() is None:
+                    self.versus_manager.action_spell()
+
+                if event.key == pg.K_RETURN:
+                    self.versus_manager.validate()
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
