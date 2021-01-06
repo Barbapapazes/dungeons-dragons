@@ -55,6 +55,7 @@ class Enemy(Character):
         
         self.attack_range = TILESIZE * 2
 
+        logger.debug("il faut leur mettre une défence par default pour contrer les attaques")
         logger.error("il y a un souci d'update avec la camera")
 
         self.speed = 2
@@ -109,6 +110,10 @@ class Enemy(Character):
             "inventory": self.inventory.save()
         }
 
+    def get_protection(self):
+        logger.debug("il faut ajouter de la protection aux personnages")
+        return 2
+
     def draw_health(self):
         """draw healthbar onto the screen
         """
@@ -133,7 +138,6 @@ class Enemy(Character):
     def update(self):
         if self.health <= 0:
             self.throw_inventory()
-            self.kill()
             self.game.turn_manager.enemies.remove(self)
 
         #if trap nearby: flee(trap)

@@ -68,7 +68,6 @@ class Window():
         self.state = self.states_dict[self.state_name]
         self.shortcuts = self.persist["shortcuts"]
         self.state.previous = previous
-        logger.debug(self.persist)
         logger.info("Startup %s", self.state_name)
         self.state.startup(self.dt, self.persist)
 
@@ -125,6 +124,7 @@ class Window():
                         self.save()
 
     def save(self):
+        """Used to save the game data"""
         self.save_game_data()
         self.save_minimap_data()
 
@@ -299,7 +299,6 @@ class _State():
         Args:
             events (array)
         """
-        pass
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -431,6 +430,13 @@ class _Elements(_State):
                     value["on_click"],
                     value["on_click_params"]
                 ))
+
+    def all_events(self, events):
+        """Used to access to all events in a screen
+
+        Args:
+            events (Events)
+        """
 
     def load_next_state(self, *next_state):
         """Load the new state"""

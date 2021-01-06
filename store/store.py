@@ -61,6 +61,11 @@ class Store:
         self.display_shop = False
 
     def save(self):
+        """Used to save the store
+
+        Returns:
+            dict
+        """
         slots = {
             "weapons": dict(),
             "armor": dict(),
@@ -138,8 +143,6 @@ class Store:
         """Add all items to the weapon category
         """
         self.weapons = list()
-        # il va falloir utiliser des variables pour que l'implémentation soit smart
-        logger.debug(self.chosen_weapons)
         for key, value in self.chosen_weapons:
             data = Weapon(
                 key,
@@ -149,7 +152,9 @@ class Store:
                 value['slot'],
                 value['type'],
                 value['weight'],
-                scope=value['scope']
+                value['number_dice'],
+                value['dice_value'],
+                value['scope']
             )
             self.weapons.append(data)
 
@@ -186,7 +191,6 @@ class Store:
     def add_all_consumables(self):
         """Add all items to the consumable category"""
         self.consumables = list()
-        logger.debug(self.chosen_consumables)
         for key, value in self.chosen_consumables:
             data = Consumable(
                 key,
@@ -226,6 +230,11 @@ class Store:
                 slot_moving.draw_items(screen)
 
     def draw_title(self, screen):
+        """Used to draw title
+
+        Args:
+            screen (Surface)
+        """
         self.game.draw_text(
             "Items", self.game.title_font, 48, YELLOW_LIGHT, 1 * WIDTH // 4, HEIGHT // 3 -
             ((STORE_TILESIZE + STORE_SLOT_GAP) * 3) // 2 + STORE_SLOT_GAP, align="n", screen=screen)
@@ -302,7 +311,6 @@ class Store:
         """
         logger.info("Get %s from store", item)
         data = deepcopy(item)
-        logger.debug("%s", type(data))
         return data
 
     def find_item(self, item):

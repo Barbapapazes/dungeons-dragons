@@ -2,11 +2,18 @@
 
 import pygame as pg
 import pytmx
-from config.window import WIDTH, HEIGHT
+from config.window import HEIGHT, WIDTH
 from logger import logger
 
 
 def collide_with_walls(sprite, group, dir):
+    """Check and manage the collision with a wall
+
+    Args:
+        sprite (Sprite)
+        group (Group): the group to check the collision with the sprite
+        dir (str): x or y
+    """
     if dir == 'x':
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
         if hits:
@@ -28,10 +35,13 @@ def collide_with_walls(sprite, group, dir):
 
 
 def collide_hit_rect(one, two):
+    """Check the collision with 2 rects"""
     return one.hit_rect.colliderect(two.rect)
 
 
 class TiledMap:
+    """Create the map"""
+
     def __init__(self, filename):
         tm = pytmx.load_pygame(filename, pixels_alpha=True)
         self.width = tm.width * tm.tilewidth
@@ -39,6 +49,11 @@ class TiledMap:
         self.tmxdata = tm
 
     def render(self, surface):
+        """Create the map on a surface of
+
+        Args:
+            surface (Surface)
+        """
         ti = self.tmxdata.get_tile_image_by_gid
         for layer in self.tmxdata.visible_layers:
             if isinstance(layer, pytmx.TiledTileLayer):
@@ -48,6 +63,11 @@ class TiledMap:
                         surface.blit(tile, (x * self.tmxdata.tilewidth, y * self.tmxdata.tileheight))
 
     def make_map(self):
+        """Create the map
+
+        Returns:
+            Surface: the map
+        """
         temp_surface = pg.Surface((self.width, self.height))
         self.render(temp_surface)
         logger.info("Create the map")
@@ -55,18 +75,42 @@ class TiledMap:
 
 
 class Camera:
+    """Create a virtual camera"""
+
     def __init__(self, width, height):
         self.camera = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
 
     def apply(self, entity):
+        """Apply the offset camera on a sprite
+
+
+        Args:
+            entity (Sprite)
+
+        Returns:
+            Sprite
+        """
         return entity.rect.move(self.camera.topleft)
 
     def apply_rect(self, rect):
+        """Apply the offset on a rect
+
+        Args:
+            rect (Rect)
+
+        Returns:
+            Rect
+        """
         return rect.move(self.camera.topleft)
 
     def update(self, target):
+        """Update the offset depending of the sprite 
+
+        Args:
+            target (Sprite)
+        """
         x = -target.rect.centerx + int(WIDTH / 2)
         y = -target.rect.centery + int(HEIGHT / 2)
 
@@ -106,22 +150,57 @@ class Minimap:
 
     @staticmethod
     def draw_player(_map, pos):
+        """Draw the player on the minimap
+
+        Args:
+            _map (Surface)
+            pos (tuple)
+        """
         pg.draw.circle(_map, (0, 255, 0), pos, 3, width=2)
 
+    @staticmethod
+    def draw_enemy(_map, pos):
+        """Draw the enemy on the minimap
+
+        Args:
+            _map (Surface)
+            pos (tuple)
+        """
+        pg.draw.circle(_map, (255, 0, 0), pos, 3, width=2)
+
     def create_all_players(self, _map, players):
+        """Draw all players
+
+        Args:
+            _map (Surface)
+            players (Group)
+        """
         for player in players:
             self.draw_player(_map, player.pos * self.img_ratio)
 
-    def update(self, player):
-        """Update the frog using a pos
+    def create_all_enemies(self, _map, enemies):
+        """Draw all enemies
 
         Args:
-            pos (list): the x and y of the player
+            _map (Surface)
+            enemies (Group)
         """
-        pos = player.pos * self.img_ratio
-        pg.draw.circle(self.cover, pg.Color(0, 0, 0, 0), pos, self.size)
+        for enemy in enemies:
+            self.draw_enemy(_map, enemy.pos * self.img_ratio)
+
+    def update(self, players):
+        """Update the frog using a players list
+
+        Args:
+            players (list(Player))
+        """
+        for player in players:
+            pos = player.pos * self.img_ratio
+            pg.draw.circle(self.cover, pg.Color(0, 0, 0, 0), pos, self.size)
         self.fog.fill(self.fog_color)
-        pg.draw.circle(self.fog, pg.Color(0, 0, 0, 0), pos, self.size)
+        for player in players:
+            pos = player.pos * self.img_ratio
+            pg.draw.circle(self.fog, pg.Color(0, 0, 0, 0), pos, self.size)
 
     def create_minimap_data(self):
         """Create a dict to save minimap data
@@ -134,11 +213,13 @@ class Minimap:
             "cover": self.cover
         }
 
-    def create(self, player, players):
+    def create(self, player, players, enemies):
         """Create the minimap as a surface
 
         Args:
             player (Player)
+            players (list(Player))
+            enemies (list(Enemy))
 
         Returns:
             Surface
@@ -148,6 +229,7 @@ class Minimap:
 
         self.draw_player(temp_map, pos)
         self.create_all_players(temp_map, players)
+        self.create_all_enemies(temp_map, enemies)
 
         temp_map.blit(self.fog, (0, 0))
         temp_map.blit(self.cover, (0, 0))

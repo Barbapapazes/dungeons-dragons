@@ -6,9 +6,9 @@ from config.server import SERVER_IP, SERVER_PORT
 
 class Network:
     def __init__(self):
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.host = SERVER_IP
-        self.port = SERVER_PORT
+        self.client = socket.socket()
+        self.host = socket.gethostname()
+        self.port = 3000
         self.addr = (self.host, self.port)
 
     def connect(self):

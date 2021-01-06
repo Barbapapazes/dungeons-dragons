@@ -1,8 +1,9 @@
-import pygame as pg
-import json
+"""Used to manage shortcuts"""
+
 import os
 from os import path
-from logger import logger
+import json
+import pygame as pg
 from data.shortcuts import SHORTCUTS_DEFAULT, CUSTOM_SHORTCUTS_FILENAME
 
 

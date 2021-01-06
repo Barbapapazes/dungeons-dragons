@@ -21,6 +21,11 @@ class Item:
         self.is_moving = False
 
     def save(self):
+        """Save the item data
+
+        Returns:
+            dict
+        """
         return {
             self.name: {
                 "object_type": "item",

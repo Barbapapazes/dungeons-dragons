@@ -1,12 +1,16 @@
 """Define a player"""
-from sprites.character import *
-from config.colors import YELLOW
-from config.window import TILESIZE
-from config.sprites import ASSETS_SPRITES, PLAYER_SPEED, PLAYER_ROT_SPEED, PLAYER_MAX_HP, PLAYER_HIT_RECT, PLAYER_MAX_MP
+from random import uniform
+
+import pygame as pg
+from config.screens import ONLINE_GAME
+from config.sprites import (ITEMS, PLAYER_HIT_RECT,
+                            PLAYER_MAX_HP, PLAYER_MAX_MP,
+                            PLAYER_SPEED)
 from inventory.inventory import Inventory
-from utils.tilemap import collide_with_walls
-from os import path
-from store.shop import Shop
+from logger import logger
+
+from sprites.character import Character
+
 vec = pg.math.Vector2
 
 
@@ -26,6 +30,7 @@ class Player(Character):
         self.gold = gold
 
         self.numberOfAction = 0
+        self.last_shot = 0
 
         # Stats
         self.HP = 100
@@ -46,13 +51,15 @@ class Player(Character):
         # Inventory
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
-        self.sort = None
+        self.spell = None
         self.inventory = Inventory(self, 5, 8)
 
-        # shop, temporary here, to put in a seller
-        # self.shop = Shop()
-
     def save(self):
+        """Used to save the player data
+
+        Returns:
+            dict
+        """
         return {
             "class": self.type,
             "pos": {
@@ -64,10 +71,25 @@ class Player(Character):
             "xp": self.xp,
             "health": self.health,
             "gold": self.gold,
-            "inventory": self.inventory.save()
+            "inventory": self.inventory.save(),
+            "equipments": self.save_equipments()
+        }
+
+    def save_equipments(self):
+        """Save the equipments of the player
+
+        Returns:
+            dict
+        """
+        armor = {key: value.save() if value else None for key, value in self.armor.items()}
+        return {
+            "armor": armor,
+            "weapon": self.weapon.save() if self.weapon else None,
+            "spell": self.spell.save() if self.spell else None
         }
 
     def get_keys(self):
+        """Used to check the keys"""
         self.vel = vec(0, 0)
         keys = pg.key.get_pressed()
         self.direction = "idle"
@@ -86,12 +108,41 @@ class Player(Character):
                 self.vel.y = PLAYER_SPEED
             if self.vel.x != 0 and self.vel.y != 0:
                 self.vel *= 0.7071
+            if self.game.name == ONLINE_GAME:
+                if keys[pg.K_SPACE]:
+                    self.shoot()
+
+    def shoot(self):
+        """Used to launch an arrow"""
+        now = pg.time.get_ticks()
+        if now - self.last_shot > 100:
+            self.last_shot = now
+            mouse_pos = pg.mouse.get_pos()
+            _dir = vec(mouse_pos[0] - self.pos[0] - self.game.camera.camera.x,
+                       mouse_pos[1] - self.pos[1] - self.game.camera.camera.y)
+            _dir.scale_to_length(1.0)
+            spread = uniform(-15, 15)
+            _dir = _dir.rotate(spread)
+            _vel = _dir * 300 * uniform(0.8, 1.2)
+            damage = 10
+            data = " ".join(
+                ["arrow", str(int(self.pos.x)),
+                 str(int(self.pos.y)),
+                 str(_dir.x),
+                 str(_dir.y),
+                 str(_vel.x),
+                 str(_vel.y),
+                 str(damage), str(self.game.current_id)])
+
+            self.game.server.send(data)
 
     def update(self):
+        """Used to update the player"""
         self.get_keys()
         super().update()
 
     def get_direction(self):
+        """Used to create the direction of the sprite, when in auto-mode"""
         angle = self.vel.angle_to(vec(0, 1))
         if 180 - 45 <= angle < 180 + 45:
             self.direction = "up"
@@ -103,6 +154,11 @@ class Player(Character):
             self.direction = "down"
 
     def set_vel(self, vel):
+        """Set the velocity of the player
+
+        Args:
+            vel ([type]): [description]
+        """
         self.direction = "idle"
         if vel[0] != 0 or vel[1] != 0:
             self.vel = vec(vel)
@@ -110,6 +166,11 @@ class Player(Character):
         self.update_image()
 
     def set_pos(self, pos):
+        """Set the pos of the player
+
+        Args:
+            pos (tuple)
+        """
         self.pos = pos
         self.rect.center = self.pos
 
@@ -200,38 +261,53 @@ class Player(Character):
         """
         self.shield += shield_gain
 
-    def equip_sort(self, sort):
-        """Put a passed sort in the sort slot
+    def equip_spell(self, spell):
+        """Put a passed spell in the spell slot
 
         Args:
             weapon (Weapon)
         """
-        if self.sort is not None:
-            self.unequip_sort()
-        self.sort = sort
+        if self.spell is not None:
+            self.unequip_spell()
+        self.spell = spell
 
-    def unequip_sort(self):
-        """Set sort to None if it wasn't
+    def unequip_spell(self):
+        """Set spell to None if it wasn't
         """
-        if self.sort is not None:
-            self.sort = None
+        if self.spell is not None:
+            self.spell = None
 
-        # self.frame_count += 1
-        # if self.frame_count >= 27:
-        #     self.frame_count = 0
 
-        # self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+class Arrow(pg.sprite.Sprite):
+    """Create an arrow"""
 
-        # if self.is_moving:
-        #     if 135 < self.rot <= 225:
-        #         self.image = pg.transform.flip(pg.transform.rotate(
-        #             self.run_right_images[self.frame_count // 9], -self.rot), False, True)
-        #     if 225 < self.rot <= 315:
-        #         self.image = pg.transform.rotate(
-        #             self.run_front_images[self.frame_count // 9], self.rot - 270)
-        #     if 315 < self.rot <= 360 or 0 <= self.rot < 45:
-        #         self.image = pg.transform.flip(pg.transform.rotate(
-        #             self.run_left_images[self.frame_count // 9], -self.rot), True, False)
-        #     if 45 < self.rot <= 135:
-        #         self.image = pg.transform.rotate(
-        #             self.run_back_images[self.frame_count // 9], self.rot - 90)
+    def __init__(self, game, pos, _dir, vel, damage, _id, player_id):
+        self._layer = 20
+        self.groups = game.all_sprites, game.arrows,
+        super(Arrow, self).__init__(self.groups)
+        self.game = game
+        self.id = _id
+        self.player_id = player_id
+
+        self.image = pg.transform.rotate(ITEMS["arrow_01e"], _dir.angle_to(vec(-1, -1)))
+        self.rect = self.image.get_rect()
+        self.hit_rect = self.rect
+        self.pos = vec(pos)
+        self.rect.center = pos
+        self.vel = vel
+        self.spawn_time = pg.time.get_ticks()
+        self.damage = damage
+        self.is_deleted = False
+
+    def update(self):
+        """Update the arrow"""
+        self.pos += self.vel * self.game.dt
+        self.rect.center = self.pos
+        if pg.time.get_ticks() - self.spawn_time > 1000:
+            if self.game.name == ONLINE_GAME:
+                self.is_deleted = True
+                # this can be done outside of this class and we can send data only for the owner
+                data = " ".join(["arrow", "remove", str(self.id), str(self.player_id)])
+                self.game.server.send(data)
+            else:
+                self.kill()

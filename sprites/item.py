@@ -1,8 +1,8 @@
 """Define a placable item"""
 
-from config.sprites import BOB_RANGE, BOB_SPEED
 import pygame as pg
 import pytweening as tween
+from config.sprites import BOB_RANGE, BOB_SPEED
 
 
 class PlacableItem(pg.sprite.Sprite):
@@ -33,6 +33,11 @@ class PlacableItem(pg.sprite.Sprite):
             self.dir *= -1
 
     def save(self):
+        """Used to save the item data
+
+        Returns:
+            dict
+        """
         return {
             "name": self.name,
             "pos": {

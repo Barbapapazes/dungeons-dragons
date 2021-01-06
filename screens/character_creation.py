@@ -53,23 +53,6 @@ class CharacterCreation(_Elements):
         self.remaining_heros_to_create = game_data["num_heros"]
         super().startup(dt, game_data)
 
-        # textbox
-        # self.name = TextBox(
-        #     self.background,
-        #     20,
-        #     100,
-        #     400,
-        #     40,
-        #     fontSize=50,
-        #     borderColour=RED,
-        #     textColour=(
-        #         0,
-        #         200,
-        #         0),
-        #     onSubmit=self.output,
-        #     radius=10,
-        #     borderThickness=4)
-
     def new(self):
         """Create new variables"""
         self.selected = 0
@@ -78,6 +61,12 @@ class CharacterCreation(_Elements):
         self.create_animations()
         self.create_sliders()
         self.create_back_button(self.background, self.load_next_state, [MENU])
+
+    def all_events(self, events):
+        for event in events:
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_ESCAPE:
+                    self.load_next_state(MENU)
 
     def create_confirm_button(self):
         """Create buttons from this screen"""
@@ -199,6 +188,7 @@ class CharacterCreation(_Elements):
         Returns:
             dict
         """
+        # logger.debug("[sofiane] il faut ajuster les valeurs par default dans les personnages")
         return {
             "soldier": {
                 "name": "soldier",
@@ -209,22 +199,22 @@ class CharacterCreation(_Elements):
                 "characteristics": {
                     "str": {
                         "base": 3,
-                        "max": 12},
+                        "max": 100},
                     "dex": {
                         "base": 0,
-                        "max": 4},
+                        "max": 100},
                     "con": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "int": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "wis": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "cha": {
                         "base": 2,
-                        "max": 12}}},
+                        "max": 100}}},
             "wizard": {
                 "name": "wizard",
                 "image": path.join(
@@ -234,22 +224,22 @@ class CharacterCreation(_Elements):
                 "characteristics": {
                     "str": {
                         "base": 0,
-                        "max": 7},
+                        "max": 100},
                     "dex": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "con": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "int": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "wis": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "cha": {
                         "base": 2,
-                        "max": 12}}},
+                        "max": 100}}},
             "thief": {
                 "name": "thief",
                 "image": path.join(
@@ -259,22 +249,22 @@ class CharacterCreation(_Elements):
                 "characteristics": {
                     "str": {
                         "base": 0,
-                        "max": 7},
+                        "max": 100},
                     "dex": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "con": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "int": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "wis": {
                         "base": 2,
-                        "max": 12},
+                        "max": 100},
                     "cha": {
                         "base": 2,
-                        "max": 12}}}}
+                        "max": 100}}}}
 
     def sum_points(self):
         """Sum off the added points, remove the offset (start points)

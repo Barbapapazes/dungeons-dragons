@@ -34,6 +34,8 @@ class Introduction(_Elements):
         self.animated = pg.sprite.Group()
         self.book = Book(self, WIDTH // 2, HEIGHT // 2, 2 * WIDTH // 4)
 
+        logger.debug("il faut écrire sur l'image")
+
         self.win = pg.Surface((WIDTH, HEIGHT)).convert_alpha()
 
     def run(self, surface, keys, mouse, dt):
@@ -56,10 +58,8 @@ class Introduction(_Elements):
         self.draw()
 
     def get_events(self, event):
-        logger.debug("%s", event)
         if event.type == pg.KEYUP:
             if event.key == pg.K_SPACE:
-                logger.debug("space")
                 self._next()
 
     def _next(self):
@@ -80,7 +80,6 @@ class Introduction(_Elements):
         super().draw_elements("Once upon a time")
         self.win.fill((0, 0, 0, 0))
         self.animated.draw(self.win)
-        # il faut écrire directement sur l'image
         self.draw_text("Press SPACE to continue", self.button_font, 48,
                        BEIGE, WIDTH // 2, HEIGHT, align="s", screen=self.win)
         self.screen.blit(self.win, (0, 0))

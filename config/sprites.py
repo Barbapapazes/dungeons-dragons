@@ -5,6 +5,7 @@ import pygame as pg
 from config.window import HEIGHT, TILESIZE, WIDTH
 from tools import strip_from_sheet as strip
 from itertools import cycle
+from logger import logger
 
 game_folder = path.dirname('.')
 assets_folder = path.join(game_folder, 'assets')
@@ -18,6 +19,8 @@ PLAYER_MAX_HP = 100
 PLAYER_MAX_MP = 50
 PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
 
+
+MALUS_ARC = 2
 
 # all items
 ITEMS = {
@@ -46,8 +49,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -57,8 +60,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -68,8 +71,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -79,8 +82,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
 
@@ -91,8 +94,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -102,8 +105,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -113,8 +116,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -124,8 +127,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -135,8 +138,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -146,8 +149,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -156,8 +159,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -167,8 +170,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -178,8 +181,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -189,8 +192,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -200,8 +203,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -211,8 +214,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -222,8 +225,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -233,8 +236,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -244,8 +247,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -255,8 +258,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -266,8 +269,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -277,8 +280,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -288,8 +291,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -299,8 +302,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -310,8 +313,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "nb_d": 2,
-        "val_d": 10,
+        "number_dice": 2,
+        "dice_value": 10,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -321,8 +324,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "dagger",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon",
@@ -332,8 +335,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "dagger",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -343,8 +346,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "dagger",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -354,8 +357,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "dagger",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -365,8 +368,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "dagger",
-        "nb_d": 1,
-        "val_d": 3,
+        "number_dice": 1,
+        "dice_value": 3,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -536,9 +539,30 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
     }
 }
 
-ITEMS_PROPERTIES = ARMOR | WEAPONS
-ITEMS_NAMES = list(ARMOR.keys()) + list(WEAPONS.keys())
+SPELLS = {
+    "fire_ball": {
+        "image_name": "fireBall",
+        "type": "heal",
+        "scope": 3 * TILESIZE,
+        "slot": "spell",
+        "object_type": "spell",
+        "time_to_live": 2,
+        "number_dice": 2,
+        "dice_value": 10
+    }
+}
 
+OTHERS = {
+    "bronze_key_small": {
+        "object_type": "other",
+        "image_name": "key_01a",
+        "weight": 10,
+        "price": 10
+    }
+}
+
+ITEMS_PROPERTIES = ARMOR | WEAPONS | SPELLS | OTHERS
+ITEMS_NAMES = list(ARMOR.keys()) + list(WEAPONS.keys()) + list(SPELLS.keys()) + list(OTHERS.keys())
 
 WEAPONS_COLS = 5
 
@@ -549,7 +573,7 @@ CONSUMABLE_COLS = WEAPONS_COLS
 # Character
 WIDTH_CHARACTER = 150
 HEIGHT_CHARACTER = 150
-USABLE_POINTS = 12
+USABLE_POINTS = 100
 
 # Bounce
 BOB_RANGE = 15
@@ -566,6 +590,12 @@ ASSETS_SPRITES = {
             sprites_folder, _type, key, f"{i}.png")), (TILESIZE, TILESIZE)) for i in range(3)]) for key in DIRECTIONS
     } for _type in TYPES
 }
+
+ASSETS_FIRE_BALL = [pg.image.load(path.join(sprites_folder, "effects_zone", "fire_ball",
+                                            "{:04d}.png".format(i))) for i in range(1, 11)]
+
+ASSETS_HEAL = [pg.image.load(path.join(sprites_folder, "effects_zone", "heal",
+                                       "{:04d}.png".format(i))) for i in range(1, 60)]
 
 ASSETS_MERCHANT = [pg.image.load(path.join(sprites_folder, "merchant", f"{i}.png"))
                    for i in range(4)]

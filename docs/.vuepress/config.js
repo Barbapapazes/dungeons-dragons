@@ -39,52 +39,48 @@ module.exports = {
     lastUpdated: true,
     nav: [
       {
-        text: 'Jouer au jeu',
-        link: '/play/',
+        text: 'Guides',
+        link: '/guides/',
       },
-      // {
-      //   text: 'Config',
-      //   link: '/config/',
-      // },
-      // {
-      //   text: 'Guide',
-      //   link: '/guide/',
-      // },
     ],
-    sidebar: [
-      // voir pour faire une partie avec les écrans (en ajoutant un lien dans le header)
-      '/presentation.md',
-      '/config.md',
-      '/window.md',
-      '/save_load.md',
-      '/game.md',
-      '/shortcuts.md',
-      '/map_editor.md',
-      '/online_game.md',
-    ],
-    // {
-    //   '/presentation/': [
-    //     {
-    //       title: 'Présentation',
-    //       collapsable: false,
-    //       children: [''],
-    //     },
-    //   ],
-    //   '/config/': [
-    //     {
-    //       title: 'Configuration',
-    //       collapsable: false,
-    //       children: [''],
-    //     },
-    //   ],
-    //   '/guide/': [
-    //     {
-    //       title: 'Guide',
-    //       collapsable: false,
-    //       children: ['', 'window', 'map_editor'],
-    //     },
-    //   ],
-    // },
+    sidebar: {
+      '/presentation/': [
+        {
+          title: 'Présentation',
+          collapsable: false,
+          children: [''],
+        },
+      ],
+      '/guides/': [
+        '',
+        {
+          title: 'Guide du joueur',
+          collapsable: true,
+          children: [
+            'joueur/',
+            'joueur/start-game',
+            'joueur/menu',
+            'joueur/create-game',
+            'joueur/how-play',
+            'joueur/online_game',
+            'joueur/shortcuts',
+          ],
+        },
+        {
+          title: 'Guide du développeur',
+          collapsable: true,
+          children: [
+            'dev/',
+            'dev/config',
+            'dev/window',
+            'dev/versus',
+            'dev/map',
+            'dev/save_load',
+            'dev/shortcuts',
+          ],
+        },
+      ],
+    },
   },
 
   /**

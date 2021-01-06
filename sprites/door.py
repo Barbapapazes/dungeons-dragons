@@ -37,6 +37,11 @@ class Door(pg.sprite.Sprite):
         self.frame_count = 0
 
     def save(self):
+        """Used the save the door data
+
+        Returns:
+            dict
+        """
         return {
             "pos": {
                 "x": self.x,
@@ -46,6 +51,7 @@ class Door(pg.sprite.Sprite):
         }
 
     def update(self):
+        """Used to update the door"""
         if self.to_open and not self.is_open:
             self.frame_count += 1
             if self.frame_count > 78:
@@ -62,6 +68,11 @@ class Door(pg.sprite.Sprite):
             self.image = self.close_image
 
     def try_open(self, player):
+        """Try to open the door
+
+        Args:
+            player (Player)
+        """
         for slot in player.inventory.slots:
             if slot.item and slot.item.name == "key":
                 logger.info("Open a door")

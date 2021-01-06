@@ -11,6 +11,7 @@ players = pg.sprite.Group()
 enemies = pg.sprite.Group()
 
 class Character(pg.sprite.Sprite):
+    """Used to define a character"""
 
     def __init__(self, game, x, y, _type, images, hit_rect):
         self._layer = y
@@ -54,6 +55,7 @@ class Character(pg.sprite.Sprite):
         self.frame_timer = 0
 
     def update(self):
+        """Update the sprite"""
         self.update_image()
 
         self.pos += self.vel * self.game.dt
@@ -63,6 +65,7 @@ class Character(pg.sprite.Sprite):
         self.update_collisions()
 
     def update_image(self):
+        """Update the image sprite"""
         self.frame_timer += self.game.dt
         if self.frame_timer >= self.frame_time:
             self.frame_timer -= self.frame_time

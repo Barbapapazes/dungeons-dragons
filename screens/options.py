@@ -28,6 +28,12 @@ class Options(_Elements):
 
         self.states_dict = self.make_states_dict()
 
+    def all_events(self, events):
+        for event in events:
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_ESCAPE:
+                    self.load_next_state(MENU)
+
     def create_buttons_dict(self):
         """Create the dict for all buttons"""
         return {

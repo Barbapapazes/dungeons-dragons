@@ -9,7 +9,7 @@ from logger import logger
 import pygame as pg
 from pygame_widgets import TextBox
 from window import _Elements
-from config.screens import NEW_GAME, CHARACTER_CREATION
+from config.screens import MENU, NEW_GAME, CHARACTER_CREATION
 
 
 class NewGame(_Elements):
@@ -32,6 +32,7 @@ class NewGame(_Elements):
         self.btns_dict = self.create_buttons_dict()
         self.create_buttons(self.image, start_y_offset=8 * HEIGHT // 10)
         self.create_text_box()
+        self.create_back_button(self.image, self.load_next_state, [MENU])
 
     def create_buttons_dict(self):
         """Create the dict for all buttons"""
@@ -77,12 +78,16 @@ class NewGame(_Elements):
 
     def normal_run(self):
         """Run the normal state"""
-        super().events_buttons()
+        super().events_buttons(back=True)
         self.draw()
 
     def all_events(self, events):
         self.slider.listen(events)
         self.text_name.listen(events)
+        for event in events:
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_ESCAPE:
+                    self.load_next_state(MENU)
 
     def draw(self):
         """Draw content"""
@@ -94,4 +99,4 @@ class NewGame(_Elements):
                        2, 3 * HEIGHT // 10, align="n", screen=self.background)
         self.draw_text(f"Number of heroes : {self.slider.getValue()}", self.text_font, 24, BEIGE, WIDTH //
                        2, 11 * HEIGHT // 20, align="n", screen=self.background)
-        super().draw_elements("Create a game")
+        super().draw_elements("Create a game", back=True)

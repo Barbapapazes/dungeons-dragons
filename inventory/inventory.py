@@ -1,15 +1,15 @@
 """Inventory"""
 
-from config.sprites import ITEMS, SCOPE_HAND
 from random import randint
-from sprites.item import PlacableItem
 import pygame as pg
-from logger import logger
+from sprites.item import PlacableItem
 from utils.container import Container
 from inventory.items import Item
-from config.window import HEIGHT, WIDTH, TILESIZE
+from config.sprites import ITEMS
+from config.window import HEIGHT, TILESIZE, WIDTH
 from config.colors import WHITE, GOLD, BLUE_SKY, PINK, YELLOW_LIGHT
-from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP, SORT_SLOTS
+from config.inventory import ACTIONS, ARMOR_SLOTS, MENU_DATA, WEAPON_SLOTS, EQUIPMENT_COLS, EQUIPMENT_ROWS, INVENTORY_TILESIZE, INVENTORY_SLOT_GAP, SPELL_SLOTS
+from logger import logger
 vec = pg.Vector2
 
 
@@ -30,7 +30,7 @@ class Inventory:
         self.slots = []
         self.armor_slots = []
         self.weapon_slots = []
-        self.sort_slots = []
+        self.spell_slots = []
 
         self.player = player
 
@@ -38,55 +38,94 @@ class Inventory:
         self.moving_item = None
         self.moving_item_slot = None
 
+        self.view_item = None
+
         self.create_slots()
         self.set_slot_types()
 
         self.menu_data = MENU_DATA
 
     @classmethod
+    def create_item(cls, key, value):
+        """Create an item
+
+        Args:
+            key (str)
+            value (dict)
+
+        Returns:
+            Item
+        """
+        item = None
+
+        if value["object_type"] == "item":
+            item = Item(
+                key,
+                ITEMS[value["image_name"]],
+                value["image_name"],
+                value["price"],
+                value["weight"])
+        elif value["object_type"] == "armor":
+            item = Armor(
+                key, ITEMS[value["image_name"]],
+                value["image_name"], value["price"], value["weight"], value["shield"], value["slot"])
+        elif value["object_type"] == "weapon":
+            item = Weapon(
+                key,
+                ITEMS[value["image_name"]],
+                value["image_name"],
+                value["price"],
+                value["slot"],
+                value["type"],
+                value["weight"],
+                value["number_dice"],
+                value["dice_value"],
+                value["scope"])
+        elif value["object_type"] == "consumable":
+            item = Consumable(
+                key,
+                ITEMS[value["image_name"]],
+                value["image_name"],
+                value["price"],
+                value["weight"],
+                value["heal"],
+                value["shield"])
+        elif value["object_type"] == "spell":
+            item = Spell(
+                key, ITEMS[value["image_name"]],
+                value["image_name"],
+                value["slot"],
+                value["type"],
+                value["scope"],
+                value["time_to_live"],
+                value["number_dice"],
+                value["dice_value"])
+
+        return item
+
+    @classmethod
     def create_inventory(cls, data):
+        """Used to create an inventory using a dict
+
+        Args:
+            data (dict): raw data
+
+        Returns:
+            list : all items in the inventory
+        """
         items = list()
         for key, value in data.items():
-            if value["object_type"] == "item":
-                items.append(
-                    Item(
-                        key,
-                        ITEMS[value["image_name"]],
-                        value["image_name"],
-                        value["price"],
-                        value["weight"]))
-            elif value["object_type"] == "armor":
-                items.append(
-                    Armor(
-                        key, ITEMS[value["image_name"]],
-                        value["image_name"], value["price"], value["weight"], value["shield"], value["slot"]))
-            elif value["object_type"] == "weapon":
-                items.append(
-                    Weapon(
-                        key,
-                        ITEMS[value["image_name"]],
-                        value["image_name"],
-                        value["price"],
-                        value["slot"],
-                        value["type"],
-                        value["weight"],
-                        value["nb_d"],
-                        value["val_d"],
-                        value["scope"]))
-            elif value["object_type"] == "consumable":
-                items.append(
-                    Consumable(
-                        key,
-                        ITEMS[value["image_name"]],
-                        value["image_name"],
-                        value["price"],
-                        value["weight"],
-                        value["hp_gain"],
-                        value["shield_gain"]))
-
+            if value is None:
+                continue
+            items.append(cls.create_item(key, value))
         return items
 
     def save(self):
+        """Save the inventory data
+
+        Returns:
+            dict
+        """
         inventory_list = dict()
         for slot in self.slots:
             if slot.item:
@@ -117,8 +156,8 @@ class Inventory:
         self.weapon_slots.append(EquipableSlot(min_x - step,
                                                max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, PINK))
 
-        self.sort_slots.append(EquipableSlot(min_x - 2*step,
-                                             max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, BLUE_SKY))
+        self.spell_slots.append(EquipableSlot(min_x - 2*step,
+                                              max_y - step + INVENTORY_SLOT_GAP, INVENTORY_TILESIZE, BLUE_SKY))
 
     def create_bag(self):
         """Create a bag to store item"""
@@ -140,8 +179,8 @@ class Inventory:
             self.armor_slots[index].slot_type = value
         for index, value in enumerate(WEAPON_SLOTS):
             self.weapon_slots[index].slot_type = value
-        for index, value in enumerate(SORT_SLOTS):
-            self.sort_slots[index].slot_type = value
+        for index, value in enumerate(SPELL_SLOTS):
+            self.spell_slots[index].slot_type = value
 
     def get_all_slots(self):
         """Get all slots fro the inventory
@@ -149,7 +188,9 @@ class Inventory:
         Returns:
             list: All slots from an inventory
         """
-        return self.slots + self.weapon_slots + self.armor_slots + self.sort_slots
+        all = self.slots + self.weapon_slots + self.armor_slots
+        all += self.spell_slots if self.player.type == "wizard" else list()
+        return all
 
     def get_equip_slot(self, item):
         """Return the slot related to the Item if it's an Equipable
@@ -160,7 +201,7 @@ class Inventory:
         Returns:
             EquipableSlot
         """
-        for slot in self.armor_slots + self.weapon_slots + self.sort_slots:
+        for slot in self.armor_slots + self.weapon_slots + self.spell_slots:
             if slot.slot_type == item.slot:
                 return slot
 
@@ -264,7 +305,9 @@ class Inventory:
                             logger.info('Action can not be done')
             elif isinstance(slot, InventorySlot):
                 if slot.rect.collidepoint(mouse_pos):
-                    logger.debug(type(slot))
+                    if action == ACTIONS['view']:
+                        self.view_item = slot.item
+                        logger.debug(slot.item)
                     if action == ACTIONS['throw']:
                         self.throw_item(slot.item)
                     if isinstance(slot.item, Equipable):
@@ -285,10 +328,18 @@ class Inventory:
             item (Item)
         """
         logger.info("throw %s", item)
-        logger.debug("ajuster les properties")
         properties = dict()
         if isinstance(item, Weapon):
-            properties['object_type'] = "weapon"
+            properties = {
+                "object_type": "weapon",
+                "price": item.price,
+                "slot": item.slot,
+                "type": item.type,
+                "weight": item.weight,
+                "number_dice": item.number_dice,
+                "dice_value": item.dice_value,
+                "scope": item.scope,
+            }
         elif isinstance(item, Armor):
             properties = {
                 "object_type": "armor",
@@ -298,9 +349,19 @@ class Inventory:
                 "slot": item.slot,
             }
         elif isinstance(item, Consumable):
-            properties['object_type'] = "consumable"
+            properties = {
+                "object_type": "consumable",
+                "price": item.price,
+                "weight": item.weight,
+                "shield": item.shield,
+                "heal": item.heal,
+            }
         else:
-            properties['object_type'] = "other"
+            properties = {
+                "object_type": "other",
+                "price": item.price,
+                "weight": item.weight,
+            }
 
         PlacableItem(
             self.player.game, vec(self.player.pos) +
@@ -349,7 +410,6 @@ class Inventory:
         Args:
             item (Item)
         """
-        logger.debug(item)
         if isinstance(item, Consumable):
             logger.info("Use %s from inventory", item)
             item.use(self, self.player)
@@ -391,13 +451,50 @@ class Inventory:
                 "Inventory", self.player.game.title_font, 48, YELLOW_LIGHT, 3 * WIDTH // 4, HEIGHT // 2 -
                 ((INVENTORY_TILESIZE + INVENTORY_SLOT_GAP) * (self.rows + 2)) // 2, align="n", screen=screen)
             self.player.game.draw_text(
-                "Equipment", self.player.game.title_font, 48, YELLOW_LIGHT, WIDTH // 2, HEIGHT // 2 -
+                "Equipment", self.player.game.title_font, 48, YELLOW_LIGHT, WIDTH // 2,  HEIGHT // 2 -
                 ((INVENTORY_TILESIZE + INVENTORY_SLOT_GAP) * (5 + 2)) // 2, align="n", screen=screen)
             for slot in self.get_all_slots():
                 slot.draw(screen)
             for slot in self.get_all_slots():
                 slot.draw_items(screen)
             self.draw_player_money()
+            if self.view_item:
+                self.player.game.draw_text("  ".join(self.view_item.name.split("_")).upper(),
+                                           self.player.game.title_font, 30, YELLOW_LIGHT, 2 * WIDTH // 4, 3 * HEIGHT //
+                                           4 + 40, align="center", screen=screen)
+                properties = None
+                if isinstance(self.view_item, Weapon):
+                    properties = {
+                        "Type": "type",
+                        "Scope": "scope",
+                        "Number of dice": "number_dice",
+                        "Value of dice": "dice_value",
+                    }
+                if isinstance(self.view_item, Spell):
+                    properties = {
+                        "Type": "type",
+                        "Scope": "scope",
+                        "Time to live": "time_to_live",
+                        "Number of dice": "number_dice",
+                        "Value of dice": "dice_value",
+                    }
+                if isinstance(self.view_item, Armor):
+                    properties = {
+                        "Slot": "slot",
+                        "Shield": "shield",
+                    }
+                if isinstance(self.view_item, Consumable):
+                    properties = {
+                        "Heal": "heal",
+                        "Shield": "shield",
+                    }
+                if properties:
+                    for index, (key, value) in enumerate(properties.items()):
+                        self.player.game.draw_text(key + " : " + str(getattr(self.view_item, value)),
+                                                   self.player.game.title_font, 24, YELLOW_LIGHT, 2 * WIDTH // 4, 3 *
+                                                   HEIGHT // 4 + index * 24 + 70, align="w", screen=screen)
+                screen.blit(pg.transform.scale(self.view_item.image, (TILESIZE, TILESIZE)),
+                            (2 * WIDTH // 4 - 75, 3 * HEIGHT // 4 + 60))
 
     def draw_player_money(self):
         """Used to draw the player's money
@@ -448,18 +545,18 @@ class EquipableSlot(InventorySlot):
 class Consumable(Item):
     """A consumable item"""
 
-    def __init__(self, name,  image, image_name, price, weight, hp_gain=0, shield_gain=0):
+    def __init__(self, name,  image, image_name, price, weight, heal, shield):
         Item.__init__(self, name, image, image_name, price, weight)
-        self.hp_gain = hp_gain
-        self.shield_gain = shield_gain
+        self.heal = heal
+        self.shield = shield
 
     def save(self):
         return {
             self.name:
             super().save()[self.name] | {
                 "object_type": "consumable",
-                "heal":  self.hp_gain,
-                "shield":  self.shield_gain
+                "heal":  self.heal,
+                "shield":  self.shield
             }}
 
     def use(self, inventory, target):
@@ -470,13 +567,13 @@ class Consumable(Item):
             target(player)
         """
         inventory.remove_item(self)
-        target.addHp(self.hp_gain)
-        target.addShield(self.shield_gain)
+        target.addHp(self.heal)
+        target.addShield(self.shield)
 
     def __deepcopy__(self, memo):
         return Consumable(
             self.name, self.image.copy(),
-            self.image_name, self.price, self.weight, self.hp_gain, self.shield_gain)
+            self.image_name, self.price, self.weight, self.heal, self.shield)
 
 
 class Equipable(Item):
@@ -556,12 +653,14 @@ class Armor(Equipable):
 class Weapon(Equipable):
     """Weapon"""
 
-    def __init__(self, name, image, image_name, price, slot, wpn_type, weight, nb_d=1, val_d=5, scope=SCOPE_HAND):
+    def __init__(
+            self, name, image, image_name, price, slot, _type, weight, number_dice, dice_value,
+            scope):
         super(Weapon, self).__init__(name, image, image_name, price, weight)
         self.slot = slot
-        self.wpn_type = wpn_type
-        self.nb_d = nb_d
-        self.val_d = val_d
+        self.type = _type
+        self.number_dice = number_dice
+        self.dice_value = dice_value
         self.scope = scope
 
     def save(self):
@@ -569,11 +668,11 @@ class Weapon(Equipable):
             self.name:
             super().save()[self.name] | {
                 "object_type": "weapon",
-                "type": self.wpn_type,
-                "nb_d": self.nb_d,
-                "val_d": self.val_d,
+                "type": self.type,
+                "number_dice": self.number_dice,
+                "dice_value": self.dice_value,
                 "scope": self.scope,
-                "slot": self.slot
+                "slot": self.slot,
             }
         }
 
@@ -604,12 +703,76 @@ class Weapon(Equipable):
         inventory.get_equip_slot(self).item = None
 
     def attack(self):
-        dmg = 0
-        for _ in range(self.nb_d):
-            dmg += randint(1, self.val_d)
-        return dmg
+        """Throw dice to calculate the attack
+
+        Returns:
+            int: the attack
+        """
+        damage = 0
+        for _ in range(self.number_dice):
+            damage += randint(1, self.dice_value)
+        return damage
 
     def __deepcopy__(self, memo):
         return Weapon(
-            self.name, self.image.copy(), self.image_name,
-            self.price, self.slot, self.wpn_type, self.weight, nb_d=self.nb_d, val_d=self.val_d, scope=self.scope)
+            self.name, self.image.copy(),
+            self.image_name, self.price, self.slot, self.type, self.weight,
+            number_dice=self.number_dice, dice_value=self.dice_value, scope=self.scope)
+
+
+class Spell(Equipable):
+    """Spell"""
+
+    def __init__(self, name, image, image_name, slot, _type, scope,  time_to_live, number_dice, dice_value):
+        super().__init__(name, image, image_name, 0, 0)
+
+        self.slot = slot
+        self.type = _type
+        self.scope = scope
+        self.time_to_live = time_to_live
+        self.number_dice = number_dice
+        self.dice_value = dice_value
+
+    def save(self):
+        return {
+            self.name: super().save()[self.name] | {
+                "object_type": "spell",
+                "slot": self.slot,
+                "type": self.type,
+                "scope": self.scope,
+                "time_to_live": self.time_to_live,
+                "number_dice": self.number_dice,
+                "dice_value": self.dice_value,
+            }
+        }
+
+    def equip(self, inventory, target):
+        """Equip the spell in the target's spell slot
+        and removes it from the inventory inventory
+
+        Args:
+            inventory(Inventory)
+            target(Player)
+        """
+        if inventory.get_equip_slot(self).item is not None:
+            inventory.get_equip_slot(self).item.unequip(inventory)
+        super().equip(target)
+        target.equip_spell(self)
+        inventory.remove_item(self)
+        inventory.get_equip_slot(self).item = self
+
+    def unequip(self, inventory):
+        """Unequip the spell and add it to the Inventory
+
+        Args:
+            inventory(Inventory)
+        """
+        self.equipped_to.unequip_spell()
+        super().unequip()
+        inventory.add_item(self)
+        inventory.get_equip_slot(self).item = None
+
+    def __deepcopy__(self, memo):
+        return Spell(self.name, self.image.copy(),
+                     self.image_name, self.slot, self.type, self.scope, self.time_to_live,
+                     self.number_dice, self.dice_value)

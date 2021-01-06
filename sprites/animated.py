@@ -108,6 +108,11 @@ class Book(Animated):
         self.rect.center = (self.x, self.y)
 
     def set_frames(self, frames):
+        """Used to setup new frames
+
+        Args:
+            frames (list)
+        """
         tmp_frames = list()
         for frame in frames:
             tmp_frames.append(pg.transform.scale(frame, (self.width, int(
@@ -136,12 +141,21 @@ class Circle(Animated):
         self.rect.center = (self.x, self.y)
 
     def set_pos(self, pos):
-        logger.debug(pos)
+        """Used to setup a new pos
+
+        Args:
+            pos (tuple)
+        """
         self.x = pos[0]
         self.y = pos[1]
         self.rect.center = pos
 
     def set_width(self, width):
+        """Used to setup a new width
+
+        Args:
+            width (int)
+        """
         if self.width != width:
             self.width = width
             tmp_frames = list()
