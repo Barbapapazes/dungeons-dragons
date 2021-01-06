@@ -627,6 +627,9 @@ class Game(_State):
         if self.press_space and hits:
             for hit in hits:
                 if isinstance(hit, CampFire):
+                    # restore the health of the player
+                    self.turn_manager.active_character().addHp(100)
+                    self.logs.add_log("Restore the player health")
                     self.save_data()
                     self.save_data_in_file()
                     self.press_space = False
