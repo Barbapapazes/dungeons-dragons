@@ -161,7 +161,7 @@ class Enemy(Character):
                     if self.move_or_attack():
                         if self.now - self.last_timestamp2 > 1500 and self.vel == vec(0,0): # skip if stuck on a wall
                             # logger.info(self.last_timestamp2)
-                            self.last_timestamp = self.now
+                            self.player_spotted = None
                             self.moving = False
                             self.end_turn()
                         #bug à la ligne juste dessous si l'ennemi est juste à côté du joueur
@@ -348,19 +348,55 @@ class Enemy(Character):
                         break
                 if skip:
                     continue
+                """skip portes
+                """
+                for door in self.game.doors.sprites():
+                    skip = False
+                    if door.rect.collidepoint(neigh.coor):
+                        skip = True
+                        break
+                if skip:
+                    continue
+                """skip coffres
+                """
+                for chest in self.game.chests.sprites():
+                    skip = False
+                    if chest.rect.collidepoint(neigh.coor):
+                        skip = True
+                        break
+                if skip:
+                    continue
+
+                """skip personnages
+                """
+                for enemy in enemies:
+                    skip = False
+                    if enemy.rect.collidepoint(neigh.coor):
+                        skip = True
+                        break
+                if skip:
+                    continue
+                for player in players:
+                    skip = False
+                    if player.rect.collidepoint(neigh.coor):
+                        skip = True
+                        break
+                if skip:
+                    continue
+
                 """skip out of bounds
                 """
                 if neigh.coor.x < 0 or neigh.coor.y < 0:
                     continue
                 """skip noeuds explorés
                 """
-                skip3 = False
+                skip = False
                 if closed_set:
                     for noeudexplored in closed_set:
                         if neigh.coor//TILESIZE == noeudexplored.coor//TILESIZE:
-                            skip3 = True
+                            skip = True
                             break
-                if skip3:
+                if skip:
                     continue
                 """le voisin est une case valide à explorer, il est ajouté aux cases à explorer
                 """
