@@ -6,10 +6,7 @@ from config.screens import ONLINE_GAME
 from config.sprites import (ITEMS, PLAYER_HIT_RECT,
                             PLAYER_MAX_HP, PLAYER_MAX_MP,
                             PLAYER_SPEED)
-from inventory.inventory import Inventory
-from logger import logger
-
-from sprites.character import Character
+from sprites.character import Character, players
 
 vec = pg.math.Vector2
 
@@ -28,8 +25,8 @@ class Player(Character):
         self.health = health
         self.xp = xp
         self.gold = gold
+        self.spell = None
 
-        self.numberOfAction = 0
         self.last_shot = 0
 
         # Stats
@@ -40,19 +37,6 @@ class Player(Character):
         self.max_MP = PLAYER_MAX_MP
         self.view_range = 500
 
-        # Attribut
-        self.STR = 70  # strenght
-        self.DEX = 60  # dexterity
-        self.CON = 40  # constitution
-        self.INT = 10  # intelligence
-        self.WIS = 10  # lucky
-        self.CHA = 60  # charisme
-
-        # Inventory
-        self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
-        self.weapon = None
-        self.spell = None
-        self.inventory = Inventory(self, 5, 8)
 
     def save(self):
         """Used to save the player data

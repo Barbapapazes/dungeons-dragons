@@ -4,6 +4,7 @@ import pygame as pg
 from utils.tilemap import collide_with_walls
 from config.sprites import PLAYER_HIT_RECT
 from logger import logger
+from inventory.inventory import Inventory
 
 vec = pg.math.Vector2
 
@@ -26,6 +27,10 @@ class Character(pg.sprite.Sprite):
             "wis": 0,
             "cha": 0
         }
+        # Inventory
+        self.inventory = Inventory(self, 5, 8)
+        self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
+        self.weapon = None
 
         self.game = game
         self.type = _type
@@ -101,6 +106,13 @@ class Character(pg.sprite.Sprite):
             f"Dice {_type}, result {result_dice}/{value_dice}, under {self.characteristics[base_value] + mod} to success")
         logger.info("Result dice : %d / %d (must be under %s to success)",
                     result_dice, value_dice, self.characteristics[base_value] + mod)
+
+    def get_protection(self):
+        protection = 1
+        for bodypart in self.armor:
+            if self.armor[bodypart] is not None:
+                protection += self.armor[bodypart]
+        return protection
 
     def groupCount(self, grouplist, count=0):
         """computes the number of entities belonging to the same group that can see one another

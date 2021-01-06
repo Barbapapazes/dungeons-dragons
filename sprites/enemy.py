@@ -7,7 +7,7 @@ from config.window import TILESIZE
 from utils.cell import Cell
 from random import uniform
 from random import randint
-import re
+from time import sleep
 from config.sprites import ASSETS_SPRITES
 vec = pg.math.Vector2
 
@@ -46,12 +46,7 @@ class Enemy(Character):
         self.last_timestamp = 0
         self.last_timestamp2 = None
         self.now = 0
-        self.cooldown = 30000
-
-        self.numberOfAction = 0
-
-        self.inventory = Inventory(self, 5, 8)
-        self.weapon = None
+        self.cooldown = randint(15,25)
         
         self.attack_range = TILESIZE * 2
 
@@ -84,12 +79,6 @@ class Enemy(Character):
             "wis": TYPE.get(self.type).get("WIS"),
             "cha": TYPE.get(self.type).get("CHA")
         }
-        # self.STR = TYPE.get(self.type).get("STR")
-        # self.DEX = TYPE.get(self.type).get("DEX")
-        # self.CON = TYPE.get(self.type).get("CON")
-        # self.INT = TYPE.get(self.type).get("INT")
-        # self.WIS = TYPE.get(self.type).get("WIS")
-        # self.CHA = TYPE.get(self.type).get("CHA")
         
     def __str__(self):
         """default displayed text whenever printing the enemy
@@ -109,10 +98,6 @@ class Enemy(Character):
             "health": self.health,
             "inventory": self.inventory.save()
         }
-
-    def get_protection(self):
-        logger.debug("il faut ajouter de la protection aux personnages")
-        return 2
 
     def draw_health(self):
         """draw healthbar onto the screen
@@ -138,6 +123,7 @@ class Enemy(Character):
     def update(self):
         if self.health <= 0:
             self.throw_inventory()
+            self.kill()
             self.game.turn_manager.enemies.remove(self)
 
         #if trap nearby: flee(trap)
@@ -155,6 +141,8 @@ class Enemy(Character):
             """ If a player is in sight, evaluate whether he is worth attacking or not
             """
             if self.player_detection():
+                # logger.debug(self.player_spotted)
+                # logger.debug(self.player_spotted.pos)
                 if self.evaluation():
                     self.flee(self.player_spotted.pos)
                     #need to skip turn after some time
@@ -164,12 +152,10 @@ class Enemy(Character):
                     
                     if self.move_or_attack():
                         if self.now - self.last_timestamp2 > 1500 and self.vel == vec(0,0): # skip if stuck on a wall
-                            # logger.info(self.last_timestamp2)
                             self.player_spotted = None
                             self.moving = False
                             self.end_turn()
-                        #bug à la ligne juste dessous si l'ennemi est juste à côté du joueur
-                        if not self.goto and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
+                        elif not self.goto : #and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
                             self.goto = self.path_finding(self.player_spotted.pos)
                             if self.goto:
                                 del self.goto[0]
@@ -181,7 +167,6 @@ class Enemy(Character):
                             self.acc = self.seek(self.goto[0].coor)
                             if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
                                 del self.goto[0]
-                            # logger.debug("enemy proche, utilisation du A* et avancement que de X case")
                         else:
                             self.vel = vec(0,0)
                             self.moving = False
@@ -193,11 +178,6 @@ class Enemy(Character):
             else:
                 self.end_turn()
 
-                # temp = self.avoidnpc()
-                # if temp is False:
-                #     self.acc = self.wander()
-                # else:
-                #     self.acc = temp
         elif self.player_detection():
             if self.evaluation():
                 self.flee(self.player_spotted.pos)
@@ -233,11 +213,6 @@ class Enemy(Character):
         self.rect.center = self.pos
 
         self.update_collisions()
-
-        # self.vel += self.acc
-        # if self.vel.length() > self.speed:
-        #     self.vel.scale_to_length(self.speed)
-        # super().update()
 
     def get_direction(self):
         """get the direction which the sprite is currently facing
@@ -380,13 +355,6 @@ class Enemy(Character):
                         break
                 if skip:
                     continue
-                for player in players:
-                    skip = False
-                    if player.rect.collidepoint(neigh.coor):
-                        skip = True
-                        break
-                if skip:
-                    continue
 
                 """skip out of bounds
                 """
@@ -482,11 +450,19 @@ class Enemy(Character):
         """attack instructions
         """
         if self.classe == CLASSES[2]:
-            if self.cooldown - self.now < 0:
-                self.game.versus_manager.logs.add_log(f"The {self} invoked a {Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE), self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')} !")
-                self.cooldown += 30000
+            if self.cooldown - self.game.turn_manager.turn < 0:
+                spawn = Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE), self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
+                self.game.turn_manager.enemies.append(spawn)
+                self.game.versus_manager.logs.add_log(f"The {self} used magic to invoke a {spawn} !")
+                self.cooldown += 20
                 self.end_turn()
-        if self.game.versus_manager.check_dice():
+            elif self.game.versus_manager.check_dice():
+                damage = self.game.versus_manager.calc_damage()
+                self.game.versus_manager.logs.add_log(f'The {self} attacked {self.player_spotted}, dealing {damage}.')
+                self.game.turn_manager.remove_health(damage, self.player_spotted)
+            else:
+                self.game.versus_manager.logs.add_log(f'The {self} missed his attack...')
+        elif self.game.versus_manager.check_dice():
                 damage = self.game.versus_manager.calc_damage()
                 self.game.versus_manager.logs.add_log(f'The {self} attacked {self.player_spotted}, dealing {damage}.')
                 self.game.turn_manager.remove_health(damage, self.player_spotted)
@@ -497,6 +473,8 @@ class Enemy(Character):
     def end_turn(self):
         self.last_timestamp2 = None
         self.goto = []
+        self.moving = False
+        sleep(1.25)
         self.game.versus_manager.check_characters_actions()
 
 class Boss(Enemy):

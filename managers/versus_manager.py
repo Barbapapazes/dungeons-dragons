@@ -94,10 +94,10 @@ class VersusManager:
     def add_actions(self):
         if self.turn_manager.active_character().type == "Boss":
             self.turn_manager.active_character().number_actions = 1
-            self.logs.add_log("Add 1 action")
+            # self.logs.add_log("Add 1 action")
         else:
             self.turn_manager.active_character().number_actions = 2
-            self.logs.add_log("Add 2 actions")
+            # self.logs.add_log("Add 2 actions")
 
     def finish_versus(self):
         """Finish the versus"""
@@ -240,6 +240,8 @@ class VersusManager:
             int: damage, can be under 0
         """
         damage = self.turn_manager.get_active_weapon_damage()
+        if hasattr(self.turn_manager.active_character(), "goto"):
+            self.selected_enemy=self.turn_manager.active_character().player_spotted
         if self.turn_manager.get_active_weapon_type() == "arc":
             dist = self.selected_enemy.pos - self.turn_manager.active_character().pos
             logger.debug("[sofiane] il faut ajuster la valuer de MALUS_ARC")
@@ -263,7 +265,7 @@ class VersusManager:
     def check_characters_actions(self):
         """Check the action of the active character"""
         self.turn_manager.active_character().number_actions -= 1
-        self.logs.add_log(f"Action remaining : {self.turn_manager.active_character().number_actions}")
+        self.logs.add_log(f"Action remaining to {self.turn_manager.active_character()} : {self.turn_manager.active_character().number_actions}")
         self.set_move_player(False)
         if self.turn_manager.active_character().number_actions == 0:
             self.add_turn()
