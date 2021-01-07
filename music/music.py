@@ -67,7 +67,6 @@ class Music():
     def update_volume(self):
         #appeler en boucle qui modifie le volume 
         pg.mixer.music.set_volume(DATA_MUSIC["volume"])
-        print(pg.mixer.music.get_volume())
         #print(self.current_playing)
         #print("je met a jour le volume", DATA_MUSIC["volume"])
     
@@ -85,22 +84,28 @@ class Music():
                 print("je joue le step")
                 
                 step=pg.mixer.Sound(path.join(self.lib_music,DATA_SOUND["piste"]["step"]))
-                pg.mixer.Sound.set_volume(step,0.1)
+                pg.mixer.Sound.set_volume(step,0.05)
                 step.play()
                 self.time_btw_stp=pg.time.get_ticks()
             DATA_SOUND["step"]=False
 
-   """ def combat(self):
+
+    def combat(self):
         if(self.state=="game" and DATA_MUSIC["start_combat"]):
             #chargement et lancement de la musique de combat 
-            DATA_MUSIC["start_combat"]==False
+            DATA_MUSIC["volume"]=0.05
+            pg.mixer.music.load(path.join(self.lib_music,self.create_dict()["combat"]))
+            self.play()
+            print("musique de combat")
+            DATA_MUSIC["start_combat"]=False
         
         if(self.state=="game" and DATA_MUSIC["end_combat"]):
             #chargement et lancement de la musique de base 
-            DATA_MUSIC["end_combat"]==False
+            self.update()
+            print("fin de la musique de combat")
+            DATA_MUSIC["end_combat"]=False
         
         
-        """
 
 
 

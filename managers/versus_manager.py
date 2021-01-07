@@ -6,6 +6,7 @@ from config.colors import ENERGOS, GLOOMY_PURPLE, RED_PIGMENT, BLUE_MARTINA
 from config.window import HEIGHT, TILESIZE
 from sprites.animated import Circle
 from logger import logger
+from data.music_data import DATA_MUSIC
 vec = pg.Vector2
 
 
@@ -89,6 +90,7 @@ class VersusManager:
         self.active = True
         self.set_move_player(False)
         self.logs.add_log("Start the versus")
+        DATA_MUSIC["start_combat"]=True
         self.add_actions()
 
     def add_actions(self):
@@ -110,6 +112,7 @@ class VersusManager:
         self.remove_action()
         self.remove_zones_effects()
         self.logs.add_log("Finish the versus")
+        DATA_MUSIC["end_combat"]=True
 
     def remove_zones_effects(self):
         """Remove all zones"""
