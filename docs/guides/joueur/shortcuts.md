@@ -4,10 +4,9 @@ Notre jeu s'utilise à la fois avec le clavier et la souris et combine les 2 la 
 
 ## Window
 
-| Nom  | Raccourci | Aide                             |
-| :--: | :-------: | -------------------------------- |
-| save |  ctrl+s   | Permet de sauvegarder une partie |
-| fps  |     =     | Toggle le conteur de fps         |
+| Nom | Raccourci | Aide                     |
+| :-: | :-------: | ------------------------ |
+| fps |     =     | Toggle le conteur de fps |
 
 ## Load Game
 
@@ -26,6 +25,11 @@ Notre jeu s'utilise à la fois avec le clavier et la souris et combine les 2 la 
 |     menu      |     m     | Toggle le sous menu                                                                       |
 |      vue      |     v     | Permet de switcher de vue entre les personnages                                           |
 |   playable    |     c     | Permet de switcher entre les personnages (en temps réel uniquement)                       |
+|      map      |     u     | Permet d'afficher la carte en grand                                                       |
+|     draw      |     r     | Permet de dessiner sur la carte                                                           |
+|     erase     |     e     | Permet d'effacer ce qui été dessiner sur la carte                                         |
+|  new_canvas   |     n     | Permet d'effacer de réinitialiser le canvas de dessins                                    |
+|     save      |  ctrl+s   | Permet de sauvegarder le canvas                                                           |
 |    attack     |     1     | Permet d'initialiser une action d'attack (en tour par tour uniquement)                    |
 |     move      |     2     | Permet d'initialiser une action de mouvement (en tour par tour uniquement)                |
 |     spell     |     3     | Permet d'initialiser une action de spell (en tour par tour uniquement, pour les sorciers) |

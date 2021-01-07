@@ -19,10 +19,6 @@ Par exemple :
 
 On peut ici comprendre que l'action `up` est dans le namespace (donc pour l'écran) `load_game`. L'aide nous permet de comprend à quoi cette action sert. Et enfin, `keys` est `CTRL+UP`
 
-## Shortcuts par default
+## Utilisation
 
-::: warning Le namespace 'window'
-
-Le namespace window est global à l'ensemble des écrans. Ainsi, il ne faut pas réutiliser dans des écrans les shortcuts qui y sont utilisés.
-
-:::
+Afin de pouvoir utiliser dans les customs shortcuts durant la création, il est possible d'utiliser la fonction `key_for` présente dans `utils/shortcuts`. C'est une fonction qui prend en paramètre la clé et un évènement. Avec ces 2 éléments, elle est en mesure de savoir si l'évènement correspond à la clé proposée. La clé qui lui est passé en paramètre provient du dictionnaire de clé au préalablement chargé, soit le default soit le fichier modifié par l'utilisateur au travers du menu shortcuts dans les options.

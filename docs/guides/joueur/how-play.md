@@ -92,3 +92,9 @@ Aussi, le feu de camps permet au joueur qui l'actionne de regagner tous ses poin
 ## Camera
 
 Nul besoin d'essayer de déplacer la caméra, vous ne pourrez pas le faire manuellement. En effet, elle vous suit automatique lorsque vous vous déplacer. Cependant, en appuyant sur **v**, vous pourrez alterner entre tous les heros présents sur la carte afin de changer la vision active. Pour changer le héro actif en temps réel, il suffit d'appuyer sur **c**
+
+## Carte et minimap
+
+Lors de vos parties, vous avez accès à une minimap. En début de partie, cette dernière va être toute noir. En effet, un brouillard de guerre est appliqué sur l'ensemble de la carte. Afin de voir la carte, il faut se déplacer dans le jeu et cela va automatique révéler la carte. Cependant, un léger brouillard va subsister. On peut voir sur la carte les points vers qui représente l'ensemble des joueurs et les points noirs qui sont l'ensemble des enemies.
+
+Il est possible de voir la carte en grand en appuyant sur **u**. Cela va afficher sur la carte du jeu en grand. Dans le mode histoire, il est possible de voir les cartes des précedents niveaux et des niveaux suivants mais avec le brouillard de guerre qui bouche totalement la vue. Aussi, il est possible de dessiner sur les cartes en utilisant le crayon et d'effacer en utiliser la gomme. Pour passer de l'un à l'autre, il faut respectivement utiliser **r** et **e**. Il est aussi possible de réinitialiser le canvas de dessin avec **\*n** et évidemment, il est possible de le sauvegarder avec **ctrl+s**. C'est une fonction très pratique pour établir une stratégie d'attaque du donjons.
