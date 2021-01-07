@@ -180,10 +180,10 @@ class Game(_Elements):
                     hero["pos"]["y"],
                     hero["class"],
                     hero["characteristics"],
-                    hero["health"],
-                    hero["xp"],
-                    hero["gold"],
-                    ASSETS_SPRITES[hero["class"]])
+                    ASSETS_SPRITES[hero["class"]],
+                    health=hero["health"],
+                    xp=hero["xp"],
+                    gold=hero["gold"])
                 for item in Inventory.create_inventory(hero["inventory"]):
                     player.inventory.add_item(item)
                 for value in hero["equipments"]["armor"].values():
@@ -275,7 +275,7 @@ class Game(_Elements):
                         _characteristics = self.game_data["game_data"]["heros"][
                             len(self.turn_manager.players)]["characteristics"]
                         _images = ASSETS_SPRITES[_class]
-                        p = Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images)
+                        p = Player(self, _x, _y, _class, _characteristics, _images)
                         p.health = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["health"]
                         p.xp = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["xp"]
                         p.gold = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["gold"]
@@ -320,7 +320,59 @@ class Game(_Elements):
                             len(self.turn_manager.players)]["characteristics"]
                         _images = ASSETS_SPRITES[_class]
                         self.turn_manager.players.append(
-                            Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
+                            Player(self, _x, _y, _class, _characteristics, _images))
+                if tile_object.name == "skeleton":
+                    self.turn_manager.enemies.append(
+                        Enemy(
+                            self, obj_center.x, obj_center.y, "skeleton",
+                            choice(["skeleton_F", "skeleton_R", "skeleton_W"])))
+                if tile_object.name == "goblin":
+                    self.turn_manager.enemies.append(
+                        Enemy(self, obj_center.x, obj_center.y, "goblin", choice(["goblin_F", "goblin_R", "goblin_W"]))
+                    )
+                if tile_object.name == "phantom":
+                    self.turn_manager.enemies.append(
+                        Enemy(
+                            self, obj_center.x, obj_center.y, "phantom",
+                            choice(["phantom_F", "phantom_R", "phantom_W"])))
+                if tile_object.name == "boss":
+                    self.turn_manager.enemies.append(
+                        Boss(self, obj_center.x, obj_center.y, "boss", "boss")
+                    )
+                if tile_object.name == 'wall':
+                    Obstacle(
+                        self,
+                        tile_object.x,
+                        tile_object.y,
+                        tile_object.width,
+                        tile_object.height)
+                if tile_object.name == "door":
+                    wall = Obstacle(
+                        self,
+                        tile_object.x,
+                        tile_object.y,
+                        tile_object.width,
+                        tile_object.height)
+                    Door(self, obj_center.x, obj_center.y, wall)
+                if tile_object.name == "chest":
+                    Chest(self, obj_center.x, obj_center.y)
+                    Obstacle(
+                        self,
+                        tile_object.x,
+                        tile_object.y,
+                        TILESIZE * 0.4,
+                        TILESIZE * 0.4)
+                if tile_object.name == "camp_fire":
+                    CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
+                if tile_object.name == "merchant":
+                    Merchant(self, obj_center.x, obj_center.y, TILESIZE)
+                if tile_object.name in ITEMS_NAMES:
+                    properties = {key: value for key, value in ITEMS_PROPERTIES[tile_object.name].items() if not (key in [
+                        "image_name"])}
+                    properties["object_type"] = ITEMS_PROPERTIES[tile_object.name]["object_type"]
+                    PlacableItem(self, obj_center, tile_object.name, properties,
+                                 ITEMS[ITEMS_PROPERTIES[tile_object.name]["image_name"]],
+                                 ITEMS_PROPERTIES[tile_object.name]["image_name"])
             self.save_data()
             self.save_data_in_file()
 

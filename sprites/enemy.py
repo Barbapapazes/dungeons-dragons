@@ -66,12 +66,16 @@ class Enemy(Character):
 
         if images[-1] == 'F':
             self.classe = CLASSES[0]
+            self.xp = 10
         elif images[-1] == 'R':
             self.classe = CLASSES[1]
+            self.xp = 10
         elif images[-1] == 'W':
             self.classe = CLASSES[2]
+            self.xp = 20
         else:
             self.classe = CLASSES[3]
+            self.xp = 150
 
         self.health = TYPE.get(self.type).get("health")
         self.characteristics = {
@@ -87,6 +91,18 @@ class Enemy(Character):
         """default displayed text whenever printing the enemy
         """
         return f'{self.type} {self.classe}'
+
+    # def difficulty_tweeking(self):
+    #     """tweeks ennemy's statistics to match game difficulty
+    #     """
+    #     self.STR += 5 * game.difficulty
+    #     self.DEX += 3 * game.difficulty
+    #     self.CON += 4 * game.difficulty
+    #     self.INT += 2 * game.difficulty
+    #     self.WIS += 1 * game.difficulty
+    #     self.CHA += 2 * game.difficulty
+    #     self.speed += 10 * game.difficulty
+    #     self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
 
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -117,18 +133,11 @@ class Enemy(Character):
         if self.health < TYPE.get(self.type).get("health"):
             pg.draw.rect(self.image, col, self.health_bar)
 
-    def throw_inventory(self):
-        """drop every item stored inside the enemy's inventory
-        """
-        for slot in self.inventory.slots:
-            if slot.item:
-                self.inventory.throw_item(slot.item)
-
     def update(self):
-        if self.health <= 0:
-            self.throw_inventory()
-            self.kill()
-            self.game.turn_manager.enemies.remove(self)
+        # if self.health <= 0:
+        #     self.throw_inventory()
+        #     self.kill()
+        #     self.game.turn_manager.enemies.remove(self)
 
         # if trap nearby: flee(trap)
         if not self.end:
@@ -190,20 +199,32 @@ class Enemy(Character):
                     if not self.goto:
                         self.goto = self.path_finding(self.player_spotted.pos)
                         if self.goto:
-                            del self.goto[0]
-
-                    if self.goto:
-                        self.acc = self.seek(self.goto[0].coor)
-                        if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
-                            del self.goto[0]
+                            for i in self.goto:
+                                rect = pg.Rect(i.coor, (SIZE, SIZE))
+                                pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
+                            self.acc = self.seek(self.goto[0].coor)
+                            if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
+                                del self.goto[0]
+                        else:
+                            self.vel = vec(0, 0)
+                            self.moving = False
+                            self.game.versus_manager.logs.add_log(f'The {self} moved.')
+                            self.end_turn()
+                    else:
+                        self.attack()
                 """if there is no player in range, just move around
                 """
             else:
-                temp = self.avoidnpc()
-                if temp is False:
-                    self.acc = self.wander()
-                else:
-                    self.acc = temp
+                self.skip_turn()
+
+        elif self.player_detection():
+            if self.evaluation():
+                self.flee(self.player_spotted.pos)
+            else:
+                if not self.goto:
+                    self.goto = self.path_finding(self.player_spotted.pos)
+                    if self.goto:
+                        del self.goto[0]
 
             """actual movement update
             """
@@ -413,7 +434,6 @@ class Enemy(Character):
             for player in self.game.turn_manager.players:
                 if (player.pos - self.pos).length() < self.view_range:
                     self.player_spotted = player
-                    logger.info("player spotted")
                     return True
             return False
         return True
@@ -474,13 +494,8 @@ class Enemy(Character):
                 self.game.versus_manager.logs.add_log(f'The {self} attacked {self.player_spotted}, dealing {damage}.')
                 self.game.turn_manager.remove_health(damage, self.player_spotted)
             else:
+                self.game.versus_manager.calc_damage()
                 self.game.versus_manager.logs.add_log(f'The {self} missed his attack...')
-        elif self.game.versus_manager.check_dice():
-            damage = self.game.versus_manager.calc_damage()
-            self.game.versus_manager.logs.add_log(f'The {self} attacked {self.player_spotted}, dealing {damage}.')
-            self.game.turn_manager.remove_health(damage, self.player_spotted)
-        else:
-            self.game.versus_manager.logs.add_log(f'The {self} missed his attack...')
         self.end_turn()
 
     def end_turn(self):
@@ -490,6 +505,12 @@ class Enemy(Character):
         self.end = True
         # sleep(1.25)
 
+    def skip_turn(self):
+        self.last_timestamp2 = None
+        self.goto = []
+        self.moving = False
+        self.number_actions = 0
+        self.game.versus_manager.check_characters_actions()
 
 class Boss(Enemy):
     def __init__(self, game, x, y, _type, images):
@@ -507,7 +528,7 @@ class Boss(Enemy):
                 else:
                     self.end_turn()
             else:
-                self.end_turn()
+                self.skip_turn()
         else:
             self.update_image()
             self.update_collisions()

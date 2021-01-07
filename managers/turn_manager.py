@@ -171,7 +171,7 @@ class TurnManager:
         damage = 0
         if self.get_active_weapon() is None:
             logger.debug("[sofiane] il faut ajuster les dégats de l'attaque sans arme")
-            damage = 10
+            damage = self.active_character().characteristic['str']//2
         else:
             damage = self.get_active_weapon().attack()
         return damage
@@ -193,8 +193,16 @@ class TurnManager:
             damage(int)
             enemy(Enemy)
         """
-        enemy.health -= damage
-        self.active_character().game.logs.add_log(f"Remove {damage}, remaining {enemy.health}")
+        enemy.subHp(damage)
+        if enemy.health == 0:
+            if not hasattr(self.active_character(), 'goto'):
+                self.active_character().xp += enemy.xp
+                self.active_character().level_up()
+                self.active_character().game.logs.add_log(f"{self.active_character()} killed {enemy} and gained {enemy.xp} exp !")
+            else:
+                self.active_character().game.logs.add_log(f"{enemy} was murdered by {self.active_character()}...")
+        else:
+            self.active_character().game.logs.add_log(f"Remove {damage}, remaining {enemy.health}")
 
     def is_active_player(self):
         """Check if the active character is a player

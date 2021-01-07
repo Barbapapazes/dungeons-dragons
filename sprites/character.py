@@ -96,6 +96,40 @@ class Character(pg.sprite.Sprite):
 
     def __str__(self):
         return f"Sprite {self.type}"
+    
+    def addHp(self, hp_gain):
+        """Add passed hp_gain to the player's health
+
+        Args:
+            hp_gain (int)
+        """
+        self.health += hp_gain
+        logger.debug(hp_gain)
+        if self.health > self.max_HP:
+            self.health = self.max_HP
+
+    def subHp(self, hp_lose):
+        """Sub passed hp_lose to the player's health
+
+        Args:
+            hp_lose (int)
+        """
+        self.health -= hp_lose
+        if self.health < 0:
+            self.health = 0
+    
+    def throw_inventory(self):
+        """drop every item stored inside the enemy's inventory
+        """
+        for slot in self.inventory.slots:
+            if slot.item:
+                self.inventory.throw_item(slot.item)
+
+    def die(self):
+        if self.health < 0:
+            self.throw_inventory()
+            self.kill()
+            self.game.turn_manager.enemies.remove(self)
 
     def throw_dice(self, base_value, mod=0, value_dice=100):
         """Throw a dice
@@ -121,7 +155,7 @@ class Character(pg.sprite.Sprite):
         protection = 1
         for bodypart in self.armor:
             if self.armor[bodypart] is not None:
-                protection += self.armor[bodypart]
+                protection += self.armor[bodypart].shield
         return protection
 
     def addHp(self, hp_gain):
