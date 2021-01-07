@@ -21,13 +21,16 @@ class VersusManager:
         self.move_btn = pg.Rect((TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.spell_btn = pg.Rect((2 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.validate_btn = pg.Rect((3 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
+
+        self.circle = Circle(game, 0, 0, 0)
+
+        self.new()
+
+    def new(self):
         self.action = None
         self.last_player_pos = None
         self.selected_enemy = None
         self.border_enemy = None
-
-        self.circle = Circle(game, 0, 0, 0)
-
         self.warn = False
         self.active = False
 
@@ -241,7 +244,7 @@ class VersusManager:
         """
         damage = self.turn_manager.get_active_weapon_damage()
         if hasattr(self.turn_manager.active_character(), "goto"):
-            self.selected_enemy=self.turn_manager.active_character().player_spotted
+            self.selected_enemy = self.turn_manager.active_character().player_spotted
         if self.turn_manager.get_active_weapon_type() == "arc":
             dist = self.selected_enemy.pos - self.turn_manager.active_character().pos
             logger.debug("[sofiane] il faut ajuster la valuer de MALUS_ARC")
@@ -265,7 +268,8 @@ class VersusManager:
     def check_characters_actions(self):
         """Check the action of the active character"""
         self.turn_manager.active_character().number_actions -= 1
-        self.logs.add_log(f"Action remaining to {self.turn_manager.active_character()} : {self.turn_manager.active_character().number_actions}")
+        self.logs.add_log(
+            f"Action remaining to {self.turn_manager.active_character()} : {self.turn_manager.active_character().number_actions}")
         self.set_move_player(False)
         if self.turn_manager.active_character().number_actions == 0:
             self.add_turn()

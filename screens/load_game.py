@@ -171,6 +171,7 @@ class LoadGame(_Elements):
                 self.game_data['game_data'] = json.load(f)
                 self.game_data['file_name'] = selected
                 self.game_data['loaded'] = True
+                self.game_data['next'] = False
                 super().set_state(TRANSITION_OUT)
                 logger.info('Load : %s', selected)
         except EnvironmentError as e:

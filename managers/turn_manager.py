@@ -11,6 +11,9 @@ class TurnManager:
     """Manage the turnbased game"""
 
     def __init__(self, turn_number=0):
+        self.new(turn_number)
+
+    def new(self, turn_number=0):
         self.players = list()
         self.enemies = list()
 

@@ -130,7 +130,7 @@ class Window():
 
     def save_minimap_data(self):
         """Save the fog and the cover from game_data"""
-        minimap_data = self.persist["minimap"]
+        minimap_data = self.state.game_data["minimap"]
         filename = self.persist["file_name"].split(".json")[0]
         minimap_types = ["cover", "fog"]
         for _type in minimap_types:

@@ -1,5 +1,6 @@
 """Game screen"""
 
+from sprites.map_check import MapCheck
 from managers.map_viewer_manager import MapViewerManager
 from sprites.effects_zone import EffectsZone
 from sprites.merchant import Merchant
@@ -62,6 +63,13 @@ class Game(_State):
     def startup(self, dt, game_data):
         self.dt = dt
         self.game_data = game_data
+
+        super().setup_transition()
+
+        self.new()
+
+    def new(self):
+        """Create a new game"""
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
         self.doors = pg.sprite.Group()
@@ -70,22 +78,13 @@ class Game(_State):
         self.items = pg.sprite.Group()
         self.spells = pg.sprite.Group()
         self.effects_zones = pg.sprite.Group()
+        self.map_checks = pg.sprite.Group()
+        self.turn_manager.new()
+        self.versus_manager.new()
+        self.animated.empty()
 
-        EffectsZone(self, 500, 300, "heal", 2, 2, 20)
-        EffectsZone(self, 800, 300, "attack", 2, 2, 20)
+        MapCheck(self, 600, 800, "map-levels_maps-level1.tmx")
 
-        # self.en1 = Enemy(self, 10, 4, "Boot n1")
-        # self.en2 = Enemy(self, 11, 7, "Boot n2")
-        self.en1 = list()
-        self.en2 = list()
-        self.enemy = [self.en1, self.en2]
-
-        super().setup_transition()
-
-        self.new()
-
-    def new(self):
-        """Create a new game"""
         self.map = TiledMap(
             path.join(
                 self.assets_folder, self.game_data["game_data"]["map"]["folder"],
@@ -101,6 +100,64 @@ class Game(_State):
             self.map_rect.width /
             self.map_rect.height, self.game_data["minimap"]["fog"], self.game_data["minimap"]["cover"])
         self.camera = Camera(self.map.width, self.map.height)
+
+        if not self.game_data["loaded"] or self.game_data["next"]:
+            for tile_object in self.map.tmxdata.objects:
+                obj_center = vec(
+                    tile_object.x + tile_object.width / 2,
+                    tile_object.y + tile_object.height / 2)
+                if tile_object.name == "skeleton":
+                    self.turn_manager.enemies.append(
+                        Enemy(
+                            self, obj_center.x, obj_center.y, "skeleton",
+                            choice(["skeleton_F", "skeleton_R", "skeleton_W"])))
+                if tile_object.name == "goblin":
+                    self.turn_manager.enemies.append(
+                        Enemy(self, obj_center.x, obj_center.y, "goblin", choice(["goblin_F", "goblin_R", "goblin_W"]))
+                    )
+                if tile_object.name == "phantom":
+                    self.turn_manager.enemies.append(
+                        Enemy(
+                            self, obj_center.x, obj_center.y, "phantom",
+                            choice(["phantom_F", "phantom_R", "phantom_W"])))
+                if tile_object.name == "boss":
+                    self.turn_manager.enemies.append(
+                        Boss(self, obj_center.x, obj_center.y, "boss", "boss")
+                    )
+                if tile_object.name == 'wall':
+                    Obstacle(
+                        self,
+                        tile_object.x,
+                        tile_object.y,
+                        tile_object.width,
+                        tile_object.height)
+                if tile_object.name == "door":
+                    wall = Obstacle(
+                        self,
+                        tile_object.x,
+                        tile_object.y,
+                        tile_object.width,
+                        tile_object.height)
+                    Door(self, obj_center.x, obj_center.y, wall)
+                if tile_object.name == "chest":
+                    Chest(self, obj_center.x, obj_center.y)
+                    Obstacle(
+                        self,
+                        tile_object.x,
+                        tile_object.y,
+                        TILESIZE * 0.4,
+                        TILESIZE * 0.4)
+                if tile_object.name == "camp_fire":
+                    CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
+                if tile_object.name == "merchant":
+                    Merchant(self, obj_center.x, obj_center.y, TILESIZE)
+                if tile_object.name in ITEMS_NAMES:
+                    properties = {key: value for key, value in ITEMS_PROPERTIES[tile_object.name].items() if not (key in [
+                        "image_name"])}
+                    properties["object_type"] = ITEMS_PROPERTIES[tile_object.name]["object_type"]
+                    PlacableItem(self, obj_center, tile_object.name, properties,
+                                 ITEMS[ITEMS_PROPERTIES[tile_object.name]["image_name"]],
+                                 ITEMS_PROPERTIES[tile_object.name]["image_name"])
 
         if self.game_data["loaded"]:
             logger.info("Load from a file")
@@ -184,6 +241,27 @@ class Game(_State):
                         tile_object.height)
                 if tile_object.name == "camp_fire":
                     CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
+        elif self.game_data["next"]:
+            logger.info("Load the next game")
+            for tile_object in self.map.tmxdata.objects:
+                obj_center = vec(
+                    tile_object.x + tile_object.width / 2,
+                    tile_object.y + tile_object.height / 2)
+                if tile_object.name == 'player':
+                    if len(self.turn_manager.players) < len(self.game_data["game_data"]["heros"]):
+                        _x = obj_center.x if not ("last_pos" in self.game_data["game_data"]["heros"][
+                            len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
+                            len(self.turn_manager.players)]["last_pos"]["x"]
+                        _y = obj_center.y if not ("last_pos" in self.game_data["game_data"]["heros"][
+                            len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
+                            len(self.turn_manager.players)]["last_pos"]["y"]
+                        _class = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["class"]
+                        _characteristics = self.game_data["game_data"]["heros"][
+                            len(self.turn_manager.players)]["characteristics"]
+                        _images = ASSETS_SPRITES[_class]
+                        # il faut lui remettre son inventaire, ses sous, son xp
+                        self.turn_manager.players.append(
+                            Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
         else:
             logger.info("Load a new game")
             for tile_object in self.map.tmxdata.objects:
@@ -204,58 +282,6 @@ class Game(_State):
                         _images = ASSETS_SPRITES[_class]
                         self.turn_manager.players.append(
                             Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
-                if tile_object.name == "skeleton":
-                    self.turn_manager.enemies.append(
-                        Enemy(
-                            self, obj_center.x, obj_center.y, "skeleton",
-                            choice(["skeleton_F", "skeleton_R", "skeleton_W"])))
-                if tile_object.name == "goblin":
-                    self.turn_manager.enemies.append(
-                        Enemy(self, obj_center.x, obj_center.y, "goblin", choice(["goblin_F", "goblin_R", "goblin_W"]))
-                    )
-                if tile_object.name == "phantom":
-                    self.turn_manager.enemies.append(
-                        Enemy(
-                            self, obj_center.x, obj_center.y, "phantom",
-                            choice(["phantom_F", "phantom_R", "phantom_W"])))
-                if tile_object.name == "boss":
-                    self.turn_manager.enemies.append(
-                        Boss(self, obj_center.x, obj_center.y, "boss", "boss")
-                    )
-                if tile_object.name == 'wall':
-                    Obstacle(
-                        self,
-                        tile_object.x,
-                        tile_object.y,
-                        tile_object.width,
-                        tile_object.height)
-                if tile_object.name == "door":
-                    wall = Obstacle(
-                        self,
-                        tile_object.x,
-                        tile_object.y,
-                        tile_object.width,
-                        tile_object.height)
-                    Door(self, obj_center.x, obj_center.y, wall)
-                if tile_object.name == "chest":
-                    Chest(self, obj_center.x, obj_center.y)
-                    Obstacle(
-                        self,
-                        tile_object.x,
-                        tile_object.y,
-                        TILESIZE * 0.4,
-                        TILESIZE * 0.4)
-                if tile_object.name == "camp_fire":
-                    CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
-                if tile_object.name == "merchant":
-                    Merchant(self, obj_center.x, obj_center.y, TILESIZE)
-                if tile_object.name in ITEMS_NAMES:
-                    properties = {key: value for key, value in ITEMS_PROPERTIES[tile_object.name].items() if not (key in [
-                        "image_name"])}
-                    properties["object_type"] = ITEMS_PROPERTIES[tile_object.name]["object_type"]
-                    PlacableItem(self, obj_center, tile_object.name, properties,
-                                 ITEMS[ITEMS_PROPERTIES[tile_object.name]["image_name"]],
-                                 ITEMS_PROPERTIES[tile_object.name]["image_name"])
             self.save_data()
             self.save_data_in_file()
 
@@ -621,6 +647,15 @@ class Game(_State):
         self.hit_merchants()
         self.hit_animated()
         self.hit_items()
+        self.hit_map_checks()
+
+    def hit_map_checks(self):
+        if self.turn_manager.is_active_player():
+            hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.map_checks, False)
+            if self.press_space and hits:
+                for hit in hits:
+                    hit.collide()
+                self.press_space = False
 
     def hit_chests(self):
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.chests, False)

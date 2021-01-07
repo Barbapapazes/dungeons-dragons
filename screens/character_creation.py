@@ -45,6 +45,7 @@ class CharacterCreation(_Elements):
 
     def startup(self, dt, game_data):
         game_data["loaded"] = False
+        game_data["next"] = False
         game_data["game_data"] = create_game_data()
         game_data["minimap"] = {
             "fog": None,
