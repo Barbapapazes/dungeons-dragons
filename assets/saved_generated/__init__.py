@@ -1,0 +1,1 @@
+"""Folder for to save generated map """ 

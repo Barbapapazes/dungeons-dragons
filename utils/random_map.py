@@ -207,7 +207,7 @@ def fusion_two_map(map1,map2,out,direction):      # direction prend la valeur ri
 
 
 
-def generate_map(height,width,out='../map_generated.tmx'):
+def generate_map(height,width,out='../../saved_generated/map_generated.tmx'):
     list_10 = ['LD','LR','LDR']
     list_11 = ['LT','TRDL','LDR','LTR','LTD']
     list_00 = ['RD']
@@ -326,9 +326,6 @@ def generate_map(height,width,out='../map_generated.tmx'):
             map1Select='./GENERATED/Untildown.tmx'
         else:
             fusion_two_map(map1Select,'./GENERATED/ligne'+str(k)+'.tmx',out,'down')
-
-
-
 
 
 
