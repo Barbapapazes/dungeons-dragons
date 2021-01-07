@@ -1,5 +1,6 @@
 """Game screen"""
 
+from managers.map_viewer_manager import MapViewerManager
 from sprites.effects_zone import EffectsZone
 from sprites.merchant import Merchant
 from sprites.animated import CampFire
@@ -91,6 +92,9 @@ class Game(_State):
                 self.game_data["game_data"]["map"]["filename"]))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
+        self.map_viewer_manager = MapViewerManager(
+            path.join(self.assets_folder, self.game_data["game_data"]["map"]["folder"]),
+            self.game_data["game_data"]["map"]["filename"], self)
         self.minimap = Minimap(
             self.map_img,
             225,
@@ -296,6 +300,7 @@ class Game(_State):
                        'shop': self.shop_run,
                        'chest': self.chest_run,
                        'merchant': self.merchant_run,
+                       'map': self.map_run,
                        }
 
         return states_dict
@@ -324,6 +329,12 @@ class Game(_State):
                     self.turn_manager.add_playable()
                     self.turn_manager.vision = self.turn_manager.playable
 
+            if event.key == pg.K_u:
+                # il va falloir le déplacer pour le mettre dans les toggle
+                self.seller = False
+                self.map_viewer_manager.active = not self.map_viewer_manager.active
+                super().toggle_sub_state('map')
+
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
 
@@ -332,6 +343,8 @@ class Game(_State):
                         logger.info("Select an item from the inventory")
                         self.turn_manager.active_character().inventory.move_item()
 
+        if self.map_viewer_manager.active:
+            self.map_viewer_manager.event(event)
         self.event_versus(event)
         if self.turn_manager.is_active_player:
             self.events_inventory(event)
@@ -471,6 +484,7 @@ class Game(_State):
         """Use to toggle the state of all states"""
         if key_for(self.game_data["shortcuts"]["game"]["menu"]["keys"], event):
             self.seller = False
+            self.map_viewer_manager.active = False
             logger.info("Toggle the sub-menu")
             self.turn_manager.active_character().inventory.display_inventory = False
             self.turn_manager.active_character().shop.display_shop = False
@@ -479,15 +493,16 @@ class Game(_State):
                    ["inventory"]["keys"], event):
             logger.info("Toggle inventory from turn_manager.active_character()")
             self.seller = False
+            self.map_viewer_manager.active = False
             # self.turn_manager.active_character().shop.display_shop = False
             self.turn_manager.active_character().inventory.display_inventory = True
             super().toggle_sub_state('inventory')
-        if event.key == pg.K_p:
-            logger.info("Toggle the shop")
-            self.seller = not self.seller
-            self.turn_manager.active_character().shop.display_shop = True
-            self.turn_manager.active_character().inventory.display_inventory = True
-            super().toggle_sub_state('shop')
+        # if event.key == pg.K_p:
+        #     logger.info("Toggle the shop")
+        #     self.seller = not self.seller
+        #     self.turn_manager.active_character().shop.display_shop = True
+        #     self.turn_manager.active_character().inventory.display_inventory = True
+        #     super().toggle_sub_state('shop')
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -558,6 +573,13 @@ class Game(_State):
         self.screen.blit(self.dim_screen, (0, 0))
         self.turn_manager.active_character().inventory.draw(self.screen)
         self.opened_merchant.shop.draw(self.screen)
+
+    def map_run(self):
+        self.draw()
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.screen.blit(self.dim_screen, (0, 0))
+        self.map_viewer_manager.draw(self.screen)
 
     def check_for_menu(self):
         """Check if the user want to access to the menu"""

@@ -13,6 +13,7 @@ assets/saved_games/*.json
 assets/saved_shortcuts/*.json
 assets/saved_settings/*.json
 assets/saved_minimap/*.png
+assets/saved_notes/*.png
 
 
 # Byte-compiled / optimized / DLL files

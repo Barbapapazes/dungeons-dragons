@@ -43,10 +43,7 @@ class TiledMap:
     """Create the map"""
 
     def __init__(self, filename):
-        tm = pytmx.load_pygame(filename, pixels_alpha=True)
-        self.width = tm.width * tm.tilewidth
-        self.height = tm.height * tm.tileheight
-        self.tmxdata = tm
+        self.new_map(filename)
 
     def render(self, surface):
         """Create the map on a surface of
@@ -72,6 +69,17 @@ class TiledMap:
         self.render(temp_surface)
         logger.info("Create the map")
         return temp_surface
+
+    def new_map(self, filename):
+        """Load a new map
+
+        Args:
+            filename (str)
+        """
+        tm = pytmx.load_pygame(filename, pixels_alpha=True)
+        self.width = tm.width * tm.tilewidth
+        self.height = tm.height * tm.tileheight
+        self.tmxdata = tm
 
 
 class Camera:

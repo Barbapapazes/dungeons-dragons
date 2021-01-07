@@ -94,9 +94,9 @@ class Window():
                     logger.info('Show fps: %s', self.show_fps)
                     self.normal_caption()
                 self.state.get_events(event)
-                if key_for(self.shortcuts["window"]["save"]["keys"], event):
-                    pg.event.wait()
-                    self.save()
+                # if key_for(self.shortcuts["window"]["save"]["keys"], event):
+                #     pg.event.wait()
+                #     self.save()
                 if key_for(self.shortcuts["shortcuts"]["show"]["keys"], event):
                     state = self.state.previous if self.state.name == SHORTCUTS else SHORTCUTS
                     self.flip_state(state)
