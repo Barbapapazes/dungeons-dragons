@@ -14,7 +14,7 @@ vec = pg.math.Vector2
 class Player(Character):
     """Create a player"""
 
-    def __init__(self, game, x, y, _type, characteristics, health, xp, gold, images):
+    def __init__(self, game, x, y, _type, characteristics, images, health=PLAYER_MAX_HP, xp=0, gold=100):
         self.groups = players
         pg.sprite.Sprite.__init__(self, self.groups)
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
@@ -30,7 +30,6 @@ class Player(Character):
         self.last_shot = 0
 
         # Stats
-        self.HP = 100
         self.max_HP = PLAYER_MAX_HP
         self.shield = 0
         self.MP = 50  # mana
@@ -196,27 +195,6 @@ class Player(Character):
         if self.weapon is not None:
             self.weapon = None
 
-    def addHp(self, hp_gain):
-        """Add passed hp_gain to the player's health
-
-        Args:
-            hp_gain (int)
-        """
-        self.HP += hp_gain
-        logger.debug(hp_gain)
-        if self.HP > self.max_HP:
-            self.HP = self.max_HP
-
-    def subHp(self, hp_lose):
-        """Sub passed hp_lose to the player's health
-
-        Args:
-            hp_lose (int)
-        """
-        self.HP -= hp_lose
-        if self.HP < 0:
-            self.HP = 0
-
     def addMP(self, MP_gain):
         """Add passed HP_gain to the player's mana
 
@@ -261,6 +239,10 @@ class Player(Character):
         if self.spell is not None:
             self.spell = None
 
+    def level_up(self):
+        if self.xp > 100:
+            self.xp = self.xp%100
+            self.game.versus_manager.logs.add_log(f"{self} leveled up !")
 
 class Arrow(pg.sprite.Sprite):
     """Create an arrow"""

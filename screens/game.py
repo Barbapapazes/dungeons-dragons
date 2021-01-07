@@ -110,10 +110,10 @@ class Game(_State):
                     hero["pos"]["y"],
                     hero["class"],
                     hero["characteristics"],
-                    hero["health"],
-                    hero["xp"],
-                    hero["gold"],
-                    ASSETS_SPRITES[hero["class"]])
+                    ASSETS_SPRITES[hero["class"]],
+                    health=hero["health"],
+                    xp=hero["xp"],
+                    gold=hero["gold"])
                 for item in Inventory.create_inventory(hero["inventory"]):
                     player.inventory.add_item(item)
                 for value in hero["equipments"]["armor"].values():
@@ -203,7 +203,7 @@ class Game(_State):
                             len(self.turn_manager.players)]["characteristics"]
                         _images = ASSETS_SPRITES[_class]
                         self.turn_manager.players.append(
-                            Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
+                            Player(self, _x, _y, _class, _characteristics, _images))
                 if tile_object.name == "skeleton":
                     self.turn_manager.enemies.append(
                         Enemy(

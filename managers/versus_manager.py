@@ -6,6 +6,7 @@ from config.colors import ENERGOS, GLOOMY_PURPLE, RED_PIGMENT, BLUE_MARTINA
 from config.window import HEIGHT, TILESIZE
 from sprites.animated import Circle
 from logger import logger
+from time import sleep
 vec = pg.Vector2
 
 
@@ -240,8 +241,8 @@ class VersusManager:
             int: damage, can be under 0
         """
         damage = self.turn_manager.get_active_weapon_damage()
-        if hasattr(self.turn_manager.active_character(), "goto"):
-            self.selected_enemy=self.turn_manager.active_character().player_spotted
+        # if hasattr(self.turn_manager.active_character(), "goto"):
+        #     self.selected_enemy=self.turn_manager.active_character().player_spotted
         if self.turn_manager.get_active_weapon_type() == "arc":
             dist = self.selected_enemy.pos - self.turn_manager.active_character().pos
             logger.debug("[sofiane] il faut ajuster la valuer de MALUS_ARC")
@@ -264,11 +265,13 @@ class VersusManager:
 
     def check_characters_actions(self):
         """Check the action of the active character"""
-        self.turn_manager.active_character().number_actions -= 1
-        self.logs.add_log(f"Action remaining to {self.turn_manager.active_character()} : {self.turn_manager.active_character().number_actions}")
+        self.turn_manager.active_character().number_actions -= 1        
         self.set_move_player(False)
-        if self.turn_manager.active_character().number_actions == 0:
+        sleep(1)
+        if self.turn_manager.active_character().number_actions <= 0:
             self.add_turn()
+        else:
+            self.logs.add_log(f"Action remaining to {self.turn_manager.active_character()} : {self.turn_manager.active_character().number_actions}")
 
     def select_enemy(self, pos):
         """Select an enemy
@@ -285,7 +288,7 @@ class VersusManager:
                         _y = pos[1] - self.game.camera.camera.y
                         if enemy.rect.collidepoint(_x, _y):
                             self.selected_enemy = enemy
-                            self.logs.add_log("Enemy selected")
+                            # self.logs.add_log("Enemy selected")
                             break
                 else:
                     self.logs.add_log("Select an enemy in the range")
@@ -297,7 +300,7 @@ class VersusManager:
                     _y = pos[1] - self.game.camera.camera.y
                     if enemy.rect.collidepoint(_x, _y):
                         self.selected_enemy = enemy
-                        self.logs.add_log("Enemy selected")
+                        # self.logs.add_log("Enemy selected")
                         break
 
     def update(self):

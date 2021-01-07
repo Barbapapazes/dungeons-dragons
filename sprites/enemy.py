@@ -65,12 +65,16 @@ class Enemy(Character):
 
         if images[-1] == 'F':
             self.classe = CLASSES[0]
+            self.xp = 10
         elif images[-1] == 'R':
             self.classe = CLASSES[1]
+            self.xp = 10
         elif images[-1] == 'W':
             self.classe = CLASSES[2]
+            self.xp = 20
         else:
             self.classe = CLASSES[3]
+            self.xp = 150
 
         self.health = TYPE.get(self.type).get("health")
         self.characteristics = {
@@ -86,6 +90,18 @@ class Enemy(Character):
         """default displayed text whenever printing the enemy
         """
         return f'{self.type} {self.classe}'
+
+    # def difficulty_tweeking(self):
+    #     """tweeks ennemy's statistics to match game difficulty
+    #     """
+    #     self.STR += 5 * game.difficulty
+    #     self.DEX += 3 * game.difficulty
+    #     self.CON += 4 * game.difficulty
+    #     self.INT += 2 * game.difficulty
+    #     self.WIS += 1 * game.difficulty
+    #     self.CHA += 2 * game.difficulty
+    #     self.speed += 10 * game.difficulty
+    #     self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
 
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -116,18 +132,11 @@ class Enemy(Character):
         if self.health < TYPE.get(self.type).get("health"):
             pg.draw.rect(self.image, col, self.health_bar)
 
-    def throw_inventory(self):
-        """drop every item stored inside the enemy's inventory
-        """
-        for slot in self.inventory.slots:
-            if slot.item:
-                self.inventory.throw_item(slot.item)
-
     def update(self):
-        if self.health <= 0:
-            self.throw_inventory()
-            self.kill()
-            self.game.turn_manager.enemies.remove(self)
+        # if self.health <= 0:
+        #     self.throw_inventory()
+        #     self.kill()
+        #     self.game.turn_manager.enemies.remove(self)
 
         # if trap nearby: flee(trap)
 
@@ -173,13 +182,14 @@ class Enemy(Character):
                         else:
                             self.vel = vec(0, 0)
                             self.moving = False
+                            self.game.versus_manager.logs.add_log(f'The {self} moved.')
                             self.end_turn()
                     else:
                         self.attack()
                 """if there is no player in range, just move around
                 """
             else:
-                self.end_turn()
+                self.skip_turn()
 
         elif self.player_detection():
             if self.evaluation():
@@ -403,7 +413,6 @@ class Enemy(Character):
             for player in players:
                 if (player.pos - self.pos).length() < self.view_range:
                     self.player_spotted = player
-                    logger.info("player spotted")
                     return True
             return False
         return True
@@ -451,35 +460,37 @@ class Enemy(Character):
     def attack(self):
         """attack instructions
         """
-        if self.classe == CLASSES[2]:
-            if self.cooldown - self.game.turn_manager.turn < 0:
-                spawn = Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE),
-                              self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
-                self.game.turn_manager.enemies.append(spawn)
-                self.game.versus_manager.logs.add_log(f"The {self} used magic to invoke a {spawn} !")
-                self.cooldown += 20
-                self.end_turn()
-            elif self.game.versus_manager.check_dice():
+        
+        if self.classe == "wizard" and self.cooldown - self.game.turn_manager.turn < 0:
+            spawn = Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE),
+                            self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
+            self.game.turn_manager.enemies.append(spawn)
+            self.game.versus_manager.logs.add_log(f"The {self} used magic to invoke a {spawn} !")
+            self.cooldown += 20
+            self.end_turn()
+        else:
+            self.game.versus_manager.selected_enemy = self.player_spotted
+            if self.game.versus_manager.check_dice():
                 damage = self.game.versus_manager.calc_damage()
                 self.game.versus_manager.logs.add_log(f'The {self} attacked {self.player_spotted}, dealing {damage}.')
                 self.game.turn_manager.remove_health(damage, self.player_spotted)
             else:
+                self.game.versus_manager.calc_damage()
                 self.game.versus_manager.logs.add_log(f'The {self} missed his attack...')
-        elif self.game.versus_manager.check_dice():
-            damage = self.game.versus_manager.calc_damage()
-            self.game.versus_manager.logs.add_log(f'The {self} attacked {self.player_spotted}, dealing {damage}.')
-            self.game.turn_manager.remove_health(damage, self.player_spotted)
-        else:
-            self.game.versus_manager.logs.add_log(f'The {self} missed his attack...')
         self.end_turn()
 
     def end_turn(self):
         self.last_timestamp2 = None
         self.goto = []
         self.moving = False
-        sleep(1.25)
         self.game.versus_manager.check_characters_actions()
 
+    def skip_turn(self):
+        self.last_timestamp2 = None
+        self.goto = []
+        self.moving = False
+        self.number_actions = 0
+        self.game.versus_manager.check_characters_actions()
 
 class Boss(Enemy):
     def __init__(self, game, x, y, _type, images):
@@ -497,7 +508,7 @@ class Boss(Enemy):
                 else:
                     self.end_turn()
             else:
-                self.end_turn()
+                self.skip_turn()
         else:
             self.update_image()
             self.update_collisions()
