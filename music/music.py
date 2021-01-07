@@ -8,6 +8,7 @@ class Music():
     def __init__(self,win):
         print("creation du module music")
         self.win=win
+        self.time_btw_stp=0
         self.startup()
         
     
@@ -72,13 +73,34 @@ class Music():
     
     def click_sound(self):
         #appeler en boucle qui va lancer un son 
-        if(DATA_SOUND["go"] and DATA_SOUND["is_enable"]):
+        if(DATA_SOUND["click"] and DATA_SOUND["is_enable"]):
             print("je joue le click")
             click=pg.mixer.Sound(path.join(self.lib_music,DATA_SOUND["piste"]["click"]))
             click.play()
-            DATA_SOUND["go"]=False
+            DATA_SOUND["click"]=False
+
+    def step_sound(self):
+        if(DATA_SOUND["step"] and DATA_SOUND["is_enable"]):
+            if((pg.time.get_ticks()-self.time_btw_stp)>200 or self.time_btw_stp == 0):
+                print("je joue le step")
+                
+                step=pg.mixer.Sound(path.join(self.lib_music,DATA_SOUND["piste"]["step"]))
+                pg.mixer.Sound.set_volume(step,0.1)
+                step.play()
+                self.time_btw_stp=pg.time.get_ticks()
+            DATA_SOUND["step"]=False
+
+   """ def combat(self):
+        if(self.state=="game" and DATA_MUSIC["start_combat"]):
+            #chargement et lancement de la musique de combat 
+            DATA_MUSIC["start_combat"]==False
+        
+        if(self.state=="game" and DATA_MUSIC["end_combat"]):
+            #chargement et lancement de la musique de base 
+            DATA_MUSIC["end_combat"]==False
         
         
+        """
 
 
 
