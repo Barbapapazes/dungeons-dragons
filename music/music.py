@@ -1,6 +1,7 @@
 import pygame as pg
 from os import path
 from data.music_data import DATA_MUSIC,DATA_SOUND
+import time 
 
 
 class Music():
@@ -11,10 +12,16 @@ class Music():
         
     
     def startup(self):
-        self.current_playing=None
+        self.current_playing="enchanted-forest-music.mp3"
         self.enable=True
         self.state="menu"
         self.lib_music=path.join('.',"music")
+        print("startup")
+
+        #chargement et lancement de la musique 
+        pg.mixer.music.set_volume(DATA_MUSIC["volume"])
+        pg.mixer.music.load(path.join(self.lib_music,self.create_dict()[self.state]))
+        self.play()
         self.init_data()
         
 
@@ -41,17 +48,26 @@ class Music():
             self.state=self.win.state_name
             #si l'etat n'est pas nul et est dans le dict 
             if(self.state and (self.state in self.create_dict())):
+
                 #si la musique qui se joue est différente de celle qui va etre jouer 
                 if(self.create_dict()[self.state] != self.current_playing):
+
+                    
+                    #chargement et lancement de la musique 
                     pg.mixer.music.load(path.join(self.lib_music,self.create_dict()[self.state]))
-                    self.current_playing=self.create_dict()[self.state]
                     self.play()
+
+                    #mise a jour de la musique en cours
+                    self.current_playing=self.create_dict()[self.state]
+                    self.init_data()
         else:
             self.stop()
 
     def update_volume(self):
         #appeler en boucle qui modifie le volume 
         pg.mixer.music.set_volume(DATA_MUSIC["volume"])
+        print(pg.mixer.music.get_volume())
+        #print(self.current_playing)
         #print("je met a jour le volume", DATA_MUSIC["volume"])
     
     def click_sound(self):
