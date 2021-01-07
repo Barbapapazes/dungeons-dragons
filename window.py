@@ -87,6 +87,7 @@ class Window():
         self.show_fps_caption()
         self.M.update_volume()
         self.M.click_sound()
+        self.M.step_sound()
 
     def events(self):
         """Manage the event"""
@@ -376,6 +377,7 @@ class _State():
         """
         sub_state = 'normal' if self.state == state else state
         logger.info('Start sub-state %s in %s', sub_state, self.name)
+        DATA_SOUND["click"]=True
         self.set_state(sub_state)
 
 
@@ -449,7 +451,7 @@ class _Elements(_State):
     def load_next_state(self, *next_state):
         """Load the new state"""
         self.next = next_state[0]
-        DATA_SOUND["go"]=True
+        DATA_SOUND["click"]=True
         super().set_state(TRANSITION_OUT)
 
     def events_buttons(self, back=False):
