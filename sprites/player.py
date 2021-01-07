@@ -15,8 +15,7 @@ vec = pg.math.Vector2
 class Player(Character):
     """Create a player"""
 
-    def __init__(self, game, x, y, _type, characteristics, health, xp, gold, images):
-        logger.debug(players)
+    def __init__(self, game, x, y, _type, characteristics, images, health=PLAYER_MAX_HP, xp=0, gold=100):
         self.groups = players
         pg.sprite.Sprite.__init__(self, self.groups)
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
@@ -243,6 +242,10 @@ class Player(Character):
         if self.spell is not None:
             self.spell = None
 
+    def level_up(self):
+        if self.xp > 100:
+            self.xp = self.xp%100
+            self.game.versus_manager.logs.add_log(f"{self} leveled up !")
 
 class Arrow(pg.sprite.Sprite):
     """Create an arrow"""
