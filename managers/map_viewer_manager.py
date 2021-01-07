@@ -1,9 +1,14 @@
 """Create the map viewer manager"""
+from config.buttons import HEIGHT_SLIDER, WIDTH_SLIDER
+from components.cursor import Cursor
+from config.colors import BEIGE
 import os
 from os import path
 
 import pygame as pg
-from config.window import HEIGHT, WIDTH
+from config.sprites import ITEMS
+from config.store import STORE_BG
+from config.window import HEIGHT, TILESIZE, WIDTH
 from logger import logger
 from utils.tilemap import TiledMap
 
@@ -24,15 +29,19 @@ class MapViewerManager:
 
         self.set_new_map(folder, filename)
 
+        self.pen_btn = pg.Rect((0, 3 * TILESIZE), (TILESIZE, TILESIZE))
+        self.pen = pg.transform.scale(ITEMS['pen'], (int(TILESIZE * 0.8), int(TILESIZE * 0.8)))
+        self.eraser_btn = pg.Rect((0, 4 * TILESIZE), (TILESIZE, TILESIZE))
+        self.eraser = pg.transform.scale(ITEMS['eraser'], (int(TILESIZE * 0.8), int(TILESIZE * 0.8)))
+        self.bg = pg.transform.scale(STORE_BG, (TILESIZE, TILESIZE))
+
         # settings
         self.color = (255, 0, 0)
         self.size = 3
 
         self.active = False
 
-    # on crée une fonction qui prend en paramètre le path qui permet de trouver la carte à afficher
     # on crée un flag qui permet d'activer ou de désactive si oui ou non on veut un carousel de carte, ça permet de gérer facilement les cartes uniques comme les customs maps.
-    # il faut gérer le brouillard de guerre ! on va dire que non (mais c'est sûrement un souci avec le fait que on le gère sur la minimap mais au pire on le recodera)
 
     def save(self):
         """Save the canvas"""
@@ -121,6 +130,11 @@ class MapViewerManager:
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
                 self.paint()
+                pos_x, pos_y = pg.mouse.get_pos()
+                if self.eraser_btn.collidepoint(pos_x, pos_y):
+                    self.use_eraser()
+                if self.pen_btn.collidepoint(pos_x, pos_y):
+                    self.use_stylus()
 
     def paint(self):
         """Paint on the screen"""
@@ -163,12 +177,21 @@ class MapViewerManager:
 
     def update(self):
         """Update"""
-        pass
 
     def draw(self, screen):
         """Draw"""
         screen.blit(self.map_img, self.map_rect)
         screen.blit(self.canvas, self.map_rect)
+
+        self.game.draw_text(self.maps_names[self.index].split('.tmx')[0],
+                            self.game.title_font, 56, BEIGE, WIDTH // 2, 0, align="n", screen=screen)
+
+        screen.blit(self.bg, self.pen_btn)
+        screen.blit(self.bg, self.eraser_btn)
+        screen.blit(self.pen, (self.pen_btn.left + (TILESIZE - self.pen.get_width()) //
+                               2, self.pen_btn.top + (TILESIZE - self.pen.get_height()) // 2))
+        screen.blit(self.eraser, (self.eraser_btn.left + (TILESIZE - self.eraser.get_width()) //
+                                  2, self.eraser_btn.top + (TILESIZE - self.eraser.get_height()) // 2))
 
         pos = pg.mouse.get_pos()
         if self.canvas_rect.collidepoint(pos):

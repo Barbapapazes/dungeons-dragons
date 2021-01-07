@@ -579,6 +579,7 @@ class Game(_State):
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
         self.screen.blit(self.dim_screen, (0, 0))
+        self.map_viewer_manager.update()
         self.map_viewer_manager.draw(self.screen)
 
     def check_for_menu(self):
