@@ -8,34 +8,25 @@ Notre jeu s'utilise à la fois avec le clavier et la souris et combine les 2 la 
 | :-: | :-------: | ------------------------ |
 | fps |     =     | Toggle le conteur de fps |
 
-## Load Game
-
-|   Nom    | Raccourci | Aide                              |
-| :------: | :-------: | --------------------------------- |
-|    up    |    UP     | Permet de sélectionner une partie |
-|   down   |   DOWN    | Permet de sélectionner une partie |
-|  enter   |  RETURN   | Permet de charger une partie      |
-| new game |   SPACE   | Permet de créer une partie        |
-
 ## Game
 
 |      Nom      | Raccourci | Aide                                                                                      |
 | :-----------: | :-------: | ----------------------------------------------------------------------------------------- |
 |   inventory   |     i     | Toggle l'inventaire                                                                       |
 |     menu      |     m     | Toggle le sous menu                                                                       |
-|      vue      |     v     | Permet de switcher de vue entre les personnages                                           |
+|     view      |     v     | Permet de switcher de vue entre les personnages                                           |
 |   playable    |     c     | Permet de switcher entre les personnages (en temps réel uniquement)                       |
 |      map      |     u     | Permet d'afficher la carte en grand                                                       |
 |     draw      |     r     | Permet de dessiner sur la carte                                                           |
 |     erase     |     e     | Permet d'effacer ce qui été dessiner sur la carte                                         |
-|  new_canvas   |     n     | Permet d'effacer de réinitialiser le canvas de dessins                                    |
+|  new canvas   |     n     | Permet d'effacer de réinitialiser le canvas de dessins                                    |
 |     save      |  ctrl+s   | Permet de sauvegarder le canvas                                                           |
 |    attack     |     1     | Permet d'initialiser une action d'attack (en tour par tour uniquement)                    |
 |     move      |     2     | Permet d'initialiser une action de mouvement (en tour par tour uniquement)                |
 |     spell     |     3     | Permet d'initialiser une action de spell (en tour par tour uniquement, pour les sorciers) |
 |   validate    |   enter   | Permet de valider une action (en tout par tour uniquement)                                |
 | environnement |   space   | Permet d'interagir avec l'environnement                                                   |
-|    retour     |  escape   | Permet de sortir des sous menu                                                            |
+|    return     |  escape   | Permet de sortir des sous menu                                                            |
 
 ## Online Game
 
