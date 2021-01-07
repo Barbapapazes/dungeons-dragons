@@ -21,6 +21,7 @@ class ChooseMap(_Elements):
         assets_folder = path.join(game_folder, 'assets')
         self.levels_maps = path.join(assets_folder, 'levels_maps')
         self.custom_maps = path.join(assets_folder, 'saved_maps')
+        self.random_maps = path.join(assets_folder,'saved_generated')
 
         self.type_maps = None
 
@@ -58,6 +59,11 @@ class ChooseMap(_Elements):
                 "text": "Custom Maps",
                 "on_click": self.toggle_sub_state,
                 "on_click_params": ['custom_maps'],
+            },
+            "random_maps": {
+                "text": "Random Maps",
+                "on_click": self.toggle_sub_state,
+                "on_click_params": ['saved_generated'],
             },
         }
 
@@ -106,6 +112,16 @@ class ChooseMap(_Elements):
             self.type_maps = "saved_maps"
             self.btns = list()
             self.create_buttons(self.image_screen, width=WIDTH_BUTTON + 50)
+        elif state == 'saved_generated':
+            self.maps = [
+                f for f in os.listdir(
+                    self.random_maps) if f.endswith('.tmx')]
+            self.image_screen = self.image.copy()
+            self.btns_dict = self.create_maps_buttons_dict()
+            self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
+            self.type_maps = "saved_generated"
+            self.btns = list()
+            self.create_buttons(self.image_screen, width=WIDTH_BUTTON + 50)
         else:
             self.btns_dict = self.create_buttons_dict()
             self.btns = list()
@@ -117,6 +133,7 @@ class ChooseMap(_Elements):
         add_dict = {
             "levels_maps": self.levels_maps_run,
             "custom_maps": self.custom_maps_run,
+            "saved_generated": self.random_maps_run,
         }
         return previous_dict | add_dict
 
@@ -146,6 +163,12 @@ class ChooseMap(_Elements):
         self.screen.blit(self.image_screen, (0, 0))
         super().events_buttons(back=True)
         super().draw_title("Custom maps")
+        self.back_btn.draw()
+
+    def random_maps_run(self):
+        self.screen.blit(self.image_screen, (0, 0))
+        super().events_buttons(back=True)
+        super().draw_title("Random Maps")
         self.back_btn.draw()
 
     def draw(self):
