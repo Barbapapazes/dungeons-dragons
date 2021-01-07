@@ -64,7 +64,9 @@ class MapViewerManager:
         name = filename.split(".tmx")[0] + '.png'
         if name in self.saved_notes_names:
             logger.info("Load %s", path.join(self.saved_notes, name))
-            self.canvas = pg.image.load(path.join(self.saved_notes, name)).convert_alpha()
+            self.canvas = pg.transform.scale(
+                pg.image.load(path.join(self.saved_notes, name)).convert_alpha(),
+                (self.width, self.height)).convert_alpha()
 
             # on doit faire une variable qui contient la surface et si on la trouve pas alors on met dedans celle du map manager
 
