@@ -29,7 +29,7 @@ from managers.turn_manager import TurnManager
 from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON, NUM_ACT_BEGIN
 from managers.versus_manager import VersusManager
 from sprites.enemy import Enemy, Boss
-from random import choice # very temporary (just to create multiple type of enemies)
+from random import choice  # very temporary (just to create multiple type of enemies)
 
 vec = pg.math.Vector2
 
@@ -130,8 +130,8 @@ class Game(_State):
                 enemy_obj = Enemy(
                     self, enemy["pos"]["x"],
                     enemy["pos"]["y"],
-                    enemy["class"],
-                    ASSETS_SPRITES[enemy["class"]])
+                    enemy["type"],
+                    enemy["class"])
                 for item in Inventory.create_inventory(enemy["inventory"]):
                     print(item.name)
                     enemy_obj.inventory.add_item(item)
@@ -202,20 +202,22 @@ class Game(_State):
                             Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
                 if tile_object.name == "skeleton":
                     self.turn_manager.enemies.append(
-                    Enemy(self, obj_center.x, obj_center.y, "skeleton", choice(["skeleton_F","skeleton_R","skeleton_W"]))
-                    )
+                        Enemy(
+                            self, obj_center.x, obj_center.y, "skeleton",
+                            choice(["skeleton_F", "skeleton_R", "skeleton_W"])))
                 if tile_object.name == "goblin":
                     self.turn_manager.enemies.append(
-                    Enemy(self, obj_center.x, obj_center.y, "goblin", choice(["goblin_F","goblin_R","goblin_W"]))
+                        Enemy(self, obj_center.x, obj_center.y, "goblin", choice(["goblin_F", "goblin_R", "goblin_W"]))
                     )
                 if tile_object.name == "phantom":
                     self.turn_manager.enemies.append(
-                    Enemy(self, obj_center.x, obj_center.y, "phantom", choice(["phantom_F","phantom_R","phantom_W"]))
-                    )
+                        Enemy(
+                            self, obj_center.x, obj_center.y, "phantom",
+                            choice(["phantom_F", "phantom_R", "phantom_W"])))
                 if tile_object.name == "boss":
                     self.turn_manager.enemies.append(
                         Boss(self, obj_center.x, obj_center.y, "boss", "boss")
-                        )
+                    )
                 if tile_object.name == 'wall':
                     Obstacle(
                         self,

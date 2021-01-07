@@ -11,6 +11,7 @@ vec = pg.math.Vector2
 players = pg.sprite.Group()
 enemies = pg.sprite.Group()
 
+
 class Character(pg.sprite.Sprite):
     """Used to define a character"""
 
@@ -49,6 +50,8 @@ class Character(pg.sprite.Sprite):
 
         self.number_actions = 0
         if not hasattr(self, "goto"):
+            logger.debug(
+                "c'est pour le player, donc on peut la mettre dans le player, ne pas donner d'images au character et passer la class avec un _")
             self.images = images
             self.image = next(self.images[self.direction])
             self.rect = self.image.get_rect()
