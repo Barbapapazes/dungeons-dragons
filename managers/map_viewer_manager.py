@@ -17,6 +17,7 @@ class MapViewerManager:
     def __init__(self, folder, filename, game):
         self.game = game
         self.map = TiledMap(path.join(folder, filename))
+        self.folder = folder
 
         self.index = 0
 
@@ -72,7 +73,9 @@ class MapViewerManager:
 
         Args:
             filename (str)
+            folder (str)
         """
+        self.folder = folder
         self.map.new_map(path.join(folder, filename))  # et ça du coup ça va aller dans le laod
         self.new_map()
         self.load(filename)
@@ -97,26 +100,31 @@ class MapViewerManager:
         self.map_rect.center = (WIDTH // 2, HEIGHT // 2)
 
     def event(self, event):
-        """Events"""
+        """Evetns
+
+        Args:
+            event (Event)
+        """
         if event.type == pg.KEYUP:
-            if event.key == pg.K_RIGHT:
-                self.save()
-                self.index += 1
-                if self.index >= self.len_maps:
-                    self.index = self.len_maps - 1
-                    logger.info('No more maps')
-                else:
-                    logger.info('Next map')
-                    self.set_new_map(self.maps_path, self.maps_names[self.index])
-            if event.key == pg.K_LEFT:
-                self.save()
-                self.index -= 1
-                if self.index < 0:
-                    self.index = 0
-                    logger.info('No more maps')
-                else:
-                    logger.info('Previous map')
-                    self.set_new_map(self.maps_path, self.maps_names[self.index])
+            if self.folder.endswith('levels_maps'):
+                if event.key == pg.K_RIGHT:
+                    self.save()
+                    self.index += 1
+                    if self.index >= self.len_maps:
+                        self.index = self.len_maps - 1
+                        logger.info('No more maps')
+                    else:
+                        logger.info('Next map')
+                        self.set_new_map(self.maps_path, self.maps_names[self.index])
+                if event.key == pg.K_LEFT:
+                    self.save()
+                    self.index -= 1
+                    if self.index < 0:
+                        self.index = 0
+                        logger.info('No more maps')
+                    else:
+                        logger.info('Previous map')
+                        self.set_new_map(self.maps_path, self.maps_names[self.index])
             if event.key == pg.K_e:
                 self.use_eraser()
             if event.key == pg.K_r:
