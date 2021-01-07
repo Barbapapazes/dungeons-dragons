@@ -88,6 +88,7 @@ class Window():
         self.M.update_volume()
         self.M.click_sound()
         self.M.step_sound()
+        self.M.combat()
 
     def events(self):
         """Manage the event"""

@@ -3,6 +3,8 @@ DATA_MUSIC = {
     "is_enable" : True,
     "volume" :0.1,
     "current_playing":None,
+    "start_combat":False,
+    "end_combat":False,
     "piste":{
         "menu":"enchanted-forest-music.mp3",
         "options":"test.wav",
@@ -10,6 +12,7 @@ DATA_MUSIC = {
         "new_game":"dark_piano.mp3",
         "choose_map":"enchanted-forest-music.mp3",
         "game":"dark_piano.mp3",
+        "combat": "combat.mp3",
             },
 }
 
