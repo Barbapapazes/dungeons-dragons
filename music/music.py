@@ -81,8 +81,6 @@ class Music():
     def step_sound(self):
         if(DATA_SOUND["step"] and DATA_SOUND["is_enable"]):
             if((pg.time.get_ticks()-self.time_btw_stp)>200 or self.time_btw_stp == 0):
-                print("je joue le step")
-                
                 step=pg.mixer.Sound(path.join(self.lib_music,DATA_SOUND["piste"]["step"]))
                 pg.mixer.Sound.set_volume(step,0.05)
                 step.play()
@@ -96,12 +94,14 @@ class Music():
             DATA_MUSIC["volume"]=0.05
             pg.mixer.music.load(path.join(self.lib_music,self.create_dict()["combat"]))
             self.play()
+            self.current_playing="combat"
             print("musique de combat")
             DATA_MUSIC["start_combat"]=False
         
         if(self.state=="game" and DATA_MUSIC["end_combat"]):
             #chargement et lancement de la musique de base 
-            self.update()
+            pg.mixer.music.load(path.join(self.lib_music,self.create_dict()[self.state]))
+            self.play()
             print("fin de la musique de combat")
             DATA_MUSIC["end_combat"]=False
         
