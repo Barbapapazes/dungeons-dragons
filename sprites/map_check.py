@@ -20,15 +20,6 @@ class MapCheck(pg.sprite.Sprite):
         self.name = name
         self.create_name()
 
-    def save(self):
-        return {
-            "pos": {
-                "x": self.x,
-                "y": self.y,
-            },
-            "name": self.name
-        }
-
     def create_name(self):
         """Cut the name to optain data"""
         data_spliced = self.name.split("-")

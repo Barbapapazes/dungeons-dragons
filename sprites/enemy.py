@@ -400,9 +400,11 @@ class Enemy(Character):
             boolean: True or False
         """
         if self.player_spotted is None:
-            for player in players:
+            logger.debug(self.game.turn_manager.players)
+            for player in self.game.turn_manager.players:
                 if (player.pos - self.pos).length() < self.view_range:
                     self.player_spotted = player
+                    logger.debug("%s, %s", player.pos, player)
                     logger.info("player spotted")
                     return True
             return False

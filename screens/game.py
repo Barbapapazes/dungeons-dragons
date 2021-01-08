@@ -32,6 +32,7 @@ from config.versus import MALUS_ARC, TOUCH_HAND, DMG_ANY_WEAPON, NUM_ACT_BEGIN
 from managers.versus_manager import VersusManager
 from sprites.enemy import Enemy, Boss
 from random import choice  # very temporary (just to create multiple type of enemies)
+from sprites.character import players, enemies
 
 vec = pg.math.Vector2
 
@@ -70,6 +71,8 @@ class Game(_State):
 
     def new(self):
         """Create a new game"""
+        players = pg.sprite.Group()
+        enemies = pg.sprite.Group()
         self.animated.empty()
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
@@ -184,8 +187,6 @@ class Game(_State):
                     player.inventory.equip_item(Inventory.create_inventory(hero["equipments"]["spell"])[0])
 
                 self.turn_manager.players.append(player)
-            for map_check in self.game_data["game_data"]["map_checks"]:
-                MapCheck(self, map_check["pos"]["x"], map_check["pos"]["y"], map_check["name"])
             for item in self.game_data["game_data"]["items"]:
                 PlacableItem(self, vec(item["pos"]["x"], item["pos"]["y"]), item["name"], item["properties"],
                              ITEMS[item["image_name"]], item["image_name"])
@@ -234,15 +235,20 @@ class Game(_State):
                     weapons=merchant["shop"]["weapons"],
                     armor=merchant["shop"]["armor"])
             for tile_object in self.map.tmxdata.objects:
+                obj_center = vec(
+                    tile_object.x + tile_object.width / 2,
+                    tile_object.y + tile_object.height / 2)
                 if tile_object.name == 'wall':
                     Obstacle(
                         self,
-                        tile_object.x,
-                        tile_object.y,
+                        obj_center.x,
+                        obj_center.y,
                         tile_object.width,
                         tile_object.height)
                 if tile_object.name == "camp_fire":
-                    CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
+                    CampFire(self, obj_center.x, obj_center.y, int(TILESIZE * 1.8))
+                if tile_object.name.startswith("map"):
+                    MapCheck(self, obj_center.x, obj_center.y, tile_object.name)
         elif self.game_data["next"]:
             logger.info("Load the next game")
             for tile_object in self.map.tmxdata.objects:
@@ -251,12 +257,10 @@ class Game(_State):
                     tile_object.y + tile_object.height / 2)
                 if tile_object.name == 'player':
                     if len(self.turn_manager.players) < len(self.game_data["game_data"]["heros"]):
-                        _x = obj_center.x if not ("last_pos" in self.game_data["game_data"]["heros"][
-                            len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
-                            len(self.turn_manager.players)]["last_pos"]["x"]
-                        _y = obj_center.y if not ("last_pos" in self.game_data["game_data"]["heros"][
-                            len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
-                            len(self.turn_manager.players)]["last_pos"]["y"]
+                        logger.debug("add a hero")
+                        logger.debug(players)
+                        _x = obj_center.x
+                        _y = obj_center.y
                         _class = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["class"]
                         _characteristics = self.game_data["game_data"]["heros"][
                             len(self.turn_manager.players)]["characteristics"]
@@ -295,12 +299,12 @@ class Game(_State):
                     tile_object.y + tile_object.height / 2)
                 if tile_object.name == 'player':
                     if len(self.turn_manager.players) < len(self.game_data["game_data"]["heros"]):
-                        _x = obj_center.x if not ("last_pos" in self.game_data["game_data"]["heros"][
+                        _x = obj_center.x if not ("pos" in self.game_data["game_data"]["heros"][
                             len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
-                            len(self.turn_manager.players)]["last_pos"]["x"]
-                        _y = obj_center.y if not ("last_pos" in self.game_data["game_data"]["heros"][
+                            len(self.turn_manager.players)]["pos"]["x"]
+                        _y = obj_center.y if not ("pos" in self.game_data["game_data"]["heros"][
                             len(self.turn_manager.players)].keys()) else self.game_data["game_data"]["heros"][
-                            len(self.turn_manager.players)]["last_pos"]["y"]
+                            len(self.turn_manager.players)]["pos"]["y"]
                         _class = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["class"]
                         _characteristics = self.game_data["game_data"]["heros"][
                             len(self.turn_manager.players)]["characteristics"]
@@ -675,12 +679,11 @@ class Game(_State):
         self.hit_map_checks()
 
     def hit_map_checks(self):
-        if self.turn_manager.is_active_player():
-            hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.map_checks, False)
-            if self.press_space and hits:
-                for hit in hits:
-                    hit.collide()
-                self.press_space = False
+        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.map_checks, False)
+        if self.press_space and hits:
+            for hit in hits:
+                hit.collide()
+            self.press_space = False
 
     def hit_chests(self):
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.chests, False)
@@ -799,14 +802,6 @@ class Game(_State):
         self.game_data["game_data"]["doors"] = self.save_doors()
         self.game_data["game_data"]["merchants"] = self.save_merchants()
         self.game_data["game_data"]["turns"] = self.save_turns()
-        self.game_data["game_data"]["map_checks"] = self.save_map_checks()
-
-    def save_map_checks(self):
-        map_list = list()
-        for map_check in self.map_checks:
-            map_list.append(map_check.save())
-
-        return map_list
 
     def save_turns(self):
         """Save the footprint of all characters to save turns
