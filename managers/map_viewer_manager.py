@@ -113,7 +113,7 @@ class MapViewerManager:
                 if event.key == pg.K_RIGHT:
                     self.save()
                     self.index += 1
-                    if self.index >= self.max_index:
+                    if self.index > self.max_index:
                         self.index -= 1
                         logger.info('No more maps')
                     else:
