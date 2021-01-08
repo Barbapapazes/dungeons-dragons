@@ -1,12 +1,13 @@
 """Used to check the end of a level"""
 from config.sprites import ITEMS
 import pygame as pg
-from config.window import TILESIZE
+from config.window import HEIGHT, TILESIZE
 from logger import logger
 
 
 class MapCheck(pg.sprite.Sprite):
     def __init__(self, game, x, y, name):
+        self._layer = -1
         self.game = game
         self.groups = game.all_sprites, game.map_checks
         super(MapCheck, self).__init__(self.groups)
@@ -28,25 +29,30 @@ class MapCheck(pg.sprite.Sprite):
 
     def collide(self):
         """Call action when collide"""
-        self.game.save_data()
-        data = {
-            "game_data": {
-                "heros": self.game.game_data["game_data"]["heros"],
-                "map": {
-                    "folder": self.folder,
-                    "filename": self.filename
-                }
-            },
-            "minimap": {
-                "fog": None,
-                "cover": None,
-            },
-            "next": True,
-            "loaded": False,
-            "shortcuts": self.game.game_data["shortcuts"]
-        }
-        self.game.game_data = data
-        self.game.new()
+        if self.filename == "finish":
+            self.game.btns_dict = self.game.create_buttons_dict()
+            self.game.create_buttons(self.game.screen, start_y_offset=8 * HEIGHT / 10)
+            self.game.toggle_sub_state("finish")
+        else:
+            self.game.save_data()
+            data = {
+                "game_data": {
+                    "heros": self.game.game_data["game_data"]["heros"],
+                    "map": {
+                        "folder": self.folder,
+                        "filename": self.filename
+                    }
+                },
+                "minimap": {
+                    "fog": None,
+                    "cover": None,
+                },
+                "next": True,
+                "loaded": False,
+                "shortcuts": self.game.game_data["shortcuts"]
+            }
+            self.game.game_data = data
+            self.game.new()
 
     def event(self, event):
         pass

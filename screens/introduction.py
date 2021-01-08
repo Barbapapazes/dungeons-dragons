@@ -32,6 +32,7 @@ class Introduction(_Elements):
         self.pages = 2
 
         self.animated = pg.sprite.Group()
+        self.all_sprites = pg.sprite.LayeredUpdates()
         self.book = Book(self, WIDTH // 2, HEIGHT // 2, 2 * WIDTH // 4)
 
         logger.debug("il faut écrire sur l'image")

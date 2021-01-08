@@ -37,7 +37,7 @@ class CharacterCreation(_Elements):
         self.remaining_heros_to_create = 0
 
         self.animated = pg.sprite.Group()
-
+        self.all_sprites = pg.sprite.LayeredUpdates()
         Flames(self, 1 * WIDTH // 20, 4 * HEIGHT // 10, 150)
         Flames(self, 19 * WIDTH // 20, 4 * HEIGHT // 10, 150)
 

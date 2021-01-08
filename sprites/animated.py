@@ -14,7 +14,7 @@ class Animated(pg.sprite.Sprite):
     """Create a animated sprite"""
 
     def __init__(self, game, frame_per_image, frames, offset=0):
-        self.groups = game.animated
+        self.groups = game.all_sprites, game.animated
         super(Animated, self).__init__(self.groups)
 
         self.game = game
@@ -129,6 +129,7 @@ class Circle(Animated):
         self.x = x
         self.y = y
         self.width = width
+        self._layer = 1
 
         frame_per_image = 6
         frames = list()

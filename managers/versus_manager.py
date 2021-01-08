@@ -322,7 +322,7 @@ class VersusManager:
 
     def draw(self, screen):
         """Draw the versus"""
-        self.draw_range(screen)
+        # self.draw_range(screen)
         self.draw_btns(screen)
         if self.action == "spell":
             if self.spell_pos:

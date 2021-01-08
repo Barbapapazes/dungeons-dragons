@@ -23,6 +23,7 @@ class Options(_Elements):
         self.create_back_button(self.background, self.load_next_state, [MENU])
 
         self.animated = pg.sprite.Group()
+        self.all_sprites = pg.sprite.LayeredUpdates()
         Chandelier(self, WIDTH // 4, 0, 200)
         Chandelier(self, 3 * WIDTH // 4, 0, 200)
 

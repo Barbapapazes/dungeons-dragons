@@ -4,7 +4,7 @@ from sprites.map_check import MapCheck
 from managers.map_viewer_manager import MapViewerManager
 from sprites.effects_zone import EffectsZone
 from sprites.merchant import Merchant
-from sprites.animated import CampFire
+from sprites.animated import CampFire, Circle
 from sprites.chest import Chest
 from inventory.inventory import Armor, Consumable, Inventory, Spell, Weapon
 from config.sprites import ASSETS_SPRITES, ITEMS, ITEMS_NAMES, ITEMS_PROPERTIES
@@ -15,14 +15,14 @@ from sprites.door import Door
 from managers.logs_manager import LogsManager
 import pygame as pg
 from components.popup_menu import PopupMenu
-from window import _State
+from window import _State, _Elements
 from logger import logger
 from sprites.player import Player
 from sprites.obstacle import Obstacle
 from utils.tilemap import TiledMap, Camera, Minimap
 from utils.shortcuts import key_for
 from config.window import WIDTH, HEIGHT, TILESIZE
-from config.colors import LIGHTGREY, WHITE
+from config.colors import BEIGE, LIGHTGREY, WHITE
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 from managers.turn_manager import TurnManager
 # from config.sprites import WEAPONS, ARMOR
@@ -37,19 +37,20 @@ from sprites.character import players, enemies
 vec = pg.math.Vector2
 
 
-class Game(_State):
+class Game(_Elements):
     """Game screen"""
 
     def __init__(self):
         self.name = GAME
-        super(Game, self).__init__(self.name)
         self.next = CREDITS
+        super(Game, self).__init__(self.name, self.next, "menu",  '0.png', {})
 
         self.all_sprites = None
 
         self.logs = LogsManager(0, 0, 300, 100, self.text_font, 16,  self.draw_text)
         self.turn_manager = TurnManager()
         self.animated = pg.sprite.Group()
+        self.all_sprites = pg.sprite.LayeredUpdates()
         self.versus_manager = VersusManager(self)
 
         self.press_space = False
@@ -356,6 +357,7 @@ class Game(_State):
                        'chest': self.chest_run,
                        'merchant': self.merchant_run,
                        'map': self.map_run,
+                       'finish': self.finish_run,
                        }
 
         return states_dict
@@ -637,6 +639,43 @@ class Game(_State):
         self.map_viewer_manager.update()
         self.map_viewer_manager.draw(self.screen)
 
+    def finish_run(self):
+        """Run the finish state"""
+        self.finish_update()
+        self.finish_draw()
+
+    def finish_update(self):
+        """Update the finish state"""
+        super().events_buttons()
+
+    def finish_draw(self):
+        """Draw the finish state"""
+        self.finish_draw_background()
+        self.draw_text("You win", self.title_font, 128, BEIGE, WIDTH // 2, HEIGHT // 2, align="center")
+        super().draw_buttons()
+
+    def finish_draw_background(self):
+        """Draw the finish background of the finish state"""
+        self.draw()
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.screen.blit(self.dim_screen, (0, 0))
+
+    def create_buttons_dict(self):
+        """Create the dict for all buttons
+
+
+        Returns:
+            dict
+        """
+        return {
+            "menu": {
+                "text": "Menu",
+                "on_click": self.load_next_state,
+                "on_click_params": [MENU]
+            }
+        }
+
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
 
@@ -649,7 +688,8 @@ class Game(_State):
         """Update all"""
         self.items.update()
         for sprite in self.all_sprites:
-            self.all_sprites.change_layer(sprite, sprite.rect.bottom)
+            if not isinstance(sprite, MapCheck) and not isinstance(sprite, Circle):
+                self.all_sprites.change_layer(sprite, sprite.rect.bottom)
 
         self.check_hits()
         self.update_sprites()
@@ -866,7 +906,6 @@ class Game(_State):
         # self.draw_grid(self.screen)
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         # self.all_sprites.draw(self.screen)
-        self.versus_manager.draw(self.screen)
         for animated in self.animated:
             if isinstance(animated, CampFire):
                 self.screen.blit(animated.image, self.camera.apply(animated))
@@ -874,8 +913,12 @@ class Game(_State):
         for sprite in self.all_sprites:
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
-
-            self.screen.blit(sprite.image, self.camera.apply(sprite))
+            if not isinstance(sprite, Circle):
+                self.screen.blit(sprite.image, self.camera.apply(sprite))
+            if isinstance(sprite, Circle):
+                self.versus_manager.draw_range(self.screen)
+                # self.screen.blit(sprite.image, self.camera.apply(sprite))
+        self.versus_manager.draw(self.screen)
 
         # for zone in self.zoneEffect:
         #     zone.rect = self.camera.apply_rect(zone.rect)
