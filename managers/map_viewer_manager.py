@@ -25,6 +25,7 @@ class MapViewerManager:
         self.saved_notes = path.join(self.game_folder, 'assets', 'saved_notes')
         self.maps_names = [f for f in os.listdir(self.maps_path) if f.endswith('.tmx')]
         self.index = self.maps_names.index(filename)
+        self.max_index = self.index
         self.saved_notes_names = [f for f in os.listdir(self.saved_notes) if f.endswith('.png')]
         self.len_maps = len(self.maps_names)
 
@@ -112,8 +113,8 @@ class MapViewerManager:
                 if event.key == pg.K_RIGHT:
                     self.save()
                     self.index += 1
-                    if self.index >= self.len_maps:
-                        self.index = self.len_maps - 1
+                    if self.index >= self.max_index:
+                        self.index -= 1
                         logger.info('No more maps')
                     else:
                         logger.info('Next map')
