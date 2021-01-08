@@ -240,5 +240,7 @@
   </object>
   <object id="107" name="map-levels_maps-level2.tmx" x="64" y="560" width="32" height="32"/>
   <object id="109" name="map-levels_maps-finish" x="144" y="512" width="32" height="32"/>
+  <object id="106" name="trap" x="464" y="272" width="32" height="32"/>
+  <object id="107" name="trap" x="400" y="272" width="32" height="32"/>
  </objectgroup>
 </map>

@@ -581,7 +581,8 @@ BOB_SPEED = 0.4
 
 
 # Heros
-TYPES = ["wizard", "soldier", "thief", "skeleton_F", "skeleton_R", "skeleton_W", "phantom_F", "phantom_R", "phantom_W", "goblin_F", "goblin_R", "goblin_W", "boss", "mini_boss"]
+TYPES = ["wizard", "soldier", "thief", "skeleton_F", "skeleton_R", "skeleton_W", "phantom_F",
+         "phantom_R", "phantom_W", "goblin_F", "goblin_R", "goblin_W", "boss", "mini_boss"]
 DIRECTIONS = ["up", "down", "left", "right", "idle"]
 
 ASSETS_SPRITES = {
@@ -607,6 +608,10 @@ ASSETS_DOOR = [pg.transform.scale(
 ASSETS_CHEST = [pg.transform.scale(
     pg.image.load(path.join(sprites_folder, "chest", f"{i}.png")),
     (TILESIZE, TILESIZE)) for i in range(8)]
+
+ASSETS_TRAP = [pg.transform.scale(
+    pg.image.load(path.join(sprites_folder, "trap", f"{i}.png")),
+    (TILESIZE, TILESIZE)) for i in range(10)]
 
 ASSETS_FLAMES = [pg.image.load(path.join(sprites_folder, "flames", f"{i}.png"))
                  for i in range(6)]
