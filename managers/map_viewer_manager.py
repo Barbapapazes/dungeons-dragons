@@ -197,6 +197,9 @@ class MapViewerManager:
         self.game.draw_text(self.maps_names[self.index].split('.tmx')[0],
                             self.game.title_font, 56, BEIGE, WIDTH // 2, 0, align="n", screen=screen)
 
+        if self.index == self.max_index:
+            screen.blit(pg.transform.scale(self.game.minimap.fog, (self.width, self.height)), self.map_rect)
+            screen.blit(pg.transform.scale(self.game.minimap.cover, (self.width, self.height)), self.map_rect)
         screen.blit(self.bg, self.pen_btn)
         screen.blit(self.bg, self.eraser_btn)
         screen.blit(self.pen, (self.pen_btn.left + (TILESIZE - self.pen.get_width()) //
