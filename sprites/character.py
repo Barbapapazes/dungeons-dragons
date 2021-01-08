@@ -117,6 +117,28 @@ class Character(pg.sprite.Sprite):
                 protection += self.armor[bodypart]
         return protection
 
+    def addHp(self, hp_gain):
+        """Add passed hp_gain to the player's health
+
+        Args:
+            hp_gain (int)
+        """
+        self.HP += hp_gain
+        logger.debug(hp_gain)
+        if self.HP > self.max_HP:
+            self.HP = self.max_HP
+
+    def subHp(self, health_lose):
+        """Sub passed hp_lose to the player's health
+
+        Args:
+            hp_lose (int)
+        """
+        self.health -= health_lose
+        if self.health < 0:
+            self.health = 0
+        logger.debug(self.health)
+
     def groupCount(self, grouplist, count=0):
         """computes the number of entities belonging to the same group that can see one another
         Args:

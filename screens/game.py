@@ -19,10 +19,11 @@ from window import _State, _Elements
 from logger import logger
 from sprites.player import Player
 from sprites.obstacle import Obstacle
-from utils.tilemap import TiledMap, Camera, Minimap
+from utils.tilemap import TiledMap, Camera, Minimap, collide_hit_rect
 from utils.shortcuts import key_for
 from config.window import WIDTH, HEIGHT, TILESIZE
 from config.colors import BEIGE, LIGHTGREY, WHITE
+from sprites.trap import Trap
 from config.screens import CREDITS, MENU, GAME, TRANSITION_IN, TRANSITION_OUT
 from managers.turn_manager import TurnManager
 # from config.sprites import WEAPONS, ARMOR
@@ -84,6 +85,7 @@ class Game(_Elements):
         self.spells = pg.sprite.Group()
         self.effects_zones = pg.sprite.Group()
         self.map_checks = pg.sprite.Group()
+        self.traps = pg.sprite.Group()
         self.turn_manager.new()
         self.versus_manager.new(self)
 
@@ -151,6 +153,8 @@ class Game(_Elements):
                         tile_object.y,
                         TILESIZE * 0.4,
                         TILESIZE * 0.4)
+                if tile_object.name == "trap":
+                    Trap(self, obj_center.x, obj_center.y)
                 if tile_object.name == "camp_fire":
                     CampFire(self, tile_object.x, tile_object.y, int(TILESIZE * 1.8))
                 if tile_object.name == "merchant":
@@ -250,6 +254,8 @@ class Game(_Elements):
                     CampFire(self, obj_center.x, obj_center.y, int(TILESIZE * 1.8))
                 if tile_object.name.startswith("map"):
                     MapCheck(self, obj_center.x, obj_center.y, tile_object.name)
+                if tile_object.name == "trap":
+                    Trap(self, obj_center.x, obj_center.y)
         elif self.game_data["next"]:
             logger.info("Load the next game")
             for tile_object in self.map.tmxdata.objects:
@@ -698,7 +704,7 @@ class Game(_Elements):
         """Update all"""
         self.items.update()
         for sprite in self.all_sprites:
-            if not isinstance(sprite, MapCheck) and not isinstance(sprite, Circle):
+            if not isinstance(sprite, MapCheck) and not isinstance(sprite, Circle) and not isinstance(sprite, Trap):
                 self.all_sprites.change_layer(sprite, sprite.rect.bottom)
 
         self.check_hits()
@@ -716,6 +722,7 @@ class Game(_Elements):
         self.chests.update()
         self.merchants.update()
         self.effects_zones.update()
+        self.traps.update()
         for animated in self.animated:
             if isinstance(animated, CampFire):
                 animated.update()
@@ -727,6 +734,14 @@ class Game(_Elements):
         self.hit_animated()
         self.hit_items()
         self.hit_map_checks()
+        self.hit_traps()
+
+    def hit_traps(self):
+        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.traps, False, collide_hit_rect)
+        for hit in hits:
+            if not hit.to_open:
+                self.turn_manager.active_character().subHp(10)
+            hit.to_open = True
 
     def hit_map_checks(self):
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.map_checks, False)
@@ -941,6 +956,9 @@ class Game(_Elements):
              self.minimap.width,
              HEIGHT -
              self.minimap.height))
+
+        for sprite in self.turn_manager.players:
+            pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply_rect(sprite.hit_rect), 1)
 
         # self.draw_versus()
 

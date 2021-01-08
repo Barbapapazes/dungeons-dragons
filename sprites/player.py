@@ -32,7 +32,6 @@ class Player(Character):
         self.last_shot = 0
 
         # Stats
-        self.HP = 100
         self.max_HP = PLAYER_MAX_HP
         self.shield = 0
         self.MP = 50  # mana
@@ -195,27 +194,6 @@ class Player(Character):
         """
         if self.weapon is not None:
             self.weapon = None
-
-    def addHp(self, hp_gain):
-        """Add passed hp_gain to the player's health
-
-        Args:
-            hp_gain (int)
-        """
-        self.HP += hp_gain
-        logger.debug(hp_gain)
-        if self.HP > self.max_HP:
-            self.HP = self.max_HP
-
-    def subHp(self, hp_lose):
-        """Sub passed hp_lose to the player's health
-
-        Args:
-            hp_lose (int)
-        """
-        self.HP -= hp_lose
-        if self.HP < 0:
-            self.HP = 0
 
     def addMP(self, MP_gain):
         """Add passed HP_gain to the player's mana
