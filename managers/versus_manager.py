@@ -98,7 +98,7 @@ class VersusManager:
         self.add_actions()
 
     def add_actions(self):
-        if self.turn_manager.active_character().type == "Boss":
+        if self.turn_manager.active_character().type == "boss":
             self.turn_manager.active_character().number_actions = 1
             # self.logs.add_log("Add 1 action")
         else:
@@ -264,8 +264,6 @@ class VersusManager:
             int: damage, can be under 0
         """
         damage = self.turn_manager.get_active_weapon_damage()
-        # if hasattr(self.turn_manager.active_character(), "goto"):
-        #     self.selected_enemy=self.turn_manager.active_character().player_spotted
         if self.turn_manager.get_active_weapon_type() == "arc":
             dist = self.selected_enemy.pos - self.turn_manager.active_character().pos
             logger.debug("[sofiane] il faut ajuster la valuer de MALUS_ARC")
@@ -274,6 +272,7 @@ class VersusManager:
                 malus = -((dist.length_squared() - scope) // TILESIZE) * MALUS_ARC
                 damage -= malus
         protection = self.selected_enemy.get_protection()
+        self.logs.add_log(f'The {self.turn_manager.active_character()} attacked {self.selected_enemy}, dealing {max(0, damage - protection)} ({damage} - {protection}).')
         return max(0, damage - protection)
 
     def check_dice(self):

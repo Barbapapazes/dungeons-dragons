@@ -168,12 +168,11 @@ class TurnManager:
         Returns:
             int
         """
-        damage = 0
+        damage = 5
         if self.get_active_weapon() is None:
-            logger.debug("[sofiane] il faut ajuster les dégats de l'attaque sans arme")
-            damage = self.active_character().characteristics['str']//2
+            damage += self.active_character().characteristics['str']//5
         else:
-            damage = self.get_active_weapon().attack()
+            damage += self.get_active_weapon().attack()
         return damage
 
     def get_active_weapon_type(self):
