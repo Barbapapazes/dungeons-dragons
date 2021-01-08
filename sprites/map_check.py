@@ -1,4 +1,5 @@
 """Used to check the end of a level"""
+from config.sprites import ITEMS
 import pygame as pg
 from config.window import TILESIZE
 from logger import logger
@@ -10,8 +11,7 @@ class MapCheck(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.map_checks
         super(MapCheck, self).__init__(self.groups)
 
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill((0, 255, 0))
+        self.image = pg.transform.scale(ITEMS["stairs"], (TILESIZE, TILESIZE))
         self.x = x
         self.y = y
         self.rect = self.image.get_rect()
