@@ -1,13 +1,13 @@
 """Define a enemy"""
 
 from sprites.character import *
-from inventory.inventory import Inventory
+from inventory.inventory import Equipable, Inventory
 from config.colors import GREEN, YELLOW, RED
 from config.window import TILESIZE
 from utils.cell import Cell
-from random import uniform
-from random import randint
-from config.sprites import ASSETS_SPRITES, WAIT_TIME
+from random import choices, uniform, randint
+from time import sleep
+from config.sprites import ASSETS_SPRITES, ARMOR, WAIT_TIME
 vec = pg.math.Vector2
 
 # npc settings
@@ -93,17 +93,21 @@ class Enemy(Character):
         """
         return f'{self.type} {self.classe}'
 
-    # def difficulty_tweeking(self):
-    #     """tweeks ennemy's statistics to match game difficulty
-    #     """
-    #     self.STR += 5 * game.difficulty
-    #     self.DEX += 3 * game.difficulty
-    #     self.CON += 4 * game.difficulty
-    #     self.INT += 2 * game.difficulty
-    #     self.WIS += 1 * game.difficulty
-    #     self.CHA += 2 * game.difficulty
-    #     self.speed += 10 * game.difficulty
-    #     self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
+    def difficulty_tweeking(self):
+        """tweeks ennemy's statistics to match game difficulty
+        """
+        self.characteristics['str'] += 5 * self.game.difficulty
+        self.characteristics['dex'] += 3 * self.game.difficulty
+        self.characteristics['con'] += 4 * self.game.difficulty
+        self.characteristics['int'] += 2 * self.game.difficulty
+        self.characteristics['wis'] += 1 * self.game.difficulty
+        self.characteristics['cha'] += 2 * self.game.difficulty
+        for bodypart in choices(['head', 'chest', 'legs', 'feet'], weights=[15,5+self.game.difficulty*5,5,10], k=self.game.difficulty):
+            armor_list = []
+            for part in ARMOR.keys():
+                if part['slot'] == bodypart:
+                    armor_list.append(part)
+            self.equip_armor(choices(armor_list, k=1))
 
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -376,12 +380,20 @@ class Enemy(Character):
                         break
                 if skip:
                     continue
-
+                
                 """skip personnages
                 """
                 for enemy in enemies:
                     skip = False
                     if enemy.rect.collidepoint(neigh.coor):
+                        skip = True
+                        break
+                if skip:
+                    continue
+
+                for merchant in self.game.merchants.sprites():
+                    skip = False
+                    if merchant.rect.collidepoint(neigh.coor):
                         skip = True
                         break
                 if skip:

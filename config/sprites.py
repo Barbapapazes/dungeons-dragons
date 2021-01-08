@@ -383,7 +383,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_01a",
         "price": 10,
         "weight": 10,
-        "shield": 20,
+        "shield": 5,
         "slot": 'head',
         "object_type": "armor"
     },
@@ -391,7 +391,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_01b",
         "price": 10,
         "weight": 10,
-        "shield": 20,
+        "shield": 10,
         "slot": 'head',
         "object_type": "armor"
     },
@@ -399,7 +399,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_01c",
         "price": 10,
         "weight": 10,
-        "shield": 20,
+        "shield": 15,
         "slot": 'head',
         "object_type": "armor"
     },
@@ -407,7 +407,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_01d",
         "price": 10,
         "weight": 15,
-        "shield": 30,
+        "shield": 15,
         "slot": "head",
         "object_type": "armor"
     },
@@ -415,7 +415,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_01e",
         "price": 10,
         "weight": 15,
-        "shield": 30,
+        "shield": 20,
         "slot": "head",
         "object_type": "armor"
     },
@@ -423,7 +423,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_02a",
         "price": 10,
         "weight": 10,
-        "shield": 20,
+        "shield": 10,
         "slot": 'head',
         "object_type": "armor"
     },
@@ -431,7 +431,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_02b",
         "price": 10,
         "weight": 10,
-        "shield": 20,
+        "shield": 15,
         "slot": 'head',
         "object_type": "armor"
     },
@@ -447,7 +447,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_02d",
         "price": 10,
         "weight": 15,
-        "shield": 30,
+        "shield": 20,
         "slot": "head",
         "object_type": "armor"
     },
@@ -455,7 +455,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_02e",
         "price": 10,
         "weight": 15,
-        "shield": 30,
+        "shield": 25,
         "slot": "head",
         "object_type": "armor"
     },
@@ -463,7 +463,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "armor_01a",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 15,
         "slot": "chest",
         "object_type": "armor"
     },
@@ -471,7 +471,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "armor_01b",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 20,
         "slot": "chest",
         "object_type": "armor"
     },
@@ -479,7 +479,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "armor_01c",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 25,
         "slot": "chest",
         "object_type": "armor"
     },
@@ -487,7 +487,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "armor_01d",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 25,
         "slot": "chest",
         "object_type": "armor"
     },
@@ -495,7 +495,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "armor_01e",
         "price": 10,
         "weight": 30,
-        "shield": 70,
+        "shield": 30,
         "slot": "chest",
         "object_type": "armor"
     },
@@ -503,7 +503,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "boots_01a",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 5,
         "slot": "feet",
         "object_type": "armor"
     },
@@ -511,7 +511,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "boots_01b",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 10,
         "slot": "feet",
         "object_type": "armor"
     },
@@ -519,7 +519,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "boots_01c",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 15,
         "slot": "feet",
         "object_type": "armor"
     },
@@ -527,7 +527,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "boots_01d",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 15,
         "slot": "feet",
         "object_type": "armor"
     },
@@ -535,7 +535,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "boots_01e",
         "price": 10,
         "weight": 30,
-        "shield": 70,
+        "shield": 20,
         "slot": "feet",
         "object_type": "armor"
     }
