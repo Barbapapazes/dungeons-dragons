@@ -24,7 +24,23 @@ Ainsi, en ajoutant :
 <object id="1" name="bronze_key_small" x="336" y="400" width="32" height="32"/>
 ```
 
-On va pouvoir créer une clé en bronze à la position 336, 400 sur la carte.
+On va pouvoir créer une clé en bronze à la position 336, 400 sur la carte. Cependant, comme conseillé dans le guide du joueur, il est conseillé d'utiliser Tiled.
+
+#### Gestion des télé-porteurs
+
+Afin de pour réaliser une campagne, des niveaux qui se suivent, une continuité, il est possible de déposer sur la carte des télé-porteurs.
+
+Afin de créer un télé-porteur in-game, il suffit de créer un objet avec un nom qui suit le pattern suivant:
+
+`map-folder-filename`
+
+Exemple :
+
+```xml
+<object id="1" name="map-saved_maps-level1.tmx" x="336" y="400" width="32" height="32"/>
+```
+
+Il est possible de trigger la fin du jeu avec `finish` à la place du filename.
 
 ## Map editor
 
