@@ -12,11 +12,22 @@ class MapCheck(pg.sprite.Sprite):
 
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill((0, 255, 0))
+        self.x = x
+        self.y = y
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
         self.name = name
         self.create_name()
+
+    def save(self):
+        return {
+            "pos": {
+                "x": self.x,
+                "y": self.y,
+            },
+            "name": self.name
+        }
 
     def create_name(self):
         """Cut the name to optain data"""
@@ -26,7 +37,7 @@ class MapCheck(pg.sprite.Sprite):
 
     def collide(self):
         """Call action when collide"""
-        logger.debug("touch a map check")
+        self.game.save_data()
         data = {
             "game_data": {
                 "heros": self.game.game_data["game_data"]["heros"],
@@ -43,7 +54,6 @@ class MapCheck(pg.sprite.Sprite):
             "loaded": False,
             "shortcuts": self.game.game_data["shortcuts"]
         }
-        logger.debug(data)
         self.game.game_data = data
         self.game.new()
 

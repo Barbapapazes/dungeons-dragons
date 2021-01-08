@@ -6,6 +6,7 @@ from config.screens import ONLINE_GAME
 from config.sprites import (ITEMS, PLAYER_HIT_RECT,
                             PLAYER_MAX_HP, PLAYER_MAX_MP,
                             PLAYER_SPEED)
+from logger import logger
 from sprites.character import Character, players
 
 vec = pg.math.Vector2
@@ -18,7 +19,7 @@ class Player(Character):
         self.groups = players
         pg.sprite.Sprite.__init__(self, self.groups)
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
-        
+
         self.can_move = True
 
         self.characteristics = characteristics
@@ -37,7 +38,6 @@ class Player(Character):
         self.max_MP = PLAYER_MAX_MP
         self.view_range = 500
 
-
     def save(self):
         """Used to save the player data
 
@@ -51,7 +51,6 @@ class Player(Character):
                 "y": self.pos.y
             },
             "characteristics": self.characteristics,
-            "health": self.health,
             "xp": self.xp,
             "health": self.health,
             "gold": self.gold,

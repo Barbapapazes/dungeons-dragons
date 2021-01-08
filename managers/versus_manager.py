@@ -22,11 +22,10 @@ class VersusManager:
         self.spell_btn = pg.Rect((2 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.validate_btn = pg.Rect((3 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
 
+        self.new(game)
+
+    def new(self, game):
         self.circle = Circle(game, 0, 0, 0)
-
-        self.new()
-
-    def new(self):
         self.action = None
         self.last_player_pos = None
         self.selected_enemy = None
