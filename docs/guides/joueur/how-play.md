@@ -99,4 +99,4 @@ Lors de vos parties, vous avez accès à une minimap. En début de partie, cette
 
 Il est possible de voir la carte en grand en appuyant sur **u**. Cela va afficher sur la carte du jeu en grand. Dans le mode histoire, il est possible de voir les cartes des précedents niveaux et des niveaux suivants mais avec le brouillard de guerre qui bouche totalement la vue. Aussi, il est possible de dessiner sur les cartes en utilisant le crayon et d'effacer en utiliser la gomme. Pour passer de l'un à l'autre, il faut respectivement utiliser **r** et **e**. Il est aussi possible de réinitialiser le canvas de dessin avec **\*n** et évidemment, il est possible de le sauvegarder avec **ctrl+s**. C'est une fonction très pratique pour établir une stratégie d'attaque du donjons.
 
-Il est aussi possible de créer ses propres cartes ! Pour cela, [vous trouverez des explications ici](/guides/dev/map).
+Il est possible de créer ses propres cartes et même ses propres campagnes ! Pour cela, [vous trouverez des explications ici](/guides/dev/map).
