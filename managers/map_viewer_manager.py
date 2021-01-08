@@ -19,12 +19,11 @@ class MapViewerManager:
         self.map = TiledMap(path.join(folder, filename))
         self.folder = folder
 
-        self.index = 0
-
         self.game_folder = path.dirname('.')
         self.maps_path = folder
         self.saved_notes = path.join(self.game_folder, 'assets', 'saved_notes')
         self.maps_names = [f for f in os.listdir(self.maps_path) if f.endswith('.tmx')]
+        self.index = self.maps_names.index(filename)
         self.saved_notes_names = [f for f in os.listdir(self.saved_notes) if f.endswith('.png')]
         self.len_maps = len(self.maps_names)
 
