@@ -92,7 +92,7 @@ class Player(Character):
             if self.vel.x != 0 and self.vel.y != 0:
                 self.vel *= 0.7071
             if self.game.name == ONLINE_GAME:
-                if keys[pg.K_SPACE]:
+                if keys[self.game.game_data["shortcuts"]["online game"]["shoot"]["keys"][2]]:
                     self.shoot()
 
     def shoot(self):

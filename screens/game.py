@@ -371,7 +371,7 @@ class Game(_Elements):
     def get_events(self, event):
         self.press_space = False
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_ESCAPE:
+            if key_for(self.game_data["shortcuts"]["game"]["return"]["keys"], event):
                 super().toggle_sub_state(self.state)
 
         if event.type == pg.KEYUP:
@@ -381,18 +381,18 @@ class Game(_Elements):
                 if self.versus_manager.active:
                     self.logs.add_log("Manual next turn")
                     self.versus_manager.add_turn()
-            if event.key == pg.K_SPACE:
+            if key_for(self.game_data["shortcuts"]["game"]["environment"]["keys"], event):
                 self.press_space = True
-            if event.key == pg.K_v:
+            if key_for(self.game_data["shortcuts"]["game"]["view"]["keys"], event):
                 logger.info("Change the vision")
                 self.turn_manager.add_vision()
-            if event.key == pg.K_c:
+            if key_for(self.game_data["shortcuts"]["game"]["playable"]["keys"], event):
                 if not self.versus_manager.active:
                     logger.info("Change the playable")
                     self.turn_manager.add_playable()
                     self.turn_manager.vision = self.turn_manager.playable
 
-            if event.key == pg.K_u:
+            if key_for(self.game_data["shortcuts"]["game"]["map"]["keys"], event):
                 # il va falloir le déplacer pour le mettre dans les toggle
                 self.seller = False
                 self.map_viewer_manager.active = not self.map_viewer_manager.active
@@ -440,14 +440,15 @@ class Game(_Elements):
                 # else:
                 #     self.versus.start()
             if self.turn_manager.is_active_player():
-                if event.key == pg.K_1:
+                if key_for(self.game_data["shortcuts"]["game"]["attack"]["keys"], event):
                     self.versus_manager.action_attack()
-                if event.key == pg.K_2:
+                if key_for(self.game_data["shortcuts"]["game"]["move"]["keys"], event):
                     self.versus_manager.action_move()
-                if event.key == pg.K_3 and not self.turn_manager.get_active_spell() is None:
+                if key_for(self.game_data["shortcuts"]["game"]["spell"]["keys"],
+                           event) and not self.turn_manager.get_active_spell() is None:
                     self.versus_manager.action_spell()
 
-                if event.key == pg.K_RETURN:
+                if key_for(self.game_data["shortcuts"]["game"]["validate"]["keys"], event):
                     self.versus_manager.validate()
 
         if event.type == pg.MOUSEBUTTONDOWN:

@@ -4,9 +4,10 @@ Notre jeu s'utilise à la fois avec le clavier et la souris et combine les 2 la 
 
 ## Window
 
-| Nom | Raccourci | Aide                     |
-| :-: | :-------: | ------------------------ |
-| fps |     =     | Toggle le conteur de fps |
+|    Nom    | Raccourci | Aide                     |
+| :-------: | :-------: | ------------------------ |
+|    fps    |     =     | Toggle le conteur de fps |
+| shortcuts |  alt + s  | Toggle le conteur de fps |
 
 ## Game
 

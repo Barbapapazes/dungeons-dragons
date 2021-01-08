@@ -1,4 +1,5 @@
 """Create the map viewer manager"""
+from utils.shortcuts import key_for
 from config.buttons import HEIGHT_SLIDER, WIDTH_SLIDER
 from components.cursor import Cursor
 from config.colors import BEIGE
@@ -126,14 +127,14 @@ class MapViewerManager:
                     else:
                         logger.info('Previous map')
                         self.set_new_map(self.maps_path, self.maps_names[self.index])
-            if event.key == pg.K_e:
+            if key_for(self.game.game_data["shortcuts"]["game"]["erase"]["keys"], event):
                 self.use_eraser()
-            if event.key == pg.K_r:
+            if key_for(self.game.game_data["shortcuts"]["game"]["draw"]["keys"], event):
                 self.use_stylus()
-            if event.key == pg.K_n:
+            if key_for(self.game.game_data["shortcuts"]["game"]["new canvas"]["keys"], event):
                 self.new_canvas()
 
-            if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
+            if key_for(self.game.game_data["shortcuts"]["game"]["save"]["keys"], event):
                 self.save()
 
         if event.type == pg.MOUSEBUTTONDOWN:

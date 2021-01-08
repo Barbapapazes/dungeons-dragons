@@ -2,6 +2,7 @@
 
 from os import path
 from datetime import datetime
+from utils.shortcuts import key_for
 from sprites.animated import Flames
 import pygame as pg
 from pygame_widgets import Button
@@ -327,14 +328,14 @@ class CharacterCreation(_Elements):
     def get_events(self, event):
         """Events loop"""
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_RIGHT:
+            if key_for(self.game_data["shortcuts"]["character creation"]["class_r"]["keys"], event):
                 self.selected += 1
                 if self.selected > len(list(self.get_characters().keys())) - 1:
                     self.selected = len(list(self.get_characters().keys())) - 1
                 self.selected_character = self.get_selected_character()
                 logger.info("Select the %s in the %s", self.selected_character["name"], CHARACTER_CREATION)
                 self.create_sliders()
-            if event.key == pg.K_LEFT:
+            if key_for(self.game_data["shortcuts"]["character creation"]["class_l"]["keys"], event):
                 self.selected -= 1
                 if self.selected < 0:
                     self.selected = 0
