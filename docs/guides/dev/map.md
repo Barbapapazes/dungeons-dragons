@@ -42,6 +42,16 @@ Exemple :
 
 Il est possible de trigger la fin du jeu avec `finish` à la place du filename.
 
+## Gestion des pièges
+
+Afin de semer des embûches dans les parties, il est possible d'ajouter des pièges sur votre carte. Lorsque un caractère se déplace dessus, alors ce dernier va subir des dégâts et le piège s'activer.
+
+Afin de générer un piège :
+
+```xml
+<object id="1" name="trap" x="336" y="400" width="32" height="32"/>
+```
+
 ## Map editor
 
 This map editor is used to create or edit a map for the game. It uses a GUI to facilitate the process of map creation. This tool is not inside the game which is different process. But we recommended to close the game when update a map for a better experience.
