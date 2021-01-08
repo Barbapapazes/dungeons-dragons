@@ -42,7 +42,7 @@ Exemple :
 
 Il est possible de trigger la fin du jeu avec `finish` à la place du filename.
 
-## Gestion des pièges
+#### Gestion des pièges
 
 Afin de semer des embûches dans les parties, il est possible d'ajouter des pièges sur votre carte. Lorsque un caractère se déplace dessus, alors ce dernier va subir des dégâts et le piège s'activer.
 
