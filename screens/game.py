@@ -80,6 +80,8 @@ class Game(_State):
         self.en2 = list()
         self.enemy = [self.en1, self.en2]
 
+        self.difficulty = 2 # temporary
+
         super().setup_transition()
 
         self.new()

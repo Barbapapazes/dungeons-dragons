@@ -111,7 +111,9 @@ class Character(pg.sprite.Sprite):
         self.health -= hp_lose
         if self.health < 0:
             self.health = 0
-    
+        else:
+            self.game.versus_manager.logs.add_log(f'{self} has {self.health} remaining')
+
     def equip_armor(self, item):
         """Equip a passed armor item in the right armor slot,
         if an item is already in the needed armor slot, it will be unequipped
@@ -123,6 +125,16 @@ class Character(pg.sprite.Sprite):
             self.unequip_armor(item.slot)
         self.armor[item.slot] = item
         self.shield += item.shield
+        
+    def unequip_armor(self, slot):
+        """Unequip an armor item from a passed slot
+
+        Args:
+            slot (Armor)
+        """
+        if self.armor[slot] is not None:
+            self.shield -= self.armor[slot].shield
+            self.armor[slot] = None
 
     def throw_inventory(self):
         """drop every item stored inside the enemy's inventory
@@ -158,10 +170,10 @@ class Character(pg.sprite.Sprite):
                     result_dice, value_dice, self.characteristics[base_value] + mod)
 
     def get_protection(self):
-        protection = self.characteristics['con']
+        protection =  self.characteristics['con']//5
         for bodypart in self.armor:
             if self.armor[bodypart] is not None:
-                protection += self.armor[bodypart].shield
+                protection += self.armor[bodypart].shield//5
         return protection
 
     def groupCount(self, grouplist, count=0):

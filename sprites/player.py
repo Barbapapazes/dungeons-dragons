@@ -156,16 +156,6 @@ class Player(Character):
         self.pos = pos
         self.rect.center = self.pos
 
-    def unequip_armor(self, slot):
-        """Unequip an armor item from a passed slot
-
-        Args:
-            slot (Armor)
-        """
-        if self.armor[slot] is not None:
-            self.shield -= self.armor[slot].shield
-            self.armor[slot] = None
-
     def equip_weapon(self, weapon):
         """Put a passed weapon in the weapon slot
 

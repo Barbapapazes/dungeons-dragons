@@ -1,13 +1,12 @@
 """Define a enemy"""
 
 from sprites.character import *
-from inventory.inventory import Equipable, Inventory
+from inventory.inventory import Armor
 from config.colors import GREEN, YELLOW, RED
 from config.window import TILESIZE
 from utils.cell import Cell
-from random import choices, uniform, randint
-from time import sleep
-from config.sprites import ASSETS_SPRITES, ARMOR
+from random import choices, choice, uniform, randint
+from config.sprites import ASSETS_SPRITES, ARMOR, ITEMS
 vec = pg.math.Vector2
 
 # npc settings
@@ -84,6 +83,7 @@ class Enemy(Character):
             "wis": TYPE.get(self.type).get("WIS"),
             "cha": TYPE.get(self.type).get("CHA")
         }
+        self.difficulty_tweeking()
 
     def __str__(self):
         """default displayed text whenever printing the enemy
@@ -101,10 +101,22 @@ class Enemy(Character):
         self.characteristics['cha'] += 2 * self.game.difficulty
         for bodypart in choices(['head', 'chest', 'legs', 'feet'], weights=[15,5+self.game.difficulty*5,5,10], k=self.game.difficulty):
             armor_list = []
-            for part in ARMOR.keys():
-                if part['slot'] == bodypart:
+            for part in ARMOR.items():
+                # logger.info(part)
+                if part[1]['slot'] == bodypart:
+        #             armor_list.append(part)
+        #     self.equip_armor(Armor(choice(armor_list), ) 
                     armor_list.append(part)
-            self.equip_armor(choices(armor_list, k=1))
+            for key, value in armor_list:
+                self.equip_armor(Armor(
+                    key,
+                    ITEMS[value['image_name']],
+                    value['image_name'],
+                    value['price'],
+                    value['weight'],
+                    value['shield'],
+                    value['slot']))
+
 
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -483,7 +495,6 @@ class Enemy(Character):
             self.game.versus_manager.selected_enemy = self.player_spotted
             if self.game.versus_manager.check_dice():
                 damage = self.game.versus_manager.calc_damage()
-                self.game.versus_manager.logs.add_log(f'The {self} attacked {self.player_spotted}, dealing {damage}.')
                 self.game.turn_manager.remove_health(damage, self.player_spotted)
             else:
                 self.game.versus_manager.calc_damage()
