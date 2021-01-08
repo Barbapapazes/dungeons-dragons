@@ -31,7 +31,6 @@ class Player(Character):
 
         # Stats
         self.max_HP = PLAYER_MAX_HP
-        self.shield = 0
         self.MP = 50  # mana
         self.max_MP = PLAYER_MAX_MP
         self.view_range = 500
@@ -156,18 +155,6 @@ class Player(Character):
         """
         self.pos = pos
         self.rect.center = self.pos
-
-    def equip_armor(self, item):
-        """Equip a passed armor item in the right armor slot,
-        if an item is already in the needed armor slot, it will be unequipped
-
-        Args:
-            item (Armor)
-        """
-        if self.armor[item.slot] is not None:
-            self.unequip_armor(item.slot)
-        self.armor[item.slot] = item
-        self.shield += item.shield
 
     def unequip_armor(self, slot):
         """Unequip an armor item from a passed slot

@@ -32,6 +32,7 @@ class Character(pg.sprite.Sprite):
         self.inventory = Inventory(self, 5, 8)
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
+        self.shield = 0
 
         self.game = game
         self.type = _type
@@ -111,6 +112,18 @@ class Character(pg.sprite.Sprite):
         if self.health < 0:
             self.health = 0
     
+    def equip_armor(self, item):
+        """Equip a passed armor item in the right armor slot,
+        if an item is already in the needed armor slot, it will be unequipped
+
+        Args:
+            item (Armor)
+        """
+        if self.armor[item.slot] is not None:
+            self.unequip_armor(item.slot)
+        self.armor[item.slot] = item
+        self.shield += item.shield
+
     def throw_inventory(self):
         """drop every item stored inside the enemy's inventory
         """
@@ -145,7 +158,7 @@ class Character(pg.sprite.Sprite):
                     result_dice, value_dice, self.characteristics[base_value] + mod)
 
     def get_protection(self):
-        protection = 1
+        protection = self.characteristics['con']
         for bodypart in self.armor:
             if self.armor[bodypart] is not None:
                 protection += self.armor[bodypart].shield
