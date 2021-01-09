@@ -699,7 +699,7 @@ class Game(_Elements):
         """Check if the user want to access to the menu"""
 
     def save_data_in_file(self):
-        self.logs.add_log("Save the game")
+        self.logs.add_log("Save the game in file")
         save_event = pg.event.Event(pg.USEREVENT, code="_State", name="save")
         pg.event.post(save_event)
 
@@ -781,12 +781,16 @@ class Game(_Elements):
         if self.press_space and hits:
             for hit in hits:
                 if isinstance(hit, CampFire):
-                    # restore the health of the player
-                    self.turn_manager.active_character().addHp(100)
-                    self.logs.add_log("Restore the player health")
-                    self.save_data()
-                    self.save_data_in_file()
-                    self.press_space = False
+                    if not self.versus_manager.active:
+                        # restore the health of the player
+                        self.turn_manager.active_character().addHp(100)
+                        self.logs.add_log("Restore the player health")
+                        self.save_data()
+                        self.save_data_in_file()
+                        self.press_space = False
+                    else:
+                        self.logs.add_log("Unable to save because versus is active")
+            self.press_space = False
 
     def hit_items(self):
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.items, False)
@@ -862,6 +866,7 @@ class Game(_Elements):
             super().toggle_sub_state('merchant')
 
     def save_data(self):
+        self.logs("Save data in memory")
         self.game_data["minimap"] = self.minimap.create_minimap_data()
         self.game_data["game_data"]["heros"] = self.save_players()
         self.game_data["game_data"]["items"] = self.save_items()
