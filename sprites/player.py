@@ -121,6 +121,10 @@ class Player(Character):
 
     def update(self):
         """Used to update the player"""
+        if self.health <= 0:
+            self.throw_inventory()
+            self.kill()
+            self.game.turn_manager.remove(self)
         self.get_keys()
         super().update()
 

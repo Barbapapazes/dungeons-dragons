@@ -1,6 +1,7 @@
 """Used to manage the turn based gameplay"""
 
 
+from config.window import HEIGHT
 from config.sprites import SCOPE_HAND
 from sprites.enemy import Enemy
 from sprites.player import Player
@@ -10,7 +11,8 @@ from logger import logger
 class TurnManager:
     """Manage the turnbased game"""
 
-    def __init__(self, turn_number=0):
+    def __init__(self, game, turn_number=0):
+        self.game = game
         self.new(turn_number)
 
     def new(self, turn_number=0):
@@ -30,6 +32,8 @@ class TurnManager:
             Player
         """
         len_players = len(self.players)
+        if len_players == 0:
+            return None
         vision_to_number = self.vision % len_players
         return self.players[vision_to_number]
 
@@ -101,6 +105,16 @@ class TurnManager:
         # logger.debug("si il n'y a plus de players, c'est game over")
         turn_to_number = self.turn % len_characters
         return turn_to_number
+
+    def active(self):
+        """Get the active depending of RT or Turn
+
+        Returns:
+
+        """
+        if self.game.versus_manager.active:
+            return self.active_character()
+        return self.get_playable_character()
 
     def active_character(self):
         """Return the active character using the turn manager
@@ -179,7 +193,7 @@ class TurnManager:
         Returns:
             bool
         """
-        return isinstance(self.active_character(), Player)
+        return isinstance(self.active(), Player)
 
     def is_active_enemy(self):
         """Check if the active character is a enemy
@@ -212,6 +226,15 @@ class TurnManager:
             elif isinstance(character, Player):
                 list_pos += 1
         return list_pos
+
+    def remove(self, character):
+        """Remove a character"""
+        if isinstance(character, Player):
+            self.players.remove(character)
+            if len(self.players) == 0:
+                self.game.btns_dict = self.game.create_buttons_dict("game over")
+                self.game.create_buttons(self.game.screen, start_y_offset=8 * HEIGHT / 10)
+                self.game.toggle_sub_state('game_over')
 
 
 def get_dice(character):

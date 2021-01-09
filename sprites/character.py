@@ -72,6 +72,13 @@ class Character(pg.sprite.Sprite):
 
         self.update_collisions()
 
+    def throw_inventory(self):
+        """drop every item stored inside the enemy's inventory
+        """
+        for slot in self.inventory.slots:
+            if slot.item:
+                self.inventory.throw_item(slot.item)
+
     def update_image(self):
         """Update the image sprite"""
         self.frame_timer += self.game.dt

@@ -49,7 +49,7 @@ class Game(_Elements):
         self.all_sprites = None
 
         self.logs = LogsManager(0, 0, 500, 14 * 16, self.text_font, 16,  self.draw_text, self)
-        self.turn_manager = TurnManager()
+        self.turn_manager = TurnManager(self)
         self.animated = pg.sprite.Group()
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.versus_manager = VersusManager(self)
@@ -365,6 +365,7 @@ class Game(_Elements):
                        'merchant': self.merchant_run,
                        'map': self.map_run,
                        'finish': self.finish_run,
+                       'game_over': self.game_over_run,
                        }
 
         return states_dict
@@ -376,6 +377,12 @@ class Game(_Elements):
                 super().toggle_sub_state(self.state)
 
         if event.type == pg.KEYUP:
+            if event.key == pg.K_a:
+                self.turn_manager.get_playable_character().health -= 10
+                logger.debug(self.turn_manager.get_playable_character().health)
+                logger.debug(type(self.turn_manager.get_playable_character()))
+            if event.key == pg.K_l:
+                logger.debug(self.turn_manager.get_playable_character().health)
             if self.turn_manager.is_active_player():
                 self.toggle_states(event)
             if event.key == pg.K_t:
@@ -419,8 +426,7 @@ class Game(_Elements):
     def event_versus(self, event):
 
         if event.type == pg.KEYUP:
-            if event.key == pg.K_l:
-                pass
+
                 # life = {
                 #     'Player': self.turn_manager.active_character().HP,
                 #     'mana': self.turn_manager.active_character().MP,
@@ -673,6 +679,21 @@ class Game(_Elements):
         self.draw_text("You win", self.title_font, 128, BEIGE, WIDTH // 2, HEIGHT // 2, align="center")
         super().draw_buttons()
 
+    def game_over_run(self):
+        """Run the game over state"""
+        self.game_over_update()
+        self.game_over_draw()
+
+    def game_over_update(self):
+        """Update the finish state"""
+        super().events_buttons()
+
+    def game_over_draw(self):
+        """Draw the game_over state"""
+        self.game_over_draw_background()
+        self.draw_text("Game over", self.title_font, 128, BEIGE, WIDTH // 2, HEIGHT // 2, align="center")
+        super().draw_buttons()
+
     def finish_draw_background(self):
         """Draw the finish background of the finish state"""
         self.draw()
@@ -680,20 +701,38 @@ class Game(_Elements):
         self.dim_screen.fill((0, 0, 0, 180))
         self.screen.blit(self.dim_screen, (0, 0))
 
-    def create_buttons_dict(self):
+    def game_over_draw_background(self):
+        """Draw the game over background of the game over state"""
+        self.draw()
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.screen.blit(self.dim_screen, (0, 0))
+
+    def create_buttons_dict(self, state):
         """Create the dict for all buttons
 
 
         Returns:
             dict
         """
-        return {
-            "menu": {
-                "text": "Menu",
-                "on_click": self.load_next_state,
-                "on_click_params": [MENU]
+        if state == "finish":
+            return {
+                "credit": {
+                    "text": "Credits",
+                    "on_click": self.load_next_state,
+                    "on_click_params": [CREDITS]
+                }
             }
-        }
+        elif state == "game over":
+            return {
+                "menu": {
+                    "text": "Menu",
+                    "on_click": self.load_next_state,
+                    "on_click_params": [MENU]
+                }
+            }
+        else:
+            return {}
 
     def check_for_menu(self):
         """Check if the user want to access to the menu"""
@@ -713,7 +752,8 @@ class Game(_Elements):
         self.check_hits()
         self.update_sprites()
         # if self.turn_manager.is_active_player():
-        self.camera.update(self.turn_manager.get_vision_character())
+        if self.turn_manager.get_vision_character():
+            self.camera.update(self.turn_manager.get_vision_character())
         self.minimap.update(self.turn_manager.players)
         self.check_for_chest_open()
         self.check_for_merchant_open()
@@ -740,44 +780,44 @@ class Game(_Elements):
         self.hit_traps()
 
     def hit_traps(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.traps, False, collide_hit_rect)
+        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.traps, False, collide_hit_rect)
         for hit in hits:
             if not hit.to_open:
-                self.turn_manager.active_character().subHp(10)
+                self.turn_manager.active().subHp(10)
             hit.to_open = True
 
     def hit_map_checks(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.map_checks, False)
+        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.map_checks, False)
         if self.press_space and hits:
             for hit in hits:
                 hit.collide()
             self.press_space = False
 
     def hit_chests(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.chests, False)
+        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.chests, False)
         if self.press_space and hits:
             for hit in hits:
-                hit.try_open(self.turn_manager.active_character())
+                hit.try_open(self.turn_manager.active())
             self.press_space = False
 
     def hit_doors(self):
         hits = pg.sprite.spritecollide(
-            self.turn_manager.active_character(),
+            self.turn_manager.active(),
             self.doors, False)
         if self.press_space and hits:
             for hit in hits:
-                hit.try_open(self.turn_manager.active_character())
+                hit.try_open(self.turn_manager.active())
             self.press_space = False
 
     def hit_merchants(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.merchants, False)
+        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.merchants, False)
         if self.press_space and hits:
             for hit in hits:
                 hit.try_open()
             self.press_space = False
 
     def hit_animated(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.animated, False)
+        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.animated, False)
         if self.press_space and hits:
             for hit in hits:
                 if isinstance(hit, CampFire):
@@ -793,18 +833,18 @@ class Game(_Elements):
             self.press_space = False
 
     def hit_items(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.items, False)
+        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.items, False)
         for hit in hits:
             if hit.properties["object_type"] == "other":
                 if self.turn_manager.is_active_player():
                     hit.kill()
-                    self.turn_manager.active_character().inventory.add_item(InventoryItem(
+                    self.turn_manager.active().inventory.add_item(InventoryItem(
                         hit.name, hit.image.copy(), hit.image_name, hit.properties["price"], hit.properties["weight"]
                     )
                     )
             if hit.properties["object_type"] == "consumable":
                 hit.kill()
-                self.turn_manager.active_character().inventory.add_item(
+                self.turn_manager.active().inventory.add_item(
                     Consumable(
                         hit.name, hit.image.copy(),
                         hit.image_name, hit.properties["price"],
@@ -814,7 +854,7 @@ class Game(_Elements):
                 )
             if hit.properties["object_type"] == "weapon":
                 hit.kill()
-                self.turn_manager.active_character().inventory.add_item(
+                self.turn_manager.active().inventory.add_item(
                     Weapon(
                         hit.name, hit.image.copy(),
                         hit.image_name, hit.properties["price"],
@@ -828,7 +868,7 @@ class Game(_Elements):
                 )
             if hit.properties["object_type"] == "armor":
                 hit.kill()
-                self.turn_manager.active_character().inventory.add_item(
+                self.turn_manager.active().inventory.add_item(
                     Armor(
                         hit.name, hit.image.copy(),
                         hit.image_name, hit.properties["price"],
@@ -839,7 +879,7 @@ class Game(_Elements):
                 )
             if hit.properties["object_type"] == "spell":
                 hit.kill()
-                self.turn_manager.active_character().inventory.add_item(
+                self.turn_manager.active().inventory.add_item(
                     Spell(
                         hit.name, hit.image.copy(),
                         hit.image_name,
@@ -855,7 +895,7 @@ class Game(_Elements):
             self.chest_open = False
             self.seller = False
             self.opened_chest.store.display_shop = True
-            self.turn_manager.active_character().inventory.display_inventory = True
+            self.turn_manager.active().inventory.display_inventory = True
             super().toggle_sub_state('chest')
 
     def check_for_merchant_open(self):
@@ -863,7 +903,7 @@ class Game(_Elements):
             self.merchant_open = False
             self.seller = False
             self.opened_merchant.shop.display_shop = True
-            self.turn_manager.active_character().inventory.display_inventory = True
+            self.turn_manager.active().inventory.display_inventory = True
             super().toggle_sub_state('merchant')
 
     def save_data(self):

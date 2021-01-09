@@ -232,10 +232,13 @@ class Minimap:
         Returns:
             Surface
         """
-        pos = player.pos * self.img_ratio
+        pos = None
+        if player:
+            pos = player.pos * self.img_ratio
         temp_map = self.resized_map.copy()
 
-        self.draw_player(temp_map, pos)
+        if pos:
+            self.draw_player(temp_map, pos)
         self.create_all_players(temp_map, players)
         self.create_all_enemies(temp_map, enemies)
 
