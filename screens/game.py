@@ -48,7 +48,7 @@ class Game(_Elements):
 
         self.all_sprites = None
 
-        self.logs = LogsManager(0, 0, 300, 100, self.text_font, 16,  self.draw_text)
+        self.logs = LogsManager(0, 0, 500, 14 * 16, self.text_font, 16,  self.draw_text)
         self.turn_manager = TurnManager()
         self.animated = pg.sprite.Group()
         self.all_sprites = pg.sprite.LayeredUpdates()
@@ -410,6 +410,7 @@ class Game(_Elements):
         if self.map_viewer_manager.active:
             self.map_viewer_manager.event(event)
         self.event_versus(event)
+        self.logs.event(event)
         if self.turn_manager.is_active_player:
             self.events_inventory(event)
             self.events_shop(event)
@@ -963,8 +964,8 @@ class Game(_Elements):
             pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply_rect(sprite.hit_rect), 1)
 
         # self.draw_versus()
-
-        self.logs.draw(self.screen)
+        if self.logs.visible:
+            self.logs.draw(self.screen)
 
         super().transtition_active(self.screen)
 
