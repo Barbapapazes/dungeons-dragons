@@ -7,7 +7,6 @@ from config.window import TILESIZE
 from utils.cell import Cell
 from random import uniform
 from random import randint
-from time import sleep
 from config.sprites import ASSETS_SPRITES
 vec = pg.math.Vector2
 
@@ -40,6 +39,9 @@ class Enemy(Character):
         self.rect.center = (x, y)
         self.hit_rect = MOB_HIT_RECT
         self.hit_rect.center = self.rect.center
+
+        self.end = False
+        self.end_time = 0
 
         self.pos = vec(x, y)
         self.vel = vec(1, 1).rotate(uniform(0, 360))
@@ -130,91 +132,97 @@ class Enemy(Character):
             self.game.turn_manager.enemies.remove(self)
 
         # if trap nearby: flee(trap)
-
-        """ reset player spotted every 10 seconds
-        """
-        self.now = pg.time.get_ticks()
-        if self.last_timestamp2 is None:
-            self.last_timestamp2 = self.now
-        if self.now - self.last_timestamp > 10000:
-            self.last_timestamp = self.now
-            self.player_spotted = None
-
-        if self.game.versus_manager.active:
-            """ If a player is in sight, evaluate whether he is worth attacking or not
+        if not self.end:
+            """ reset player spotted every 10 seconds
             """
-            if self.player_detection():
-                # logger.debug(self.player_spotted)
-                # logger.debug(self.player_spotted.pos)
+            self.now = pg.time.get_ticks()
+            if self.last_timestamp2 is None:
+                self.last_timestamp2 = self.now
+            if self.now - self.last_timestamp > 10000:
+                self.last_timestamp = self.now
+                self.player_spotted = None
+
+            if self.game.versus_manager.active:
+                """ If a player is in sight, evaluate whether he is worth attacking or not
+                """
+                if self.player_detection():
+                    # logger.debug(self.player_spotted)
+                    # logger.debug(self.player_spotted.pos)
+                    if self.evaluation():
+                        self.flee(self.player_spotted.pos)
+                        # need to skip turn after some time
+                    else:
+                        """ if player out of reach, "pathfind" him
+                        """
+
+                        if self.move_or_attack():
+                            if self.now - self.last_timestamp2 > 1500 and self.vel == vec(
+                                    0, 0):  # skip if stuck on a wall
+                                self.player_spotted = None
+                                self.moving = False
+                                self.end_turn()
+                            elif not self.goto:  # and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
+                                self.goto = self.path_finding(self.player_spotted.pos)
+                                if self.goto:
+                                    del self.goto[0]
+                            # logger.debug(self.goto)
+                            if self.goto:
+                                for i in self.goto:
+                                    rect = pg.Rect(i.coor, (SIZE, SIZE))
+                                    pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
+                                self.acc = self.seek(self.goto[0].coor)
+                                if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
+                                    del self.goto[0]
+                            else:
+                                self.vel = vec(0, 0)
+                                self.moving = False
+                                self.end_turn()
+                        else:
+                            self.attack()
+                    """if there is no player in range, just move around
+                    """
+                else:
+                    self.end_turn()
+
+            elif self.player_detection():
                 if self.evaluation():
                     self.flee(self.player_spotted.pos)
-                    # need to skip turn after some time
                 else:
-                    """ if player out of reach, "pathfind" him
-                    """
-
-                    if self.move_or_attack():
-                        if self.now - self.last_timestamp2 > 1500 and self.vel == vec(0, 0):  # skip if stuck on a wall
-                            self.player_spotted = None
-                            self.moving = False
-                            self.end_turn()
-                        elif not self.goto:  # and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
-                            self.goto = self.path_finding(self.player_spotted.pos)
-                            if self.goto:
-                                del self.goto[0]
-                        # logger.debug(self.goto)
+                    if not self.goto:
+                        self.goto = self.path_finding(self.player_spotted.pos)
                         if self.goto:
-                            for i in self.goto:
-                                rect = pg.Rect(i.coor, (SIZE, SIZE))
-                                pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
-                            self.acc = self.seek(self.goto[0].coor)
-                            if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
-                                del self.goto[0]
-                        else:
-                            self.vel = vec(0, 0)
-                            self.moving = False
-                            self.end_turn()
-                    else:
-                        self.attack()
+                            del self.goto[0]
+
+                    if self.goto:
+                        self.acc = self.seek(self.goto[0].coor)
+                        if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
+                            del self.goto[0]
                 """if there is no player in range, just move around
                 """
             else:
-                self.end_turn()
+                temp = self.avoidnpc()
+                if temp is False:
+                    self.acc = self.wander()
+                else:
+                    self.acc = temp
 
-        elif self.player_detection():
-            if self.evaluation():
-                self.flee(self.player_spotted.pos)
-            else:
-                if not self.goto:
-                    self.goto = self.path_finding(self.player_spotted.pos)
-                    if self.goto:
-                        del self.goto[0]
-
-                if self.goto:
-                    self.acc = self.seek(self.goto[0].coor)
-                    if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
-                        del self.goto[0]
-            """if there is no player in range, just move around
+            """actual movement update
             """
+            self.vel += self.acc
+            if self.vel.length() > self.speed:
+                self.vel.scale_to_length(self.speed)
+            self.get_direction()
+            self.update_image()
+            self.pos += self.vel
+            self.rect = self.image.get_rect()
+            self.rect.center = self.pos
+
+            self.update_collisions()
         else:
-            temp = self.avoidnpc()
-            if temp is False:
-                self.acc = self.wander()
-            else:
-                self.acc = temp
-
-        """actual movement update
-        """
-        self.vel += self.acc
-        if self.vel.length() > self.speed:
-            self.vel.scale_to_length(self.speed)
-        self.get_direction()
-        self.update_image()
-        self.pos += self.vel
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-
-        self.update_collisions()
+            self.end_time += self.game.dt
+            if self.end_time > (500 / 1000):
+                self.end = False
+                self.game.versus_manager.check_characters_actions()
 
     def get_direction(self):
         """get the direction which the sprite is currently facing
@@ -404,7 +412,6 @@ class Enemy(Character):
             for player in self.game.turn_manager.players:
                 if (player.pos - self.pos).length() < self.view_range:
                     self.player_spotted = player
-                    logger.debug("%s, %s", player.pos, player)
                     logger.info("player spotted")
                     return True
             return False
@@ -479,8 +486,8 @@ class Enemy(Character):
         self.last_timestamp2 = None
         self.goto = []
         self.moving = False
-        sleep(1.25)
-        self.game.versus_manager.check_characters_actions()
+        self.end = True
+        # sleep(1.25)
 
 
 class Boss(Enemy):

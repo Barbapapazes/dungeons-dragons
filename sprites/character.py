@@ -123,10 +123,10 @@ class Character(pg.sprite.Sprite):
         Args:
             hp_gain (int)
         """
-        self.HP += hp_gain
+        self.health += hp_gain
         logger.debug(hp_gain)
-        if self.HP > self.max_HP:
-            self.HP = self.max_HP
+        if self.health > self.max_HP:
+            self.health = self.max_HP
 
     def subHp(self, health_lose):
         """Sub passed hp_lose to the player's health

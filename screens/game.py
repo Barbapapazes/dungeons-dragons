@@ -748,7 +748,6 @@ class Game(_Elements):
 
     def hit_map_checks(self):
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.map_checks, False)
-        logger.debug("%s, %s", self.map_checks, hits)
         if self.press_space and hits:
             for hit in hits:
                 hit.collide()
