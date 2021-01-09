@@ -796,11 +796,12 @@ class Game(_Elements):
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.items, False)
         for hit in hits:
             if hit.properties["object_type"] == "other":
-                hit.kill()
-                self.turn_manager.active_character().inventory.add_item(InventoryItem(
-                    hit.name, hit.image.copy(), hit.image_name, hit.properties["price"], hit.properties["weight"]
-                )
-                )
+                if self.turn_manager.is_active_player():
+                    hit.kill()
+                    self.turn_manager.active_character().inventory.add_item(InventoryItem(
+                        hit.name, hit.image.copy(), hit.image_name, hit.properties["price"], hit.properties["weight"]
+                    )
+                    )
             if hit.properties["object_type"] == "consumable":
                 hit.kill()
                 self.turn_manager.active_character().inventory.add_item(
