@@ -10,7 +10,7 @@ from config.sprites import ASSETS_SPRITES, ARMOR, ITEMS, WAIT_TIME
 vec = pg.math.Vector2
 
 # npc settings
-MOB_HIT_RECT = pg.Rect(0, 0, TILESIZE-16, TILESIZE-16)
+MOB_HIT_RECT = pg.Rect(0, 0, TILESIZE-24, TILESIZE-24)
 SIZE = 8
 SEEK_FORCE = 0.1
 APPROACH_RADIUS = 50
@@ -157,7 +157,12 @@ class Enemy(Character):
         #     self.game.turn_manager.enemies.remove(self)
 
         # if trap nearby: flee(trap)
-        if not self.end:
+        if self.end and not self.game.versus_manager.active:
+            self.end_time += self.game.dt
+            if self.end_time > (WAIT_TIME / 1000):
+                self.end = False
+                self.game.versus_manager.check_characters_actions()
+        else:
             """ reset player spotted every 10 seconds
             """
             self.now = pg.time.get_ticks()
@@ -179,10 +184,9 @@ class Enemy(Character):
                     else:
                         """ if player out of reach, "pathfind" him
                         """
-
+                        self.game.turn_manager.selected_enemy = self.player_spotted
                         if self.move_or_attack():
-                            if self.now - self.last_timestamp2 > 1500 and self.vel == vec(
-                                    0, 0):  # skip if stuck on a wall
+                            if self.now - self.last_timestamp2 > 1500 and self.vel == vec(0, 0):  # skip if stuck on a wall
                                 self.player_spotted = None
                                 self.moving = False
                                 self.end_turn()
@@ -201,13 +205,14 @@ class Enemy(Character):
                             else:
                                 self.vel = vec(0, 0)
                                 self.moving = False
+                                self.game.versus_manager.logs.add_log(f'The {self} moved.')
                                 self.end_turn()
                         else:
                             self.attack()
                     """if there is no player in range, just move around
                     """
                 else:
-                    self.end_turn()
+                    self.skip_turn()
 
             elif self.player_detection():
                 if self.evaluation():
@@ -216,32 +221,20 @@ class Enemy(Character):
                     if not self.goto:
                         self.goto = self.path_finding(self.player_spotted.pos)
                         if self.goto:
-                            for i in self.goto:
-                                rect = pg.Rect(i.coor, (SIZE, SIZE))
-                                pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
-                            self.acc = self.seek(self.goto[0].coor)
-                            if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
-                                del self.goto[0]
-                        else:
-                            self.vel = vec(0, 0)
-                            self.moving = False
-                            self.game.versus_manager.logs.add_log(f'The {self} moved.')
-                            self.end_turn()
-                    else:
-                        self.attack()
+                            del self.goto[0]
+
+                    if self.goto:
+                        self.acc = self.seek(self.goto[0].coor)
+                        if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
+                            del self.goto[0]
                 """if there is no player in range, just move around
                 """
             else:
-                self.skip_turn()
-
-        elif self.player_detection():
-            if self.evaluation():
-                self.flee(self.player_spotted.pos)
-            else:
-                if not self.goto:
-                    self.goto = self.path_finding(self.player_spotted.pos)
-                    if self.goto:
-                        del self.goto[0]
+                temp = self.avoidnpc()
+                if temp is False:
+                    self.acc = self.wander()
+                else:
+                    self.acc = temp
 
             """actual movement update
             """
@@ -255,11 +248,7 @@ class Enemy(Character):
             self.rect.center = self.pos
 
             self.update_collisions()
-        else:
-            self.end_time += self.game.dt
-            if self.end_time > (WAIT_TIME / 1000):
-                self.end = False
-                self.game.versus_manager.check_characters_actions()
+
 
     def get_direction(self):
         """get the direction which the sprite is currently facing
@@ -337,7 +326,7 @@ class Enemy(Character):
             list : calls the function reconstruct_path to create the list of cells
         """
         start = Cell(coor=self.pos)
-
+        i = 0
         open_set = [start]
         closed_set = []
 
@@ -345,7 +334,8 @@ class Enemy(Character):
 
         """boucle de recherche de chemin
         """
-        while open_set:
+        while open_set or i < 50:
+            i += 1
             """pitié faites que personne ne voit ça, ça sélectionne la case la plus proche de l'arrivée
             """
             mini = 10000

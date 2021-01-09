@@ -6,7 +6,6 @@ from config.colors import ENERGOS, GLOOMY_PURPLE, RED_PIGMENT, BLUE_MARTINA
 from config.window import HEIGHT, TILESIZE
 from sprites.animated import Circle
 from logger import logger
-from time import sleep
 vec = pg.Vector2
 
 
@@ -285,10 +284,7 @@ class VersusManager:
     def check_characters_actions(self):
         """Check the action of the active character"""
         self.turn_manager.active_character().number_actions -= 1
-        self.logs.add_log(
-            f"Action remaining to {self.turn_manager.active_character()} : {self.turn_manager.active_character().number_actions}")
         self.set_move_player(False)
-        sleep(1)
         if self.turn_manager.active_character().number_actions <= 0:
             self.add_turn()
         else:
