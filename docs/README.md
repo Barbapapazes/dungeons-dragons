@@ -83,3 +83,5 @@ footer: Made by  with ❤️ by the group 10
 - création de cartes personnalisées
 - possibilité de prendre des notes sur les cartes de jeux
 - génération intelligente et automatique de carte
+- mode campagne
+- possibilité de créer des campagnes personnalisées

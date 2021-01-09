@@ -10,7 +10,7 @@ Pour ce projet, nous avons mis en place un map éditor très simple mais tout de
 
 ### Méta-data
 
-Les fichiers `tmx` sont des fichiers `xml` avec une architecture spécifique pour les cartes. L'intérêt de ce type de fichiers, à l'inverse d'un fichier text, est qu'il permet de stocker et d'organiser très simplement nos données. Ainsi, avec ce type de fichiers, nous avons accès à plusieurs layers sur une carte et nous pouvons y ajouter un système d'objet directement dans la carte. Lors de la lecture de cette dernière par le jeu, nous pouvons instancier le bon élément en utilisant le nom et la position de l'objet. C'est donc très pratique.
+Les fichiers `tmx` sont des fichiers `xml` avec une architecture spécifique pour les cartes. L'intérêt de ce type de fichiers, à l'inverse d'un fichier text, est qu'il permet de stocker et d'organiser très simplement nos données. Ainsi, avec ce type de fichiers, nous avons accès à plusieurs layers sur une carte et nous pouvons y ajouter un système d'objet directement dans la carte. Ce système d'objet permet à nos cartes une grandes flexibilités et une manipulation très simple. Lors de la lecture de cette dernière par le jeu, nous pouvons instancier le bon élément en utilisant le nom et la position de l'objet. C'est donc très pratique.
 
 Le meilleur exemple est la gestion des items.
 
@@ -33,6 +33,12 @@ Afin de pour réaliser une campagne, des niveaux qui se suivent, une continuité
 Afin de créer un télé-porteur in-game, il suffit de créer un objet avec un nom qui suit le pattern suivant:
 
 `map-folder-filename`
+
+:::info Conseil
+
+Pour la création d'une campagne personnalisée avec vision des maps précédentes, il est conseillé d'utiliser `levels_maps` comme folder.
+
+:::
 
 Exemple :
 

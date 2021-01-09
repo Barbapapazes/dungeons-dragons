@@ -48,8 +48,6 @@ Dans le dossier `utils`, il s'agit de fichier qui contiennent des fonctions ou d
 
 ## States
 
-Dans le so
-
 In the `main.py` file, all the states, which are called screens in this project, are loaded, using the `setup_states` function. They are classes which inherit from `_State` or from `_Elements`.
 
 In the `Window`, there is a function called `flip_state` which is called every time the screen change. The goal is to load the new state and keep some data from the previous state. Ainsi, il est possible de transmettre de la data entre les différents écrans afin que ces derniers communiquent entre eux.
@@ -77,5 +75,3 @@ Au final, `_Element` est très pratique pour la création d'un sous-menu.
 Les écrans sont gérés dans le dossier `screens` et ils représentent une vue de l'application.
 
 Par exemple, on a l'écran de chargement du jeu, celui pour les crédits et même celui pour le jeu. Chacun d'eux est autonome et permet de gérer facilement et efficacement le développement de chacun des vue. En effet, la parallélisation des tâches est extrêmement simple, d'autant plus que la structure est classique avec pygame. Le seul ajout est celui des sub-state pour rester dans le même écran mais en y ajoutant des fonctionnalités.
-
-<!-- fonctionnement des shortcuts et de la sauvegarde -->

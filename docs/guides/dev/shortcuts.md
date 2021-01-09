@@ -1,9 +1,5 @@
 # Raccourcis claviers
 
-`il faut absolument revoir les shortcuts`
-v : changer la vue camera
-espace : interagir avec l'environnement
-
 L'ensemble des shortcuts par défault sont dans `data/shortcuts.py`. Il s'agit d'un grand dictionnaire découpé en namespace en fonction des écrans. Ensuite, chaque shortcut est aussi un dictionnaire composé du raccourcie, sous la clé `keys`, et d'une phrase d'aide, sous la clé `help`.
 
 Dans la clé `keys`, on va trouver une liste de 3 éléments. Le premier et le second sont des modifiers. Le premier est la touche CTRL, la seconde est la touche ALT et la dernière est la touche d'activation

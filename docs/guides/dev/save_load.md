@@ -12,7 +12,7 @@ La mécanique chargement est géré par l'écran `load_game` qui se charge avant
 
 ## Sauvegarde
 
-Pour sauvegarder, l'utilisateur doit utiliser **CTRL+S**. Cela va stocker dans le dossier des sauvegardes une sauvegarde de l'état du jeu de l'utilisateur dans un fichier `json`.
+Pour sauvegarder, l'utilisateur doit utiliser **CTRL+S**. Cela va stocker dans le dossier des sauvegardes une sauvegarde de l'état du jeu de l'utilisateur dans un fichier `json`. Ce format de fichier permet de sauvegarder l'essentiel de chaque objet. Ainsi, les sauvegardes sont très simples et très légères.
 
 La mécanique de sauvegarde est directement géré dans le fichier `window.py`.
 
