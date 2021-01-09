@@ -4,7 +4,7 @@ from sprites.map_check import MapCheck
 from managers.map_viewer_manager import MapViewerManager
 from sprites.effects_zone import EffectsZone
 from sprites.merchant import Merchant
-from sprites.animated import CampFire, Circle
+from sprites.animated import CampFire, Circle, Confetti
 from sprites.chest import Chest
 from inventory.inventory import Armor, Consumable, Inventory, Spell, Weapon
 from config.sprites import ASSETS_SPRITES, ITEMS, ITEMS_NAMES, ITEMS_PROPERTIES
@@ -53,6 +53,8 @@ class Game(_Elements):
         self.animated = pg.sprite.Group()
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.versus_manager = VersusManager(self)
+
+        self.confetti = Confetti(self, WIDTH // 2, 0)
 
         self.press_space = False
         self.chest_open = False
@@ -672,12 +674,14 @@ class Game(_Elements):
     def finish_update(self):
         """Update the finish state"""
         super().events_buttons()
+        self.confetti.update()
 
     def finish_draw(self):
         """Draw the finish state"""
         self.finish_draw_background()
         self.draw_text("You win", self.title_font, 128, BEIGE, WIDTH // 2, HEIGHT // 2, align="center")
         super().draw_buttons()
+        self.screen.blit(self.confetti.image, self.confetti.rect)
 
     def game_over_run(self):
         """Run the game over state"""

@@ -631,3 +631,6 @@ ASSETS_BOOK_NEXT = [pg.image.load(path.join(sprites_folder, "book", "next",  f"{
 
 ASSETS_CIRCLE = [pg.image.load(path.join(sprites_folder, "circle", "{:04d}.png".format(i)))
                  for i in range(1, 60)]
+
+ASSETS_CONFETTI = [pg.image.load(path.join(sprites_folder, "confetti", "{:04d}.png".format(i)))
+                   for i in range(1, 170)]
