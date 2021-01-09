@@ -85,3 +85,4 @@ footer: Made by  with ❤️ by the group 10
 - génération intelligente et automatique de carte
 - mode campagne
 - possibilité de créer des campagnes personnalisées
+- modularité de la carte
