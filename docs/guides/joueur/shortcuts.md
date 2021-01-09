@@ -21,6 +21,7 @@ Notre jeu s'utilise à la fois avec le clavier et la souris et combine les 2 la 
 |     draw      |     r     | Permet de dessiner sur la carte                                                           |
 |     erase     |     e     | Permet d'effacer ce qui été dessiner sur la carte                                         |
 |  new canvas   |     n     | Permet d'effacer de réinitialiser le canvas de dessins                                    |
+|    console    |     k     | Permet d'activer et de désactiver la console                                              |
 |     save      |  ctrl+s   | Permet de sauvegarder le canvas                                                           |
 |    attack     |     1     | Permet d'initialiser une action d'attack (en tour par tour uniquement)                    |
 |     move      |     2     | Permet d'initialiser une action de mouvement (en tour par tour uniquement)                |

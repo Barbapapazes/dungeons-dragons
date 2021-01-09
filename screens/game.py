@@ -48,7 +48,7 @@ class Game(_Elements):
 
         self.all_sprites = None
 
-        self.logs = LogsManager(0, 0, 500, 14 * 16, self.text_font, 16,  self.draw_text)
+        self.logs = LogsManager(0, 0, 500, 14 * 16, self.text_font, 16,  self.draw_text, self)
         self.turn_manager = TurnManager()
         self.animated = pg.sprite.Group()
         self.all_sprites = pg.sprite.LayeredUpdates()

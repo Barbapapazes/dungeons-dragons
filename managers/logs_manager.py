@@ -1,6 +1,7 @@
 """Create the game logger"""
 
 import time
+from utils.shortcuts import key_for
 
 import pygame as pg
 from config.colors import WHITE
@@ -10,11 +11,12 @@ from logger import logger
 class LogsManager:
     """Used to create an in-game logger"""
 
-    def __init__(self, x, y, width, height, font, fontsize, draw_text):
+    def __init__(self, x, y, width, height, font, fontsize, draw_text, game):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.game = game
 
         self.font = font
         self.fontsize = fontsize
@@ -41,18 +43,15 @@ class LogsManager:
             event (Event)
         """
         if event.type == pg.KEYUP:
-            if event.key == pg.K_k:
+            if key_for(self.game.game_data["shortcuts"]["game"]["console"]["keys"], event):
                 self.visible = not self.visible
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 4:
-                logger.debug('up')
                 self.offset += 6
                 if self.offset > len(self.messages) * self.fontsize:
                     self.offset = len(self.messages) * self.fontsize
             elif event.button == 5:
-                logger.debug('down')
                 self.offset -= 6
-                logger.debug("%s, %s", self.offset, len(self.messages) * self.fontsize)
                 if self.offset < - self.height:
                     self.offset = - self.height
 

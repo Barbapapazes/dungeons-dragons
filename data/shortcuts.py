@@ -15,6 +15,7 @@ SHORTCUTS_DEFAULT = {
         "draw": {"keys": [False, False, pg.K_r], "help": "Used to draw on the big map"},
         "erase": {"keys": [False, False, pg.K_e], "help": "Used to erase drawing on the big map"},
         "new canvas": {"keys": [False, False, pg.K_n], "help": "Restore the canvas of the big map"},
+        "console": {"keys": [False, False, pg.K_k], "help": "Toggle the console"},
         "save": {"keys": [True, False, pg.K_s], "help": "Save the canvas"},
         "attack": {"keys": [False, False, pg.K_1], "help": "Start an attack action"},
         "move": {"keys": [False, False, pg.K_2], "help": "Start a move action"},
