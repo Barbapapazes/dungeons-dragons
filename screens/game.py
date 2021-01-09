@@ -55,6 +55,7 @@ class Game(_Elements):
         self.versus_manager = VersusManager(self)
 
         self.confetti = Confetti(self, WIDTH // 2, 0)
+        self.difficulty = 2 # temporary
 
         self.press_space = False
         self.chest_open = False
