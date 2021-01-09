@@ -11,7 +11,7 @@ from logger import logger
 class Chest(pg.sprite.Sprite):
     """Create a chest"""
 
-    def __init__(self, game, x, y, consumable=False, weapons=False, armor=False, is_open=False):
+    def __init__(self, game, x, y, consumable=None, weapons=None, armor=None, is_open=False):
         self._layer = y
         self.groups = game.all_sprites, game.chests
         pg.sprite.Sprite.__init__(self, self.groups)

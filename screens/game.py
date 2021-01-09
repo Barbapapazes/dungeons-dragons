@@ -233,6 +233,7 @@ class Game(_Elements):
                         border)
                 Door(self, door["pos"]["x"], door["pos"]["y"], wall, is_open=door["is_open"])
             for merchant in self.game_data["game_data"]["merchants"]:
+                logger.debug(merchant)
                 Merchant(
                     self, merchant["pos"]["x"],
                     merchant["pos"]["y"],

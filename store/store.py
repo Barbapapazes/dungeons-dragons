@@ -36,18 +36,18 @@ class Store:
         self.armor_slots = []
         self.consumable_slots = []
 
-        if weapons:
+        if weapons is not None:
             weapons = weapons.items()
-        if armor:
+        if armor is not None:
             armor = armor.items()
-        if consumable:
+        if consumable is not None:
             consumable = consumable.items()
 
         self.chosen_weapons = [choice(list(WEAPONS.items())) for _ in range(
-            randint(0, 5))] if not weapons else weapons
-        self.chosen_armor = [choice(list(ARMOR.items())) for _ in range(randint(0, 5))] if not armor else armor
+            randint(0, 5))] if weapons is None else weapons
+        self.chosen_armor = [choice(list(ARMOR.items())) for _ in range(randint(0, 5))] if armor is None else armor
         self.chosen_consumables = [choice(list(CONSUMABLE.items()))
-                                   for _ in range(randint(0, 5))] if not consumable else consumable
+                                   for _ in range(randint(0, 5))] if consumable is None else consumable
 
         self.moving_item = None
         self.moving_item_slot = None
