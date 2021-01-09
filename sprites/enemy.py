@@ -7,7 +7,7 @@ from config.window import TILESIZE
 from utils.cell import Cell
 from random import uniform
 from random import randint
-from config.sprites import ASSETS_SPRITES
+from config.sprites import ASSETS_SPRITES, WAIT_TIME
 vec = pg.math.Vector2
 
 # npc settings
@@ -220,7 +220,7 @@ class Enemy(Character):
             self.update_collisions()
         else:
             self.end_time += self.game.dt
-            if self.end_time > (500 / 1000):
+            if self.end_time > (WAIT_TIME / 1000):
                 self.end = False
                 self.game.versus_manager.check_characters_actions()
 

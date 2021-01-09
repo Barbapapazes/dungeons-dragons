@@ -19,6 +19,8 @@ PLAYER_MAX_HP = 100
 PLAYER_MAX_MP = 50
 PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
 
+# enemy
+WAIT_TIME = 800
 
 MALUS_ARC = 2
 
