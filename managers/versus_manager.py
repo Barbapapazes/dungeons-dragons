@@ -105,7 +105,7 @@ class VersusManager:
         """Finish the versus"""
         self.active = False
         self.free_all_players()
-        self.turn_manager.playable = self.turn_manager.players.index(self.turn_manager.active_character())
+        self.turn_manager.playable = self.turn_manager.players.index(self.turn_manager.active())
         self.turn_manager.vision = self.turn_manager.playable
         self.remove_selected_enemy()
         self.remove_last_player_pos()

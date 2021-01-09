@@ -249,8 +249,8 @@ class Game(_Elements):
                 if tile_object.name == 'wall':
                     Obstacle(
                         self,
-                        obj_center.x,
-                        obj_center.y,
+                        tile_object.x,
+                        tile_object.y,
                         tile_object.width,
                         tile_object.height)
                 if tile_object.name == "camp_fire":
@@ -989,6 +989,7 @@ class Game(_Elements):
                 self.screen.blit(animated.image, self.camera.apply(animated))
 
         for sprite in self.all_sprites:
+            pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply(sprite), 1)
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
             if not isinstance(sprite, Circle):
@@ -1000,6 +1001,10 @@ class Game(_Elements):
         # for zone in self.zoneEffect:
         #     zone.rect = self.camera.apply_rect(zone.rect)
         #     # zone.draw()  ça marche pas de ouf mais c'est pas loin
+
+        for enemy in self.all_sprites:
+            if isinstance(enemy, Enemy):
+                pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply_rect(enemy.hit_rect), 1)
 
         self.screen.blit(
             self.minimap.create(
@@ -1015,6 +1020,9 @@ class Game(_Elements):
         # self.draw_versus()
         if self.logs.visible:
             self.logs.draw(self.screen)
+
+        for wall in self.walls:
+            pg.draw.rect(self.screen, (0, 0, 255), self.camera.apply(wall), 1)
 
         super().transtition_active(self.screen)
 

@@ -11,7 +11,7 @@ from config.sprites import ASSETS_SPRITES, WAIT_TIME
 vec = pg.math.Vector2
 
 # npc settings
-MOB_HIT_RECT = pg.Rect(0, 0, TILESIZE-16, TILESIZE-16)
+MOB_HIT_RECT = pg.Rect(0, 0, 30, 30)
 SIZE = 8
 SEEK_FORCE = 0.1
 APPROACH_RADIUS = 50
