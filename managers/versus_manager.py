@@ -204,6 +204,7 @@ class VersusManager:
                     self.turn_manager.sorted.remove(self.selected_enemy)
                     self.selected_enemy.kill()
             else:
+                self.selected_enemy = None
                 self.logs.add_log("Missed dice roll")
             self.check_characters_actions()
         if self.action == 'move':
@@ -364,6 +365,7 @@ class VersusManager:
             rect.centerx -= 3
             rect.centery -= 3
             screen.blit(image, self.game.camera.apply_rect(rect))
+            screen.blit(self.selected_enemy.image, self.game.camera.apply_rect(rect))
 
     def create_border(self, surface, color):
         """Create the enemy border

@@ -732,11 +732,11 @@ class Game(_Elements):
 
     def check_hits(self):
         self.hit_chests()
+        self.hit_map_checks()
         self.hit_doors()
         self.hit_merchants()
         self.hit_animated()
         self.hit_items()
-        self.hit_map_checks()
         self.hit_traps()
 
     def hit_traps(self):
@@ -748,6 +748,7 @@ class Game(_Elements):
 
     def hit_map_checks(self):
         hits = pg.sprite.spritecollide(self.turn_manager.active_character(), self.map_checks, False)
+        logger.debug("%s, %s", self.map_checks, hits)
         if self.press_space and hits:
             for hit in hits:
                 hit.collide()
@@ -867,7 +868,7 @@ class Game(_Elements):
             super().toggle_sub_state('merchant')
 
     def save_data(self):
-        self.logs("Save data in memory")
+        self.logs.add_log("Save data in memory")
         self.game_data["minimap"] = self.minimap.create_minimap_data()
         self.game_data["game_data"]["heros"] = self.save_players()
         self.game_data["game_data"]["items"] = self.save_items()
@@ -951,7 +952,6 @@ class Game(_Elements):
                 self.screen.blit(sprite.image, self.camera.apply(sprite))
             if isinstance(sprite, Circle):
                 self.versus_manager.draw_range(self.screen)
-                # self.screen.blit(sprite.image, self.camera.apply(sprite))
         self.versus_manager.draw(self.screen)
 
         # for zone in self.zoneEffect:
