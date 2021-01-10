@@ -593,7 +593,8 @@ class Game(_Elements):
 
     def finish_draw(self):
         """Draw the finish state"""
-        self.finish_draw_background()
+        self.screen.blit(self.previous_screen, (0, 0))
+
         self.draw_text("You win", self.title_font, 128, BEIGE, WIDTH // 2, HEIGHT // 2, align="center")
         super().draw_buttons()
         self.screen.blit(self.confetti.image, self.confetti.rect)
@@ -609,7 +610,8 @@ class Game(_Elements):
 
     def game_over_draw(self):
         """Draw the game_over state"""
-        self.game_over_draw_background()
+        self.screen.blit(self.previous_screen, (0, 0))
+
         self.draw_text("Game over", self.title_font, 128, BEIGE, WIDTH // 2, HEIGHT // 2, align="center")
         super().draw_buttons()
 

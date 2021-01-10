@@ -211,8 +211,8 @@ class TurnManager:
             if self.is_active_enemy():
                 self.active_character().update()
         else:
-            for enemy in self.enemies:
-                enemy.update()
+            # for enemy in self.enemies:
+            #     enemy.update()
             self.get_playable_character().update()
 
     def get_pos_player(self):
@@ -234,6 +234,7 @@ class TurnManager:
         if isinstance(character, Player):
             self.players.remove(character)
             if len(self.players) == 0:
+                self.game.create_dim()
                 self.game.btns_dict = self.game.create_buttons_dict("game over")
                 self.game.create_buttons(self.game.screen, start_y_offset=8 * HEIGHT / 10)
                 self.game.toggle_sub_state('game_over')

@@ -30,6 +30,7 @@ class MapCheck(pg.sprite.Sprite):
     def collide(self):
         """Call action when collide"""
         if self.filename == "finish":
+            self.game.create_dim()
             self.game.btns_dict = self.game.create_buttons_dict("finish")
             self.game.create_buttons(self.game.screen, start_y_offset=8 * HEIGHT / 10)
             self.game.toggle_sub_state("finish")
