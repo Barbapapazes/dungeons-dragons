@@ -63,6 +63,8 @@ class Game(_Elements):
         self.opened_merchant = None
         self.seller = False
 
+        self.debug = False
+
         self.states_dict = self.make_states_dict()
 
     def startup(self, dt, game_data):
@@ -385,6 +387,8 @@ class Game(_Elements):
                 logger.debug(type(self.turn_manager.get_playable_character()))
             if event.key == pg.K_l:
                 logger.debug(self.turn_manager.get_playable_character().health)
+            if event.key == pg.K_EQUALS:
+                self.debug = not self.debug
             if self.turn_manager.is_active_player():
                 self.toggle_states(event)
             if event.key == pg.K_t:
@@ -980,14 +984,25 @@ class Game(_Elements):
 
     def draw(self):
         """Draw all"""
-        # self.screen.fill(BLACK)
-        # self.draw_grid(self.screen)
+        self.draw_map()
+        self.draw_all_sprites()
+
+        self.versus_manager.draw(self.screen)
+        self.minimap.draw(self.screen)
+        self.logs.draw(self.screen)
+
+        self.draw_debug()
+
+        super().transtition_active(self.screen)
+
+    def draw_map(self):
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         # self.all_sprites.draw(self.screen)
         for animated in self.animated:
             if isinstance(animated, CampFire):
                 self.screen.blit(animated.image, self.camera.apply(animated))
 
+    def draw_all_sprites(self):
         for sprite in self.all_sprites:
             pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply(sprite), 1)
             if isinstance(sprite, Enemy):
@@ -1008,19 +1023,15 @@ class Game(_Elements):
 
         self.minimap.draw(self.screen)
 
-        for sprite in self.turn_manager.players:
-            pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply_rect(sprite.hit_rect), 1)
-
-        # self.draw_versus()
-        if self.logs.visible:
-        self.logs.draw(self.screen)
-
-        for wall in self.walls:
-            pg.draw.rect(self.screen, (0, 0, 255), self.camera.apply(wall), 1)
-
-        super().transtition_active(self.screen)
-
-    # def draw_versus(self):
-    #     """Draw the hud for the versus"""
-    #     if self.versus.active and self.turn_manager.numberOfAction > 0:
-    #         self.versus.draw(self.screen, self.player)
+    def draw_debug(self):
+        if self.debug:
+            for sprite in self.turn_manager.players:
+                pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply_rect(sprite.hit_rect), 1)
+            for sprite in self.turn_manager.enemies:
+                pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply_rect(sprite.hit_rect), 1)
+            for wall in self.walls:
+                pg.draw.rect(self.screen, (255, 0, 0), self.camera.apply(wall), 1)
+            for trap in self.traps:
+                pg.draw.rect(self.screen, (0, 0, 255), self.camera.apply(trap), 1)
+            for map_check in self.map_checks:
+                pg.draw.rect(self.screen, (0, 0, 255), self.camera.apply(map_check), 1)
