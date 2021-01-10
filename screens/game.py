@@ -758,7 +758,7 @@ class Game(_Elements):
         # if self.turn_manager.is_active_player():
         if self.turn_manager.get_vision_character():
             self.camera.update(self.turn_manager.get_vision_character())
-        self.minimap.update(self.turn_manager.players)
+        self.minimap.update()
         self.check_for_chest_open()
         self.check_for_merchant_open()
 
@@ -1006,13 +1006,7 @@ class Game(_Elements):
             if isinstance(enemy, Enemy):
                 pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply_rect(enemy.hit_rect), 1)
 
-        self.screen.blit(
-            self.minimap.create(
-                self.turn_manager.get_vision_character(), self.turn_manager.players, self.turn_manager.enemies),
-            (WIDTH -
-             self.minimap.width,
-             HEIGHT -
-             self.minimap.height))
+        self.minimap.draw(self.screen)
 
         for sprite in self.turn_manager.players:
             pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply_rect(sprite.hit_rect), 1)
