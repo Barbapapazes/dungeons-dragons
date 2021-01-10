@@ -1019,7 +1019,7 @@ class Game(_Elements):
 
         # self.draw_versus()
         if self.logs.visible:
-            self.logs.draw(self.screen)
+        self.logs.draw(self.screen)
 
         for wall in self.walls:
             pg.draw.rect(self.screen, (0, 0, 255), self.camera.apply(wall), 1)

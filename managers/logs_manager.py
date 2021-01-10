@@ -61,11 +61,12 @@ class LogsManager:
         Args:
             screen (Surface)
         """
-        screen.blit(self.screen_logs, (self.x, self.y))
-        for index, message in enumerate(self.messages):
-            _y = self.height - (index * self.fontsize) + self.offset
-            if 0 < _y <= self.height:
-                self.draw_text(message, self.font, self.fontsize, WHITE, 0, _y, screen=screen, align="sw")
+        if self.visible:
+            screen.blit(self.screen_logs, (self.x, self.y))
+            for index, message in enumerate(self.messages):
+                _y = self.height - (index * self.fontsize) + self.offset
+                if 0 < _y <= self.height:
+                    self.draw_text(message, self.font, self.fontsize, WHITE, 0, _y, screen=screen, align="sw")
 
     def add_log(self, message):
         """Add a message to the logger
