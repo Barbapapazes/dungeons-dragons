@@ -64,6 +64,7 @@ class Game(_Elements):
         self.seller = False
 
         self.debug = False
+        self.previous_screen = None
 
         self.states_dict = self.make_states_dict()
 
@@ -330,7 +331,6 @@ class Game(_Elements):
         previous_dict = super().make_states_dict().copy()
         add_dict = {
             'inventory': self.inventory_run,
-            'shop': self.shop_run,
             'chest': self.chest_run,
             'merchant': self.merchant_run,
             'map': self.map_run,
@@ -374,11 +374,10 @@ class Game(_Elements):
 
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
-
                 if self.state == 'inventory':
-                    if self.turn_manager.active_character().inventory.display_inventory:
+                    if self.turn_manager.active().inventory.display_inventory:
                         logger.info("Select an item from the inventory")
-                        self.turn_manager.active_character().inventory.move_item()
+                        self.turn_manager.active().inventory.move_item()
 
         if self.map_viewer_manager.active:
             self.map_viewer_manager.event(event)
@@ -422,13 +421,13 @@ class Game(_Elements):
         if self.state == 'inventory':
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    self.turn_manager.active_character().inventory.move_item()
+                    self.turn_manager.active().inventory.move_item()
             elif event.type == pg.MOUSEBUTTONUP:
                 if event.button == 1:
-                    self.turn_manager.active_character().inventory.place_item()
+                    self.turn_manager.active().inventory.place_item()
                 elif event.button == 3:
                     self.mouse_pos = pg.mouse.get_pos()
-                    PopupMenu(self.turn_manager.active_character().inventory.menu_data)
+                    PopupMenu(self.turn_manager.active().inventory.menu_data)
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
                     self.inventory_events(event)
@@ -436,11 +435,11 @@ class Game(_Elements):
     def inventory_events(self, event):
         """Used to manage all event"""
         if event.name == "inventory":
-            self.turn_manager.active_character().inventory.check_slot(event.text, self.mouse_pos)
+            self.turn_manager.active().inventory.check_slot(event.text, self.mouse_pos)
             if self.seller:
                 if event.text in ["sell"]:
-                    self.turn_manager.active_character().shop.check_slot(
-                        event.text, self.screen, self.turn_manager.active_character(), self.mouse_pos)
+                    self.turn_manager.active().shop.check_slot(
+                        event.text, self.screen, self.turn_manager.active(), self.mouse_pos)
 
     def events_shop(self, event):
         """When the shop state is running"""
@@ -450,20 +449,20 @@ class Game(_Elements):
                     self.mouse_pos = pg.mouse.get_pos()
                     if self.opened_merchant.shop.is_clicked(self.mouse_pos):
                         PopupMenu(self.opened_merchant.shop.menu_data)
-                    elif self.turn_manager.active_character().inventory.is_clicked(self.mouse_pos):
-                        PopupMenu(self.turn_manager.active_character().inventory.menu_data)
+                    elif self.turn_manager.active().inventory.is_clicked(self.mouse_pos):
+                        PopupMenu(self.turn_manager.active().inventory.menu_data)
                 elif event.button == 1:
-                    self.opened_merchant.shop.place_item(self.turn_manager.active_character().inventory)
-                    self.turn_manager.active_character().inventory.place_item()
+                    self.opened_merchant.shop.place_item(self.turn_manager.active().inventory)
+                    self.turn_manager.active().inventory.place_item()
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.opened_merchant.shop.move_item()
-                    self.turn_manager.active_character().inventory.move_item()
+                    self.turn_manager.active().inventory.move_item()
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
                     if event.name == 'shop' and event.text in self.opened_merchant.shop.menu_data:
                         self.opened_merchant.shop.check_slot(
-                            event.text, self.screen, self.turn_manager.active_character(), self.mouse_pos)
+                            event.text, self.screen, self.turn_manager.active(), self.mouse_pos)
                     self.inventory_events(event)
 
     def events_chest(self, event):
@@ -474,34 +473,33 @@ class Game(_Elements):
                     self.mouse_pos = pg.mouse.get_pos()
                     if self.opened_chest.store.is_clicked(self.mouse_pos):
                         PopupMenu(self.opened_chest.store.menu_data)
-                    elif self.turn_manager.active_character().inventory.is_clicked(self.mouse_pos):
-                        PopupMenu(self.turn_manager.active_character().inventory.menu_data)
+                    elif self.turn_manager.active().inventory.is_clicked(self.mouse_pos):
+                        PopupMenu(self.turn_manager.active().inventory.menu_data)
                 elif event.button == 1:
-                    self.opened_chest.store.place_item(self.turn_manager.active_character().inventory)
-                    self.turn_manager.active_character().inventory.place_item()
+                    self.opened_chest.store.place_item(self.turn_manager.active().inventory)
+                    self.turn_manager.active().inventory.place_item()
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.opened_chest.store.move_item()
-                    self.turn_manager.active_character().inventory.move_item()
+                    self.turn_manager.active().inventory.move_item()
             elif event.type == pg.USEREVENT:
                 if event.code == 'MENU':
                     if event.name == 'store' and event.text in self.opened_chest.store.menu_data:
                         self.opened_chest.store.check_slot(
-                            event.text, self.screen, self.turn_manager.active_character(), self.mouse_pos)
+                            event.text, self.screen, self.turn_manager.active(), self.mouse_pos)
                     self.inventory_events(event)
 
     def toggle_states(self, event):
         """Use to toggle the state of all states"""
         if key_for(self.game_data["shortcuts"]["game"]
                    ["inventory"]["keys"], event):
-            logger.info("Toggle inventory from turn_manager.active_character()")
+            logger.info("Toggle inventory from %s", self.turn_manager.active())
             self.seller = False
             self.map_viewer_manager.active = False
             self.turn_manager.active().inventory.display_inventory = True
             self.create_dim()
             super().toggle_sub_state('inventory')
         if key_for(self.game_data["shortcuts"]["game"]["map"]["keys"], event):
-                # il va falloir le déplacer pour le mettre dans les toggle
             self.seller = False
             self.map_viewer_manager.active = True
             self.turn_manager.active().inventory.display_inventory = False
@@ -520,48 +518,18 @@ class Game(_Elements):
         self.screen = surface
         self.dt = dt
         update_level = self.states_dict[self.state]
-        if self.state != 'normal':
-            self.draw()
         update_level()
 
     def normal_run(self):
         """Run the normal state"""
-        # if self.versus.active:
-        #     # self.versus_update()
-        #     if (self.versus.action == "Move_autorised"):
-        #         self.update()
-        # else:
         self.update()
         self.draw()
-        self.versus_manager.check_for_versus()
-        self.check_for_menu()
-
-    def menu_run(self):
-        """Run the menu state"""
-        self.draw()
-        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
-        self.dim_screen.fill((0, 0, 0, 180))
-        self.screen.blit(self.dim_screen, (0, 0))
-        self.draw_text(
-            "C'est un sub-state ! Un menu dans l'écran game",
-            self.title_font,
-            15,
-            WHITE,
-            WIDTH // 2,
-            HEIGHT // 2,
-            'center')
 
     def inventory_run(self):
         """Run the inventory state"""
         self.screen.blit(self.previous_screen, (0, 0))
 
         self.turn_manager.active().inventory.draw(self.screen)
-
-        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
-        self.dim_screen.fill((0, 0, 0, 180))
-        self.screen.blit(self.dim_screen, (0, 0))
-        self.turn_manager.active_character().inventory.draw(self.screen)
-        self.turn_manager.active_character().shop.draw(self.screen)
 
     def chest_run(self):
         self.screen.blit(self.previous_screen, (0, 0))
@@ -615,20 +583,6 @@ class Game(_Elements):
         self.draw_text("Game over", self.title_font, 128, BEIGE, WIDTH // 2, HEIGHT // 2, align="center")
         super().draw_buttons()
 
-    def finish_draw_background(self):
-        """Draw the finish background of the finish state"""
-        self.draw()
-        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
-        self.dim_screen.fill((0, 0, 0, 180))
-        self.screen.blit(self.dim_screen, (0, 0))
-
-    def game_over_draw_background(self):
-        """Draw the game over background of the game over state"""
-        self.draw()
-        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
-        self.dim_screen.fill((0, 0, 0, 180))
-        self.screen.blit(self.dim_screen, (0, 0))
-
     def create_buttons_dict(self, state):
         """Create the dict for all buttons
 
@@ -654,9 +608,6 @@ class Game(_Elements):
             }
         else:
             return {}
-
-    def check_for_menu(self):
-        """Check if the user want to access to the menu"""
 
     def save_data_in_file(self):
         self.logs.add_log("Save the game in file")
