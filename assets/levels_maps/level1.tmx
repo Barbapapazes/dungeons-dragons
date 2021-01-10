@@ -144,7 +144,7 @@
   <object id="1" name="bronze_key_small" x="336" y="400" width="32" height="32"/>
   <object id="2" name="player" x="436" y="208" width="32" height="32"/>
   <object id="3" name="player" x="536" y="208" width="32" height="32"/>
-  <object id="3" name="chest" x="536" y="208" width="32" height="32"/>
+  <object id="3" name="chest" x="528" y="80" width="32" height="32"/>
   <object id="3" name="potion_health_medium" type="consumable" x="400" y="80" width="32" height="32">
    <properties>
     <property name="object_type" value="consumable"/>
@@ -189,7 +189,6 @@
   <object id="36" name="wall" x="1296" y="896" width="48" height="48"/>
   <object id="37" name="wall" x="1296" y="704" width="48" height="48"/>
   <object id="38" name="wall" x="1280" y="384" width="16" height="256"/>
-  <object id="40" name="zombie" x="784" y="208" width="32" height="32"/>
   <object id="42" name="zombie" x="1072" y="816" width="32" height="32"/>
   <object id="46" name="wall" x="784" y="1232" width="32" height="32"/>
   <object id="47" name="wall" x="1104" y="1296" width="32" height="32"/>
@@ -220,7 +219,7 @@
     <property name="object_type" value="other"/>
    </properties>
   </object>
-  <object id="102" name="door" x="240" y="208" width="32" height="32"/>
+  <object id="102" name="door" x="208" y="208" width="32" height="32"/>
   <object id="103" name="merchant" x="336" y="128" width="32" height="32"/>
   <object id="104" name="gold_boots_small" type="consumable" x="240" y="304" width="32" height="32">
    <properties>
@@ -232,13 +231,18 @@
     <property name="object_type" value="consumable"/>
    </properties>
   </object>
+  <object id="3" name="skeleton" x="1040" y="432" width="32" height="32"/>
+  <object id="3" name="skeleton" x="864" y="592" width="32" height="32"/>
+  <object id="3" name="phantom" x="720" y="560" width="32" height="32"/>
+  <object id="3" name="goblin" x="880" y="464" width="32" height="32"/>
+  <object id="3" name="boss" x="864" y="672" width="64" height="64"/>
   <object id="109" name="map-levels_maps-finish" x="144" y="512" width="32" height="32"/>
   <object id="106" name="trap" x="464" y="272" width="32" height="32"/>
   <object id="107" name="trap" x="400" y="144" width="32" height="32"/>
-  <object id="110" name="player" x="352" y="192" width="32" height="32"/>
+  <object id="110" name="player" x="336" y="208" width="32" height="32"/>
   <object id="111" name="map-levels_maps-level2.tmx" x="144" y="400" width="32" height="32"/>
   <object id="112" name="camp_fire" x="144" y="656" width="32" height="32"/>
-  <object id="115" name="phantom" x="656" y="208" width="32" height="32"/>
-  <object id="116" name="phantom" x="656" y="96" width="32" height="32"/>
+  <object id="115" name="phantom" x="976" y="576" width="32" height="32"/>
+  <object id="116" name="phantom" x="992" y="496" width="32" height="32"/>
  </objectgroup>
 </map>

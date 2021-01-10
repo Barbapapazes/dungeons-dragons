@@ -220,8 +220,8 @@ class TurnManager:
             if self.is_active_enemy():
                 self.active_character().update()
         else:
-            # for enemy in self.enemies:
-            #     enemy.update()
+            for enemy in self.enemies:
+                enemy.update()
             self.get_playable_character().update()
 
     def get_pos_player(self):
