@@ -779,6 +779,7 @@ class Game(_Elements):
                 animated.update()
 
     def check_hits(self):
+        """Check all hit in the game"""
         self.hit_chests()
         self.hit_map_checks()
         self.hit_doors()
