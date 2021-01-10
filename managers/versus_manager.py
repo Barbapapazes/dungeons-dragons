@@ -43,30 +43,33 @@ class VersusManager:
                 if self.is_distance(enemy.pos, player.pos, 300):
                     start = True
 
-        warning = False
-        warn_list = list()
-        for player in self.turn_manager.players:
-            for enemy in self.turn_manager.enemies:
-                if self.is_distance(player.pos, enemy.pos, 700):
-                    warn_list.append(True)
-                    warning = True
+        if not start:
+            warning = False
+            warn_list = list()
+            # used to be sure that every hero is at the right distance
+            for player in self.turn_manager.players:
+                for enemy in self.turn_manager.enemies:
+                    if self.is_distance(player.pos, enemy.pos, 500):
+                        warn_list.append(True)
+                        warning = True
+                        break
+                    else:
+                        warn_list.append(False)
+                if warning:
                     break
-                else:
-                    warn_list.append(False)
-            if warning:
-                break
 
-        found = False
-        for warn in warn_list:
-            if warn:
-                found = True
+            found = False
+            for warn in warn_list:
+                if warn:
+                    found = True
+                    break
 
-        if not found and self.warn:
-            self.warn = False
+            if not found and self.warn:
+                self.warn = False
 
-        if warning and not self.warn:
-            self.logs.add_log("You're near a battle")
-            self.warn = True
+            if warning and not self.warn:
+                self.logs.add_log("You're near a battle ! Be careful !")
+                self.warn = True
         if start and not self.active:
             self.start_versus()
         elif not start and self.active:
@@ -337,6 +340,8 @@ class VersusManager:
                     self.spell_pos = pos
                 elif mouse_click[2]:
                     self.spell_pos = None
+
+        self.check_for_versus()
 
     def draw(self, screen):
         """Draw the versus"""
