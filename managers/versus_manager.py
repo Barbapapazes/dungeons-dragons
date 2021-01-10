@@ -446,6 +446,7 @@ class VersusManager:
         self.add_actions()
         self.check_effects_zones_hits()
         self.check_for_effects_zones()
+        self.logs.add_log(self.turn_manager.active())
 
     def check_for_effects_zones(self):
         """Check if the effets zone can live"""

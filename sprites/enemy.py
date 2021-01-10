@@ -157,6 +157,8 @@ class Enemy(Character):
 
         # if trap nearby: flee(trap)
         if self.end and not self.game.versus_manager.active:
+            if self.spawned:
+                self.number_actions = 0
             self.end_time += self.game.dt
             if self.end_time > (WAIT_TIME / 1000):
                 self.end = False
@@ -175,7 +177,7 @@ class Enemy(Character):
                 """ If a player is in sight, evaluate whether he is worth attacking or not
                 """
                 if self.player_detection():
-                    # logger.debug(self.player_spotted)
+                    logger.debug(self.player_spotted)
                     # logger.debug(self.player_spotted.pos)
                     if self.evaluation():
                         self.flee(self.player_spotted.pos)
@@ -211,7 +213,11 @@ class Enemy(Character):
                     """if there is no player in range, just move around
                     """
                 else:
-                    self.skip_turn()
+                    temp = self.avoidnpc()
+                    if temp is False:
+                        self.acc = self.wander()
+                    else:
+                        self.acc = temp
 
             elif self.player_detection():
                 if self.evaluation():
@@ -226,26 +232,10 @@ class Enemy(Character):
                             self.acc = self.seek(self.goto[0].coor)
                             if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
                                 del self.goto[0]
-                        else:
-                            self.vel = vec(0, 0)
-                            self.moving = False
-                            self.game.versus_manager.logs.add_log(f'The {self} moved.')
-                            self.end_turn()
-                    else:
-                        self.attack()
                 """if there is no player in range, just move around
                 """
             else:
                 self.skip_turn()
-
-        elif self.player_detection():
-            if self.evaluation():
-                self.flee(self.player_spotted.pos)
-            else:
-                if not self.goto:
-                    self.goto = self.path_finding(self.player_spotted.pos)
-                    if self.goto:
-                        del self.goto[0]
 
             """actual movement update
             """
@@ -259,13 +249,6 @@ class Enemy(Character):
             self.rect.center = self.pos
 
             self.update_collisions()
-        else:
-            if self.spawned:
-                self.number_actions = 0
-            self.end_time += self.game.dt
-            if self.end_time > (WAIT_TIME / 1000):
-                self.end = False
-                self.game.versus_manager.check_characters_actions()
 
     def get_direction(self):
         """get the direction which the sprite is currently facing
@@ -511,15 +494,16 @@ class Enemy(Character):
     def attack(self):
         """attack instructions
         """
-        if self.classe == CLASSES[2]:
-            if self.cooldown - self.game.turn_manager.turn < 0:
-                spawn = Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE),
-                              self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
-                self.game.turn_manager.add_character(spawn)
-                self.game.versus_manager.logs.add_log(f"The {self} used magic to invoke a {spawn} !")
-                self.cooldown += 2
-                self.spawned = True
-            elif self.game.versus_manager.check_dice():
+        if self.classe == "wizard" and self.cooldown - self.game.turn_manager.turn < 0:
+            spawn = Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE),
+                            self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
+            self.game.turn_manager.add_character(spawn)
+            self.game.versus_manager.logs.add_log(f"The {self} used magic to invoke a {spawn} !")
+            self.cooldown += 2
+            self.spawned = True
+        else:
+            self.game.versus_manager.selected_enemy = self.player_spotted
+            if self.game.versus_manager.check_dice():
                 damage = self.game.versus_manager.calc_damage()
                 self.game.turn_manager.remove_health(damage, self.player_spotted)
             else:
