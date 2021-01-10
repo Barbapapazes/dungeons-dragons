@@ -88,7 +88,7 @@ class Options(_Elements):
         """Make the dictionnary of state methods for the level
 
         Returns:
-            [object: define all the possible states for a screen
+            object: define all the possible states for a screen
         """
         previous_dict = super().make_states_dict().copy()
         add_dict = {"screen": self.screen_run}
