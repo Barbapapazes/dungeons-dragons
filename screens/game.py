@@ -752,6 +752,10 @@ class Game(_Elements):
 
     def update(self):
         """Update all"""
+        self.update_layers()
+        self.update_camera()
+
+        self.update_sprites()
         self.items.update()
         for sprite in self.all_sprites:
             if not isinstance(sprite, MapCheck) and not isinstance(sprite, Circle) and not isinstance(sprite, Trap):
@@ -766,9 +770,20 @@ class Game(_Elements):
         self.check_for_chest_open()
         self.check_for_merchant_open()
 
-    def update_sprites(self):
+        self.minimap.update()
         self.versus_manager.update()
         self.turn_manager.update(self.versus_manager.active)
+
+    def update_camera(self):
+        if self.turn_manager.get_vision_character():
+            self.camera.update(self.turn_manager.get_vision_character())
+
+    def update_layers(self):
+        for sprite in self.all_sprites:
+            if not isinstance(sprite, MapCheck) and not isinstance(sprite, Circle) and not isinstance(sprite, Trap):
+                self.all_sprites.change_layer(sprite, sprite.rect.bottom)
+
+    def update_sprites(self):
         self.doors.update()
         self.chests.update()
         self.merchants.update()
