@@ -917,12 +917,12 @@ class Game(_Elements):
     def save_data(self):
         self.logs.add_log("Save data in memory")
         self.game_data["minimap"] = self.minimap.create_minimap_data()
-        self.game_data["game_data"]["heros"] = self.save_players()
-        self.game_data["game_data"]["items"] = self.save_items()
-        self.game_data["game_data"]["enemies"] = self.save_enemies()
-        self.game_data["game_data"]["chests"] = self.save_chests()
-        self.game_data["game_data"]["doors"] = self.save_doors()
-        self.game_data["game_data"]["merchants"] = self.save_merchants()
+        self.game_data["game_data"]["heros"] = self.save_list(self.turn_manager.players)
+        self.game_data["game_data"]["items"] = self.save_list(self.items)
+        self.game_data["game_data"]["enemies"] = self.save_list(self.turn_manager.enemies)
+        self.game_data["game_data"]["chests"] = self.save_list(self.chests)
+        self.game_data["game_data"]["doors"] = self.save_list(self.doors)
+        self.game_data["game_data"]["merchants"] = self.save_list(self.merchants)
         self.game_data["game_data"]["turns"] = self.save_turns()
 
     def save_turns(self):
@@ -933,32 +933,12 @@ class Game(_Elements):
         """
         return [(int(character.x), int(character.y)) for character in self.turn_manager.get_characters()]
 
-    def save_merchants(self):
-        merchants_list = list()
-        for merchant in self.merchants:
-            merchants_list.append(merchant.save())
+    def save_list(self, values):
+        data = list()
+        for value in values:
+            data.append(value.save())
 
-        return merchants_list
-
-    def save_doors(self):
-        doors_list = list()
-        for door in self.doors:
-            doors_list.append(door.save())
-
-        return doors_list
-
-    def save_chests(self):
-        chests_list = list()
-        for chest in self.chests:
-            chests_list.append(chest.save())
-
-        return chests_list
-
-    def save_players(self):
-        players_list = list()
-        for character in self.all_sprites:
-            if isinstance(character, Player):
-                players_list.append(character.save())
+        return data
 
         return players_list
 
