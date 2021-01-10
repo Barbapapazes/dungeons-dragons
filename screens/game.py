@@ -7,7 +7,7 @@ from sprites.merchant import Merchant
 from sprites.animated import CampFire, Circle, Confetti
 from sprites.chest import Chest
 from inventory.inventory import Armor, Consumable, Inventory, Spell, Weapon
-from config.sprites import ASSETS_SPRITES, ITEMS, ITEMS_NAMES, ITEMS_PROPERTIES
+from config.sprites import ASSETS_SPRITES, ITEMS, ITEMS_NAMES, ITEMS_PROPERTIES, TRAP_DAMAGE
 from os import path
 from sprites.item import PlacableItem
 from inventory.items import Item as InventoryItem
@@ -102,11 +102,8 @@ class Game(_Elements):
         self.map_viewer_manager = MapViewerManager(
             path.join(self.assets_folder, self.game_data["game_data"]["map"]["folder"]),
             self.game_data["game_data"]["map"]["filename"], self)
-        self.minimap = Minimap(
-            self.map_img,
-            225,
-            self.map_rect.width /
-            self.map_rect.height, self.game_data["minimap"]["fog"], self.game_data["minimap"]["cover"])
+        self.minimap = Minimap(self.map_img, 225, self.map_rect.width / self.map_rect.height, self.turn_manager,
+                               fog=self.game_data["minimap"]["fog"], cover=self.game_data["minimap"]["cover"])
         self.camera = Camera(self.map.width, self.map.height)
 
         if not self.game_data["loaded"] or self.game_data["next"]:
@@ -237,7 +234,6 @@ class Game(_Elements):
                         border)
                 Door(self, door["pos"]["x"], door["pos"]["y"], wall, is_open=door["is_open"])
             for merchant in self.game_data["game_data"]["merchants"]:
-                logger.debug(merchant)
                 Merchant(
                     self, merchant["pos"]["x"],
                     merchant["pos"]["y"],
@@ -269,8 +265,6 @@ class Game(_Elements):
                     tile_object.y + tile_object.height / 2)
                 if tile_object.name == 'player':
                     if len(self.turn_manager.players) < len(self.game_data["game_data"]["heros"]):
-                        logger.debug("add a hero")
-                        logger.debug(players)
                         _x = obj_center.x
                         _y = obj_center.y
                         _class = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["class"]
@@ -326,32 +320,6 @@ class Game(_Elements):
             self.save_data()
             self.save_data_in_file()
 
-        # Temporaire
-        # think how this will be used with the menu
-        # add a logger inside the inventory (for each keys or mouse move)
-        # items_folder = path.join(self.img_folder, 'items')
-        # weapons = list()
-        # for key, value in WEAPONS.items():
-        #     data = Weapon(
-        #         key, path.join(items_folder, value['image']),
-        #         value['weight'],
-        #         value['slot'],
-        #         value['type'],
-        #         value['number_dice'],
-        #         value['dice_value'],
-        #         value['scope'])
-        #     weapons.append(data)
-        #     self.player.inventory.add_item(data)
-
-        # hp_potion = Consumable('img/potionRed.png', 2, 30)
-        # helmet_armor = Armor('helmet armor', 'assets/img/items/helmet.png', 10, 20, 'head')
-        # chest_armor = Armor('img/chest.png', 10, 40, 'chest')
-        # upg_helmet_armor = Armor('img/upg_helmet.png', 10, 40, 'head')
-        # upg_chest_armor = Armor('img/upg_chest.png', 10, 80, 'chest')
-        # self.player.inventory.add_item(helmet_armor)
-        # fireBall = Sort('fireBall', 'assets/img/items/fireBall.png', 10, 'sort', 5, 'fire', 10, 2, 4, 2)
-        # self.turn_manager.active_character().inventory.add_item(fireBall)
-
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
 
@@ -359,20 +327,18 @@ class Game(_Elements):
         Returns:
             object: define all the possible states for a screen
         """
-        states_dict = {TRANSITION_IN: self.transition_in,
-                       TRANSITION_OUT: self.transition_out,
-                       'normal': self.normal_run,
-                       'menu': self.menu_run,
-                       'inventory': self.inventory_run,
-                       'shop': self.shop_run,
-                       'chest': self.chest_run,
-                       'merchant': self.merchant_run,
-                       'map': self.map_run,
-                       'finish': self.finish_run,
-                       'game_over': self.game_over_run,
-                       }
+        previous_dict = super().make_states_dict().copy()
+        add_dict = {
+            'inventory': self.inventory_run,
+            'shop': self.shop_run,
+            'chest': self.chest_run,
+            'merchant': self.merchant_run,
+            'map': self.map_run,
+            'finish': self.finish_run,
+            'game_over': self.game_over_run,
+        }
 
-        return states_dict
+        return previous_dict | add_dict
 
     def get_events(self, event):
         self.press_space = False
@@ -406,12 +372,6 @@ class Game(_Elements):
                     self.turn_manager.add_playable()
                     self.turn_manager.vision = self.turn_manager.playable
 
-            if key_for(self.game_data["shortcuts"]["game"]["map"]["keys"], event):
-                # il va falloir le déplacer pour le mettre dans les toggle
-                self.seller = False
-                self.map_viewer_manager.active = not self.map_viewer_manager.active
-                super().toggle_sub_state('map')
-
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
 
@@ -433,13 +393,6 @@ class Game(_Elements):
 
         if event.type == pg.KEYUP:
 
-                # life = {
-                #     'Player': self.turn_manager.active_character().HP,
-                #     'mana': self.turn_manager.active_character().MP,
-                #     'en1': self.en1.HP,
-                #     'en2': self.en2.HP}
-                # logger.info(life)
-
             if event.key == pg.K_TAB:
                 """Simulate begin versus"""
                 if self.versus_manager.active:
@@ -447,12 +400,6 @@ class Game(_Elements):
                 else:
                     self.versus_manager.start_versus()
 
-                # self.turn_manager.active_character().numberOfAction = NUM_ACT_BEGIN
-
-                # if self.versus.active:
-                #     self.versus.finish()
-                # else:
-                #     self.versus.start()
             if self.turn_manager.is_active_player():
                 if key_for(self.game_data["shortcuts"]["game"]["attack"]["keys"], event):
                     self.versus_manager.action_attack()
@@ -469,31 +416,6 @@ class Game(_Elements):
             if event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
                 self.versus_manager.events(mouse_pos)
-                # faire un fonction event pour le veruss qui regroupe tout ça
-
-                # if self.versus.active:
-
-                #     if Versus.is_clicked(self.versus.attack_btn, mouse_pos) and not self.versus.is_progress():
-                #         self.versus.set_action("attack")
-
-                #     if self.versus.action == "select_enemy":
-                #         logger.info("Select an enemy")
-                #         self.versus.selected_enemy(self.enemy, mouse_pos)
-
-                #     if Versus.is_clicked(self.versus.move_btn, mouse_pos) and not self.versus.is_progress():
-                #         self.versus.set_action("move")
-
-                #     if self.versus.CheckMove(self.player, mouse_pos) and self.versus.action == 'move':
-                #         self.versus.set_action("move_is_authorized")
-
-                #     if self.versus.action == "pos_spell":
-                #         self.versus.createZone(self.player, mouse_pos)
-
-                #     if Versus.is_clicked(self.versus.spell_btn, mouse_pos) and not self.versus.is_progress():
-                #         if self.versus.check_spell(self.player):
-                #             self.versus.set_action("pos_spell")
-                #         else:
-                #             self.logs.add_log("No sort select OR you don't have enough mana")
 
     def events_inventory(self, event):
         """When the shop state is running"""
@@ -570,13 +492,6 @@ class Game(_Elements):
 
     def toggle_states(self, event):
         """Use to toggle the state of all states"""
-        if key_for(self.game_data["shortcuts"]["game"]["menu"]["keys"], event):
-            self.seller = False
-            self.map_viewer_manager.active = False
-            logger.info("Toggle the sub-menu")
-            self.turn_manager.active_character().inventory.display_inventory = False
-            self.turn_manager.active_character().shop.display_shop = False
-            super().toggle_sub_state('menu')
         if key_for(self.game_data["shortcuts"]["game"]
                    ["inventory"]["keys"], event):
             logger.info("Toggle inventory from turn_manager.active_character()")
@@ -585,12 +500,11 @@ class Game(_Elements):
             # self.turn_manager.active_character().shop.display_shop = False
             self.turn_manager.active_character().inventory.display_inventory = True
             super().toggle_sub_state('inventory')
-        # if event.key == pg.K_p:
-        #     logger.info("Toggle the shop")
-        #     self.seller = not self.seller
-        #     self.turn_manager.active_character().shop.display_shop = True
-        #     self.turn_manager.active_character().inventory.display_inventory = True
-        #     super().toggle_sub_state('shop')
+        if key_for(self.game_data["shortcuts"]["game"]["map"]["keys"], event):
+                # il va falloir le déplacer pour le mettre dans les toggle
+            self.seller = False
+            self.map_viewer_manager.active = not self.map_viewer_manager.active
+            super().toggle_sub_state('map')
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -757,16 +671,8 @@ class Game(_Elements):
 
         self.update_sprites()
         self.items.update()
-        for sprite in self.all_sprites:
-            if not isinstance(sprite, MapCheck) and not isinstance(sprite, Circle) and not isinstance(sprite, Trap):
-                self.all_sprites.change_layer(sprite, sprite.rect.bottom)
 
         self.check_hits()
-        self.update_sprites()
-        # if self.turn_manager.is_active_player():
-        if self.turn_manager.get_vision_character():
-            self.camera.update(self.turn_manager.get_vision_character())
-        self.minimap.update()
         self.check_for_chest_open()
         self.check_for_merchant_open()
 
@@ -807,7 +713,7 @@ class Game(_Elements):
         hits = pg.sprite.spritecollide(self.turn_manager.active(), self.traps, False, collide_hit_rect)
         for hit in hits:
             if not hit.to_open:
-                self.turn_manager.active().subHp(10)
+                self.turn_manager.active().subHp(TRAP_DAMAGE)
             hit.to_open = True
 
     def hit_map_checks(self):
@@ -956,28 +862,6 @@ class Game(_Elements):
 
         return data
 
-        return players_list
-
-    def save_enemies(self):
-        enemies_list = list()
-        for character in self.all_sprites:
-            if isinstance(character, Enemy):
-                enemies_list.append(character.save())
-
-        return enemies_list
-
-    def save_items(self):
-        """Save all the placable items on the map
-
-        Returns:
-            object
-        """
-        items_list = list()
-        for item in self.items:
-            items_list.append(item.save())
-
-        return items_list
-
     def draw(self):
         """Draw all"""
         self.draw_map()
@@ -993,31 +877,15 @@ class Game(_Elements):
 
     def draw_map(self):
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
-        # self.all_sprites.draw(self.screen)
-        for animated in self.animated:
-            if isinstance(animated, CampFire):
-                self.screen.blit(animated.image, self.camera.apply(animated))
 
     def draw_all_sprites(self):
         for sprite in self.all_sprites:
-            pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply(sprite), 1)
             if isinstance(sprite, Enemy):
                 sprite.draw_health()
             if not isinstance(sprite, Circle):
                 self.screen.blit(sprite.image, self.camera.apply(sprite))
             if isinstance(sprite, Circle):
                 self.versus_manager.draw_range(self.screen)
-        self.versus_manager.draw(self.screen)
-
-        # for zone in self.zoneEffect:
-        #     zone.rect = self.camera.apply_rect(zone.rect)
-        #     # zone.draw()  ça marche pas de ouf mais c'est pas loin
-
-        for enemy in self.all_sprites:
-            if isinstance(enemy, Enemy):
-                pg.draw.rect(self.screen, (0, 255, 0), self.camera.apply_rect(enemy.hit_rect), 1)
-
-        self.minimap.draw(self.screen)
 
     def draw_debug(self):
         if self.debug:

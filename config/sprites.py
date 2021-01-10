@@ -24,6 +24,9 @@ WAIT_TIME = 800
 
 MALUS_ARC = 2
 
+# trap
+TRAP_DAMAGE = 10
+
 # all items
 ITEMS = {
     f.split('.png')[0]: pg.image.load(path.join(items_folder, f))
