@@ -10,7 +10,7 @@ from config.sprites import ASSETS_SPRITES, ARMOR, ITEMS, WAIT_TIME
 vec = pg.math.Vector2
 
 # npc settings
-MOB_HIT_RECT = pg.Rect(0, 0, TILESIZE-24, TILESIZE-24)
+MOB_HIT_RECT = pg.Rect(0, 0, TILESIZE-32, TILESIZE-32)
 SIZE = 8
 SEEK_FORCE = 0.1
 APPROACH_RADIUS = 50
@@ -248,7 +248,6 @@ class Enemy(Character):
             self.rect.center = self.pos
 
             self.update_collisions()
-
 
     def get_direction(self):
         """get the direction which the sprite is currently facing
@@ -518,12 +517,14 @@ class Enemy(Character):
         self.moving = False
         self.end = True
         # sleep(1.25)
+        self.game.versus_manager.check_characters_actions()
 
     def skip_turn(self):
         self.last_timestamp2 = None
         self.goto = []
         self.moving = False
         self.number_actions = 0
+        self.end = True
         self.game.versus_manager.check_characters_actions()
 
 class Boss(Enemy):
