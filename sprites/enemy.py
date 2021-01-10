@@ -521,12 +521,14 @@ class Enemy(Character):
         self.moving = False
         self.end = True
         # sleep(1.25)
+        self.game.versus_manager.check_characters_actions()
 
     def skip_turn(self):
         self.last_timestamp2 = None
         self.goto = []
         self.moving = False
         self.number_actions = 0
+        self.end = True
         self.game.versus_manager.check_characters_actions()
 
 class Boss(Enemy):
