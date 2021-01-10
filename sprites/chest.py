@@ -73,6 +73,7 @@ class Chest(pg.sprite.Sprite):
                 if slot.item and slot.item.name == "bronze_key_small":
                     self.game.logs.add_log("Open a chest")
                     player.inventory.remove_item(slot.item)
+                    self.game.create_dim()
                     self.game.chest_open = True
                     self.game.opened_chest = self
                     self.is_open = True

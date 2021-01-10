@@ -497,14 +497,23 @@ class Game(_Elements):
             logger.info("Toggle inventory from turn_manager.active_character()")
             self.seller = False
             self.map_viewer_manager.active = False
-            # self.turn_manager.active_character().shop.display_shop = False
-            self.turn_manager.active_character().inventory.display_inventory = True
+            self.turn_manager.active().inventory.display_inventory = True
+            self.create_dim()
             super().toggle_sub_state('inventory')
         if key_for(self.game_data["shortcuts"]["game"]["map"]["keys"], event):
                 # il va falloir le déplacer pour le mettre dans les toggle
             self.seller = False
-            self.map_viewer_manager.active = not self.map_viewer_manager.active
+            self.map_viewer_manager.active = True
+            self.turn_manager.active().inventory.display_inventory = False
+            self.create_dim()
             super().toggle_sub_state('map')
+
+    def create_dim(self):
+        self.draw()
+        self.previous_screen = self.screen.copy()
+        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
+        self.dim_screen.fill((0, 0, 0, 180))
+        self.previous_screen.blit(self.dim_screen, (0, 0))
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -544,15 +553,9 @@ class Game(_Elements):
 
     def inventory_run(self):
         """Run the inventory state"""
-        self.draw()
-        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
-        self.dim_screen.fill((0, 0, 0, 180))
-        self.screen.blit(self.dim_screen, (0, 0))
-        self.turn_manager.active_character().inventory.draw(self.screen)
+        self.screen.blit(self.previous_screen, (0, 0))
 
-    def shop_run(self):
-        """Run the shop state"""
-        self.draw()
+        self.turn_manager.active().inventory.draw(self.screen)
 
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
@@ -561,26 +564,20 @@ class Game(_Elements):
         self.turn_manager.active_character().shop.draw(self.screen)
 
     def chest_run(self):
-        self.draw()
-        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
-        self.dim_screen.fill((0, 0, 0, 180))
-        self.screen.blit(self.dim_screen, (0, 0))
-        self.turn_manager.active_character().inventory.draw(self.screen)
+        self.screen.blit(self.previous_screen, (0, 0))
+
+        self.turn_manager.active().inventory.draw(self.screen)
         self.opened_chest.store.draw(self.screen)
 
     def merchant_run(self):
-        self.draw()
-        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
-        self.dim_screen.fill((0, 0, 0, 180))
-        self.screen.blit(self.dim_screen, (0, 0))
-        self.turn_manager.active_character().inventory.draw(self.screen)
+        self.screen.blit(self.previous_screen, (0, 0))
+
+        self.turn_manager.active().inventory.draw(self.screen)
         self.opened_merchant.shop.draw(self.screen)
 
     def map_run(self):
-        self.draw()
-        self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
-        self.dim_screen.fill((0, 0, 0, 180))
-        self.screen.blit(self.dim_screen, (0, 0))
+        self.screen.blit(self.previous_screen, (0, 0))
+
         self.map_viewer_manager.update()
         self.map_viewer_manager.draw(self.screen)
 
