@@ -4,6 +4,7 @@ from config.buttons import WIDTH_BUTTON
 from config.window import HEIGHT, WIDTH
 import pygame as pg
 from window import _Elements
+from utils.random_map import generate_map
 from config.screens import BACKGROUND_MENU, CHARACTER_CREATION, CHOOSE_MAP, CREDITS, GAME, INTRODUCTION, MENU, NEW_GAME, OPTIONS, LOAD_GAME, TRANSITION_IN, TRANSITION_OUT
 from config.colors import BEIGE,YELLOW_LIGHT,GREEN_DARK
 from config.buttons import WIDTH_BUTTON, HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON
@@ -40,6 +41,7 @@ class ChooseMap(_Elements):
         super(ChooseMap, self).__init__(self.name, self.next, 'menu', '0.png', self.create_buttons_dict())
 
         self.states_dict = self.make_states_dict()
+        self.sizeMap = 10
 
     def startup(self, dt, game_data):
         super().startup(dt, game_data)
@@ -140,6 +142,35 @@ class ChooseMap(_Elements):
         pg.event.wait()
         self.refresh()
     
+
+    def create_button_generated_map(self):
+        bt = self.create_button(
+                self.image_screen,
+                100,
+                200,
+                150,
+                HEIGHT_BUTTON,
+                "generated",
+                self.button_font,
+                self.fontsize,
+                MARGIN_BUTTON,
+                RADIUS_BUTTON,
+                BEIGE,
+                YELLOW_LIGHT,
+                GREEN_DARK,
+                self.generate,
+                [self.sizeMap]
+        )
+        return bt
+
+    def generate(self,size_map):
+        generate_map(size_map,size_map)
+        logger.info("Generation map random")
+        self.refresh()
+
+        
+
+
     def refresh(self):
         """Refresh the list"""
         self.image_screen = self.image.copy()
@@ -148,15 +179,12 @@ class ChooseMap(_Elements):
                 self.random_maps) if f.endswith('.tmx')]
 
         self.maps = self.maps_generated
-               
-
-
 
         self.create_back_button(self.image_screen, self.toggle_sub_state, ['normal'])
 
         self.btns_dict = self.create_maps_buttons_dict()
         self.create_buttons(self.image_screen, offset=70, width=WIDTH_BUTTON + 50)
-        
+        self.create_button_generated_map().draw()
         
         self.delete_btns = list()
         self.create_delete_buttons()
@@ -208,6 +236,7 @@ class ChooseMap(_Elements):
             self.create_buttons(self.image_screen, width=WIDTH_BUTTON + 50)
             self.delete_btns = list()
             self.create_delete_buttons()
+            self.button_generate=self.create_button_generated_map()
         else:
             self.btns_dict = self.create_buttons_dict()
             self.btns = list()
@@ -260,6 +289,8 @@ class ChooseMap(_Elements):
         self.back_btn.draw()
         self.draw_text("Delete", self.text_font, 26, BEIGE, WIDTH // 2 + WIDTH_BUTTON + 25, 230, align="s")
         self.events_delete_btns()
+        self.button_generate.draw()
+        self.button_generate.listen(pg.event.get())
 
         
 

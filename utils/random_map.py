@@ -3,7 +3,7 @@ import os
 from random import randint
 #from config.random import MAP,IMAGE,TILE
 
-os.chdir('./assets/map_random/')
+
 
 def out_xml(out,width,height,data_Ground,data_Wall,data_Object):
 
@@ -229,8 +229,9 @@ def generate_map(height,width,out='../../saved_generated/map_generated.tmx'):
     ligneUP = list(x-x for x in range(width))
     ligneCUR_R = list(x-x for x in range(width))
     ligneCUR_D = list(x-x for x in range(width))
-    
-    os.chdir('./preset')
+
+  
+    os.chdir('./assets/map_random/preset')
 
     dir = './S/'
     listDir = os.listdir(dir)
@@ -327,5 +328,5 @@ def generate_map(height,width,out='../../saved_generated/map_generated.tmx'):
         else:
             fusion_two_map(map1Select,'./GENERATED/ligne'+str(k)+'.tmx',out,'down')
 
-
+    os.chdir('../../../')
 
