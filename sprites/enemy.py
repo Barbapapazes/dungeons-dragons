@@ -212,7 +212,7 @@ class Enemy(Character):
                 self.vel.scale_to_length(self.speed)
             self.get_direction()
             self.update_image()
-            self.pos += self.vel
+            self.pos += self.vel * (self.game.dt * 140)
             self.rect = self.image.get_rect()
             self.rect.center = self.pos
 
