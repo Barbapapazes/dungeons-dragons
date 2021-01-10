@@ -795,7 +795,8 @@ class Game(_Elements):
         self.game_data["game_data"]["chests"] = self.save_list(self.chests)
         self.game_data["game_data"]["doors"] = self.save_list(self.doors)
         self.game_data["game_data"]["merchants"] = self.save_list(self.merchants)
-        self.game_data["game_data"]["turns"] = self.save_turns()
+        #  no more needed because we can only save if the versus is disable
+        # self.game_data["game_data"]["turns"] = self.save_turns()
 
     def save_turns(self):
         """Save the footprint of all characters to save turns
