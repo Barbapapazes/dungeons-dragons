@@ -50,12 +50,11 @@ class Enemy(Character):
         self.last_timestamp = 0
         self.last_timestamp2 = None
         self.now = 0
-        self.cooldown = randint(15, 25)
+        self.cooldown = 1
+        self.spawned = False
+        # self.cooldown = randint(15, 25)
 
         self.attack_range = TILESIZE * 2
-
-        logger.debug("il faut leur mettre une défence par default pour contrer les attaques")
-        logger.error("il y a un souci d'update avec la camera")
 
         self.speed = 2
 
@@ -219,6 +218,8 @@ class Enemy(Character):
 
             self.update_collisions()
         else:
+            if self.spawned:
+                self.number_actions = 0
             self.end_time += self.game.dt
             if self.end_time > (WAIT_TIME / 1000):
                 self.end = False
@@ -408,7 +409,7 @@ class Enemy(Character):
             boolean: True or False
         """
         if self.player_spotted is None:
-            logger.debug(self.game.turn_manager.players)
+
             for player in self.game.turn_manager.players:
                 if (player.pos - self.pos).length() < self.view_range:
                     self.player_spotted = player
@@ -464,10 +465,10 @@ class Enemy(Character):
             if self.cooldown - self.game.turn_manager.turn < 0:
                 spawn = Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE),
                               self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
-                self.game.turn_manager.enemies.append(spawn)
+                self.game.turn_manager.add_character(spawn)
                 self.game.versus_manager.logs.add_log(f"The {self} used magic to invoke a {spawn} !")
-                self.cooldown += 20
-                self.end_turn()
+                self.cooldown += 2
+                self.spawned = True
             elif self.game.versus_manager.check_dice():
                 damage = self.game.versus_manager.calc_damage()
                 self.game.versus_manager.logs.add_log(f'The {self} attacked {self.player_spotted}, dealing {damage}.')

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="50" height="30" tilewidth="64" tileheight="64" infinite="0" nextlayerid="6" nextobjectid="113">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="50" height="30" tilewidth="64" tileheight="64" infinite="0" nextlayerid="6" nextobjectid="117">
  <tileset firstgid="1" name="spritesheet_tiles" tilewidth="64" tileheight="64" spacing="10" tilecount="540" columns="27">
   <image source="../img/spritesheet_tiles.png" width="1988" height="1470"/>
  </tileset>
@@ -145,11 +145,6 @@
   <object id="2" name="player" x="436" y="208" width="32" height="32"/>
   <object id="3" name="player" x="536" y="208" width="32" height="32"/>
   <object id="3" name="chest" x="536" y="208" width="32" height="32"/>
-  <object id="3" name="skeleton" x="784" y="576" width="32" height="32"/>
-  <object id="3" name="skeleton" x="896" y="496" width="32" height="32"/>
-  <object id="3" name="phantom" x="868" y="560" width="32" height="32"/>
-  <object id="3" name="goblin" x="896" y="588" width="32" height="32"/>
-  <object id="3" name="boss" x="640" y="560" width="64" height="64"/>
   <object id="3" name="potion_health_medium" type="consumable" x="400" y="80" width="32" height="32">
    <properties>
     <property name="object_type" value="consumable"/>
@@ -220,7 +215,6 @@
   <object id="93" name="zombie" x="1856" y="752" width="32" height="32"/>
   <object id="94" name="zombie" x="1872" y="576" width="32" height="32"/>
   <object id="99" name="health" x="848" y="912" width="32" height="32"/>
-  <object id="100" name="shotgun" x="976" y="528" width="32" height="32"/>
   <object id="101" name="camp_fire" type="other" x="240" y="128" width="32" height="32">
    <properties>
     <property name="object_type" value="other"/>
@@ -244,5 +238,7 @@
   <object id="110" name="player" x="352" y="192" width="32" height="32"/>
   <object id="111" name="map-levels_maps-level2.tmx" x="144" y="400" width="32" height="32"/>
   <object id="112" name="camp_fire" x="144" y="656" width="32" height="32"/>
+  <object id="115" name="phantom" x="656" y="208" width="32" height="32"/>
+  <object id="116" name="phantom" x="656" y="96" width="32" height="32"/>
  </objectgroup>
 </map>

@@ -125,9 +125,12 @@ class Game(_Elements):
                     )
                 if tile_object.name == "phantom":
                     self.turn_manager.enemies.append(
+                        # Enemy(
+                        #     self, obj_center.x, obj_center.y, "phantom",
+                        #     choice(["phantom_F", "phantom_R", "phantom_W"])))
                         Enemy(
                             self, obj_center.x, obj_center.y, "phantom",
-                            choice(["phantom_F", "phantom_R", "phantom_W"])))
+                            choice(["phantom_W"])))
                 if tile_object.name == "boss":
                     self.turn_manager.enemies.append(
                         Boss(self, obj_center.x, obj_center.y, "boss", "boss")

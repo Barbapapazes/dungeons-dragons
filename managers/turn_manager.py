@@ -73,8 +73,6 @@ class TurnManager:
         """Sort the characters"""
         self.sorted = self.players + self.enemies
 
-        logger.debug("il faut charger la configuration")
-
         # used to sort characters using the dexterity
         self.sorted.sort(key=get_dice)
 
@@ -95,6 +93,18 @@ class TurnManager:
 
         self.players = players
 
+    def add_character(self, sprite):
+        """Add a sprite during the game
+
+        Args:
+            sprite (Player | Enemy)
+        """
+
+        if isinstance(sprite, Enemy):
+            self.enemies.append(sprite)
+        self.sorted.append(sprite)
+        self.add_turn()
+
     def get_relative_turn(self):
         """Get the relative turn
 
@@ -102,7 +112,6 @@ class TurnManager:
             int
         """
         len_characters = len(self.get_characters())
-        # logger.debug("si il n'y a plus de players, c'est game over")
         turn_to_number = self.turn % len_characters
         return turn_to_number
 

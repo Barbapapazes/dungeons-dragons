@@ -287,11 +287,11 @@ class VersusManager:
 
     def check_characters_actions(self):
         """Check the action of the active character"""
-        self.turn_manager.active_character().number_actions -= 1
+        self.turn_manager.active().number_actions -= 1
         self.logs.add_log(
-            f"Action remaining to {self.turn_manager.active_character()} : {self.turn_manager.active_character().number_actions}")
+            f"Action remaining to {self.turn_manager.active()} : {self.turn_manager.active().number_actions}")
         self.set_move_player(False)
-        if self.turn_manager.active_character().number_actions == 0:
+        if self.turn_manager.active().number_actions <= 0:
             self.add_turn()
 
     def select_enemy(self, pos):
@@ -442,7 +442,6 @@ class VersusManager:
         self.turn_manager.add_turn()
         if self.turn_manager.is_active_player():
             self.turn_manager.add_vision()
-        # add actions to the next character
         self.set_move_player(False)
         self.add_actions()
         self.check_effects_zones_hits()
