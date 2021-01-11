@@ -243,7 +243,5 @@
   <object id="110" name="player" x="352" y="192" width="32" height="32"/>
   <object id="111" name="map-levels_maps-level2.tmx" x="144" y="400" width="32" height="32"/>
   <object id="112" name="camp_fire" x="144" y="656" width="32" height="32"/>
-  <object id="115" name="phantom" x="656" y="208" width="32" height="32"/>
-  <object id="116" name="phantom" x="656" y="96" width="32" height="32"/>
  </objectgroup>
 </map>

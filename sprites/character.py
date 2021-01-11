@@ -90,9 +90,11 @@ class Character(pg.sprite.Sprite):
     def update_collisions(self):
         """Manage the collisions"""
         self.hit_rect.centerx = self.pos.x
-        collide_with_walls(self, self.game.walls, 'x')
+        if collide_with_walls(self, self.game.walls, 'x'):
+            self.vel.x = -self.vel.x/2
         self.hit_rect.centery = self.pos.y
-        collide_with_walls(self, self.game.walls, 'y')
+        if collide_with_walls(self, self.game.walls, 'y'):
+            self.vel.y = -self.vel.y/2
         self.rect.center = self.hit_rect.center
 
     def __str__(self):

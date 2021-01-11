@@ -5,7 +5,7 @@ from inventory.inventory import Armor
 from config.colors import GREEN, YELLOW, RED
 from config.window import TILESIZE
 from utils.cell import Cell
-from random import choices, choice, uniform, randint
+from random import choices, random, uniform, randint
 from config.sprites import ASSETS_SPRITES, ARMOR, ITEMS, WAIT_TIME
 vec = pg.math.Vector2
 
@@ -18,10 +18,10 @@ WANDER_RING_DISTANCE = 500
 WANDER_RING_RADIUS = 150
 CLASSES = ["fighter", "rogue", "wizard", "boss"]
 TYPE = {
-    "skeleton": {"health": 80, "STR": 35, "DEX": 20, "CON": 30, "INT": 50, "WIS": 30, "CHA": 30},
-    "goblin":   {"health": 70, "STR": 45, "DEX": 50, "CON": 35, "INT": 20, "WIS": 15, "CHA": 10},
-    "phantom":   {"health": 100, "STR": 30, "DEX": 35, "CON": 30, "INT": 40, "WIS": 30, "CHA": 10},
-    "boss": {"health": 250, "STR": 70, "DEX": 25, "CON": 55, "INT": 20, "WIS": 10, "CHA": 40}
+    "skeleton": {"health": 50, "STR": 35, "DEX": 20, "CON": 20, "INT": 50, "WIS": 30, "CHA": 30},
+    "goblin":   {"health": 60, "STR": 45, "DEX": 50, "CON": 25, "INT": 20, "WIS": 15, "CHA": 10},
+    "phantom":   {"health": 70, "STR": 30, "DEX": 35, "CON": 30, "INT": 40, "WIS": 30, "CHA": 10},
+    "boss": {"health": 250, "STR": 70, "DEX": 25, "CON": 50, "INT": 20, "WIS": 10, "CHA": 40}
 }
 
 
@@ -51,11 +51,11 @@ class Enemy(Character):
         self.now = 0
         self.cooldown = 1
         self.spawned = False
-        # self.cooldown = randint(15, 25)
+        self.cooldown = randint(15, 25)
 
         self.attack_range = TILESIZE * 2
 
-        self.speed = 2
+        self.speed = 1.5
 
         self.target = self.pos
         self.player_spotted = None
@@ -176,12 +176,11 @@ class Enemy(Character):
             if self.game.versus_manager.active:
                 """ If a player is in sight, evaluate whether he is worth attacking or not
                 """
-                if self.player_detection():
-                    logger.debug(self.player_spotted)
-                    # logger.debug(self.player_spotted.pos)
+                if self.now - self.last_timestamp2 > 3000:
+                    self.end_turn()
+                elif self.player_detection():
                     if self.evaluation():
                         self.flee(self.player_spotted.pos)
-                        # need to skip turn after some time
                     else:
                         """ if player out of reach, "pathfind" him
                         """
@@ -195,7 +194,6 @@ class Enemy(Character):
                                 self.goto = self.path_finding(self.player_spotted.pos)
                                 if self.goto:
                                     del self.goto[0]
-                            # logger.debug(self.goto)
                             if self.goto:
                                 for i in self.goto:
                                     rect = pg.Rect(i.coor, (SIZE, SIZE))
@@ -210,14 +208,8 @@ class Enemy(Character):
                                 self.end_turn()
                         else:
                             self.attack()
-                    """if there is no player in range, just move around
-                    """
                 else:
-                    temp = self.avoidnpc()
-                    if temp is False:
-                        self.acc = self.wander()
-                    else:
-                        self.acc = temp
+                    self.skip_turn()
 
             elif self.player_detection():
                 if self.evaluation():
@@ -235,7 +227,13 @@ class Enemy(Character):
                 """if there is no player in range, just move around
                 """
             else:
-                self.skip_turn()
+                if self.vel == vec(0,0):
+                    self.vel = vec(-random(), -random())
+                temp = self.avoidnpc()
+                if temp is False:
+                    self.acc = self.wander()
+                else:
+                    self.acc = temp
 
             """actual movement update
             """
@@ -289,9 +287,6 @@ class Enemy(Character):
         Returns:
             vec(x,y): acceleration vector that self should use to reach the target
         """
-        # now = pg.time.get_ticks()
-        # if now - self.last_timestamp > randint(1000,5000):
-        #     self.last_timestamp = now
         circle_pos = self.pos + self.vel.normalize() * WANDER_RING_DISTANCE
         target = circle_pos + vec(WANDER_RING_RADIUS, 0).rotate(uniform(0, 360))
         return self.seek(target)
@@ -305,6 +300,9 @@ class Enemy(Character):
         Returns:
             vec(x,y): acceleration vector that self should use to reach the target
         """
+        logger.info(f'{self} flees {target}')
+        if self.vel == vec(0,0):
+            self.vel = vec(-random(), -random())
         steer = vec(0, 0)
         distance = self.pos - target
         if distance.length() < FLEE_DISTANCE:
@@ -334,7 +332,7 @@ class Enemy(Character):
 
         """boucle de recherche de chemin
         """
-        while open_set or i < 50:
+        while open_set and i < 50:
             i += 1
             """pitié faites que personne ne voit ça, ça sélectionne la case la plus proche de l'arrivée
             """
@@ -360,6 +358,15 @@ class Enemy(Character):
                 for wall in self.game.walls.sprites():
                     skip = False
                     if wall.rect.collidepoint(neigh.coor):
+                        skip = True
+                        break
+                if skip:
+                    continue
+                """skip murs
+                """
+                for trap in self.game.traps.sprites():
+                    skip = False
+                    if trap.rect.collidepoint(neigh.coor):
                         skip = True
                         break
                 if skip:
@@ -461,6 +468,7 @@ class Enemy(Character):
         if collision is not []:
             for sprite in collision:
                 if sprite != self:
+                    logger.info(f'{self} avoids {sprite} at positions {self.pos} and {sprite.pos}')
                     return Enemy.flee(self, sprite.pos)
         return False
 
@@ -499,7 +507,7 @@ class Enemy(Character):
                             self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
             self.game.turn_manager.add_character(spawn)
             self.game.versus_manager.logs.add_log(f"The {self} used magic to invoke a {spawn} !")
-            self.cooldown += 2
+            self.cooldown += 20
             self.spawned = True
         else:
             self.game.versus_manager.selected_enemy = self.player_spotted

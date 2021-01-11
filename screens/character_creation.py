@@ -200,22 +200,22 @@ class CharacterCreation(_Elements):
                 "description": "Chevaliers menant une quête, seigneurs conquérants, champions royaux, fantassins d'élite, mercenaires endurcis et rois-bandits,\ntous partagent une maîtrise inégalée des armes et des armures ainsi qu'une connaissance approfondie des compétences de combat.\nTous connaissent bien la mort, l'infligeant autant qu'ils lui font face.",
                 "characteristics": {
                     "str": {
-                        "base": 3,
+                        "base": 30,
                         "max": 100},
                     "dex": {
-                        "base": 0,
+                        "base": 20,
                         "max": 100},
                     "con": {
-                        "base": 2,
+                        "base": 40,
                         "max": 100},
                     "int": {
-                        "base": 2,
+                        "base": 15,
                         "max": 100},
                     "wis": {
-                        "base": 2,
+                        "base": 15,
                         "max": 100},
                     "cha": {
-                        "base": 2,
+                        "base": 10,
                         "max": 100}}},
             "wizard": {
                 "name": "wizard",
@@ -225,22 +225,22 @@ class CharacterCreation(_Elements):
                 "description": "",
                 "characteristics": {
                     "str": {
-                        "base": 0,
+                        "base": 10,
                         "max": 100},
                     "dex": {
-                        "base": 2,
+                        "base": 20,
                         "max": 100},
                     "con": {
-                        "base": 2,
+                        "base": 15,
                         "max": 100},
                     "int": {
-                        "base": 2,
+                        "base": 35,
                         "max": 100},
                     "wis": {
-                        "base": 2,
+                        "base": 30,
                         "max": 100},
                     "cha": {
-                        "base": 2,
+                        "base": 20,
                         "max": 100}}},
             "thief": {
                 "name": "thief",
@@ -250,22 +250,22 @@ class CharacterCreation(_Elements):
                 "description": "",
                 "characteristics": {
                     "str": {
-                        "base": 0,
+                        "base": 25,
                         "max": 100},
                     "dex": {
-                        "base": 2,
+                        "base": 30,
                         "max": 100},
                     "con": {
-                        "base": 2,
+                        "base": 15,
                         "max": 100},
                     "int": {
-                        "base": 2,
+                        "base": 20,
                         "max": 100},
                     "wis": {
-                        "base": 2,
+                        "base": 15,
                         "max": 100},
                     "cha": {
-                        "base": 2,
+                        "base": 25,
                         "max": 100}}}}
 
     def sum_points(self):
