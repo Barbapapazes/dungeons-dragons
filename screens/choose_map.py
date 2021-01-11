@@ -4,10 +4,12 @@ from config.buttons import WIDTH_BUTTON
 from config.window import HEIGHT, WIDTH
 import pygame as pg
 from window import _Elements
+from components.cursor import Cursor
 from utils.random_map import generate_map
 from config.screens import BACKGROUND_MENU, CHARACTER_CREATION, CHOOSE_MAP, CREDITS, GAME, INTRODUCTION, MENU, NEW_GAME, OPTIONS, LOAD_GAME, TRANSITION_IN, TRANSITION_OUT
 from config.colors import BEIGE,YELLOW_LIGHT,GREEN_DARK
-from config.buttons import WIDTH_BUTTON, HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON
+from config.buttons import WIDTH_BUTTON, HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, HEIGHT_SLIDER,WIDTH_SLIDER
+from pygame_widgets import TextBox
 import os
 from os import path
 from logger import logger
@@ -41,7 +43,8 @@ class ChooseMap(_Elements):
         super(ChooseMap, self).__init__(self.name, self.next, 'menu', '0.png', self.create_buttons_dict())
 
         self.states_dict = self.make_states_dict()
-        self.sizeMap = 10
+        self.sizeMapWidth = 6
+        self.sizeMapHeight = 6
 
     def startup(self, dt, game_data):
         super().startup(dt, game_data)
@@ -147,7 +150,7 @@ class ChooseMap(_Elements):
         bt = self.create_button(
                 self.image_screen,
                 100,
-                200,
+                500,
                 150,
                 HEIGHT_BUTTON,
                 "generated",
@@ -159,17 +162,63 @@ class ChooseMap(_Elements):
                 YELLOW_LIGHT,
                 GREEN_DARK,
                 self.generate,
-                [self.sizeMap]
+                []
+                
         )
         return bt
 
-    def generate(self,size_map):
-        generate_map(size_map,size_map)
+    def generate(self):
+        if self.nameMap.getText() == '':
+            generate_map(self.sizeMapHeight,self.sizeMapWidth)
+        else:
+            pathFile='../../saved_generated/'+self.nameMap.getText()+'.tmx'
+            generate_map(self.sizeMapHeight,self.sizeMapWidth,pathFile)
+
         logger.info("Generation map random")
         self.refresh()
 
-        
+    def create_sliders(self,x,y,name):
+       return Cursor(            
+            name,
+            name,
+            x,
+            y,
+            WIDTH_SLIDER,
+            HEIGHT_SLIDER,
+            self.image_screen,
+            9,
+            30,
+            1,
+            9,
+            self.text_font,
+            self.draw_text, GREEN_DARK, YELLOW_LIGHT)
 
+
+    def createSliderForSizeMap(self):
+        return [
+            self.create_sliders(100,200,"height"),
+            self.create_sliders(100,300,"width")
+        ]
+
+    def createNameBox(self):
+        self.nameMap= TextBox(
+            self.image_screen,
+            70,
+            400,
+            WIDTH_BUTTON,
+            HEIGHT_BUTTON,
+            fontsize=50,
+            color=GREEN_DARK, 
+            textColour=GREEN_DARK, 
+            onSubmit=self.getNameMap, 
+            radius=10, 
+            borderThickness=4
+
+        )
+
+    def getNameMap(self):
+        logger.info("Name map : "+self.nameMap.getText()+".tmx")
+        return self.nameMap.getText()
 
     def refresh(self):
         """Refresh the list"""
@@ -188,6 +237,10 @@ class ChooseMap(_Elements):
         
         self.delete_btns = list()
         self.create_delete_buttons()
+
+        self.sliders = self.createSliderForSizeMap()
+        self.DrawSlider()
+        self.createNameBox()
 
         logger.info("Refresh the info")
 
@@ -237,6 +290,11 @@ class ChooseMap(_Elements):
             self.delete_btns = list()
             self.create_delete_buttons()
             self.button_generate=self.create_button_generated_map()
+            self.sliders = self.createSliderForSizeMap()
+            self.createNameBox()
+            logger.debug("C'est dur d'écrire, il y a trop d'event en même temps ")
+            
+            
         else:
             self.btns_dict = self.create_buttons_dict()
             self.btns = list()
@@ -281,22 +339,47 @@ class ChooseMap(_Elements):
         self.back_btn.draw()
 
     def random_maps_run(self):
-        for btn in self.delete_btns:
-            btn.draw()
         self.screen.blit(self.image_screen, (0, 0))
         super().events_buttons(back=True)
         super().draw_title("Random Maps")
+        self.all_events_random_mode()
+        self.draw_random_mode()
+        
+        
+        
+    
+    def all_events_random_mode(self):
+        events = pg.event.get()
+        self.nameMap.listen(events)
+        self.button_generate.listen(events)
+        self.events_delete_btns(events)
+        self.events_sliders(events)
+
+    def draw_random_mode(self):
+        self.DrawSlider()
+        self.nameMap.draw()
         self.back_btn.draw()
         self.draw_text("Delete", self.text_font, 26, BEIGE, WIDTH // 2 + WIDTH_BUTTON + 25, 230, align="s")
-        self.events_delete_btns()
         self.button_generate.draw()
-        self.button_generate.listen(pg.event.get())
+        for btn in self.delete_btns:
+            btn.draw()
 
-        
+    def DrawSlider(self):
+        for slider in self.sliders:
+            slider.draw()
+            if slider.name == "width":
+                self.sizeMapWidth =slider.getValue()
+            elif slider.name == "height":
+                self.sizeMapHeight =slider.getValue()
 
-    def events_delete_btns(self):
+
+    def events_sliders(self,events):
+        """Events for sliders"""
+        for slider in self.sliders:
+            slider.listen(events)
+
+    def events_delete_btns(self,events):
         """Listen for delete btns"""
-        events = pg.event.get()
         for btn in self.delete_btns:
             btn.listen(events)
 
