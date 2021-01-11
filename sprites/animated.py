@@ -177,7 +177,7 @@ class Circle(Animated):
         if self.width != width:
             self.width = width
             tmp_frames = list()
-            for frame in self.frames:
+            for frame in ASSETS_CIRCLE:
                 frame = pg.transform.scale(frame, (width, width))
                 frame.set_colorkey((50, 50, 50))
                 tmp_frames.append(frame)

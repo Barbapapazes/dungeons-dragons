@@ -150,11 +150,6 @@ class Enemy(Character):
             pg.draw.rect(self.image, col, self.health_bar)
 
     def update(self):
-        # if self.health <= 0:
-        #     self.throw_inventory()
-        #     self.kill()
-        #     self.game.turn_manager.enemies.remove(self)
-
         # if trap nearby: flee(trap)
         if self.end and not self.game.versus_manager.active:
             if self.spawned:
@@ -242,7 +237,7 @@ class Enemy(Character):
                 self.vel.scale_to_length(self.speed)
             self.get_direction()
             self.update_image()
-            self.pos += self.vel
+            self.pos += self.vel * (self.game.dt * 140)
             self.rect = self.image.get_rect()
             self.rect.center = self.pos
 

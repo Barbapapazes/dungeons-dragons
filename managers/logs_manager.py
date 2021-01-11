@@ -33,7 +33,7 @@ class LogsManager:
     def create_screen(self):
         """Create the log screen"""
         self.screen_logs = pg.Surface((self.width, self.height)).convert_alpha()
-        self.screen_logs.fill((0, 0, 0, 180))
+        self.screen_logs.fill(pg.Color(0, 0, 0, 220))
 
     def event(self, event):
         """Event
