@@ -339,6 +339,7 @@ class Game(_Elements):
             'map': self.map_run,
             'finish': self.finish_run,
             'game_over': self.game_over_run,
+            'menu': self.menu_run,
         }
 
         return previous_dict | add_dict
@@ -346,7 +347,13 @@ class Game(_Elements):
     def get_events(self, event):
         self.press_space = False
         if event.type == pg.KEYDOWN:
-            if key_for(self.game_data["shortcuts"]["game"]["return"]["keys"], event):
+            if self.state == "normal":
+                if event.key == pg.K_ESCAPE:
+                    self.create_dim()
+                    self.btns_dict = self.create_buttons_dict("menu")
+                    self.create_buttons(self.screen, start_y_offset=8 * HEIGHT / 10)
+                    self.toggle_sub_state('menu')
+            elif key_for(self.game_data["shortcuts"]["game"]["return"]["keys"], event):
                 super().toggle_sub_state(self.state)
 
         if event.type == pg.KEYUP:
@@ -528,6 +535,13 @@ class Game(_Elements):
         self.update()
         self.draw()
 
+    def menu_run(self):
+        """Run the inventory state"""
+        self.screen.blit(self.previous_screen, (0, 0))
+        super().events_buttons()
+        self.draw_text("Quit the game ?", self.title_font, 128, BEIGE, WIDTH // 2, HEIGHT // 2, align="center")
+        super().draw_buttons()
+
     def inventory_run(self):
         """Run the inventory state"""
         self.screen.blit(self.previous_screen, (0, 0))
@@ -602,6 +616,14 @@ class Game(_Elements):
                 }
             }
         elif state == "game over":
+            return {
+                "menu": {
+                    "text": "Menu",
+                    "on_click": self.load_next_state,
+                    "on_click_params": [MENU]
+                }
+            }
+        elif state == "menu":
             return {
                 "menu": {
                     "text": "Menu",
