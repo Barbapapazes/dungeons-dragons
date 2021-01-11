@@ -87,6 +87,13 @@ class Enemy(Character):
         }
         self.difficulty_tweeking()
 
+    def throw_inventory(self):
+        """drop every item stored inside the enemy's inventory
+        """
+        for slot in self.inventory.slots:
+            if slot.item:
+                self.inventory.throw_item(slot.item)
+
     def __str__(self):
         """default displayed text whenever printing the enemy
         """
@@ -101,13 +108,16 @@ class Enemy(Character):
         self.characteristics['int'] += 2 * self.game.difficulty
         self.characteristics['wis'] += 1 * self.game.difficulty
         self.characteristics['cha'] += 2 * self.game.difficulty
-        for bodypart in choices(['head', 'chest', 'legs', 'feet'], weights=[15,5+self.game.difficulty*5,5,10], k=self.game.difficulty):
+        for bodypart in choices(
+            ['head', 'chest', 'legs', 'feet'],
+            weights=[15, 5 + self.game.difficulty * 5, 5, 10],
+                k=self.game.difficulty):
             armor_list = []
             for part in ARMOR.items():
                 # logger.info(part)
                 if part[1]['slot'] == bodypart:
-        #             armor_list.append(part)
-        #     self.equip_armor(Armor(choice(armor_list), ) 
+                    #             armor_list.append(part)
+                    #     self.equip_armor(Armor(choice(armor_list), )
                     armor_list.append(part)
             for key, value in armor_list:
                 self.equip_armor(Armor(
@@ -118,7 +128,6 @@ class Enemy(Character):
                     value['weight'],
                     value['shield'],
                     value['slot']))
-
 
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -151,7 +160,7 @@ class Enemy(Character):
 
     def update(self):
         # if trap nearby: flee(trap)
-        if self.end and not self.game.versus_manager.active:
+        if self.end:
             if self.spawned:
                 self.number_actions = 0
             self.end_time += self.game.dt
@@ -181,7 +190,8 @@ class Enemy(Character):
                         """
                         self.game.turn_manager.selected_enemy = self.player_spotted
                         if self.move_or_attack():
-                            if self.now - self.last_timestamp2 > 1500 and self.vel == vec(0, 0):  # skip if stuck on a wall
+                            if self.now - self.last_timestamp2 > 1500 and self.vel == vec(
+                                    0, 0):  # skip if stuck on a wall
                                 self.player_spotted = None
                                 self.moving = False
                                 self.end_turn()
@@ -190,16 +200,17 @@ class Enemy(Character):
                                 if self.goto:
                                     del self.goto[0]
                             if self.goto:
-                                for i in self.goto:
-                                    rect = pg.Rect(i.coor, (SIZE, SIZE))
-                                    pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
+                                if self.game.debug:
+                                    for i in self.goto:
+                                        rect = pg.Rect(i.coor, (SIZE, SIZE))
+                                        pg.draw.rect(self.game.screen, (255, 255, 255), rect)
                                 self.acc = self.seek(self.goto[0].coor)
                                 if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
                                     del self.goto[0]
                             else:
                                 self.vel = vec(0, 0)
                                 self.moving = False
-                                self.game.versus_manager.logs.add_log(f'The {self} moved.')
+                                self.game.logs.add_log(f'The {self} moved.')
                                 self.end_turn()
                         else:
                             self.attack()
@@ -213,16 +224,17 @@ class Enemy(Character):
                     if not self.goto:
                         self.goto = self.path_finding(self.player_spotted.pos)
                         if self.goto:
-                            for i in self.goto:
-                                rect = pg.Rect(i.coor, (SIZE, SIZE))
-                                pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
+                            if self.game.debug:
+                                for i in self.goto:
+                                    rect = pg.Rect(i.coor, (SIZE, SIZE))
+                                    pg.draw.rect(self.game.screen, (255, 255, 255), rect)
                             self.acc = self.seek(self.goto[0].coor)
                             if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
                                 del self.goto[0]
                 """if there is no player in range, just move around
                 """
             else:
-                if self.vel == vec(0,0):
+                if self.vel == vec(0, 0):
                     self.vel = vec(-random(), -random())
                 temp = self.avoidnpc()
                 if temp is False:
@@ -237,7 +249,7 @@ class Enemy(Character):
                 self.vel.scale_to_length(self.speed)
             self.get_direction()
             self.update_image()
-            self.pos += self.vel * (self.game.dt * 140)
+            self.pos += self.vel * (self.game.dt * 100)
             self.rect = self.image.get_rect()
             self.rect.center = self.pos
 
@@ -296,7 +308,7 @@ class Enemy(Character):
             vec(x,y): acceleration vector that self should use to reach the target
         """
         logger.info(f'{self} flees {target}')
-        if self.vel == vec(0,0):
+        if self.vel == vec(0, 0):
             self.vel = vec(-random(), -random())
         steer = vec(0, 0)
         distance = self.pos - target
@@ -384,7 +396,7 @@ class Enemy(Character):
                         break
                 if skip:
                     continue
-                
+
                 """skip personnages
                 """
                 for enemy in enemies:
@@ -499,7 +511,7 @@ class Enemy(Character):
         """
         if self.classe == "wizard" and self.cooldown - self.game.turn_manager.turn < 0:
             spawn = Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE),
-                            self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
+                          self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
             self.game.turn_manager.add_character(spawn)
             self.game.versus_manager.logs.add_log(f"The {self} used magic to invoke a {spawn} !")
             self.cooldown += 20
@@ -519,16 +531,11 @@ class Enemy(Character):
         self.goto = []
         self.moving = False
         self.end = True
-        # sleep(1.25)
-        self.game.versus_manager.check_characters_actions()
 
     def skip_turn(self):
-        self.last_timestamp2 = None
-        self.goto = []
-        self.moving = False
+        self.end_turn()
         self.number_actions = 0
-        self.end = True
-        self.game.versus_manager.check_characters_actions()
+
 
 class Boss(Enemy):
     def __init__(self, game, x, y, _type, images):

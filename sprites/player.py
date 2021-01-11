@@ -221,10 +221,11 @@ class Player(Character):
 
     def level_up(self):
         if self.xp > 100:
-            self.xp = self.xp%100
+            self.xp = self.xp % 100
             for i in self.characteristics:
                 self.characteristics[i] += 5
-            self.game.versus_manager.logs.add_log(f"{self} leveled up !")
+            self.game.logs.add_log(f"{self} leveled up !")
+
 
 class Arrow(pg.sprite.Sprite):
     """Create an arrow"""

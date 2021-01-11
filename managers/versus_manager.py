@@ -41,7 +41,7 @@ class VersusManager:
         start = False
         for enemy in self.turn_manager.enemies:
             for player in self.turn_manager.players:
-                if self.is_distance(enemy.pos, player.pos, 300):
+                if self.is_distance(enemy.pos, player.pos, 500):
                     start = True
 
         if not start:
@@ -50,7 +50,7 @@ class VersusManager:
             # used to be sure that every hero is at the right distance
             for player in self.turn_manager.players:
                 for enemy in self.turn_manager.enemies:
-                    if self.is_distance(player.pos, enemy.pos, 500):
+                    if self.is_distance(player.pos, enemy.pos, 700):
                         warn_list.append(True)
                         warning = True
                         break
@@ -271,14 +271,15 @@ class VersusManager:
         """
         damage = self.turn_manager.get_active_weapon_damage()
         if self.turn_manager.get_active_weapon_type() == "arc":
-            dist = self.selected_enemy.pos - self.turn_manager.active_character().pos
+            dist = self.selected_enemy.pos - self.turn_manager.active().pos
             logger.debug("[sofiane] il faut ajuster la valuer de MALUS_ARC")
             scope = self.turn_manager.get_active_weapon().scope
             if dist.length_squared() > scope:
                 malus = -((dist.length_squared() - scope) // TILESIZE) * MALUS_ARC
                 damage -= malus
         protection = self.selected_enemy.get_protection()
-        self.logs.add_log(f'The {self.turn_manager.active_character()} attacked {self.selected_enemy}, dealing {max(0, damage - protection)} ({damage} - {protection}).')
+        self.logs.add_log(
+            f'The {self.turn_manager.active()} attacked {self.selected_enemy}, dealing {max(0, damage - protection)} ({damage} - {protection}).')
         return max(0, damage - protection)
 
     def check_dice(self):
@@ -293,12 +294,13 @@ class VersusManager:
 
     def check_characters_actions(self):
         """Check the action of the active character"""
-        self.turn_manager.active_character().number_actions -= 1
+        self.turn_manager.active().number_actions -= 1
         self.set_move_player(False)
-        if self.turn_manager.active_character().number_actions <= 0:
+        if self.turn_manager.active().number_actions <= 0:
             self.add_turn()
         else:
-            self.logs.add_log(f"Action remaining to {self.turn_manager.active_character()} : {self.turn_manager.active_character().number_actions}")
+            self.logs.add_log(
+                f"Action remaining to {self.turn_manager.active()} : {self.turn_manager.active().number_actions}")
 
     def select_enemy(self, pos):
         """Select an enemy
@@ -315,7 +317,6 @@ class VersusManager:
                         _y = pos[1] - self.game.camera.camera.y
                         if enemy.rect.collidepoint(_x, _y):
                             self.selected_enemy = enemy
-                            # self.logs.add_log("Enemy selected")
                             break
                 else:
                     self.logs.add_log("Select an enemy in the range")
@@ -327,7 +328,6 @@ class VersusManager:
                     _y = pos[1] - self.game.camera.camera.y
                     if enemy.rect.collidepoint(_x, _y):
                         self.selected_enemy = enemy
-                        # self.logs.add_log("Enemy selected")
                         break
 
     def update(self):

@@ -142,8 +142,8 @@ class TurnManager:
         scope = None
         if self.is_active_player():
             scope = SCOPE_HAND
-            if self.active_character().weapon:
-                scope = self.active_character().weapon.scope
+            if self.active().weapon:
+                scope = self.active().weapon.scope
         return scope
 
     def get_active_weapon(self):
@@ -152,7 +152,7 @@ class TurnManager:
         Returns:
             Weapon
         """
-        return self.active_character().weapon
+        return self.active().weapon
 
     def get_active_spell(self):
         """Get the active spell
@@ -160,7 +160,7 @@ class TurnManager:
         Returns:
             Spell
         """
-        return self.active_character().spell
+        return self.active().spell
 
     def get_active_weapon_damage(self):
         """Get the damage of the active weapon
@@ -170,7 +170,7 @@ class TurnManager:
         """
         damage = 5
         if self.get_active_weapon() is None:
-            damage += self.active_character().characteristics['str']//5
+            damage += self.active().characteristics['str'] // 5
         else:
             damage += self.get_active_weapon().attack()
         return damage
@@ -194,14 +194,15 @@ class TurnManager:
         """
         enemy.subHp(damage)
         if enemy.health == 0:
-            if not hasattr(self.active_character(), 'goto'):
-                self.active_character().xp += enemy.xp
-                self.active_character().level_up()
-                self.active_character().game.logs.add_log(f"{self.active_character()} killed {enemy} and gained {enemy.xp} exp !")
+            if not hasattr(self.active(), 'goto'):
+                self.active().xp += enemy.xp
+                self.active().level_up()
+                self.game.logs.add_log(
+                    f"{self.active()} killed {enemy} and gained {enemy.xp} exp !")
             else:
-                self.active_character().game.logs.add_log(f"{enemy} was murdered by {self.active_character()}...")
+                self.game.logs.add_log(f"{enemy} was murdered by {self.active()}...")
         else:
-            self.active_character().game.logs.add_log(f"Remove {damage}, remaining {enemy.health}")
+            self.game.logs.add_log(f"Remove {damage}, remaining {enemy.health}")
 
     def is_active_player(self):
         """Check if the active character is a player
