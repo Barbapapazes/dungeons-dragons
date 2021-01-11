@@ -203,12 +203,10 @@ class VersusManager:
                 damage = self.calc_damage()
                 self.turn_manager.remove_health(damage, self.selected_enemy)
                 if self.selected_enemy.health <= 0:
-                    self.turn_manager.enemies.remove(self.selected_enemy)
-                    self.turn_manager.sorted.remove(self.selected_enemy)
-                    self.selected_enemy.kill()
+                    self.kill_enemy()
             else:
-                self.selected_enemy = None
                 self.logs.add_log("Missed dice roll")
+            self.selected_enemy = None
             self.check_characters_actions()
         if self.action == 'move':
             self.logs.add_log("Hero moved")
@@ -227,6 +225,14 @@ class VersusManager:
                 turn_manager.get_active_spell().number_dice, self.turn_manager.get_active_spell().dice_value)
             self.remove_action()
             self.check_characters_actions()
+
+    def kill_enemy(self):
+        """Kill an enemy"""
+        self.turn_manager.enemies.remove(self.selected_enemy)
+        self.turn_manager.sorted.remove(self.selected_enemy)
+        self.selected_enemy.throw_inventory()
+        self.selected_enemy.kill()
+        self.turn_manager.add_turn()
 
     def action_attack(self):
         """Used to start a action to attack"""

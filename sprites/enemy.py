@@ -125,11 +125,6 @@ class Enemy(Character):
                 self.inventory.throw_item(slot.item)
 
     def update(self):
-        if self.health <= 0:
-            self.throw_inventory()
-            self.kill()
-            self.game.turn_manager.enemies.remove(self)
-
         # if trap nearby: flee(trap)
         if not self.end:
             """ reset player spotted every 10 seconds
