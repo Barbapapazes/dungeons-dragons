@@ -134,6 +134,7 @@ class Character(pg.sprite.Sprite):
         self.health -= hp_lose
         if self.health < 0:
             self.health = 0
+            self.kill()
         else:
             self.game.logs.add_log(f'{self} has {self.health} remaining, (-{hp_lose})')
 
@@ -192,11 +193,14 @@ class Character(pg.sprite.Sprite):
         Returns:
             int: number of entities that can see one another
         """
+        # for i in grouplist:
+        #     logger.info(i)
+        # logger.info(count)
         for someone in grouplist:
             if someone == self:
                 grouplist.remove(someone)
                 count += 1
-            if (someone.pos - self.pos).length_squared() <= self.view_range:
+            if (someone.pos - self.pos).length() <= self.view_range:
                 if hasattr(someone, "goto"):
                     someone.player_spotted = self.player_spotted
                 return Character.groupCount(someone, grouplist, count)
