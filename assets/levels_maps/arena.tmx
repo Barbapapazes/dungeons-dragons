@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="188" height="189" tilewidth="16" tileheight="16" infinite="0" nextlayerid="19" nextobjectid="753">
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="188" height="189" tilewidth="16" tileheight="16" infinite="0" nextlayerid="19" nextobjectid="756">
  <tileset firstgid="1" source="../img/full tilemap.tsx"/>
  <tileset firstgid="73" source="../img/door_closed.tsx"/>
  <tileset firstgid="77" source="../img/full spritesheet.tsx"/>
@@ -2000,5 +2000,8 @@
   <object id="750" name="wall" x="0" y="1376" width="4" height="108" rotation="360"/>
   <object id="751" name="wall" x="0" y="1484" width="4" height="132" rotation="360"/>
   <object id="752" name="wall" x="0" y="1356" width="16" height="20"/>
+  <object id="753" name="player" x="1520" y="1488"/>
+  <object id="754" name="player" x="1468" y="1488"/>
+  <object id="755" name="player" x="1572" y="1488"/>
  </objectgroup>
 </map>
