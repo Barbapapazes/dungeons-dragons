@@ -2,6 +2,7 @@
 
 import logging
 from colorlog import ColoredFormatter
+from os import environ
 
 # Create a custom logger
 logger = logging.getLogger(__name__)
@@ -9,7 +10,9 @@ logger = logging.getLogger(__name__)
 # Create handlers
 c_handler = logging.StreamHandler()
 # f_handler = logging.FileHandler('file.log')
-c_handler.setLevel(logging.DEBUG)
+level = logging.ERROR if environ.get('PYTHON_ENV') == "production" else logging.DEBUG
+
+c_handler.setLevel(level)
 # f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers

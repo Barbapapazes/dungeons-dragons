@@ -72,6 +72,7 @@ module.exports = {
           children: [
             'dev/',
             'dev/config',
+            'dev/logger',
             'dev/window',
             'dev/versus',
             'dev/managers',
