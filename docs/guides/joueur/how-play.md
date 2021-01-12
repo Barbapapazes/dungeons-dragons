@@ -61,6 +61,8 @@ Le voleur est un personnage assez simple. Cependant, il a toujours la chance d'�
 
 ## Enemies
 
+Les ennemis se baladents tranquillement jusqu'au moment où les joueurs apparaissent dans leur ligne de mire. Ils vont alors décider si le risque vaut le coup d'aller attaquer. En combat, ils utilisent leur pouvoir spécial s'ils en ont un, sinon ils se mettent simplement en position et attaquent ensuite.
+
 ## Items
 
 ### Au sol
