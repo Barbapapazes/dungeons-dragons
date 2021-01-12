@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import os
 from random import randint
 from os import path
+from logger import logger
 
 game_folder = path.dirname('.')
 assets_folder = path.join(game_folder, 'assets')
@@ -75,6 +76,7 @@ def out_xml(out, width, height, data_Ground, data_Wall, data_Object):
 
     tree = ET.ElementTree(map)
     tree.write(out)
+    logger.info('Generate map %s in %s', out, path.abspath(out))
 
 
 # direction prend la valeur right or down (c'est pour savoir comment on place la map 1 par rapport a la deuxieme)
