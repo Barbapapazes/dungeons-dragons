@@ -40,7 +40,7 @@ class OnlineGame(_Elements):
         self.created_arrows = None
 
         # map
-        self.map = TiledMap(path.join(self.levels_maps, 'level1.tmx'))
+        self.map = TiledMap(path.join(self.levels_maps, 'arena.tmx'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.camera = Camera(self.map.width, self.map.height)
