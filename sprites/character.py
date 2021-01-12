@@ -133,6 +133,7 @@ class Character(pg.sprite.Sprite):
         self.health -= hp_lose
         if self.health < 0:
             self.health = 0
+            self.kill()
         else:
             self.game.logs.add_log(f'{self} has {self.health} remaining, (-{hp_lose})')
 
