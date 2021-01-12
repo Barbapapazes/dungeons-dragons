@@ -36,3 +36,17 @@ Créer un cercle de rayon `DISTANCE_MOVE` puis on sélectionne une position dans
 Chaque utilisation de sort a un coût en mana, et chaque sort pose au sol une zone d'effet qui rend des point de vie pour les sort de type `heal` et les autres des dégâts.
 
 Un même sort peut appliquer des zones qui ont une valeur d'action différente (heal/dommage) car le sort fait comme les armes et possède une caractéristique xdz (x dé de valeur z)
+
+## Phase des ennemis
+
+### Décision 
+
+En combat, les ennemis fuient systématiquement si ils leur restent peu de vie. Sinon, si les ennemis sont à portée (`attack_range`) d'un joueur, ils vont attaquer, sinon ils vont se déplacer vers ce joueur.
+
+### Déplacement
+
+Les ennemis vont suivre le chemin le plus court trouvé par l'algorithme de pathfinding A* vers le joueur en vue et suivre ce chemin de manière presque linéaire avec une vitesse `speed`.
+
+### Attaque
+
+Les ennemis utilisent leur pouvoir spécial s'ils en possèdent un et qu'il s'est écoulé un certain nombre de tour depuis le début du combat ou la dernière fois qu'ils l'ont utilisé (`cooldown`). Sinon, une attaque simple va être lancée commme pour un joueur.
