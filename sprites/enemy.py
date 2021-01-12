@@ -15,15 +15,15 @@ vec = pg.math.Vector2
 # npc settings
 MOB_HIT_RECT = pg.Rect(0, 0, 30, 30)
 SIZE = 8
-SEEK_FORCE = 0.1
+SEEK_FORCE = 0.25
 APPROACH_RADIUS = 50
 WANDER_RING_DISTANCE = 500
-WANDER_RING_RADIUS = 150
+WANDER_RING_RADIUS = 300
 CLASSES = ["fighter", "rogue", "wizard", "boss"]
 TYPE = {
-    "skeleton": {"health": 50, "STR": 35, "DEX": 20, "CON": 20, "INT": 50, "WIS": 30, "CHA": 30},
-    "goblin":   {"health": 60, "STR": 45, "DEX": 50, "CON": 25, "INT": 20, "WIS": 15, "CHA": 10},
-    "phantom":   {"health": 70, "STR": 30, "DEX": 35, "CON": 30, "INT": 40, "WIS": 30, "CHA": 10},
+    "skeleton": {"health": 10, "STR": 35, "DEX": 20, "CON": 20, "INT": 50, "WIS": 30, "CHA": 30},
+    "goblin":   {"health": 10, "STR": 45, "DEX": 50, "CON": 25, "INT": 20, "WIS": 15, "CHA": 10},
+    "phantom":   {"health": 10, "STR": 30, "DEX": 35, "CON": 30, "INT": 40, "WIS": 30, "CHA": 10},
     "boss": {"health": 250, "STR": 70, "DEX": 25, "CON": 50, "INT": 20, "WIS": 10, "CHA": 40}
 }
 
@@ -58,12 +58,12 @@ class Enemy(Character):
 
         self.attack_range = TILESIZE * 2
 
-        self.speed = 1.5
+        self.speed = 1
 
         self.target = self.pos
         self.player_spotted = None
 
-        self.view_range = TILESIZE * 6
+        self.view_range = TILESIZE * 8
         self.moving = False
 
         if images[-1] == 'F':
@@ -187,9 +187,10 @@ class Enemy(Character):
             self.now = pg.time.get_ticks()
             if self.last_timestamp2 is None:
                 self.last_timestamp2 = self.now
-            if self.now - self.last_timestamp > 10000:
+            if self.now - self.last_timestamp > 5000:
                 self.last_timestamp = self.now
                 self.player_spotted = None
+                self.goto = []
 
             if self.game.versus_manager.active:
                 """ If a player is in sight, evaluate whether he is worth attacking or not
@@ -198,18 +199,18 @@ class Enemy(Character):
                     self.end_turn()
                 elif self.player_detection():
                     if self.evaluation():
-                        self.flee(self.player_spotted.pos)
+                        self.acc = self.flee(self.player_spotted.pos)
                     else:
                         """ if player out of reach, "pathfind" him
                         """
                         self.game.turn_manager.selected_enemy = self.player_spotted
                         if self.move_or_attack():
-                            if self.now - self.last_timestamp2 > 1500 and self.vel == vec(
-                                    0, 0):  # skip if stuck on a wall
-                                self.player_spotted = None
-                                self.moving = False
-                                self.end_turn()
-                            elif not self.goto:  # and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
+                            # if self.now - self.last_timestamp2 > 1500 and self.vel == vec(
+                            #         0, 0):  # skip if stuck on a wall
+                            #     self.player_spotted = None
+                            #     self.moving = False
+                            #     self.end_turn()
+                            if not self.goto:  # and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
                                 self.goto = self.path_finding(self.player_spotted.pos)
                                 if self.goto:
                                     del self.goto[0]
@@ -233,18 +234,19 @@ class Enemy(Character):
 
             elif self.player_detection():
                 if self.evaluation():
-                    self.flee(self.player_spotted.pos)
+                    self.acc = self.flee(self.player_spotted.pos)
                 else:
-                    if not self.goto:
+                    if not self.goto:  # and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
                         self.goto = self.path_finding(self.player_spotted.pos)
                         if self.goto:
-                            if self.game.debug:
-                                for i in self.goto:
-                                    rect = pg.Rect(i.coor, (SIZE, SIZE))
-                                    pg.draw.rect(self.game.screen, (255, 255, 255), rect)
-                            self.acc = self.seek(self.goto[0].coor)
-                            if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
-                                del self.goto[0]
+                            del self.goto[0]
+                    if self.goto:
+                        for i in self.goto:
+                            rect = pg.Rect(i.coor, (SIZE, SIZE))
+                            pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
+                        self.acc = self.seek(self.goto[0].coor)
+                        if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
+                            del self.goto[0]
                 """if there is no player in range, just move around
                 """
             else:
@@ -312,7 +314,7 @@ class Enemy(Character):
         target = circle_pos + vec(WANDER_RING_RADIUS, 0).rotate(uniform(0, 360))
         return self.seek(target)
 
-    def flee(self, target, FLEE_DISTANCE=200):
+    def flee(self, target, FLEE_DISTANCE = 10*TILESIZE):
         """makes the npc run away from the target
 
         Args:
@@ -321,19 +323,26 @@ class Enemy(Character):
         Returns:
             vec(x,y): acceleration vector that self should use to reach the target
         """
-        logger.info(f'{self} flees {target}')
-        if self.vel == vec(0, 0):
-            self.vel = vec(-random(), -random())
         steer = vec(0, 0)
-        distance = self.pos - target
-        if distance.length() < FLEE_DISTANCE:
-            desired = distance.normalize() * self.speed
+        dist = self.pos - target
+        if dist.length() < FLEE_DISTANCE:
+            desired = (self.pos - target).normalize() * 5
         else:
-            desired = self.vel.normalize() * self.speed
-        steer = desired - self.vel
+            desired = self.vel.normalize() * 5
+        steer = (desired - self.vel)
         if steer.length() > SEEK_FORCE:
             steer.scale_to_length(SEEK_FORCE)
         return steer
+        # # logger.info(f'{self} flees {target}')
+        # steer = vec(0, 0)
+        # distance = self.pos - target
+        # logger.info(distance.length())
+        # if distance.length() < FLEE_DISTANCE:
+        #     desired = distance.normalize() * 2
+        #     steer = desired - self.vel
+        # if steer.length() > SEEK_FORCE:
+        #     steer.scale_to_length(SEEK_FORCE)
+        # return steer
 
     def path_finding(self, goalvec=vec(0, 0)):
         """implementation of the A* pathfinfind algorithm
@@ -471,8 +480,7 @@ class Enemy(Character):
             boolean: True or False
         """
         if self.player_spotted is None:
-
-            for player in self.game.turn_manager.players:
+            for player in players:
                 if (player.pos - self.pos).length() < self.view_range:
                     self.player_spotted = player
                     return True
@@ -504,10 +512,7 @@ class Enemy(Character):
         Returns:
             vec(x,y): acceleration vector following [the shortest path to the player / the optimal fleeing curve]
         """
-        # linear : lambda x : x/25 - 2
-        return self.health_percentage()/25 - 2 < (self.groupCount(enemies.sprites()) - Character.groupCount(self.player_spotted, players.sprites()))
-        #     return npc.flee(self, self.player_spotted.pos)
-        # else: return npc.moveto(self, npc.pathfinding2(self, self.player_spotted.pos))
+        return self.health_percentage()//25 - 3 > (self.groupCount(enemies.sprites()) - Character.groupCount(self.player_spotted, players.sprites()))
 
     def move_or_attack(self):
         """decide whether to attack or move this turn
@@ -560,7 +565,14 @@ class Boss(Enemy):
         self.attack_range = TILESIZE * 3
 
     def update(self):
-        if self.game.versus_manager.active:
+        if self.end:
+            if self.spawned:
+                self.number_actions = 0
+            self.end_time += self.game.dt
+            if self.end_time > (WAIT_TIME / 1000):
+                self.end = False
+                self.game.versus_manager.check_characters_actions()
+        elif self.game.versus_manager.active:
             if self.player_detection():
                 if (self.player_spotted.pos - self.pos).length() < self.attack_range:
                     self.attack()
