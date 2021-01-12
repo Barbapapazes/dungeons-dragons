@@ -55,6 +55,7 @@ class Game(_Elements):
         self.versus_manager = VersusManager(self)
 
         self.confetti = Confetti(self, WIDTH // 2, 0)
+        self.difficulty = 2  # temporary
 
         self.press_space = False
         self.chest_open = False
@@ -125,12 +126,9 @@ class Game(_Elements):
                     )
                 if tile_object.name == "phantom":
                     self.turn_manager.enemies.append(
-                        # Enemy(
-                        #     self, obj_center.x, obj_center.y, "phantom",
-                        #     choice(["phantom_F", "phantom_R", "phantom_W"])))
                         Enemy(
                             self, obj_center.x, obj_center.y, "phantom",
-                            choice(["phantom_W"])))
+                            choice(["phantom_F", "phantom_R", "phantom_W"])))
                 if tile_object.name == "boss":
                     self.turn_manager.enemies.append(
                         Boss(self, obj_center.x, obj_center.y, "boss", "boss")
@@ -180,10 +178,10 @@ class Game(_Elements):
                     hero["pos"]["y"],
                     hero["class"],
                     hero["characteristics"],
-                    hero["health"],
-                    hero["xp"],
-                    hero["gold"],
-                    ASSETS_SPRITES[hero["class"]])
+                    ASSETS_SPRITES[hero["class"]],
+                    health=hero["health"],
+                    xp=hero["xp"],
+                    gold=hero["gold"])
                 for item in Inventory.create_inventory(hero["inventory"]):
                     player.inventory.add_item(item)
                 for value in hero["equipments"]["armor"].values():
@@ -275,7 +273,7 @@ class Game(_Elements):
                         _characteristics = self.game_data["game_data"]["heros"][
                             len(self.turn_manager.players)]["characteristics"]
                         _images = ASSETS_SPRITES[_class]
-                        p = Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images)
+                        p = Player(self, _x, _y, _class, _characteristics, _images)
                         p.health = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["health"]
                         p.xp = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["xp"]
                         p.gold = self.game_data["game_data"]["heros"][len(self.turn_manager.players)]["gold"]
@@ -320,7 +318,8 @@ class Game(_Elements):
                             len(self.turn_manager.players)]["characteristics"]
                         _images = ASSETS_SPRITES[_class]
                         self.turn_manager.players.append(
-                            Player(self, _x, _y, _class, _characteristics, 100, 0, 100, _images))
+                            Player(self, _x, _y, _class, _characteristics, _images))
+
             self.save_data()
             self.save_data_in_file()
 

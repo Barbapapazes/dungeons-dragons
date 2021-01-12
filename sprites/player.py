@@ -15,7 +15,7 @@ vec = pg.math.Vector2
 class Player(Character):
     """Create a player"""
 
-    def __init__(self, game, x, y, _type, characteristics, health, xp, gold, images):
+    def __init__(self, game, x, y, _type, characteristics, images, health=PLAYER_MAX_HP, xp=0, gold=100):
         self.groups = players
         pg.sprite.Sprite.__init__(self, self.groups)
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
@@ -32,7 +32,6 @@ class Player(Character):
 
         # Stats
         self.max_HP = PLAYER_MAX_HP
-        self.shield = 0
         self.MP = 50  # mana
         self.max_MP = PLAYER_MAX_MP
         self.view_range = 500
@@ -160,28 +159,6 @@ class Player(Character):
         self.pos = pos
         self.rect.center = self.pos
 
-    def equip_armor(self, item):
-        """Equip a passed armor item in the right armor slot,
-        if an item is already in the needed armor slot, it will be unequipped
-
-        Args:
-            item (Armor)
-        """
-        if self.armor[item.slot] is not None:
-            self.unequip_armor(item.slot)
-        self.armor[item.slot] = item
-        self.shield += item.shield
-
-    def unequip_armor(self, slot):
-        """Unequip an armor item from a passed slot
-
-        Args:
-            slot (Armor)
-        """
-        if self.armor[slot] is not None:
-            self.shield -= self.armor[slot].shield
-            self.armor[slot] = None
-
     def equip_weapon(self, weapon):
         """Put a passed weapon in the weapon slot
 
@@ -241,6 +218,13 @@ class Player(Character):
         """
         if self.spell is not None:
             self.spell = None
+
+    def level_up(self):
+        if self.xp > 100:
+            self.xp = self.xp % 100
+            for i in self.characteristics:
+                self.characteristics[i] += 5
+            self.game.logs.add_log(f"{self} leveled up !")
 
 
 class Arrow(pg.sprite.Sprite):

@@ -1,13 +1,12 @@
 """Define a enemy"""
 
 from sprites.character import *
-from inventory.inventory import Inventory
+from inventory.inventory import Armor
 from config.colors import GREEN, YELLOW, RED
 from config.window import TILESIZE
 from utils.cell import Cell
-from random import uniform
-from random import randint
-from config.sprites import ASSETS_SPRITES, WAIT_TIME
+from random import choices, random, uniform, randint
+from config.sprites import ASSETS_SPRITES, ARMOR, ITEMS, WAIT_TIME
 vec = pg.math.Vector2
 
 # npc settings
@@ -19,10 +18,10 @@ WANDER_RING_DISTANCE = 500
 WANDER_RING_RADIUS = 150
 CLASSES = ["fighter", "rogue", "wizard", "boss"]
 TYPE = {
-    "skeleton": {"health": 80, "STR": 35, "DEX": 20, "CON": 30, "INT": 50, "WIS": 30, "CHA": 30},
-    "goblin":   {"health": 70, "STR": 45, "DEX": 50, "CON": 35, "INT": 20, "WIS": 15, "CHA": 10},
-    "phantom":   {"health": 100, "STR": 30, "DEX": 35, "CON": 30, "INT": 40, "WIS": 30, "CHA": 10},
-    "boss": {"health": 250, "STR": 70, "DEX": 25, "CON": 55, "INT": 20, "WIS": 10, "CHA": 40}
+    "skeleton": {"health": 50, "STR": 35, "DEX": 20, "CON": 20, "INT": 50, "WIS": 30, "CHA": 30},
+    "goblin":   {"health": 60, "STR": 45, "DEX": 50, "CON": 25, "INT": 20, "WIS": 15, "CHA": 10},
+    "phantom":   {"health": 70, "STR": 30, "DEX": 35, "CON": 30, "INT": 40, "WIS": 30, "CHA": 10},
+    "boss": {"health": 250, "STR": 70, "DEX": 25, "CON": 50, "INT": 20, "WIS": 10, "CHA": 40}
 }
 
 
@@ -52,11 +51,11 @@ class Enemy(Character):
         self.now = 0
         self.cooldown = 1
         self.spawned = False
-        # self.cooldown = randint(15, 25)
+        self.cooldown = randint(15, 25)
 
         self.attack_range = TILESIZE * 2
 
-        self.speed = 2
+        self.speed = 1.5
 
         self.target = self.pos
         self.player_spotted = None
@@ -66,12 +65,16 @@ class Enemy(Character):
 
         if images[-1] == 'F':
             self.classe = CLASSES[0]
+            self.xp = 10
         elif images[-1] == 'R':
             self.classe = CLASSES[1]
+            self.xp = 10
         elif images[-1] == 'W':
             self.classe = CLASSES[2]
+            self.xp = 20
         else:
             self.classe = CLASSES[3]
+            self.xp = 150
 
         self.health = TYPE.get(self.type).get("health")
         self.characteristics = {
@@ -82,11 +85,49 @@ class Enemy(Character):
             "wis": TYPE.get(self.type).get("WIS"),
             "cha": TYPE.get(self.type).get("CHA")
         }
+        self.difficulty_tweeking()
+
+    def throw_inventory(self):
+        """drop every item stored inside the enemy's inventory
+        """
+        for slot in self.inventory.slots:
+            if slot.item:
+                self.inventory.throw_item(slot.item)
 
     def __str__(self):
         """default displayed text whenever printing the enemy
         """
         return f'{self.type} {self.classe}'
+
+    def difficulty_tweeking(self):
+        """tweeks ennemy's statistics to match game difficulty
+        """
+        self.characteristics['str'] += 5 * self.game.difficulty
+        self.characteristics['dex'] += 3 * self.game.difficulty
+        self.characteristics['con'] += 4 * self.game.difficulty
+        self.characteristics['int'] += 2 * self.game.difficulty
+        self.characteristics['wis'] += 1 * self.game.difficulty
+        self.characteristics['cha'] += 2 * self.game.difficulty
+        for bodypart in choices(
+            ['head', 'chest', 'legs', 'feet'],
+            weights=[15, 5 + self.game.difficulty * 5, 5, 10],
+                k=self.game.difficulty):
+            armor_list = []
+            for part in ARMOR.items():
+                # logger.info(part)
+                if part[1]['slot'] == bodypart:
+                    #             armor_list.append(part)
+                    #     self.equip_armor(Armor(choice(armor_list), )
+                    armor_list.append(part)
+            for key, value in armor_list:
+                self.equip_armor(Armor(
+                    key,
+                    ITEMS[value['image_name']],
+                    value['image_name'],
+                    value['price'],
+                    value['weight'],
+                    value['shield'],
+                    value['slot']))
 
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -117,16 +158,16 @@ class Enemy(Character):
         if self.health < TYPE.get(self.type).get("health"):
             pg.draw.rect(self.image, col, self.health_bar)
 
-    def throw_inventory(self):
-        """drop every item stored inside the enemy's inventory
-        """
-        for slot in self.inventory.slots:
-            if slot.item:
-                self.inventory.throw_item(slot.item)
-
     def update(self):
         # if trap nearby: flee(trap)
-        if not self.end:
+        if self.end:
+            if self.spawned:
+                self.number_actions = 0
+            self.end_time += self.game.dt
+            if self.end_time > (WAIT_TIME / 1000):
+                self.end = False
+                self.game.versus_manager.check_characters_actions()
+        else:
             """ reset player spotted every 10 seconds
             """
             self.now = pg.time.get_ticks()
@@ -139,16 +180,15 @@ class Enemy(Character):
             if self.game.versus_manager.active:
                 """ If a player is in sight, evaluate whether he is worth attacking or not
                 """
-                if self.player_detection():
-                    # logger.debug(self.player_spotted)
-                    # logger.debug(self.player_spotted.pos)
+                if self.now - self.last_timestamp2 > 3000:
+                    self.end_turn()
+                elif self.player_detection():
                     if self.evaluation():
                         self.flee(self.player_spotted.pos)
-                        # need to skip turn after some time
                     else:
                         """ if player out of reach, "pathfind" him
                         """
-
+                        self.game.turn_manager.selected_enemy = self.player_spotted
                         if self.move_or_attack():
                             if self.now - self.last_timestamp2 > 1500 and self.vel == vec(
                                     0, 0):  # skip if stuck on a wall
@@ -159,24 +199,23 @@ class Enemy(Character):
                                 self.goto = self.path_finding(self.player_spotted.pos)
                                 if self.goto:
                                     del self.goto[0]
-                            # logger.debug(self.goto)
                             if self.goto:
-                                for i in self.goto:
-                                    rect = pg.Rect(i.coor, (SIZE, SIZE))
-                                    pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
+                                if self.game.debug:
+                                    for i in self.goto:
+                                        rect = pg.Rect(i.coor, (SIZE, SIZE))
+                                        pg.draw.rect(self.game.screen, (255, 255, 255), rect)
                                 self.acc = self.seek(self.goto[0].coor)
                                 if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
                                     del self.goto[0]
                             else:
                                 self.vel = vec(0, 0)
                                 self.moving = False
+                                self.game.logs.add_log(f'The {self} moved.')
                                 self.end_turn()
                         else:
                             self.attack()
-                    """if there is no player in range, just move around
-                    """
                 else:
-                    self.end_turn()
+                    self.skip_turn()
 
             elif self.player_detection():
                 if self.evaluation():
@@ -185,15 +224,18 @@ class Enemy(Character):
                     if not self.goto:
                         self.goto = self.path_finding(self.player_spotted.pos)
                         if self.goto:
-                            del self.goto[0]
-
-                    if self.goto:
-                        self.acc = self.seek(self.goto[0].coor)
-                        if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
-                            del self.goto[0]
+                            if self.game.debug:
+                                for i in self.goto:
+                                    rect = pg.Rect(i.coor, (SIZE, SIZE))
+                                    pg.draw.rect(self.game.screen, (255, 255, 255), rect)
+                            self.acc = self.seek(self.goto[0].coor)
+                            if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
+                                del self.goto[0]
                 """if there is no player in range, just move around
                 """
             else:
+                if self.vel == vec(0, 0):
+                    self.vel = vec(-random(), -random())
                 temp = self.avoidnpc()
                 if temp is False:
                     self.acc = self.wander()
@@ -207,18 +249,11 @@ class Enemy(Character):
                 self.vel.scale_to_length(self.speed)
             self.get_direction()
             self.update_image()
-            self.pos += self.vel * (self.game.dt * 140)
+            self.pos += self.vel * (self.game.dt * 100)
             self.rect = self.image.get_rect()
             self.rect.center = self.pos
 
             self.update_collisions()
-        else:
-            if self.spawned:
-                self.number_actions = 0
-            self.end_time += self.game.dt
-            if self.end_time > (WAIT_TIME / 1000):
-                self.end = False
-                self.game.versus_manager.check_characters_actions()
 
     def get_direction(self):
         """get the direction which the sprite is currently facing
@@ -259,9 +294,6 @@ class Enemy(Character):
         Returns:
             vec(x,y): acceleration vector that self should use to reach the target
         """
-        # now = pg.time.get_ticks()
-        # if now - self.last_timestamp > randint(1000,5000):
-        #     self.last_timestamp = now
         circle_pos = self.pos + self.vel.normalize() * WANDER_RING_DISTANCE
         target = circle_pos + vec(WANDER_RING_RADIUS, 0).rotate(uniform(0, 360))
         return self.seek(target)
@@ -275,6 +307,9 @@ class Enemy(Character):
         Returns:
             vec(x,y): acceleration vector that self should use to reach the target
         """
+        logger.info(f'{self} flees {target}')
+        if self.vel == vec(0, 0):
+            self.vel = vec(-random(), -random())
         steer = vec(0, 0)
         distance = self.pos - target
         if distance.length() < FLEE_DISTANCE:
@@ -296,7 +331,7 @@ class Enemy(Character):
             list : calls the function reconstruct_path to create the list of cells
         """
         start = Cell(coor=self.pos)
-
+        i = 0
         open_set = [start]
         closed_set = []
 
@@ -304,7 +339,8 @@ class Enemy(Character):
 
         """boucle de recherche de chemin
         """
-        while open_set:
+        while open_set and i < 50:
+            i += 1
             """pitié faites que personne ne voit ça, ça sélectionne la case la plus proche de l'arrivée
             """
             mini = 10000
@@ -333,6 +369,15 @@ class Enemy(Character):
                         break
                 if skip:
                     continue
+                """skip murs
+                """
+                for trap in self.game.traps.sprites():
+                    skip = False
+                    if trap.rect.collidepoint(neigh.coor):
+                        skip = True
+                        break
+                if skip:
+                    continue
                 """skip portes
                 """
                 for door in self.game.doors.sprites():
@@ -357,6 +402,14 @@ class Enemy(Character):
                 for enemy in enemies:
                     skip = False
                     if enemy.rect.collidepoint(neigh.coor):
+                        skip = True
+                        break
+                if skip:
+                    continue
+
+                for merchant in self.game.merchants.sprites():
+                    skip = False
+                    if merchant.rect.collidepoint(neigh.coor):
                         skip = True
                         break
                 if skip:
@@ -408,7 +461,6 @@ class Enemy(Character):
             for player in self.game.turn_manager.players:
                 if (player.pos - self.pos).length() < self.view_range:
                     self.player_spotted = player
-                    logger.info("player spotted")
                     return True
             return False
         return True
@@ -423,6 +475,7 @@ class Enemy(Character):
         if collision is not []:
             for sprite in collision:
                 if sprite != self:
+                    logger.info(f'{self} avoids {sprite} at positions {self.pos} and {sprite.pos}')
                     return Enemy.flee(self, sprite.pos)
         return False
 
@@ -456,26 +509,21 @@ class Enemy(Character):
     def attack(self):
         """attack instructions
         """
-        if self.classe == CLASSES[2]:
-            if self.cooldown - self.game.turn_manager.turn < 0:
-                spawn = Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE),
-                              self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
-                self.game.turn_manager.add_character(spawn)
-                self.game.versus_manager.logs.add_log(f"The {self} used magic to invoke a {spawn} !")
-                self.cooldown += 2
-                self.spawned = True
-            elif self.game.versus_manager.check_dice():
+        if self.classe == "wizard" and self.cooldown - self.game.turn_manager.turn < 0:
+            spawn = Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE),
+                          self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
+            self.game.turn_manager.add_character(spawn)
+            self.game.versus_manager.logs.add_log(f"The {self} used magic to invoke a {spawn} !")
+            self.cooldown += 20
+            self.spawned = True
+        else:
+            self.game.versus_manager.selected_enemy = self.player_spotted
+            if self.game.versus_manager.check_dice():
                 damage = self.game.versus_manager.calc_damage()
-                self.game.versus_manager.logs.add_log(f'The {self} attacked {self.player_spotted}, dealing {damage}.')
                 self.game.turn_manager.remove_health(damage, self.player_spotted)
             else:
+                self.game.versus_manager.calc_damage()
                 self.game.versus_manager.logs.add_log(f'The {self} missed his attack...')
-        elif self.game.versus_manager.check_dice():
-            damage = self.game.versus_manager.calc_damage()
-            self.game.versus_manager.logs.add_log(f'The {self} attacked {self.player_spotted}, dealing {damage}.')
-            self.game.turn_manager.remove_health(damage, self.player_spotted)
-        else:
-            self.game.versus_manager.logs.add_log(f'The {self} missed his attack...')
         self.end_turn()
 
     def end_turn(self):
@@ -483,7 +531,10 @@ class Enemy(Character):
         self.goto = []
         self.moving = False
         self.end = True
-        # sleep(1.25)
+
+    def skip_turn(self):
+        self.end_turn()
+        self.number_actions = 0
 
 
 class Boss(Enemy):
@@ -502,7 +553,7 @@ class Boss(Enemy):
                 else:
                     self.end_turn()
             else:
-                self.end_turn()
+                self.skip_turn()
         else:
             self.update_image()
             self.update_collisions()
