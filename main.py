@@ -1,10 +1,11 @@
 """Main file"""
 
-from config.screens import (CHARACTER_CREATION, CHOOSE_MAP, CREDITS, GAME,
-                            INTRODUCTION, LOAD_GAME, MENU, NEW_GAME,
-                            ONLINE_GAME, OPTIONS, SHORTCUTS)
+from config.screens import (CHARACTER_CREATION, CHOOSE_LEVEL, CHOOSE_MAP,
+                            CREDITS, GAME, INTRODUCTION, LOAD_GAME, MENU,
+                            NEW_GAME, ONLINE_GAME, OPTIONS, SHORTCUTS)
 from logger import logger
 from screens.character_creation import CharacterCreation
+from screens.choose_level import ChooseLevel
 from screens.choose_map import ChooseMap
 from screens.credits import Credits
 from screens.game import Game
@@ -31,7 +32,8 @@ if __name__ == '__main__':
         CHARACTER_CREATION: CharacterCreation(),
         NEW_GAME: NewGame(),
         INTRODUCTION: Introduction(),
-        CHOOSE_MAP: ChooseMap()
+        CHOOSE_MAP: ChooseMap(),
+        CHOOSE_LEVEL: ChooseLevel()
     }
     W.setup_states(STATES, MENU)
     W.main()

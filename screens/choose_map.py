@@ -8,7 +8,7 @@ from components.cursor import Cursor
 from config.buttons import (HEIGHT_BUTTON, HEIGHT_SLIDER, MARGIN_BUTTON,
                             RADIUS_BUTTON, WIDTH_BUTTON, WIDTH_SLIDER)
 from config.colors import BEIGE, GREEN_DARK, YELLOW_LIGHT
-from config.screens import (CHARACTER_CREATION, CHOOSE_MAP, INTRODUCTION,
+from config.screens import (CHARACTER_CREATION, CHOOSE_LEVEL, CHOOSE_MAP,
                             TRANSITION_OUT)
 from config.window import WIDTH, HEIGHT
 from logger import logger
@@ -22,7 +22,7 @@ class ChooseMap(_Elements):
 
     def __init__(self):
         self.name = CHOOSE_MAP
-        self.next = INTRODUCTION
+        self.next = CHOOSE_LEVEL
 
         game_folder = path.dirname('.')
         assets_folder = path.join(game_folder, 'assets')
@@ -267,7 +267,7 @@ class ChooseMap(_Elements):
             "folder": self.type_maps
         }
         logger.info("Select %s", selected)
-        self.next = INTRODUCTION
+        self.next = CHOOSE_LEVEL
         super().set_state(TRANSITION_OUT)
 
     def toggle_sub_state(self, state):

@@ -232,6 +232,7 @@ class VersusManager:
         self.turn_manager.enemies.remove(self.selected_enemy)
         self.turn_manager.sorted.remove(self.selected_enemy)
         self.selected_enemy.throw_inventory()
+        self.selected_enemy.throw_equipments()
         self.selected_enemy.kill()
         self.turn_manager.add_turn()
 

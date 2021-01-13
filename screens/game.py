@@ -55,7 +55,6 @@ class Game(_Elements):
         self.versus_manager = VersusManager(self)
 
         self.confetti = Confetti(self, WIDTH // 2, 0)
-        self.difficulty = 2  # temporary
 
         self.press_space = False
         self.chest_open = False
@@ -79,6 +78,8 @@ class Game(_Elements):
 
     def new(self):
         """Create a new game"""
+        self.difficulty = self.game_data["game_data"]["difficulty"]
+
         players = pg.sprite.Group()
         enemies = pg.sprite.Group()
         self.animated.empty()
@@ -203,10 +204,14 @@ class Game(_Elements):
                     self, enemy["pos"]["x"],
                     enemy["pos"]["y"],
                     enemy["type"],
-                    enemy["class"])
+                    enemy["class"], equipments=True)
                 for item in Inventory.create_inventory(enemy["inventory"]):
-                    print(item.name)
                     enemy_obj.inventory.add_item(item)
+                for value in enemy["equipments"]["armor"].values():
+                    if value is None:
+                        continue
+                    item = Inventory.create_inventory(value)[0]
+                    enemy_obj.inventory.equip_item(item)
                 self.turn_manager.enemies.append(
                     enemy_obj)
             for chest in self.game_data["game_data"]["chests"]:

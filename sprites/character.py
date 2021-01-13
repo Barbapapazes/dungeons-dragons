@@ -32,6 +32,7 @@ class Character(pg.sprite.Sprite):
         self.inventory = Inventory(self, 5, 8)
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
+        self.spell = None
         self.shield = 0
 
         self.game = game
@@ -70,6 +71,19 @@ class Character(pg.sprite.Sprite):
         self.rect.center = self.pos
 
         self.update_collisions()
+
+    def save_equipments(self):
+        """Save the equipments of the player
+
+        Returns:
+            dict
+        """
+        armor = {key: value.save() if value else None for key, value in self.armor.items()}
+        return {
+            "armor": armor,
+            "weapon": self.weapon.save() if self.weapon else None,
+            "spell": self.spell.save() if self.spell else None
+        }
 
     def throw_inventory(self):
         """drop every item stored inside the enemy's inventory

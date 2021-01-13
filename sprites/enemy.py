@@ -26,7 +26,7 @@ TYPE = {
 
 
 class Enemy(Character):
-    def __init__(self, game, x, y, _type, images):
+    def __init__(self, game, x, y, _type, images, equipments=False):
         self.goto = []
         self.groups = enemies
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -85,40 +85,49 @@ class Enemy(Character):
             "wis": TYPE.get(self.type).get("WIS"),
             "cha": TYPE.get(self.type).get("CHA")
         }
-        self.difficulty_tweeking()
+        self.set_characteristics()
+
+        if not equipments:
+            self.difficulty_tweeking()
 
     def throw_inventory(self):
-        """drop every item stored inside the enemy's inventory
-        """
+        """drop every item stored inside the enemy's inventory"""
         for slot in self.inventory.slots:
             if slot.item:
                 self.inventory.throw_item(slot.item)
+
+    def throw_equipments(self):
+        logger.debug("throw equipment")
+        for value in self.armor.values():
+            if value is not None:
+                self.inventory.throw_item(value)
 
     def __str__(self):
         """default displayed text whenever printing the enemy
         """
         return f'{self.type} {self.classe}'
 
-    def difficulty_tweeking(self):
-        """tweeks ennemy's statistics to match game difficulty
-        """
+    def set_characteristics(self):
         self.characteristics['str'] += 5 * self.game.difficulty
         self.characteristics['dex'] += 3 * self.game.difficulty
         self.characteristics['con'] += 4 * self.game.difficulty
         self.characteristics['int'] += 2 * self.game.difficulty
         self.characteristics['wis'] += 1 * self.game.difficulty
         self.characteristics['cha'] += 2 * self.game.difficulty
+
+    def difficulty_tweeking(self):
+        """tweeks ennemy's statistics to match game difficulty"""
         for bodypart in choices(
             ['head', 'chest', 'legs', 'feet'],
             weights=[15, 5 + self.game.difficulty * 5, 5, 10],
                 k=self.game.difficulty):
             armor_list = []
             for part in ARMOR.items():
-                # logger.info(part)
+                # we can use use a filter to avoid to have always the same elements et en fonction de la difficulté, on choisi les bonne parts
                 if part[1]['slot'] == bodypart:
-                    #             armor_list.append(part)
-                    #     self.equip_armor(Armor(choice(armor_list), )
                     armor_list.append(part)
+                    break
+            logger.debug(armor_list)
             for key, value in armor_list:
                 self.equip_armor(Armor(
                     key,
@@ -141,6 +150,7 @@ class Enemy(Character):
                 "y": self.pos.y
             },
             "health": self.health,
+            "equipments": self.save_equipments(),
             "inventory": self.inventory.save()
         }
 

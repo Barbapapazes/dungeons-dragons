@@ -26,7 +26,6 @@ class Player(Character):
         self.health = health
         self.xp = xp
         self.gold = gold
-        self.spell = None
 
         self.last_shot = 0
 
@@ -54,19 +53,6 @@ class Player(Character):
             "gold": self.gold,
             "inventory": self.inventory.save(),
             "equipments": self.save_equipments()
-        }
-
-    def save_equipments(self):
-        """Save the equipments of the player
-
-        Returns:
-            dict
-        """
-        armor = {key: value.save() if value else None for key, value in self.armor.items()}
-        return {
-            "armor": armor,
-            "weapon": self.weapon.save() if self.weapon else None,
-            "spell": self.spell.save() if self.spell else None
         }
 
     def get_keys(self):
