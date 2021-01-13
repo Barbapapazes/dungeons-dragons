@@ -24,7 +24,7 @@ Ainsi, en ajoutant :
 <object id="1" name="bronze_key_small" x="336" y="400" width="32" height="32"/>
 ```
 
-On va pouvoir créer une clé en bronze à la position 336, 400 sur la carte. Cependant, comme conseillé dans le guide du joueur, il est conseillé d'utiliser Tiled.
+On va pouvoir créer une clé en bronze à la position 336, 400 sur la carte. Cependant, comme conseillé dans le guide du joueur, il est conseillé d'utiliser Tiled. Vous trouverez l'ensemble des items disponibles dans `config/sprites.py`
 
 #### Gestion des télé-porteurs
 
