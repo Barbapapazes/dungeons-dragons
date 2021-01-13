@@ -1,6 +1,7 @@
 """Level up manager"""
-from config.window import WIDTH
+import pygame as pg
 from config.colors import BEIGE
+from config.window import WIDTH
 from logger import logger
 
 
@@ -17,6 +18,12 @@ class LevelUpManager:
             "title": "",
             "content": ""
         }
+        self.size = 48
+        self.notification_screen = pg.Surface((250, 100)).convert_alpha()
+        self.notification_screen.fill(pg.Color(0, 0, 0, 220))
+        self.notification_rect = self.notification_screen.get_rect()
+        self.notification_rect.topright = (WIDTH - 12, 12)
+        logger.debug("c'est plus un notification manager")
 
     def update(self):
         if self.game.turn_manager.is_active_player() and self.game.turn_manager.active().level_up():
@@ -31,5 +38,8 @@ class LevelUpManager:
 
     def draw(self, screen):
         if self.active:
-            self.game.draw_text(self.content["title"], self.game.title_font, 48,
-                                BEIGE, WIDTH - 48, 48, align="e", screen=screen)
+            screen.blit(self.notification_screen, self.notification_rect)
+            self.game.draw_text(self.content["title"], self.game.title_font, self.size,
+                                BEIGE, WIDTH - self.size, self.size, align="e", screen=screen)
+            self.game.draw_text(self.content["content"], self.game.text_font, int(self.size * 1.5 / 4),
+                                BEIGE, WIDTH - self.size, self.size * 2, align="e", screen=screen)

@@ -213,8 +213,10 @@ class Player(Character):
             self.game.logs.add_log(f"{self} leveled up !")
             self.skill_bonus = True
             self.game.level_up_manager.content["title"] = "Level up !"
-            logger.debug(
-                "ajouter le contenu dans le level_up (il va falloir le renommer notifivation manager et stocker ailleurs le level_up) manager")
+            if self.type == "soldier":
+                self.game.level_up_manager.content["content"] = "Unlock a fight action !"
+            elif self.type == "wizard":
+                self.game.level_up_manager.content["content"] = "Unlock two spell actions !"
             return True
         return False
 

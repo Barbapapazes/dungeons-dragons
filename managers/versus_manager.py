@@ -33,7 +33,8 @@ class VersusManager:
         self.border_enemy = None
         self.warn = False
         self.active = False
-        self.action_bonus = False
+        self.soldier_bonus = False
+        self.wizard_bonus = False
 
         self.spell_pos = None
 
@@ -183,21 +184,31 @@ class VersusManager:
             if not self.action:
                 if self.attack_btn.collidepoint(
                     pos[0],
-                    pos[1]) or(
+                    pos[1]) and not self.wizard_bonus or (
                     self.attack_btn.collidepoint(pos[0],
-                                                 pos[1]) and self.action_bonus):
+                                                 pos[1]) and self.soldier_bonus):
                     self.action_attack()
-                if self.move_btn.collidepoint(pos[0], pos[1]) and not self.action_bonus:
+                elif self.attack_btn.collidepoint(pos[0], pos[1]) and self.wizard_bonus:
+                    self.logs.add_log("This is a bonus, you have to use your spell !")
+
+                if self.move_btn.collidepoint(pos[0], pos[1]) and not self.soldier_bonus and not self.wizard_bonus:
                     self.action_move()
-                elif self.move_btn.collidepoint(pos[0], pos[1]) and self.action_bonus:
-                    self.logs.add_log("This is a bonus, you have to fight !")
+                elif self.move_btn.collidepoint(pos[0], pos[1]):
+                    if self.soldier_bonus:
+                        self.logs.add_log("This is a bonus, you have to fight !")
+                    elif self.wizard_bonus:
+                        self.logs.add_log("This is a bonus, you have to use your spell !")
+
                 if self.spell_btn.collidepoint(
-                        pos[0],
-                        pos[1]) and not self.action_bonus and not self.turn_manager.get_active_spell() is None:
+                    pos[0],
+                    pos[1]) and not self.soldier_bonus and not self.turn_manager.get_active_spell() is None or(
+                    self.spell_btn.collidepoint(pos[0],
+                                                pos[1]) and self.wizard_bonus):
                     self.action_spell()
-                elif self.spell_btn.collidepoint(pos[0], pos[1]) and self.action_bonus:
+                elif self.spell_btn.collidepoint(pos[0], pos[1]) and self.soldier_bonus:
                     self.logs.add_log("This is a bonus, you have to fight !")
             if self.validate_btn.collidepoint(pos[0], pos[1]):
+                logger.debug("%s, %s", self.soldier_bonus, self.wizard_bonus)
                 self.validate()
 
     def validate(self):
@@ -306,10 +317,15 @@ class VersusManager:
         """Check the action of the active character"""
         self.turn_manager.active().number_actions -= 1
         self.set_move_player(False)
+        logger.debug("c'est ici qu'on va check les level up")
         if self.turn_manager.active().skill_bonus and self.turn_manager.active().number_actions == 0:
-            self.turn_manager.active().skill_bonus = 0
+            self.turn_manager.active().skill_bonus = False
             self.turn_manager.active().number_actions += 1
-            self.action_bonus = True
+            if self.turn_manager.active().type == "soldier":
+                self.soldier_bonus = True
+            elif self.turn_manager.active().type == "wizard":
+                self.turn_manager.active().number_actions += 1
+                self.wizard_bonus = True
 
         if self.turn_manager.active().number_actions <= 0 and not self.turn_manager.active().skill_bonus:
             self.add_turn()
