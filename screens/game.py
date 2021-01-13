@@ -1,5 +1,6 @@
 """Game screen"""
 
+from managers.level_up_manager import LevelUpManager
 from sprites.map_check import MapCheck
 from managers.map_viewer_manager import MapViewerManager
 from sprites.effects_zone import EffectsZone
@@ -53,6 +54,7 @@ class Game(_Elements):
         self.animated = pg.sprite.Group()
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.versus_manager = VersusManager(self)
+        self.level_up_manager = LevelUpManager(self)
 
         self.confetti = Confetti(self, WIDTH // 2, 0)
 
@@ -362,8 +364,8 @@ class Game(_Elements):
 
         if event.type == pg.KEYUP:
             if event.key == pg.K_a:
-                self.turn_manager.get_playable_character().health -= 10
-                logger.debug(self.turn_manager.get_playable_character().health)
+                self.turn_manager.get_playable_character().xp += 10
+                logger.debug(self.turn_manager.get_playable_character().xp)
                 logger.debug(type(self.turn_manager.get_playable_character()))
             if event.key == pg.K_l:
                 logger.debug(self.turn_manager.get_playable_character().health)
@@ -658,6 +660,7 @@ class Game(_Elements):
         self.minimap.update()
         self.versus_manager.update()
         self.turn_manager.update(self.versus_manager.active)
+        self.level_up_manager.update()
 
     def update_camera(self):
         if self.turn_manager.get_vision_character():
@@ -850,6 +853,7 @@ class Game(_Elements):
         self.versus_manager.draw(self.screen)
         self.minimap.draw(self.screen)
         self.logs.draw(self.screen)
+        self.level_up_manager.draw(self.screen)
 
         self.draw_debug()
 

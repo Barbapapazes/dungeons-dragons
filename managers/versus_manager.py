@@ -33,6 +33,7 @@ class VersusManager:
         self.border_enemy = None
         self.warn = False
         self.active = False
+        self.action_bonus = False
 
         self.spell_pos = None
 
@@ -180,14 +181,22 @@ class VersusManager:
         """
         if self.active and self.turn_manager.is_active_player():
             if not self.action:
-                if self.attack_btn.collidepoint(pos[0], pos[1]):
-                    # il faut faire des fonctions de ça et dans le game, dans les events, si c'est le tour d'un joueur, alors en fonction de la touch, ça lance la fonction correspondante
-                    # utiliser entrer pour valider
+                if self.attack_btn.collidepoint(
+                    pos[0],
+                    pos[1]) or(
+                    self.attack_btn.collidepoint(pos[0],
+                                                 pos[1]) and self.action_bonus):
                     self.action_attack()
-                if self.move_btn.collidepoint(pos[0], pos[1]):
+                if self.move_btn.collidepoint(pos[0], pos[1]) and not self.action_bonus:
                     self.action_move()
-                if self.spell_btn.collidepoint(pos[0], pos[1]) and not self.turn_manager.get_active_spell() is None:
+                elif self.move_btn.collidepoint(pos[0], pos[1]) and self.action_bonus:
+                    self.logs.add_log("This is a bonus, you have to fight !")
+                if self.spell_btn.collidepoint(
+                        pos[0],
+                        pos[1]) and not self.action_bonus and not self.turn_manager.get_active_spell() is None:
                     self.action_spell()
+                elif self.spell_btn.collidepoint(pos[0], pos[1]) and self.action_bonus:
+                    self.logs.add_log("This is a bonus, you have to fight !")
             if self.validate_btn.collidepoint(pos[0], pos[1]):
                 self.validate()
 
@@ -297,7 +306,12 @@ class VersusManager:
         """Check the action of the active character"""
         self.turn_manager.active().number_actions -= 1
         self.set_move_player(False)
-        if self.turn_manager.active().number_actions <= 0:
+        if self.turn_manager.active().skill_bonus and self.turn_manager.active().number_actions == 0:
+            self.turn_manager.active().skill_bonus = 0
+            self.turn_manager.active().number_actions += 1
+            self.action_bonus = True
+
+        if self.turn_manager.active().number_actions <= 0 and not self.turn_manager.active().skill_bonus:
             self.add_turn()
         else:
             self.logs.add_log(

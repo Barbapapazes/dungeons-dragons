@@ -51,6 +51,7 @@ class Character(pg.sprite.Sprite):
         self.pos = vec(x, y)
 
         self.number_actions = 0
+        self.skill_bonus = False
         if not hasattr(self, "goto"):
             self.images = images
             self.image = next(self.images[self.direction])

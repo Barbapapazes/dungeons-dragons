@@ -206,11 +206,17 @@ class Player(Character):
             self.spell = None
 
     def level_up(self):
-        if self.xp > 100:
+        if self.xp >= 100:
             self.xp = self.xp % 100
             for i in self.characteristics:
                 self.characteristics[i] += 5
             self.game.logs.add_log(f"{self} leveled up !")
+            self.skill_bonus = True
+            self.game.level_up_manager.content["title"] = "Level up !"
+            logger.debug(
+                "ajouter le contenu dans le level_up (il va falloir le renommer notifivation manager et stocker ailleurs le level_up) manager")
+            return True
+        return False
 
 
 class Arrow(pg.sprite.Sprite):
