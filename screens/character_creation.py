@@ -11,7 +11,7 @@ from logger import logger
 from components.cursor import Cursor
 from data.game_data import create_game_data
 from config.window import WIDTH, HEIGHT
-from config.screens import CHARACTER_CREATION, CHOOSE_MAP, INTRODUCTION, MENU, TRANSITION_OUT
+from config.screens import CHARACTER_CREATION, CHOOSE_MAP, NEW_GAME, TRANSITION_OUT
 from config.colors import LIGHTGREY, YELLOW_LIGHT, BLACK, BEIGE, GREEN_DARK, WHITE
 from config.sprites import WIDTH_CHARACTER, HEIGHT_CHARACTER, USABLE_POINTS
 from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
@@ -62,13 +62,13 @@ class CharacterCreation(_Elements):
         self.create_confirm_button()
         self.create_animations()
         self.create_sliders()
-        self.create_back_button(self.background, self.load_next_state, [MENU])
+        self.create_back_button(self.background, self.load_next_state, [NEW_GAME])
 
     def all_events(self, events):
         for event in events:
             if event.type == pg.KEYUP:
                 if event.key == pg.K_ESCAPE:
-                    self.load_next_state(MENU)
+                    self.load_next_state(NEW_GAME)
 
     def create_confirm_button(self):
         """Create buttons from this screen"""
@@ -78,7 +78,7 @@ class CharacterCreation(_Elements):
             20 * HEIGHT // 20 - HEIGHT_BUTTON // 2 - 20,
             WIDTH_BUTTON // 2,
             HEIGHT_BUTTON // 2,
-            text='start'.upper(),
+            text='continue'.upper(),
             fontSize=20,
             margin=MARGIN_BUTTON,
             radius=RADIUS_BUTTON,

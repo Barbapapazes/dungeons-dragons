@@ -19,6 +19,10 @@ class Introduction(_Elements):
         self.next = GAME
         super(Introduction, self).__init__(self.name, self.next, 'introduction', '0001.png', {})
 
+        self.new()
+
+    def new(self):
+        """Create a fresh screen"""
         self.frames = list()
         for frame in BACKGROUND_INTRODUCTION:
             self.frames.append(pg.transform.scale(frame, (WIDTH, HEIGHT)))

@@ -5,7 +5,7 @@ import json
 import pygame as pg
 from pygame_widgets import Button
 from logger import logger
-from config.screens import TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
+from config.screens import CHARACTER_CREATION, INTRODUCTION, NEW_GAME, TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
 from config.colors import BLACK, BEIGE, GREEN_DARK, YELLOW_LIGHT
 from config.window import WIDTH, HEIGHT, FPS, TITLE
 from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
@@ -101,6 +101,9 @@ class Window():
                     state = self.state.previous if self.state.name == SHORTCUTS else SHORTCUTS
                     self.flip_state(state)
                     logger.info('Toggle shortcuts : %s', state)
+                if event.key == pg.K_b:
+                    # utiliser un event global à la fin
+                    self.reset()
 
             elif event.type == pg.KEYUP:
                 self.keys = pg.key.get_pressed()
@@ -122,6 +125,14 @@ class Window():
                     if event.name == 'save':
                         logger.info("User event: save ")
                         self.save()
+                    if event.name == 'reset':
+                        logger.info("User event: reset ")
+                        self.reset()
+
+    def reset(self):
+        self.states_dict[NEW_GAME].new()
+        self.states_dict[CHARACTER_CREATION].new()
+        self.states_dict[INTRODUCTION].new()
 
     def save(self):
         """Used to save the game data"""

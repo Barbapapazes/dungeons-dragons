@@ -1,11 +1,12 @@
 """Used to manage the turn based gameplay"""
 
 
-from config.window import HEIGHT
+import pygame as pg
 from config.sprites import SCOPE_HAND
+from config.window import HEIGHT
+from logger import logger
 from sprites.enemy import Enemy
 from sprites.player import Player
-from logger import logger
 
 
 class TurnManager:
@@ -251,6 +252,8 @@ class TurnManager:
         if isinstance(character, Player):
             self.players.remove(character)
             if len(self.players) == 0:
+                save_event = pg.event.Event(pg.USEREVENT, code="_State", name="reset")
+                pg.event.post(save_event)
                 self.game.create_dim()
                 self.game.btns_dict = self.game.create_buttons_dict("game over")
                 self.game.create_buttons(self.game.screen, start_y_offset=8 * HEIGHT / 10)
