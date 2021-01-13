@@ -2,8 +2,10 @@ import pygame as pg
 from os import path
 from sprites.player import Player
 from config.window import WIDTH, HEIGHT
-from config.colors import RED, GREEN, CYAN, DARKGREY, GOLD
+from config.colors import RED, GREEN, CYAN, DARKGREY, GOLD, BLACK
 from config.sprites import PLAYER_MAX_HP, PLAYER_MAX_MP
+from managers.stats_manager import StatsWindow
+from utils.container import Container
 
 
 class Hud:
@@ -13,10 +15,11 @@ class Hud:
         self.game = game
         self.screen = game.screen
         self.imgs = game.img_folder
-
+        self.stats = StatsWindow()
         self.button_dict = self.create_buttons_dict()
         self.buttons = list()
-
+        self._size = WIDTH // 20 + WIDTH // 100
+        self.create_buttons()
 
     def draw_healthbars(self, screen):
         """Draw a healthbar for each player of the game"""
@@ -70,68 +73,65 @@ class Hud:
     def create_buttons_dict(self):
         return {
             "quests": {
-                "text": "Quests",
+                "state": "menu",
                 "on_click": None,
                 "image": path.join(self.imgs, "items/book_01g.png"),
                 "rect": None
             },
             "inventory": {
-                "text": "Inventory",
+                "state": "inventory",
                 "on_click": print("inventory"),
                 "image": path.join(self.game.assets_folder, "sprites/chest/3.png"),
                 "rect": None
             },
             "stats": {
-                "text": "Stats",
-                "on_click": None,
+                "state": "stats",
+                "on_click": None,#self.stats.print_characteristics(self.game.turn_manager.get_vision_character()),
                 "image": path.join(self.imgs, "items/cotton_01a.png"),
                 "rect": None
 
             },
             "map": {
-                "text": "Map",
+                "state": "map",
                 "on_click": None,
                 "image": path.join(self.imgs, "location.png"),
                 "rect": None
             }
         }
 
-    def draw_buttons(self, screen):
-        l = len(self.button_dict)
-        circle_size = WIDTH // 20
-        step = WIDTH // 100
-        size = circle_size + step
-        offset = 6
+    def create_buttons(self):
+        max_x = WIDTH
+        min_x = WIDTH - self._size*len(self.button_dict)
+        min_y = 00
+        max_y = self._size
+        
+        for _x in range(min_x, max_x, self._size):
+            self.buttons.append(HudButton(_x, 0, self._size, BLACK))
+            print(_x)
+        for i, (k, v) in enumerate(self.button_dict.items()):
+            self.buttons[i].item = pg.image.load(self.button_dict[k]["image"]).convert_alpha()
 
-        circle_img = pg.image.load(path.join(self.imgs, "store/background.png")).convert_alpha()
-        circle_img = pg.transform.scale(circle_img, (size, size))
+    def get_all_buttons(self):
+        return self.buttons
+    def draw_all_buttons(self, screen):
+        for b in self.get_all_buttons():
+            b.draw(screen)
+            b.draw_image(screen)
 
-        for i in range(l + 1):
-            screen.blit(circle_img, (WIDTH - (i*size), HEIGHT // 200))
-        i = 1
-        for b in self.button_dict.keys():
-            print(b)
-            b_img = pg.image.load(self.button_dict[b]["image"]).convert_alpha()
-            b_img = pg.transform.scale(b_img, (circle_size, circle_size))
-            screen.blit(b_img, (WIDTH + offset - (i*size), offset + HEIGHT // 200))
-            # self.button_dict[b]["rect"] = b_img.get_rect()
-            i += 1
-
-    # def is_clicked(self, mouse_pos):
-    #     for button in self.button_dict:
-    #         if self.button_dict[button]["rect"].collidepoint(mouse_pos):
-    #             return True
+    def is_clicked(self, mouse_pos):
+        for button in self.button_dict:
+            if self.button_dict[button]["rect"].collidepoint(mouse_pos):
+                print("test")
+                return self.button_dict[button]["state"]
 
     # def get_clicked_event(self, mouse_pos):
     #     for button in self.button_dict.keys():
     #         if self.button_dict[button]["rect"].collidepoint(mouse_pos):
     #             return self.button_dict[button]["on_click"]
 
-    def hud_event(self, mouse_pos):
-        if is_clicked():
-            get_clicked_event(mouse_pos)
-
-
+    # def hud_event(self, mouse_pos):
+    #     if is_clicked():
+    #         get_clicked_event(mouse_pos)
 
     def draw(self, screen):
         """Draw the whole HUD
@@ -140,4 +140,14 @@ class Hud:
         self.draw_manabars(screen)
         self.draw_xpbar(screen)
         # self.draw_shapes(screen)
-        self.draw_buttons(screen)
+        self.draw_all_buttons(screen)
+
+class HudButton(Container):
+
+    def draw_image(self, screen):
+        if self.item:
+            offset = 12
+            image = pg.transform.scale(self.item, (self.size, self.size))
+            _x = image.get_width()
+            _y = image.get_height()
+            screen.blit(image, (self.x, self.y))

@@ -36,6 +36,7 @@ from sprites.enemy import Enemy, Boss
 from random import choice  # very temporary (just to create multiple type of enemies)
 from sprites.character import players, enemies
 
+from managers.stats_manager import StatsWindow
 vec = pg.math.Vector2
 
 
@@ -432,6 +433,12 @@ class Game(_Elements):
             if event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
                 self.versus_manager.events(mouse_pos)
+
+    def events_hud(self, event):
+        if self.state != 'inventory': 
+            if event.type == pg.MOUSBUTTONDOWN:
+                if event.type == 1:
+                    super().toggle_sub_state(self.hud.is_clicked(pg.mouse.get_pos()))
 
     def events_inventory(self, event):
         """When the shop state is running"""
