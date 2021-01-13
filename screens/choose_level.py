@@ -16,6 +16,9 @@ class ChooseLevel(_Elements):
 
         super(ChooseLevel, self).__init__(self.name, self.next, 'menu', '0.png', self.create_buttons_dict())
 
+    def startup(self, dt, game_data):
+        super().startup(dt, game_data)
+
         self.create_back_button(self.background, self.load_next_state, [CHOOSE_LEVEL])
 
     def all_events(self, events):

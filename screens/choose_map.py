@@ -274,6 +274,7 @@ class ChooseMap(_Elements):
         super().toggle_sub_state(state)
         pg.event.clear()
         pg.event.wait()
+
         if state == "levels_maps":
             self.maps = [
                 f for f in os.listdir(
