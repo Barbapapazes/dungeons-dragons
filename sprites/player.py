@@ -217,6 +217,8 @@ class Player(Character):
                 self.game.level_up_manager.content["content"] = "Unlock a fight action !"
             elif self.type == "wizard":
                 self.game.level_up_manager.content["content"] = "Unlock two spell actions !"
+            elif self.type == "thief":
+                self.game.level_up_manager.content["content"] = "Unlock a big punch next turn !"
             return True
         return False
 

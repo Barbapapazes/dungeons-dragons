@@ -97,6 +97,8 @@ class VersusManager:
         self.active = True
         self.set_move_player(False)
         self.logs.add_log("Start the versus")
+        self.turn_manager.turn = 0
+        self.turn_manager.sorted = False
         self.add_actions()
 
     def add_actions(self):
@@ -299,6 +301,12 @@ class VersusManager:
                 malus = -((dist.length_squared() - scope) // TILESIZE) * MALUS_ARC
                 damage -= malus
         protection = self.selected_enemy.get_protection()
+
+        if self.turn_manager.active().type == "thief" and self.turn_manager.active().skill_bonus and self.turn_manager.turn < len(self.turn_manager.sorted):
+            self.turn_manager.active().skill_bonus = False
+            self.logs.add_log("Use huge attack from thief")
+            damage *= 2.2
+
         self.logs.add_log(
             f'The {self.turn_manager.active()} attacked {self.selected_enemy}, dealing {max(0, damage - protection)} ({damage} - {protection}).')
         return max(0, damage - protection)
@@ -318,7 +326,7 @@ class VersusManager:
         self.turn_manager.active().number_actions -= 1
         self.set_move_player(False)
         logger.debug("c'est ici qu'on va check les level up")
-        if self.turn_manager.active().skill_bonus and self.turn_manager.active().number_actions == 0:
+        if self.turn_manager.active().skill_bonus and self.turn_manager.active().number_actions == 0 and not self.turn_manager.active().type == "thief":
             self.turn_manager.active().skill_bonus = False
             self.turn_manager.active().number_actions += 1
             if self.turn_manager.active().type == "soldier":
