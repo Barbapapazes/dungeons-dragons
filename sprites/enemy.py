@@ -1,12 +1,15 @@
 """Define a enemy"""
 
-from sprites.character import *
-from inventory.inventory import Armor
-from config.colors import GREEN, YELLOW, RED
+from random import choice, choices, randint, random, uniform
+
+from config.colors import GREEN, RED, YELLOW
+from config.sprites import ARMOR, ASSETS_SPRITES, ITEMS, WAIT_TIME
 from config.window import TILESIZE
+from inventory.inventory import Armor
 from utils.cell import Cell
-from random import choices, random, uniform, randint
-from config.sprites import ASSETS_SPRITES, ARMOR, ITEMS, WAIT_TIME
+
+from sprites.character import *
+
 vec = pg.math.Vector2
 
 # npc settings
@@ -117,18 +120,20 @@ class Enemy(Character):
 
     def difficulty_tweeking(self):
         """tweeks ennemy's statistics to match game difficulty"""
+
         for bodypart in choices(
             ['head', 'chest', 'legs', 'feet'],
             weights=[15, 5 + self.game.difficulty * 5, 5, 10],
                 k=self.game.difficulty):
-            armor_list = []
-            for part in ARMOR.items():
-                # we can use use a filter to avoid to have always the same elements et en fonction de la difficulté, on choisi les bonne parts
-                if part[1]['slot'] == bodypart:
-                    armor_list.append(part)
-                    break
-            logger.debug(armor_list)
-            for key, value in armor_list:
+
+            def filterPart(item):
+                return item[1]["slot"] == bodypart
+
+            filtered = filter(filterPart, ARMOR.items())
+            filtered_list = [i for i in filtered]
+
+            if len(filtered_list):
+                key, value = choice(filtered_list)
                 self.equip_armor(Armor(
                     key,
                     ITEMS[value['image_name']],
