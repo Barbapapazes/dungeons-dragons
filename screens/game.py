@@ -19,6 +19,7 @@ from window import _State, _Elements
 from logger import logger
 from sprites.player import Player
 from sprites.obstacle import Obstacle
+from utils.hud import Hud
 from utils.tilemap import TiledMap, Camera, Minimap, collide_hit_rect
 from utils.shortcuts import key_for
 from config.window import WIDTH, HEIGHT, TILESIZE
@@ -327,6 +328,8 @@ class Game(_Elements):
 
             self.save_data()
             self.save_data_in_file()
+
+        self.hud = Hud(self)
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -845,6 +848,7 @@ class Game(_Elements):
     def draw(self):
         """Draw all"""
         self.draw_map()
+        self.hud.draw(self.screen)
         self.draw_all_sprites()
 
         self.versus_manager.draw(self.screen)

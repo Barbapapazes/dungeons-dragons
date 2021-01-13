@@ -25,7 +25,7 @@ if __name__ == '__main__':
         LOAD_GAME: LoadGame(),
         MENU: Menu(),
         GAME: Game(),
-        ONLINE_GAME: OnlineGame(),
+        # ONLINE_GAME: OnlineGame(),
         CREDITS: Credits(),
         OPTIONS: Options(),
         SHORTCUTS: Shortcuts(),
