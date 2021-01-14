@@ -396,7 +396,6 @@ class Game(_Elements):
                     if self.turn_manager.active().inventory.display_inventory:
                         logger.info("Select an item from the inventory")
                         self.turn_manager.active().inventory.move_item()
-
         if self.map_viewer_manager.active:
             self.map_viewer_manager.event(event)
         self.event_versus(event)
@@ -405,6 +404,7 @@ class Game(_Elements):
             self.events_inventory(event)
             self.events_shop(event)
             self.events_chest(event)
+            self.events_hud(event)
 
     def event_versus(self, event):
 
@@ -435,10 +435,26 @@ class Game(_Elements):
                 self.versus_manager.events(mouse_pos)
 
     def events_hud(self, event):
-        if self.state != 'inventory': 
-            if event.type == pg.MOUSBUTTONDOWN:
-                if event.type == 1:
-                    super().toggle_sub_state(self.hud.is_clicked(pg.mouse.get_pos()))
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                state = self.hud.get_relate_button_state(pg.mouse.get_pos())
+                if state == 'inventory':
+                    if self.turn_manager.is_active_player():
+                        logger.info("Toggle inventory from %s", self.turn_manager.active())
+                        self.seller = False
+                        self.map_viewer_manager.active = False
+                        self.create_dim()
+                        super().toggle_sub_state('inventory')
+                if state == 'map': 
+                    self.seller = False
+                    self.map_viewer_manager.active = True
+                    self.turn_manager.active().inventory.display_inventory = False
+                    self.create_dim()
+                    super().toggle_sub_state('map')
+                if state == 'quests':
+                    pass
+                if state == 'stats':
+                    pass
 
     def events_inventory(self, event):
         """When the shop state is running"""

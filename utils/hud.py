@@ -104,34 +104,26 @@ class Hud:
         min_x = WIDTH - self._size*len(self.button_dict)
         min_y = 00
         max_y = self._size
-        
         for _x in range(min_x, max_x, self._size):
             self.buttons.append(HudButton(_x, 0, self._size, BLACK))
             print(_x)
         for i, (k, v) in enumerate(self.button_dict.items()):
             self.buttons[i].item = pg.image.load(self.button_dict[k]["image"]).convert_alpha()
+            self.buttons[i].set_name(k)
 
     def get_all_buttons(self):
         return self.buttons
+
     def draw_all_buttons(self, screen):
         for b in self.get_all_buttons():
             b.draw(screen)
             b.draw_image(screen)
-
-    def is_clicked(self, mouse_pos):
-        for button in self.button_dict:
-            if self.button_dict[button]["rect"].collidepoint(mouse_pos):
-                print("test")
-                return self.button_dict[button]["state"]
-
-    # def get_clicked_event(self, mouse_pos):
-    #     for button in self.button_dict.keys():
-    #         if self.button_dict[button]["rect"].collidepoint(mouse_pos):
-    #             return self.button_dict[button]["on_click"]
-
-    # def hud_event(self, mouse_pos):
-    #     if is_clicked():
-    #         get_clicked_event(mouse_pos)
+    
+    def get_relate_button_state(self, mouse_pos):
+        for button in self.get_all_buttons():
+            print(button.name)
+            if button.rect.collidepoint(mouse_pos):
+                return button.name
 
     def draw(self, screen):
         """Draw the whole HUD
@@ -139,15 +131,19 @@ class Hud:
         self.draw_healthbars(screen)
         self.draw_manabars(screen)
         self.draw_xpbar(screen)
-        # self.draw_shapes(screen)
         self.draw_all_buttons(screen)
 
 class HudButton(Container):
 
+    def set_name(self, name):
+        self.name = name
+    
     def draw_image(self, screen):
         if self.item:
             offset = 12
             image = pg.transform.scale(self.item, (self.size, self.size))
             _x = image.get_width()
             _y = image.get_height()
+            pg.draw.rect(screen, (0, 255, 0), pg.Rect(self.x, self.y, _x, _y), 1)
+
             screen.blit(image, (self.x, self.y))
