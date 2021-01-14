@@ -605,8 +605,17 @@ ASSETS_SPRITES = {
     _type: {
         key: cycle([pg.transform.scale(pg.image.load(path.join(
             sprites_folder, _type, key, f"{i}.png")), (TILESIZE, TILESIZE)) for i in range(3)]) for key in DIRECTIONS
-    } for _type in TYPES
+    } for _type in TYPES if _type != 'boss'
 }
+
+ASSET_BOSS =  {
+    'boss': {
+        key: cycle([pg.transform.scale(pg.image.load(path.join(
+            sprites_folder, 'boss', key, f"{i}.png")), (96, 96)) for i in range(3)]) for key in DIRECTIONS
+    }
+}
+
+ASSETS_SPRITES = ASSETS_SPRITES | ASSET_BOSS
 
 ASSETS_FIRE_BALL = [pg.image.load(path.join(sprites_folder, "effects_zone", "fire_ball",
                                             "{:04d}.png".format(i))) for i in range(1, 11)]
