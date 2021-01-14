@@ -134,20 +134,16 @@ class Character(pg.sprite.Sprite):
         if self.health <= 0:
             self.health = 0
             if enemies.has(self):
-                # enemies.remove(self)
-                # logger.debug(self.alive())
-                # for i in enemies.sprites():
-                #     logger.debug(i)
-                # logger.debug(self.groups)
+                self.game.turn_manager.enemies.remove(self)
+                self.game.turn_manager.sorted.remove(self)
+                self.throw_inventory()
                 self.groups.remove(self)
-                # for i in enemies.sprites():
-                #     logger.debug(i)
                 self.kill()
                 # for i in enemies.sprites():
                 #     logger.debug(i)
                 enemies.remove_internal(self)
-                # for i in enemies.sprites():
-                #     logger.debug(i)
+                for i in enemies.sprites():
+                    logger.debug(i)
         else:
             self.game.logs.add_log(f'{self} has {self.health} remaining, (-{hp_lose})')
 

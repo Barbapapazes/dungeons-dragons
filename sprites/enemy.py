@@ -142,7 +142,10 @@ class Enemy(Character):
                     value['price'],
                     value['weight'],
                     value['shield'],
-                    value['slot']))
+                    value['slot'])
+                logger.info(armor)
+                self.inventory.add_item(armor)
+                self.equip_armor(armor)
 
 
     def save(self):
