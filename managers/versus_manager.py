@@ -251,12 +251,17 @@ class VersusManager:
 
     def kill_enemy(self):
         """Kill an enemy"""
+        rel_turn = self.turn_manager.get_relative_turn()
+        if self.turn_manager.sorted.index(
+                self.selected_enemy) < self.turn_manager.sorted.index(
+                self.turn_manager.active()):
+            rel_turn -= 1
         self.turn_manager.enemies.remove(self.selected_enemy)
         self.turn_manager.sorted.remove(self.selected_enemy)
         self.selected_enemy.throw_inventory()
         self.selected_enemy.throw_equipments()
         self.selected_enemy.kill()
-        self.turn_manager.add_turn()
+        self.turn_manager.turn = len(self.turn_manager.sorted) + rel_turn
 
     def action_attack(self):
         """Used to start a action to attack"""
@@ -325,17 +330,17 @@ class VersusManager:
         """Check the action of the active character"""
         self.turn_manager.active().number_actions -= 1
         self.set_move_player(False)
-        logger.debug("c'est ici qu'on va check les level up")
-        if self.turn_manager.active().skill_bonus and self.turn_manager.active().number_actions == 0 and not self.turn_manager.active().type == "thief":
-            self.turn_manager.active().skill_bonus = False
-            self.turn_manager.active().number_actions += 1
-            if self.turn_manager.active().type == "soldier":
-                self.soldier_bonus = True
-            elif self.turn_manager.active().type == "wizard":
-                self.turn_manager.active().number_actions += 1
-                self.wizard_bonus = True
 
-        if self.turn_manager.active().number_actions <= 0 and not self.turn_manager.active().skill_bonus:
+        if self.turn_manager.is_active_player() and self.turn_manager.active().level_up() and self.turn_manager.active().number_actions == 0:
+            if not self.turn_manager.active().type == "thief":
+                self.turn_manager.active().number_actions += 1
+                if self.turn_manager.active().type == "soldier":
+                    self.soldier_bonus = True
+                elif self.turn_manager.active().type == "wizard":
+                    self.turn_manager.active().number_actions += 1
+                    self.wizard_bonus = True
+
+        if self.turn_manager.active().number_actions <= 0:
             self.add_turn()
         else:
             self.logs.add_log(

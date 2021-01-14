@@ -1,6 +1,6 @@
 """Game screen"""
 
-from managers.level_up_manager import LevelUpManager
+from managers.notification_manager import NotificationManager
 from sprites.map_check import MapCheck
 from managers.map_viewer_manager import MapViewerManager
 from sprites.effects_zone import EffectsZone
@@ -54,7 +54,7 @@ class Game(_Elements):
         self.animated = pg.sprite.Group()
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.versus_manager = VersusManager(self)
-        self.level_up_manager = LevelUpManager(self)
+        self.notification_manager = NotificationManager(self)
 
         self.confetti = Confetti(self, WIDTH // 2, 0)
 
@@ -660,7 +660,7 @@ class Game(_Elements):
         self.minimap.update()
         self.versus_manager.update()
         self.turn_manager.update(self.versus_manager.active)
-        self.level_up_manager.update()
+        self.notification_manager.update()
 
     def update_camera(self):
         if self.turn_manager.get_vision_character():
@@ -853,7 +853,7 @@ class Game(_Elements):
         self.versus_manager.draw(self.screen)
         self.minimap.draw(self.screen)
         self.logs.draw(self.screen)
-        self.level_up_manager.draw(self.screen)
+        self.notification_manager.draw(self.screen)
 
         self.draw_debug()
 

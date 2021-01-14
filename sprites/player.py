@@ -205,23 +205,6 @@ class Player(Character):
         if self.spell is not None:
             self.spell = None
 
-    def level_up(self):
-        if self.xp >= 100:
-            self.xp = self.xp % 100
-            for i in self.characteristics:
-                self.characteristics[i] += 5
-            self.game.logs.add_log(f"{self} leveled up !")
-            self.skill_bonus = True
-            self.game.level_up_manager.content["title"] = "Level up !"
-            if self.type == "soldier":
-                self.game.level_up_manager.content["content"] = "Unlock a fight action !"
-            elif self.type == "wizard":
-                self.game.level_up_manager.content["content"] = "Unlock two spell actions !"
-            elif self.type == "thief":
-                self.game.level_up_manager.content["content"] = "Unlock a big punch next turn !"
-            return True
-        return False
-
 
 class Arrow(pg.sprite.Sprite):
     """Create an arrow"""

@@ -2,7 +2,7 @@
 from random import randint, uniform
 import pygame as pg
 from utils.tilemap import collide_with_walls
-from config.sprites import PLAYER_HIT_RECT
+from config.sprites import PLAYER_HIT_RECT, TYPES_HEROS
 from logger import logger
 from inventory.inventory import Inventory
 
@@ -35,6 +35,7 @@ class Character(pg.sprite.Sprite):
         self.spell = None
         self.shield = 0
 
+        self.xp = 0
         self.game = game
         self.type = _type
         self.direction = "idle"
@@ -202,3 +203,22 @@ class Character(pg.sprite.Sprite):
                     someone.player_spotted = self.player_spotted
                 return Character.groupCount(someone, grouplist, count)
         return count
+
+    def level_up(self):
+        logger.debug("%s, %s", self, self.xp)
+        if self.xp >= 100 and self.type in TYPES_HEROS:
+            self.xp = self.xp % 100
+            for i in self.characteristics:
+                self.characteristics[i] += 5
+            self.game.logs.add_log(f"{self} leveled up !")
+            self.game.notification_manager.active = True
+            self.game.notification_manager.content["title"] = "Level up !"
+            if self.type == "soldier":
+                self.game.notification_manager.content["content"] = "Unlock a fight action !"
+            elif self.type == "wizard":
+                self.game.notification_manager.content["content"] = "Unlock two spell actions !"
+            elif self.type == "thief":
+                self.skill_bonus = True
+                self.game.notification_manager.content["content"] = "Unlock a big punch next turn !"
+            return True
+        return False
