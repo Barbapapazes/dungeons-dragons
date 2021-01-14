@@ -54,7 +54,8 @@ class Enemy(Character):
         self.now = 0
         self.cooldown = 1
         self.spawned = False
-        self.cooldown = randint(15, 25)
+        self.cooldown = randint(10, 20)
+        self.fleeing = False
 
         self.attack_range = TILESIZE * 2
 
@@ -140,7 +141,10 @@ class Enemy(Character):
                     value['price'],
                     value['weight'],
                     value['shield'],
-                    value['slot']))
+                    value['slot'])
+                logger.info(armor)
+                self.inventory.add_item(armor)
+                self.equip_armor(armor)
 
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -198,8 +202,9 @@ class Enemy(Character):
                 if self.now - self.last_timestamp2 > 3000:
                     self.end_turn()
                 elif self.player_detection():
-                    if self.evaluation():
+                    if self.evaluation() or self.fleeing:
                         self.acc = self.flee(self.player_spotted.pos)
+                        self.fleeing = True
                     else:
                         """ if player out of reach, "pathfind" him
                         """
@@ -233,17 +238,19 @@ class Enemy(Character):
                     self.skip_turn()
 
             elif self.player_detection():
-                if self.evaluation():
+                if self.evaluation() or self.fleeing:
                     self.acc = self.flee(self.player_spotted.pos)
+                    self.fleeing = True
                 else:
                     if not self.goto:  # and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
                         self.goto = self.path_finding(self.player_spotted.pos)
                         if self.goto:
                             del self.goto[0]
                     if self.goto:
-                        for i in self.goto:
-                            rect = pg.Rect(i.coor, (SIZE, SIZE))
-                            pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
+                        if self.game.debug:
+                            for i in self.goto:
+                                rect = pg.Rect(i.coor, (SIZE, SIZE))
+                                pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
                         self.acc = self.seek(self.goto[0].coor)
                         if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
                             del self.goto[0]
@@ -326,9 +333,11 @@ class Enemy(Character):
         steer = vec(0, 0)
         dist = self.pos - target
         if dist.length() < FLEE_DISTANCE:
-            desired = (self.pos - target).normalize() * 5
+            desired = (self.pos - target).normalize() * self.speed
         else:
-            desired = self.vel.normalize() * 5
+            if self.vel == vec(0,0):
+                self.vel = vec(random(),random())
+            desired = self.vel.normalize() * self.speed
         steer = (desired - self.vel)
         if steer.length() > SEEK_FORCE:
             steer.scale_to_length(SEEK_FORCE)
@@ -385,10 +394,13 @@ class Enemy(Character):
             for neigh in current.neighbor():
                 """skip murs
                 """
+                rect = pg.Rect(neigh.coor, (10, 10))
                 for wall in self.game.walls.sprites():
-                    skip = False
-                    if wall.rect.collidepoint(neigh.coor):
+                    skip = False    
+                    if wall.rect.colliderect(rect):
                         skip = True
+                        if self.game.debug:
+                            pg.draw.rect(self.game.map_img, (0, 0, 0), rect)
                         break
                 if skip:
                     continue
@@ -396,8 +408,10 @@ class Enemy(Character):
                 """
                 for trap in self.game.traps.sprites():
                     skip = False
-                    if trap.rect.collidepoint(neigh.coor):
+                    if trap.rect.colliderect(rect):
                         skip = True
+                        if self.game.debug:
+                            pg.draw.rect(self.game.map_img, (0, 0, 0), rect)
                         break
                 if skip:
                     continue
@@ -405,8 +419,10 @@ class Enemy(Character):
                 """
                 for door in self.game.doors.sprites():
                     skip = False
-                    if door.rect.collidepoint(neigh.coor):
+                    if door.rect.colliderect(rect):
                         skip = True
+                        if self.game.debug:
+                            pg.draw.rect(self.game.map_img, (0, 0, 0), rect)
                         break
                 if skip:
                     continue
@@ -414,8 +430,10 @@ class Enemy(Character):
                 """
                 for chest in self.game.chests.sprites():
                     skip = False
-                    if chest.rect.collidepoint(neigh.coor):
+                    if chest.rect.colliderect(rect):
                         skip = True
+                        if self.game.debug:
+                            pg.draw.rect(self.game.map_img, (0, 0, 0), rect)
                         break
                 if skip:
                     continue
@@ -424,16 +442,20 @@ class Enemy(Character):
                 """
                 for enemy in enemies:
                     skip = False
-                    if enemy.rect.collidepoint(neigh.coor):
+                    if enemy.rect.colliderect(rect):
                         skip = True
+                        if self.game.debug:
+                            pg.draw.rect(self.game.map_img, (0, 0, 0), rect)
                         break
                 if skip:
                     continue
 
                 for merchant in self.game.merchants.sprites():
                     skip = False
-                    if merchant.rect.collidepoint(neigh.coor):
-                        skip = True
+                    if merchant.rect.colliderect(rect):
+                        skip = True                        
+                        if self.game.debug:
+                            pg.draw.rect(self.game.map_img, (0, 0, 0), rect)
                         break
                 if skip:
                     continue
@@ -512,7 +534,7 @@ class Enemy(Character):
         Returns:
             vec(x,y): acceleration vector following [the shortest path to the player / the optimal fleeing curve]
         """
-        return self.health_percentage()//25 - 3 > (self.groupCount(enemies.sprites()) - Character.groupCount(self.player_spotted, players.sprites()))
+        return self.health_percentage()//25 - 4 + self.game.difficulty > (self.groupCount(enemies.sprites()) - Character.groupCount(self.player_spotted, players.sprites()))
 
     def move_or_attack(self):
         """decide whether to attack or move this turn
@@ -547,6 +569,7 @@ class Enemy(Character):
 
     def end_turn(self):
         self.last_timestamp2 = None
+        self.fleeing = False
         self.goto = []
         self.moving = False
         self.end = True
