@@ -174,8 +174,6 @@ class Character(pg.sprite.Sprite):
         _type = "success" if self.dice["success"] else "failed"
         self.game.logs.add_log(
             f"Dice {_type}, result {result_dice}/{value_dice}, under {self.characteristics[base_value] + mod} to success")
-        logger.info("Result dice : %d / %d (must be under %s to success)",
-                    result_dice, value_dice, self.characteristics[base_value] + mod)
 
     def get_protection(self):
         protection = self.characteristics['con'] // 5

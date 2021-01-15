@@ -173,6 +173,8 @@ class TurnManager:
         if self.get_active_weapon() is None:
             damage += self.active().characteristics['str'] // 5
         else:
+            self.game.logs.add_log(
+                f"Number of dice: {self.get_active_weapon().attack().number_dice}, Dice value: {self.get_active_weapon().attack().dice_value}")
             damage += self.get_active_weapon().attack()
         return damage
 
