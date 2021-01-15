@@ -227,13 +227,14 @@ class VersusManager:
             self.remove_action()
             self.check_characters_actions()
 
-    def kill_enemy(self):
+    def kill_enemy(self, enemy=None):
         """Kill an enemy"""
-        self.turn_manager.enemies.remove(self.selected_enemy)
-        self.turn_manager.sorted.remove(self.selected_enemy)
-        self.selected_enemy.throw_inventory()
-        self.selected_enemy.throw_equipments()
-        self.selected_enemy.kill()
+        to_kill = self.selected_enemy if enemy is None else enemy
+        self.turn_manager.enemies.remove(to_kill)
+        self.turn_manager.sorted.remove(to_kill)
+        to_kill.throw_inventory()
+        to_kill.throw_equipments()
+        to_kill.kill()
         self.turn_manager.add_turn()
 
     def action_attack(self):

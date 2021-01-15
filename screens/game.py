@@ -8,7 +8,7 @@ from sprites.animated import CampFire, Circle, Confetti
 from sprites.chest import Chest
 from inventory.inventory import Armor, Consumable, Inventory, Spell, Weapon
 from config.sprites import ASSETS_SPRITES, ITEMS, ITEMS_NAMES, ITEMS_PROPERTIES, TRAP_DAMAGE
-from os import path
+from os import kill, path
 from sprites.item import PlacableItem
 from inventory.items import Item as InventoryItem
 from sprites.door import Door
@@ -693,40 +693,42 @@ class Game(_Elements):
         for hit in hits:
             if not hit.to_open:
                 self.turn_manager.active().subHp(TRAP_DAMAGE)
-            hit.to_open = True
+                if (self.turn_manager.is_active_enemy() and self.turn_manager.active().health <= 0):
+                    self.versus_manager.kill_enemy(self.turn_manager.active())
+            hit.to_open=True
 
     def hit_map_checks(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.map_checks, False)
+        hits=pg.sprite.spritecollide(self.turn_manager.active(), self.map_checks, False)
         if self.press_space and hits:
             for hit in hits:
                 hit.collide()
-            self.press_space = False
+            self.press_space=False
 
     def hit_chests(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.chests, False)
+        hits=pg.sprite.spritecollide(self.turn_manager.active(), self.chests, False)
         if self.press_space and hits:
             for hit in hits:
                 hit.try_open(self.turn_manager.active())
-            self.press_space = False
+            self.press_space=False
 
     def hit_doors(self):
-        hits = pg.sprite.spritecollide(
+        hits=pg.sprite.spritecollide(
             self.turn_manager.active(),
             self.doors, False)
         if self.press_space and hits:
             for hit in hits:
                 hit.try_open(self.turn_manager.active())
-            self.press_space = False
+            self.press_space=False
 
     def hit_merchants(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.merchants, False)
+        hits=pg.sprite.spritecollide(self.turn_manager.active(), self.merchants, False)
         if self.press_space and hits:
             for hit in hits:
                 hit.try_open()
-            self.press_space = False
+            self.press_space=False
 
     def hit_animated(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.animated, False)
+        hits=pg.sprite.spritecollide(self.turn_manager.active(), self.animated, False)
         if self.press_space and hits:
             for hit in hits:
                 if isinstance(hit, CampFire):
@@ -736,13 +738,13 @@ class Game(_Elements):
                         self.logs.add_log("Restore the player health")
                         self.save_data()
                         self.save_data_in_file()
-                        self.press_space = False
+                        self.press_space=False
                     else:
                         self.logs.add_log("Unable to save because versus is active")
-            self.press_space = False
+            self.press_space=False
 
     def hit_items(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.items, False)
+        hits=pg.sprite.spritecollide(self.turn_manager.active(), self.items, False)
         for hit in hits:
             if hit.properties["object_type"] == "other":
                 if self.turn_manager.is_active_player():
@@ -801,29 +803,29 @@ class Game(_Elements):
 
     def check_for_chest_open(self):
         if self.chest_open:
-            self.chest_open = False
-            self.seller = False
-            self.opened_chest.store.display_shop = True
-            self.turn_manager.active().inventory.display_inventory = True
+            self.chest_open=False
+            self.seller=False
+            self.opened_chest.store.display_shop=True
+            self.turn_manager.active().inventory.display_inventory=True
             super().toggle_sub_state('chest')
 
     def check_for_merchant_open(self):
         if self.merchant_open:
-            self.merchant_open = False
-            self.seller = False
-            self.opened_merchant.shop.display_shop = True
-            self.turn_manager.active().inventory.display_inventory = True
+            self.merchant_open=False
+            self.seller=False
+            self.opened_merchant.shop.display_shop=True
+            self.turn_manager.active().inventory.display_inventory=True
             super().toggle_sub_state('merchant')
 
     def save_data(self):
         self.logs.add_log("Save data in memory")
-        self.game_data["minimap"] = self.minimap.create_minimap_data()
-        self.game_data["game_data"]["heros"] = self.save_list(self.turn_manager.players)
-        self.game_data["game_data"]["items"] = self.save_list(self.items)
-        self.game_data["game_data"]["enemies"] = self.save_list(self.turn_manager.enemies)
-        self.game_data["game_data"]["chests"] = self.save_list(self.chests)
-        self.game_data["game_data"]["doors"] = self.save_list(self.doors)
-        self.game_data["game_data"]["merchants"] = self.save_list(self.merchants)
+        self.game_data["minimap"]=self.minimap.create_minimap_data()
+        self.game_data["game_data"]["heros"]=self.save_list(self.turn_manager.players)
+        self.game_data["game_data"]["items"]=self.save_list(self.items)
+        self.game_data["game_data"]["enemies"]=self.save_list(self.turn_manager.enemies)
+        self.game_data["game_data"]["chests"]=self.save_list(self.chests)
+        self.game_data["game_data"]["doors"]=self.save_list(self.doors)
+        self.game_data["game_data"]["merchants"]=self.save_list(self.merchants)
         #  no more needed because we can only save if the versus is disable
         # self.game_data["game_data"]["turns"] = self.save_turns()
 
@@ -836,7 +838,7 @@ class Game(_Elements):
         return [(int(character.x), int(character.y)) for character in self.turn_manager.get_characters()]
 
     def save_list(self, values):
-        data = list()
+        data=list()
         for value in values:
             data.append(value.save())
 
