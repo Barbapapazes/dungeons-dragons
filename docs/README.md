@@ -63,7 +63,7 @@ footer: Made by  with ❤️ by the group 10
 - gestion des items au sol, dans le shop et dans l'inventaire
 - ennemies intelligents et autonomes
 - nombreux types d'ennemies
-- utilisation du mode combat au clavier et à la sourie
+- utilisation du mode combat au clavier et à la souris
 - surbrillance de la sélection d'un ennemie
 
 ### Sauvegarde
