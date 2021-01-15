@@ -119,9 +119,9 @@ class Character(pg.sprite.Sprite):
             hp_gain (int)
         """
         self.health += hp_gain
-        logger.debug(hp_gain)
         if self.health > self.max_HP:
             self.health = self.max_HP
+        self.game.logs.add_log(f'{self} has {self.health} remaining, (+{hp_gain}')
 
     def subHp(self, hp_lose):
         """Sub passed hp_lose to the player's health
@@ -133,7 +133,7 @@ class Character(pg.sprite.Sprite):
         if self.health < 0:
             self.health = 0
         else:
-            self.game.versus_manager.logs.add_log(f'{self} has {self.health} remaining')
+            self.game.logs.add_log(f'{self} has {self.health} remaining, (-{hp_lose}')
 
     def equip_armor(self, item):
         """Equip a passed armor item in the right armor slot,
