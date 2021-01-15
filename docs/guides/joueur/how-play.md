@@ -28,7 +28,7 @@ Il existe 3 types de heros :
 - le sorcier
 - le voleur
 
-Chacun de ses heros va se voir attribuer des capacités spéciales ainsi que des caractéristiques par défaut différentes.
+Chacun de ses heros va se voir attribuer des capacités spéciales ainsi que des caractéristiques par défaut différentes. Aussi, ces héros possèdent des skills lorsque augmente de niveau. Par exemple, le soldat va pouvoir réaliser une nouvelle attaque, le sorcier va avoir le droit de lancer 2 sorts en plus de ses actions. Enfin, le voleur va donner un gros lors de son premier coup du prochain combat.
 
 ### Caractéristiques
 
@@ -45,7 +45,7 @@ Chaque personnage possède 6 attributs qui varient entre 30 et 100. Il s'agit de
 
 - WIS (wisdom) : Dans un coffre ou sur un ennemi, il y a deux types de loot. Le premier, loot ordinaire se trouvant dans la base de donné. Et le second qui est un loot qui apparaît seulement si le test est réussi, donc un meilleur loot.
 
-- CHA (charisme) : A la rencontre d'un personnage non jouable amicale, on effectue ce test pour determiner si le personnage joué arrive à impressioner le personnage et pouvoir avoir des réductions sur le shop si c'est un marchand ou avoir des indications (direction/clef/porte) si cela est un personnage classic
+- CHA (charisme) : A la rencontre d'un personnage non jouable amicale, on effectue ce test pour determiner si le personnage joué arrive à impressionner le personnage et pouvoir avoir des réductions sur le shop si c'est un marchand ou avoir des indications (direction/clef/porte) si cela est un personnage classic
 
 ### Soldat
 
@@ -62,6 +62,8 @@ Le voleur est un personnage assez simple. Cependant, il a toujours la chance d'�
 ## Enemies
 
 Les ennemis se baladent tranquillement jusqu'au moment où les joueurs apparaissent dans leur ligne de mire. Ils vont alors décider si le risque vaut le coup d'aller attaquer. En combat, ils utilisent leur pouvoir spécial s'ils en ont un, sinon ils se mettent simplement en position et attaquent ensuite.
+
+Vous avez la possibilité de choisir parmi 5 niveaux de difficulté pour vos parties. Ce niveau permet d'ajuster les caractéristiques des ennemies et d'adapter leur équipements.
 
 ## Items
 
