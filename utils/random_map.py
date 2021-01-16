@@ -273,7 +273,7 @@ def generate_map(height, width, out=default_out):
                     list_cur = endh_01
 
             if k == height-1 and i == width - 1:
-                list_cur = ['WALL']
+                list_cur = ['END']
 
             dirMap = list_cur[randint(0, len(list_cur)-1)]
             dir = path.join(preset, dirMap)
