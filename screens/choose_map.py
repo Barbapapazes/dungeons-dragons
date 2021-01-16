@@ -1,6 +1,5 @@
 """Menu screen"""
 
-from data.music_data import DATA_MUSIC, DATA_SOUND
 import os
 from os import path
 
@@ -269,7 +268,7 @@ class ChooseMap(_Elements):
         }
         logger.info("Select %s", selected)
         self.next = CHOOSE_LEVEL
-        DATA_SOUND["click"] = True
+        self.game_data["music"]["sound"]["click"] = True
         super().set_state(TRANSITION_OUT)
 
     def toggle_sub_state(self, state):

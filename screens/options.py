@@ -60,12 +60,12 @@ class Options(_Elements):
         """Create the dict for screen size buttons"""
         return {
             "song": {
-                "text": "Song : "+str(DATA_MUSIC["is_enable"]),
+                "text": "Song : "+str(self.game_data["music"]["song"]["is_enable"]),
                 "on_click": self.status_music,
                 "on_click_params": "1",
             },
             "sound": {
-                "text": "Sound : "+str(DATA_MUSIC["is_enable"]),
+                "text": "Sound : "+str(self.game_data["music"]["song"]["is_enable"]),
                 "on_click": self.status_music,
                 "on_click_params": "1",
             },

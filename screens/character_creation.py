@@ -1,6 +1,5 @@
 """Create a character screen"""
 
-from data.music_data import DATA_SOUND
 from datetime import datetime
 from os import path
 
@@ -464,7 +463,7 @@ class CharacterCreation(_Elements):
 
     def next_action(self):
         """Pass to the next screen or create a new hero"""
-        DATA_SOUND["click"] = True
+        self.game_data["music"]["sound"]["click"] = True
         logger.info("Save data to game_data")
         # pour chaque perso à faire, il faut le faire, valider, sauvegarder, décrémenter le nombre restant de perso à faire
         # si le nombre est > 0 alors on renvoie sur le même screen pour faire les autres

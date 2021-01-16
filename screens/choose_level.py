@@ -1,6 +1,5 @@
 """Choose level screen"""
 
-from data.music_data import DATA_SOUND
 import pygame as pg
 from config.screens import CHOOSE_LEVEL, INTRODUCTION, TRANSITION_OUT
 from logger import logger
@@ -48,9 +47,8 @@ class ChooseLevel(_Elements):
     def load(self, index):
         self.game_data["game_data"]["difficulty"] = index
         logger.info("Difficulty %s", index)
-        DATA_SOUND["click"] = True
+        self.game_data["music"]["sound"]["click"] = True
         super().set_state(TRANSITION_OUT)
-        logger.debug(self.game_data)
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""

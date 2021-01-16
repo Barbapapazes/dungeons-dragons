@@ -100,7 +100,6 @@ class Enemy(Character):
                 self.inventory.throw_item(slot.item)
 
     def throw_equipments(self):
-        logger.debug("throw equipment")
         for value in self.armor.values():
             if value is not None:
                 self.inventory.throw_item(value)
