@@ -52,10 +52,11 @@ class Enemy(Character):
         self.last_timestamp = 0
         self.last_timestamp2 = None
         self.now = 0
-        self.cooldown = 1
+        self.cooldown = 1.1
         self.spawned = False
         self.cooldown = randint(10, 20)
         self.fleeing = False
+        self.skip = False
 
         self.attack_range = TILESIZE * 2
 
@@ -141,10 +142,8 @@ class Enemy(Character):
                     value['price'],
                     value['weight'],
                     value['shield'],
-                    value['slot'])
-                logger.info(armor)
-                self.inventory.add_item(armor)
-                self.equip_armor(armor)
+                    value['slot']))
+
 
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -178,7 +177,11 @@ class Enemy(Character):
 
     def update(self):
         # if trap nearby: flee(trap)
-        if self.end:
+        if self.skip:
+            self.end = False
+            self.skip = False
+            self.game.versus_manager.check_characters_actions()
+        elif self.end:
             if self.spawned:
                 self.number_actions = 0
             self.end_time += self.game.dt
@@ -200,7 +203,7 @@ class Enemy(Character):
                 """ If a player is in sight, evaluate whether he is worth attacking or not
                 """
                 if self.now - self.last_timestamp2 > 3000:
-                    self.end_turn()
+                    self.end_move()
                 elif self.player_detection():
                     if self.evaluation() or self.fleeing:
                         self.acc = self.flee(self.player_spotted.pos)
@@ -210,11 +213,6 @@ class Enemy(Character):
                         """
                         self.game.turn_manager.selected_enemy = self.player_spotted
                         if self.move_or_attack():
-                            # if self.now - self.last_timestamp2 > 1500 and self.vel == vec(
-                            #         0, 0):  # skip if stuck on a wall
-                            #     self.player_spotted = None
-                            #     self.moving = False
-                            #     self.end_turn()
                             if not self.goto:  # and not self.player_spotted.pos.x - TILESIZE/2 <= self.pos.x <= self.player_spotted.pos.x + TILESIZE/2 and not self.player_spotted.pos.y - TILESIZE/2 <= self.pos.y <= self.player_spotted.pos.y + TILESIZE/2:
                                 self.goto = self.path_finding(self.player_spotted.pos)
                                 if self.goto:
@@ -231,7 +229,7 @@ class Enemy(Character):
                                 self.vel = vec(0, 0)
                                 self.moving = False
                                 self.game.logs.add_log(f'The {self} moved.')
-                                self.end_turn()
+                                self.end_move()
                         else:
                             self.attack()
                 else:
@@ -332,8 +330,8 @@ class Enemy(Character):
         """
         steer = vec(0, 0)
         dist = self.pos - target
-        if dist.length() < FLEE_DISTANCE:
-            desired = (self.pos - target).normalize() * self.speed
+        if dist.length() < FLEE_DISTANCE and dist.length() != 0 :
+            desired = dist.normalize() * self.speed
         else:
             if self.vel == vec(0,0):
                 self.vel = vec(random(),random())
@@ -565,9 +563,9 @@ class Enemy(Character):
             else:
                 self.game.versus_manager.calc_damage()
                 self.game.versus_manager.logs.add_log(f'The {self} missed his attack...')
-        self.end_turn()
+        self.end_move()
 
-    def end_turn(self):
+    def end_move(self):
         self.last_timestamp2 = None
         self.fleeing = False
         self.goto = []
@@ -575,8 +573,9 @@ class Enemy(Character):
         self.end = True
 
     def skip_turn(self):
-        self.end_turn()
+        self.skip = True
         self.number_actions = 0
+        self.end_move()
 
 
 class Boss(Enemy):
@@ -600,7 +599,7 @@ class Boss(Enemy):
                 if (self.player_spotted.pos - self.pos).length() < self.attack_range:
                     self.attack()
                 else:
-                    self.end_turn()
+                    self.end_move()
             else:
                 self.skip_turn()
         else:
