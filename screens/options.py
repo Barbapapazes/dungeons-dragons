@@ -1,15 +1,16 @@
 """Options screen"""
 
-from os import path
 import json
-from sprites.animated import Chandelier
+from os import path
+
 import pygame as pg
-from logger import logger
-from window import _Elements
-from config.window import WIDTH, HEIGHT
 from config.colors import BEIGE
-from config.screens import MENU, OPTIONS, SHORTCUTS ,OPTIONS_MUSIC
+from config.screens import MENU, OPTIONS, OPTIONS_MUSIC, SHORTCUTS
+from config.window import HEIGHT, WIDTH
 from data.options import CUSTOM_SETTINGS_FILENAME
+from logger import logger
+from sprites.animated import Chandelier
+from window import _Elements
 
 
 class Options(_Elements):
@@ -28,9 +29,6 @@ class Options(_Elements):
         Chandelier(self, 3 * WIDTH // 4, 0, 200)
 
         self.states_dict = self.make_states_dict()
-        
-        
-        
 
     def all_events(self, events):
         for event in events:
@@ -58,8 +56,6 @@ class Options(_Elements):
             },
         }
 
-    
-    
     def create_music_buttons_dict(self):
         """Create the dict for screen size buttons"""
         return {
@@ -144,6 +140,7 @@ class Options(_Elements):
         """Run the normal state"""
         super().events_buttons(back=True)
         self.draw()
+        self.animated.update()
 
     def screen_run(self):
         """Run the screen state"""
@@ -165,8 +162,6 @@ class Options(_Elements):
         """Draw content"""
         super().draw_elements("Options", back=True)
         self.animated.draw(self.screen)
-
-
 
     @staticmethod
     def create_slider(
