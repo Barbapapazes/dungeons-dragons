@@ -1,5 +1,6 @@
 """Create a character screen"""
 
+from data.music_data import DATA_SOUND
 from datetime import datetime
 from os import path
 
@@ -68,7 +69,7 @@ class CharacterCreation(_Elements):
         self.create_back_button(self.background, self.load_next_state, [NEW_GAME])
         self.idle = IdleCharacter(
             self, 6, self.selected_character["images"],
-            0, WIDTH // 2, 8 * HEIGHT / 10, WIDTH_CHARACTER)
+            0, WIDTH // 2, 7 * HEIGHT / 10, WIDTH_CHARACTER)
 
     def all_events(self, events):
         for event in events:
@@ -463,6 +464,7 @@ class CharacterCreation(_Elements):
 
     def next_action(self):
         """Pass to the next screen or create a new hero"""
+        DATA_SOUND["click"] = True
         logger.info("Save data to game_data")
         # pour chaque perso à faire, il faut le faire, valider, sauvegarder, décrémenter le nombre restant de perso à faire
         # si le nombre est > 0 alors on renvoie sur le même screen pour faire les autres

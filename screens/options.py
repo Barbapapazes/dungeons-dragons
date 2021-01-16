@@ -1,15 +1,16 @@
 """Options screen"""
 
-from os import path
 import json
-from sprites.animated import Chandelier
+from os import path
+
 import pygame as pg
-from logger import logger
-from window import _Elements
-from config.window import WIDTH, HEIGHT
 from config.colors import BEIGE
-from config.screens import MENU, OPTIONS, SHORTCUTS
+from config.screens import MENU, OPTIONS, OPTIONS_MUSIC, SHORTCUTS
+from config.window import HEIGHT, WIDTH
 from data.options import CUSTOM_SETTINGS_FILENAME
+from logger import logger
+from sprites.animated import Chandelier
+from window import _Elements
 
 
 class Options(_Elements):
@@ -47,6 +48,26 @@ class Options(_Elements):
                 "text": "Screen resolutions",
                 "on_click": self.toggle_sub_state,
                 "on_click_params": ['screen'],
+            },
+            "Music & Sounds": {
+                "text": "Musics & Sounds",
+                "on_click": self.load_next_state,
+                "on_click_params": [OPTIONS_MUSIC],
+            },
+        }
+
+    def create_music_buttons_dict(self):
+        """Create the dict for screen size buttons"""
+        return {
+            "song": {
+                "text": "Song : "+str(DATA_MUSIC["is_enable"]),
+                "on_click": self.status_music,
+                "on_click_params": "1",
+            },
+            "sound": {
+                "text": "Sound : "+str(DATA_MUSIC["is_enable"]),
+                "on_click": self.status_music,
+                "on_click_params": "1",
             },
         }
 
@@ -118,8 +139,8 @@ class Options(_Elements):
     def normal_run(self):
         """Run the normal state"""
         super().events_buttons(back=True)
-        self.animated.update()
         self.draw()
+        self.animated.update()
 
     def screen_run(self):
         """Run the screen state"""
@@ -141,3 +162,55 @@ class Options(_Elements):
         """Draw content"""
         super().draw_elements("Options", back=True)
         self.animated.draw(self.screen)
+
+    @staticmethod
+    def create_slider(
+            title,
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color):
+        """Create a slider
+
+        Args:
+            title (str)
+            name (str)
+            x (int)
+            y (int)
+            width (int)
+            height (int)
+            surface (Surface)
+            min (int)
+            max (int)
+            step (int)
+            start (int)
+            font (str)
+            draw_text (func)
+            color (tuple)
+            handle_color (tuple)
+
+        Returns:
+            Cursor
+        """
+        return Cursor(
+            title,
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color)

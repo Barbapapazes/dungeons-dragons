@@ -59,7 +59,7 @@ class Character(pg.sprite.Sprite):
             self.hit_rect = hit_rect
             self.hit_rect.center = self.rect.center
 
-        self.frame_time = 60 / 1000
+        self.frame_time = 180 / 1000
         self.frame_timer = 0
 
     def update(self):

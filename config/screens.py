@@ -20,6 +20,7 @@ INTRODUCTION = "introduction"
 CHOOSE_LEVEL = "choose_level"
 CHOOSE_MAP = "choose_map"
 ONLINE_GAME = "online_game"
+OPTIONS_MUSIC="options_music"
 
 # states
 TRANSITION_IN = 'transition in'

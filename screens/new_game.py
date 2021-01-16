@@ -1,5 +1,6 @@
 """Menu screen"""
 
+from data.music_data import DATA_SOUND
 from os import path
 from components.cursor import Cursor
 from config.buttons import HEIGHT_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
@@ -53,6 +54,7 @@ class NewGame(_Elements):
         self.game_data['file_name'] = self.get_text_info() + '.json'
         self.game_data['num_heros'] = self.slider.getValue()
         logger.info("Filename : %s, Number of heros : %s", self.game_data['file_name'],  self.game_data['num_heros'])
+        DATA_SOUND["click"] = True
         self.load_next_state(state)
 
     def create_slider(self):

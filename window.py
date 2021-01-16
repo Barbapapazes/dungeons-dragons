@@ -13,7 +13,9 @@ from config.colors import BEIGE, BLACK, GREEN_DARK, YELLOW_LIGHT
 from config.screens import (CHARACTER_CREATION, INTRODUCTION, NEW_GAME,
                             SHORTCUTS, TRANSITION_IN, TRANSITION_OUT)
 from config.window import FPS, HEIGHT, TITLE, WIDTH
+from data.music_data import DATA_SOUND
 from logger import logger
+from music.music import Music
 from utils.shortcuts import key_for, load_shortcuts
 
 
@@ -40,6 +42,8 @@ class Window():
 
         self.show_fps = False
 
+        self.music = Music(self)
+
         self.load_data()
 
     def load_data(self):
@@ -61,6 +65,7 @@ class Window():
         self.states_dict = states_dict
         self.state_name = start_state
         self.state = self.states_dict[self.state_name]
+        self.music.flip_music()
 
     def flip_state(self, state=None):
         """Change state to a new state"""
@@ -75,6 +80,7 @@ class Window():
         self.state.previous = previous
         logger.info("Startup %s", self.state_name)
         self.state.startup(self.dt, self.persist)
+        self.music.flip_music()
 
     def run(self):
         """Run the state"""
@@ -84,6 +90,7 @@ class Window():
             self.flip_state()
         self.state.run(self.screen, self.keys, self.mouse, self.dt)
         self.show_fps_caption()
+        self.music.update()
 
     def events(self):
         """Manage the event"""
@@ -384,6 +391,7 @@ class _State():
         """
         sub_state = 'normal' if self.state == state else state
         logger.info('Start sub-state %s in %s', sub_state, self.name)
+        DATA_SOUND["click"] = True
         self.set_state(sub_state)
 
 
@@ -457,6 +465,7 @@ class _Elements(_State):
     def load_next_state(self, *next_state):
         """Load the new state"""
         self.next = next_state[0]
+        DATA_SOUND["click"] = True
         super().set_state(TRANSITION_OUT)
 
     def events_buttons(self, back=False):
