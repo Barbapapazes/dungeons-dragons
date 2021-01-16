@@ -13,10 +13,10 @@ from config.colors import BEIGE, BLACK, GREEN_DARK, YELLOW_LIGHT
 from config.screens import (CHARACTER_CREATION, INTRODUCTION, NEW_GAME,
                             SHORTCUTS, TRANSITION_IN, TRANSITION_OUT)
 from config.window import FPS, HEIGHT, TITLE, WIDTH
-from logger import logger
-from utils.shortcuts import key_for, load_shortcuts
-from music.music import Music
 from data.music_data import DATA_SOUND
+from logger import logger
+from music.music import Music
+from utils.shortcuts import key_for, load_shortcuts
 
 
 class Window():
@@ -42,7 +42,7 @@ class Window():
 
         self.show_fps = False
 
-        self.M = Music(self)
+        self.music = Music(self)
 
         self.load_data()
 
@@ -65,7 +65,7 @@ class Window():
         self.states_dict = states_dict
         self.state_name = start_state
         self.state = self.states_dict[self.state_name]
-        self.M.update()
+        self.music.flip_music()
 
     def flip_state(self, state=None):
         """Change state to a new state"""
@@ -80,7 +80,7 @@ class Window():
         self.state.previous = previous
         logger.info("Startup %s", self.state_name)
         self.state.startup(self.dt, self.persist)
-        self.M.update()
+        self.music.flip_music()
 
     def run(self):
         """Run the state"""
@@ -90,10 +90,7 @@ class Window():
             self.flip_state()
         self.state.run(self.screen, self.keys, self.mouse, self.dt)
         self.show_fps_caption()
-        self.M.update_volume()
-        self.M.click_sound()
-        self.M.step_sound()
-        self.M.combat()
+        self.music.update()
 
     def events(self):
         """Manage the event"""

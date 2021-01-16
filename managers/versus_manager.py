@@ -1,12 +1,13 @@
 """Create the versus mananger"""
 import pygame as pg
-from sprites.effects_zone import EffectsZone
+from config.colors import BLUE_MARTINA, ENERGOS, GLOOMY_PURPLE, RED_PIGMENT
 from config.sprites import ITEMS, MALUS_ARC
-from config.colors import ENERGOS, GLOOMY_PURPLE, RED_PIGMENT, BLUE_MARTINA
 from config.window import HEIGHT, TILESIZE
-from sprites.animated import Circle
-from logger import logger
 from data.music_data import DATA_MUSIC
+from logger import logger
+from sprites.animated import Circle
+from sprites.effects_zone import EffectsZone
+
 vec = pg.Vector2
 
 
