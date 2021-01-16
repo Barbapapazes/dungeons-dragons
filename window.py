@@ -1,14 +1,19 @@
 """Create the main window and the base for all screens"""
-from os import path
-import sys
 import json
+import sys
+from os import path
+
 import pygame as pg
 from pygame_widgets import Button
+
+from components.cursor import Cursor
+from config.buttons import (HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON,
+                            WIDTH_BUTTON)
+from config.colors import BEIGE, BLACK, GREEN_DARK, YELLOW_LIGHT
+from config.screens import (CHARACTER_CREATION, INTRODUCTION, NEW_GAME,
+                            SHORTCUTS, TRANSITION_IN, TRANSITION_OUT)
+from config.window import FPS, HEIGHT, TITLE, WIDTH
 from logger import logger
-from config.screens import CHARACTER_CREATION, INTRODUCTION, NEW_GAME, TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
-from config.colors import BLACK, BEIGE, GREEN_DARK, YELLOW_LIGHT
-from config.window import WIDTH, HEIGHT, FPS, TITLE
-from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
 from utils.shortcuts import key_for, load_shortcuts
 
 
@@ -557,3 +562,55 @@ class _Elements(_State):
             pressedColour=pressed_color,
             onClick=on_click,
             onClickParams=on_click_params)
+
+    @staticmethod
+    def create_slider(
+            title,
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color):
+        """Create a slider
+
+        Args:
+            title (str)
+            name (str)
+            x (int)
+            y (int)
+            width (int)
+            height (int)
+            surface (Surface)
+            min (int)
+            max (int)
+            step (int)
+            start (int)
+            font (str)
+            draw_text (func)
+            color (tuple)
+            handle_color (tuple)
+
+        Returns:
+            Cursor
+        """
+        return Cursor(
+            title,
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color)
