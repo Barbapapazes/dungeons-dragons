@@ -11,7 +11,7 @@ from logger import logger
 class Chest(pg.sprite.Sprite):
     """Create a chest"""
 
-    def __init__(self, game, x, y, consumable=False, weapons=False, armor=False, is_open=False):
+    def __init__(self, game, x, y, consumable=None, weapons=None, armor=None, is_open=False):
         self._layer = y
         self.groups = game.all_sprites, game.chests
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -71,10 +71,11 @@ class Chest(pg.sprite.Sprite):
         if not self.is_open:
             for slot in player.inventory.slots:
                 if slot.item and slot.item.name == "bronze_key_small":
-                    logger.info("Open a chest")
+                    self.game.logs.add_log("Open a chest")
                     player.inventory.remove_item(slot.item)
+                    self.game.create_dim()
                     self.game.chest_open = True
                     self.game.opened_chest = self
                     self.is_open = True
                     break
-            logger.info("You need a key to open the chest")
+            self.game.logs.add_log("You need a key to open the chest")

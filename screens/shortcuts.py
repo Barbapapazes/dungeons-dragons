@@ -83,13 +83,20 @@ class Shortcuts(_Elements):
 
     def create_shortcuts(self):
         """Create buttons for selected shortcuts"""
-        _x = WIDTH // 2 - (WIDTH_BUTTON) // 4
+        _x = None
         y_base = 250
         self.shortcuts_btns = list()
         logger.info("Create all buttons from load_game")
+        if len(self.get_selected_shortcuts()) > 7:
+            _x = WIDTH // 4 - (WIDTH_BUTTON) // 4
+        else:
+            _x = WIDTH // 2 - (WIDTH_BUTTON) // 4
         for index, (key, value) in enumerate(self.get_selected_shortcuts()):
+            if index == 7:
+                y_base = 250
+                _x += (WIDTH // 2)
             self.shortcuts_btns.append(self.create_button(
-                self.screen_shortcuts, _x, y_base + 60 * index, WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2,
+                self.screen_shortcuts, _x, y_base + 60 * (index % 7), WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2,
                 key.upper() + " : " + self.create_text_shortcut(
                     value["keys"][0], value["keys"][1], value["keys"][2]),
                 self.button_font, 20, MARGIN_BUTTON, RADIUS_BUTTON, BEIGE,
@@ -328,6 +335,11 @@ class Shortcuts(_Elements):
 
     def draw_help(self):
         """Draw help text"""
+        if len(self.get_selected_shortcuts()) > 7:
+            _x = WIDTH // 4
+        else:
+            _x = WIDTH // 2
+        _y = 250 + (HEIGHT_BUTTON // 2)
         for index, (_, value) in enumerate(
                 self.shortcuts[self.menu_keys[self.selected_menu]].items()):
             color = BEIGE
@@ -335,13 +347,16 @@ class Shortcuts(_Elements):
             for key_2, value_2 in value.items():
                 if key_2 == 'help':
                     text = f"{value_2}"
+            if index == 7:
+                _x += WIDTH // 2
+                _y = 250 + (HEIGHT_BUTTON // 2)
             self.draw_text(
                 text,
                 self.text_font,
                 16,
                 color,
-                WIDTH // 2,
-                250 + (HEIGHT_BUTTON // 2) + 5 + 60 * index,
+                _x,
+                _y + 5 + 60 * (index % 7),
                 align="n")
 
     def draw_saved(self):

@@ -134,12 +134,13 @@ class Camera:
 class Minimap:
     """Create a minimap"""
 
-    def __init__(self, img, w, map_ratio, fog=None, cover=None):
+    def __init__(self, img, w, map_ratio, turn_manager, fog=None, cover=None):
         self.img = img
         self.width = w
         self.height = int(w // map_ratio)
         self.img_ratio = w / img.get_width()
         self.size = (WIDTH * self.img_ratio) // 2
+        self.turn_manager = turn_manager
 
         self.resized_map = pg.transform.scale(self.img, (self.width, self.height))
 
@@ -196,17 +197,16 @@ class Minimap:
         for enemy in enemies:
             self.draw_enemy(_map, enemy.pos * self.img_ratio)
 
-    def update(self, players):
+    def update(self):
         """Update the frog using a players list
 
         Args:
-            players (list(Player))
         """
-        for player in players:
+        for player in self.turn_manager.players:
             pos = player.pos * self.img_ratio
             pg.draw.circle(self.cover, pg.Color(0, 0, 0, 0), pos, self.size)
         self.fog.fill(self.fog_color)
-        for player in players:
+        for player in self.turn_manager.players:
             pos = player.pos * self.img_ratio
             pg.draw.circle(self.fog, pg.Color(0, 0, 0, 0), pos, self.size)
 
@@ -221,24 +221,20 @@ class Minimap:
             "cover": self.cover
         }
 
-    def create(self, player, players, enemies):
+    def create(self):
         """Create the minimap as a surface
-
-        Args:
-            player (Player)
-            players (list(Player))
-            enemies (list(Enemy))
 
         Returns:
             Surface
         """
-        pos = player.pos * self.img_ratio
         temp_map = self.resized_map.copy()
 
-        self.draw_player(temp_map, pos)
-        self.create_all_players(temp_map, players)
-        self.create_all_enemies(temp_map, enemies)
+        self.create_all_players(temp_map, self.turn_manager.players)
+        self.create_all_enemies(temp_map, self.turn_manager.enemies)
 
         temp_map.blit(self.fog, (0, 0))
         temp_map.blit(self.cover, (0, 0))
         return temp_map
+
+    def draw(self, screen):
+        screen.blit(self.create(), (WIDTH - self.width, HEIGHT - self.height))

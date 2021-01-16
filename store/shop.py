@@ -16,7 +16,6 @@ class Shop(Store):
         """Create the shop
         """
         super(Shop, self).__init__(game, consumable, weapons, armor, menu_data=SHOP_MENU)
-        # il va falloir adapter les actions et utiliser un flag
 
     def place_item(self, inventory):
         """Place a item in the inventory"""

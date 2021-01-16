@@ -4,6 +4,5 @@
 def create_game_data():
     """Create game data"""
     return {
-        "count": 0,
         "heros": list(),
     }

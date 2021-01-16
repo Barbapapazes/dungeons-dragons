@@ -21,6 +21,11 @@ class NewGame(_Elements):
         super(NewGame, self).__init__(self.name, self.next, 'new_game', 'background.jpg', {})
 
         self.background = pg.Surface((WIDTH, HEIGHT))
+
+        self.new()
+
+    def new(self):
+        """Used to create a fresh screen"""
         image = pg.image.load(
             path.join(
                 self.img_folder,

@@ -1,4 +1,5 @@
 """Create the map viewer manager"""
+from utils.shortcuts import key_for
 from config.buttons import HEIGHT_SLIDER, WIDTH_SLIDER
 from components.cursor import Cursor
 from config.colors import BEIGE
@@ -19,12 +20,12 @@ class MapViewerManager:
         self.map = TiledMap(path.join(folder, filename))
         self.folder = folder
 
-        self.index = 0
-
         self.game_folder = path.dirname('.')
         self.maps_path = folder
         self.saved_notes = path.join(self.game_folder, 'assets', 'saved_notes')
         self.maps_names = [f for f in os.listdir(self.maps_path) if f.endswith('.tmx')]
+        self.index = self.maps_names.index(filename)
+        self.max_index = self.index
         self.saved_notes_names = [f for f in os.listdir(self.saved_notes) if f.endswith('.png')]
         self.len_maps = len(self.maps_names)
 
@@ -112,8 +113,8 @@ class MapViewerManager:
                 if event.key == pg.K_RIGHT:
                     self.save()
                     self.index += 1
-                    if self.index >= self.len_maps:
-                        self.index = self.len_maps - 1
+                    if self.index > self.max_index:
+                        self.index -= 1
                         logger.info('No more maps')
                     else:
                         logger.info('Next map')
@@ -127,14 +128,14 @@ class MapViewerManager:
                     else:
                         logger.info('Previous map')
                         self.set_new_map(self.maps_path, self.maps_names[self.index])
-            if event.key == pg.K_e:
+            if key_for(self.game.game_data["shortcuts"]["game"]["erase"]["keys"], event):
                 self.use_eraser()
-            if event.key == pg.K_r:
+            if key_for(self.game.game_data["shortcuts"]["game"]["draw"]["keys"], event):
                 self.use_stylus()
-            if event.key == pg.K_n:
+            if key_for(self.game.game_data["shortcuts"]["game"]["new canvas"]["keys"], event):
                 self.new_canvas()
 
-            if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_CTRL:
+            if key_for(self.game.game_data["shortcuts"]["game"]["save"]["keys"], event):
                 self.save()
 
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -191,11 +192,14 @@ class MapViewerManager:
     def draw(self, screen):
         """Draw"""
         screen.blit(self.map_img, self.map_rect)
-        screen.blit(self.canvas, self.map_rect)
 
         self.game.draw_text(self.maps_names[self.index].split('.tmx')[0],
                             self.game.title_font, 56, BEIGE, WIDTH // 2, 0, align="n", screen=screen)
 
+        if self.index == self.max_index:
+            screen.blit(pg.transform.scale(self.game.minimap.fog, (self.width, self.height)), self.map_rect)
+            screen.blit(pg.transform.scale(self.game.minimap.cover, (self.width, self.height)), self.map_rect)
+        screen.blit(self.canvas, self.map_rect)
         screen.blit(self.bg, self.pen_btn)
         screen.blit(self.bg, self.eraser_btn)
         screen.blit(self.pen, (self.pen_btn.left + (TILESIZE - self.pen.get_width()) //

@@ -1,0 +1,1 @@
+"""Ligne generated for map random"""

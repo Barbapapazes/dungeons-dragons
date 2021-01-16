@@ -37,7 +37,7 @@
   <object id="9" name="wall" x="319.334" y="447.333" width="128" height="61.3333"/>
   <object id="10" name="wall" x="66.0002" y="450" width="124.666" height="61.3333"/>
   <object id="11" name="Boss" x="257.278" y="256.697"/>
-  <object id="14" name="Goblin" x="96.4065" y="420.472"/>
-  <object id="15" name="Goblin" x="421.633" y="80.726" rotation="359.594"/>
+  <object id="14" name="Goblin" x="128.929" y="381.561"/>
+  <object id="15" name="Goblin" x="384.464" y="126.025" rotation="359.594"/>
  </objectgroup>
 </map>

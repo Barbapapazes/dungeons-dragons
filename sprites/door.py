@@ -75,8 +75,8 @@ class Door(pg.sprite.Sprite):
         """
         for slot in player.inventory.slots:
             if slot.item and slot.item.name == "bronze_key_small":
-                logger.info("Open a door")
+                self.game.logs.add_log("Open a door")
                 player.inventory.remove_item(slot.item)
                 self.to_open = True
                 break
-        logger.info("You need a key to open the door")
+        self.game.logs.add_log("You need a key to open the door")

@@ -1,16 +1,22 @@
 """Used to manage the turn based gameplay"""
 
 
+import pygame as pg
 from config.sprites import SCOPE_HAND
+from config.window import HEIGHT
+from logger import logger
 from sprites.enemy import Enemy
 from sprites.player import Player
-from logger import logger
 
 
 class TurnManager:
     """Manage the turnbased game"""
 
-    def __init__(self, turn_number=0):
+    def __init__(self, game, turn_number=0):
+        self.game = game
+        self.new(turn_number)
+
+    def new(self, turn_number=0):
         self.players = list()
         self.enemies = list()
 
@@ -27,6 +33,8 @@ class TurnManager:
             Player
         """
         len_players = len(self.players)
+        if len_players == 0:
+            return None
         vision_to_number = self.vision % len_players
         return self.players[vision_to_number]
 
@@ -66,8 +74,6 @@ class TurnManager:
         """Sort the characters"""
         self.sorted = self.players + self.enemies
 
-        logger.debug("il faut charger la configuration")
-
         # used to sort characters using the dexterity
         self.sorted.sort(key=get_dice)
 
@@ -88,6 +94,18 @@ class TurnManager:
 
         self.players = players
 
+    def add_character(self, sprite):
+        """Add a sprite during the game
+
+        Args:
+            sprite (Player | Enemy)
+        """
+
+        if isinstance(sprite, Enemy):
+            self.enemies.append(sprite)
+        self.sorted.append(sprite)
+        self.add_turn()
+
     def get_relative_turn(self):
         """Get the relative turn
 
@@ -95,9 +113,18 @@ class TurnManager:
             int
         """
         len_characters = len(self.get_characters())
-        # logger.debug("si il n'y a plus de players, c'est game over")
         turn_to_number = self.turn % len_characters
         return turn_to_number
+
+    def active(self):
+        """Get the active depending of RT or Turn
+
+        Returns:
+
+        """
+        if self.game.versus_manager.active:
+            return self.active_character()
+        return self.get_playable_character()
 
     def active_character(self):
         """Return the active character using the turn manager
@@ -116,8 +143,8 @@ class TurnManager:
         scope = None
         if self.is_active_player():
             scope = SCOPE_HAND
-            if self.active_character().weapon:
-                scope = self.active_character().weapon.scope
+            if self.active().weapon:
+                scope = self.active().weapon.scope
         return scope
 
     def get_active_weapon(self):
@@ -126,7 +153,7 @@ class TurnManager:
         Returns:
             Weapon
         """
-        return self.active_character().weapon
+        return self.active().weapon
 
     def get_active_spell(self):
         """Get the active spell
@@ -134,7 +161,7 @@ class TurnManager:
         Returns:
             Spell
         """
-        return self.active_character().spell
+        return self.active().spell
 
     def get_active_weapon_damage(self):
         """Get the damage of the active weapon
@@ -142,12 +169,13 @@ class TurnManager:
         Returns:
             int
         """
-        damage = 0
+        damage = 5
         if self.get_active_weapon() is None:
-            logger.debug("[sofiane] il faut ajuster les dégats de l'attaque sans arme")
-            damage = 10
+            damage += self.active().characteristics['str'] // 5
         else:
-            damage = self.get_active_weapon().attack()
+            self.game.logs.add_log(
+                f"Number of dice: {self.get_active_weapon().attack().number_dice}, Dice value: {self.get_active_weapon().attack().dice_value}")
+            damage += self.get_active_weapon().attack()
         return damage
 
     def get_active_weapon_type(self):
@@ -167,8 +195,17 @@ class TurnManager:
             damage(int)
             enemy(Enemy)
         """
-        enemy.health -= damage
-        self.active_character().game.logs.add_log(f"Remove {damage}, remaining {enemy.health}")
+        enemy.subHp(damage)
+        if enemy.health == 0:
+            if not hasattr(self.active(), 'goto'):
+                self.active().xp += enemy.xp
+                self.active().level_up()
+                self.game.logs.add_log(
+                    f"{self.active()} killed {enemy} and gained {enemy.xp} exp !")
+            else:
+                self.game.logs.add_log(f"{enemy} was murdered by {self.active()}...")
+        else:
+            self.game.logs.add_log(f"Remove {damage}, remaining {enemy.health}")
 
     def is_active_player(self):
         """Check if the active character is a player
@@ -176,7 +213,7 @@ class TurnManager:
         Returns:
             bool
         """
-        return isinstance(self.active_character(), Player)
+        return isinstance(self.active(), Player)
 
     def is_active_enemy(self):
         """Check if the active character is a enemy
@@ -194,6 +231,8 @@ class TurnManager:
             if self.is_active_enemy():
                 self.active_character().update()
         else:
+            for enemy in self.enemies:
+                enemy.update()
             self.get_playable_character().update()
 
     def get_pos_player(self):
@@ -209,6 +248,18 @@ class TurnManager:
             elif isinstance(character, Player):
                 list_pos += 1
         return list_pos
+
+    def remove(self, character):
+        """Remove a character"""
+        if isinstance(character, Player):
+            self.players.remove(character)
+            if len(self.players) == 0:
+                save_event = pg.event.Event(pg.USEREVENT, code="_State", name="reset")
+                pg.event.post(save_event)
+                self.game.create_dim()
+                self.game.btns_dict = self.game.create_buttons_dict("game over")
+                self.game.create_buttons(self.game.screen, start_y_offset=8 * HEIGHT / 10)
+                self.game.toggle_sub_state('game_over')
 
 
 def get_dice(character):

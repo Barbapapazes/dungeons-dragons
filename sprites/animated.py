@@ -1,10 +1,11 @@
 """Used to create a animated sprite"""
 
+from config.window import HEIGHT, WIDTH
 from random import randint
 from collections import deque
 import pygame as pg
 from logger import logger
-from config.sprites import ASSETS_CAMP_FIRE, ASSETS_CHANDELIER, ASSETS_CIRCLE, ASSETS_FLAMES
+from config.sprites import ASSETS_CAMP_FIRE, ASSETS_CHANDELIER, ASSETS_CIRCLE, ASSETS_CONFETTI, ASSETS_FLAMES
 from config.sprites import ASSETS_FLAMES, ASSETS_BOOK_OPENING
 
 default_fn = lambda *args: None
@@ -14,7 +15,7 @@ class Animated(pg.sprite.Sprite):
     """Create a animated sprite"""
 
     def __init__(self, game, frame_per_image, frames, offset=0):
-        self.groups = game.animated
+        self.groups = game.all_sprites, game.animated
         super(Animated, self).__init__(self.groups)
 
         self.game = game
@@ -90,6 +91,22 @@ class Chandelier(Animated):
         self.rect.center = (self.x, self.y + self.frames[0].get_height() // 2)
 
 
+class Confetti(Animated):
+    """Used to create a camp fire"""
+
+    def __init__(self, game, x, y):
+        self.x = x
+        self.y = y
+
+        frame_per_image = 2
+        frames = list()
+        for frame in ASSETS_CONFETTI:
+            frames.append(pg.transform.scale(frame, (WIDTH, HEIGHT)))
+        super(Confetti, self).__init__(game, frame_per_image, frames)
+
+        self.rect.center = (self.x, self.y + self.frames[0].get_height() // 2)
+
+
 class Book(Animated):
     """Used to create a book"""
 
@@ -129,6 +146,7 @@ class Circle(Animated):
         self.x = x
         self.y = y
         self.width = width
+        self._layer = 1
 
         frame_per_image = 6
         frames = list()
@@ -159,9 +177,42 @@ class Circle(Animated):
         if self.width != width:
             self.width = width
             tmp_frames = list()
-            for frame in self.frames:
+            for frame in ASSETS_CIRCLE:
                 frame = pg.transform.scale(frame, (width, width))
                 frame.set_colorkey((50, 50, 50))
                 tmp_frames.append(frame)
             self.frames = tmp_frames
             self.rect = self.frames[0].get_rect()
+
+
+class IdleCharacter(Animated):
+    def __init__(self, game, frame_per_image, frames, offset, x, y, width):
+        super().__init__(game, frame_per_image, frames, offset=offset)
+        self.x = x
+        self.y = y
+        self.width = width
+
+        updated_frames = list()
+
+        for frame in frames:
+            updated_frames.append(pg.transform.scale(frame, (self.width, int(
+                self.width * frame.get_height() / frame.get_width()))))
+
+        self.frames = updated_frames
+        super(IdleCharacter, self).__init__(game, frame_per_image, updated_frames)
+
+        self.rect.center = (self.x, self.y)
+
+    def set_frames(self, frames):
+        """Used to setup new frames
+
+        Args:
+            frames (list)
+        """
+        tmp_frames = list()
+        for frame in frames:
+            tmp_frames.append(pg.transform.scale(frame, (self.width, int(
+                self.width * frame.get_height() / frame.get_width()))))
+        self.frames = tmp_frames
+        self.frame_total = (len(frames) - 1) * self.frame_per_image
+        self.frame_count = 0

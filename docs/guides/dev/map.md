@@ -10,7 +10,7 @@ Pour ce projet, nous avons mis en place un map éditor très simple mais tout de
 
 ### Méta-data
 
-Les fichiers `tmx` sont des fichiers `xml` avec une architecture spécifique pour les cartes. L'intérêt de ce type de fichiers, à l'inverse d'un fichier text, est qu'il permet de stocker et d'organiser très simplement nos données. Ainsi, avec ce type de fichiers, nous avons accès à plusieurs layers sur une carte et nous pouvons y ajouter un système d'objet directement dans la carte. Lors de la lecture de cette dernière par le jeu, nous pouvons instancier le bon élément en utilisant le nom et la position de l'objet. C'est donc très pratique.
+Les fichiers `tmx` sont des fichiers `xml` avec une architecture spécifique pour les cartes. L'intérêt de ce type de fichiers, à l'inverse d'un fichier text, est qu'il permet de stocker et d'organiser très simplement nos données. Ainsi, avec ce type de fichiers, nous avons accès à plusieurs layers sur une carte et nous pouvons y ajouter un système d'objet directement dans la carte. Ce système d'objet permet à nos cartes une grandes flexibilités et une manipulation très simple. Lors de la lecture de cette dernière par le jeu, nous pouvons instancier le bon élément en utilisant le nom et la position de l'objet. C'est donc très pratique.
 
 Le meilleur exemple est la gestion des items.
 
@@ -24,7 +24,39 @@ Ainsi, en ajoutant :
 <object id="1" name="bronze_key_small" x="336" y="400" width="32" height="32"/>
 ```
 
-On va pouvoir créer une clé en bronze à la position 336, 400 sur la carte.
+On va pouvoir créer une clé en bronze à la position 336, 400 sur la carte. Cependant, comme conseillé dans le guide du joueur, il est conseillé d'utiliser Tiled. Vous trouverez l'ensemble des items disponibles dans `config/sprites.py`
+
+#### Gestion des télé-porteurs
+
+Afin de pour réaliser une campagne, des niveaux qui se suivent, une continuité, il est possible de déposer sur la carte des télé-porteurs.
+
+Afin de créer un télé-porteur in-game, il suffit de créer un objet avec un nom qui suit le pattern suivant:
+
+`map-folder-filename`
+
+:::info Conseil
+
+Pour la création d'une campagne personnalisée avec vision des maps précédentes, il est conseillé d'utiliser `levels_maps` comme folder.
+
+:::
+
+Exemple :
+
+```xml
+<object id="1" name="map-saved_maps-level1.tmx" x="336" y="400" width="32" height="32"/>
+```
+
+Il est possible de trigger la fin du jeu avec `finish` à la place du filename.
+
+#### Gestion des pièges
+
+Afin de semer des embûches dans les parties, il est possible d'ajouter des pièges sur votre carte. Lorsque un caractère se déplace dessus, alors ce dernier va subir des dégâts et le piège s'activer.
+
+Afin de générer un piège :
+
+```xml
+<object id="1" name="trap" x="336" y="400" width="32" height="32"/>
+```
 
 ## Map editor
 

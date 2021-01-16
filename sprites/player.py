@@ -6,6 +6,7 @@ from config.screens import ONLINE_GAME
 from config.sprites import (ITEMS, PLAYER_HIT_RECT,
                             PLAYER_MAX_HP, PLAYER_MAX_MP,
                             PLAYER_SPEED)
+from logger import logger
 from sprites.character import Character, players
 from inventory.inventory import Inventory
 from logger import logger
@@ -19,29 +20,25 @@ vec = pg.math.Vector2
 class Player(Character):
     """Create a player"""
 
-    def __init__(self, game, x, y, _type, characteristics, health, xp, gold, images):
+    def __init__(self, game, x, y, _type, characteristics, images, health=PLAYER_MAX_HP, xp=0, gold=100):
         self.groups = players
         pg.sprite.Sprite.__init__(self, self.groups)
         super(Player, self).__init__(game, x, y, _type, images, PLAYER_HIT_RECT)
-        
+
         self.can_move = True
 
         self.characteristics = characteristics
         self.health = health
         self.xp = xp
         self.gold = gold
-        self.spell = None
 
         self.last_shot = 0
 
         # Stats
-        self.HP = 100
         self.max_HP = PLAYER_MAX_HP
-        self.shield = 0
         self.MP = 50  # mana
         self.max_MP = PLAYER_MAX_MP
         self.view_range = 500
-
 
     def save(self):
         """Used to save the player data
@@ -56,25 +53,11 @@ class Player(Character):
                 "y": self.pos.y
             },
             "characteristics": self.characteristics,
-            "health": self.health,
             "xp": self.xp,
             "health": self.health,
             "gold": self.gold,
             "inventory": self.inventory.save(),
             "equipments": self.save_equipments()
-        }
-
-    def save_equipments(self):
-        """Save the equipments of the player
-
-        Returns:
-            dict
-        """
-        armor = {key: value.save() if value else None for key, value in self.armor.items()}
-        return {
-            "armor": armor,
-            "weapon": self.weapon.save() if self.weapon else None,
-            "spell": self.spell.save() if self.spell else None
         }
 
     def get_keys(self):
@@ -102,7 +85,7 @@ class Player(Character):
             if self.vel.x != 0 and self.vel.y != 0:
                 self.vel *= 0.7071
             if self.game.name == ONLINE_GAME:
-                if keys[pg.K_SPACE]:
+                if keys[self.game.game_data["shortcuts"]["online game"]["shoot"]["keys"][2]]:
                     self.shoot()
 
     def shoot(self):
@@ -131,6 +114,10 @@ class Player(Character):
 
     def update(self):
         """Used to update the player"""
+        if self.health <= 0:
+            self.throw_inventory()
+            self.kill()
+            self.game.turn_manager.remove(self)
         self.get_keys()
         super().update()
 
@@ -167,28 +154,6 @@ class Player(Character):
         self.pos = pos
         self.rect.center = self.pos
 
-    def equip_armor(self, item):
-        """Equip a passed armor item in the right armor slot,
-        if an item is already in the needed armor slot, it will be unequipped
-
-        Args:
-            item (Armor)
-        """
-        if self.armor[item.slot] is not None:
-            self.unequip_armor(item.slot)
-        self.armor[item.slot] = item
-        self.shield += item.shield
-
-    def unequip_armor(self, slot):
-        """Unequip an armor item from a passed slot
-
-        Args:
-            slot (Armor)
-        """
-        if self.armor[slot] is not None:
-            self.shield -= self.armor[slot].shield
-            self.armor[slot] = None
-
     def equip_weapon(self, weapon):
         """Put a passed weapon in the weapon slot
 
@@ -204,27 +169,6 @@ class Player(Character):
         """
         if self.weapon is not None:
             self.weapon = None
-
-    def addHp(self, hp_gain):
-        """Add passed hp_gain to the player's health
-
-        Args:
-            hp_gain (int)
-        """
-        self.HP += hp_gain
-        logger.debug(hp_gain)
-        if self.HP > self.max_HP:
-            self.HP = self.max_HP
-
-    def subHp(self, hp_lose):
-        """Sub passed hp_lose to the player's health
-
-        Args:
-            hp_lose (int)
-        """
-        self.HP -= hp_lose
-        if self.HP < 0:
-            self.HP = 0
 
     def addMP(self, MP_gain):
         """Add passed HP_gain to the player's mana
@@ -269,6 +213,13 @@ class Player(Character):
         """
         if self.spell is not None:
             self.spell = None
+
+    def level_up(self):
+        if self.xp > 100:
+            self.xp = self.xp % 100
+            for i in self.characteristics:
+                self.characteristics[i] += 5
+            self.game.logs.add_log(f"{self} leveled up !")
 
 
 class Arrow(pg.sprite.Sprite):

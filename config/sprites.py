@@ -19,8 +19,13 @@ PLAYER_MAX_HP = 100
 PLAYER_MAX_MP = 50
 PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
 
+# enemy
+WAIT_TIME = 800
 
 MALUS_ARC = 2
+
+# trap
+TRAP_DAMAGE = 10
 
 # all items
 ITEMS = {
@@ -50,7 +55,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "sword",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 2,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -72,7 +77,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "sword",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 4,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -83,7 +88,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "sword",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 5,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
 
@@ -95,7 +100,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "sword",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 6,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -105,7 +110,7 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "number_dice": 1,
+        "number_dice": 2,
         "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
@@ -116,8 +121,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "number_dice": 1,
-        "dice_value": 3,
+        "number_dice": 2,
+        "dice_value": 4,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -127,8 +132,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "number_dice": 1,
-        "dice_value": 3,
+        "number_dice": 2,
+        "dice_value": 5,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -138,8 +143,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "number_dice": 1,
-        "dice_value": 3,
+        "number_dice": 2,
+        "dice_value": 6,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -149,8 +154,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "number_dice": 1,
-        "dice_value": 3,
+        "number_dice": 2,
+        "dice_value": 7,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -171,7 +176,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 11,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -182,7 +187,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 12,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -193,7 +198,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 13,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -204,7 +209,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 14,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -215,7 +220,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 15,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -226,7 +231,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 16,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -237,7 +242,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 17,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -248,7 +253,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 18,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -259,7 +264,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 19,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -269,8 +274,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "number_dice": 2,
-        "dice_value": 10,
+        "number_dice": 3,
+        "dice_value": 15,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -280,8 +285,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "number_dice": 2,
-        "dice_value": 10,
+        "number_dice": 3,
+        "dice_value": 16,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -291,8 +296,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "number_dice": 2,
-        "dice_value": 10,
+        "number_dice": 3,
+        "dice_value": 17,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -302,8 +307,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "number_dice": 2,
-        "dice_value": 10,
+        "number_dice": 3,
+        "dice_value": 18,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -313,8 +318,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "number_dice": 2,
-        "dice_value": 10,
+        "number_dice": 3,
+        "dice_value": 19,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -336,7 +341,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "dagger",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 4,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -347,7 +352,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "dagger",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 5,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -358,7 +363,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "dagger",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 6,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -369,7 +374,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "dagger",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 7,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -381,7 +386,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_01a",
         "price": 10,
         "weight": 10,
-        "shield": 20,
+        "shield": 5,
         "slot": 'head',
         "object_type": "armor"
     },
@@ -389,7 +394,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_01b",
         "price": 10,
         "weight": 10,
-        "shield": 20,
+        "shield": 10,
         "slot": 'head',
         "object_type": "armor"
     },
@@ -397,7 +402,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_01c",
         "price": 10,
         "weight": 10,
-        "shield": 20,
+        "shield": 15,
         "slot": 'head',
         "object_type": "armor"
     },
@@ -405,7 +410,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_01d",
         "price": 10,
         "weight": 15,
-        "shield": 30,
+        "shield": 15,
         "slot": "head",
         "object_type": "armor"
     },
@@ -413,7 +418,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_01e",
         "price": 10,
         "weight": 15,
-        "shield": 30,
+        "shield": 20,
         "slot": "head",
         "object_type": "armor"
     },
@@ -421,7 +426,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_02a",
         "price": 10,
         "weight": 10,
-        "shield": 20,
+        "shield": 10,
         "slot": 'head',
         "object_type": "armor"
     },
@@ -429,7 +434,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_02b",
         "price": 10,
         "weight": 10,
-        "shield": 20,
+        "shield": 15,
         "slot": 'head',
         "object_type": "armor"
     },
@@ -445,7 +450,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_02d",
         "price": 10,
         "weight": 15,
-        "shield": 30,
+        "shield": 20,
         "slot": "head",
         "object_type": "armor"
     },
@@ -453,7 +458,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "helmet_02e",
         "price": 10,
         "weight": 15,
-        "shield": 30,
+        "shield": 25,
         "slot": "head",
         "object_type": "armor"
     },
@@ -461,7 +466,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "armor_01a",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 15,
         "slot": "chest",
         "object_type": "armor"
     },
@@ -469,7 +474,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "armor_01b",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 20,
         "slot": "chest",
         "object_type": "armor"
     },
@@ -477,7 +482,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "armor_01c",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 25,
         "slot": "chest",
         "object_type": "armor"
     },
@@ -485,7 +490,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "armor_01d",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 25,
         "slot": "chest",
         "object_type": "armor"
     },
@@ -493,7 +498,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "armor_01e",
         "price": 10,
         "weight": 30,
-        "shield": 70,
+        "shield": 30,
         "slot": "chest",
         "object_type": "armor"
     },
@@ -501,7 +506,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "boots_01a",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 5,
         "slot": "feet",
         "object_type": "armor"
     },
@@ -509,7 +514,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "boots_01b",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 10,
         "slot": "feet",
         "object_type": "armor"
     },
@@ -517,7 +522,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "boots_01c",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 15,
         "slot": "feet",
         "object_type": "armor"
     },
@@ -525,7 +530,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "boots_01d",
         "price": 10,
         "weight": 20,
-        "shield": 40,
+        "shield": 15,
         "slot": "feet",
         "object_type": "armor"
     },
@@ -533,7 +538,7 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
         "image_name": "boots_01e",
         "price": 10,
         "weight": 30,
-        "shield": 70,
+        "shield": 20,
         "slot": "feet",
         "object_type": "armor"
     }
@@ -581,7 +586,8 @@ BOB_SPEED = 0.4
 
 
 # Heros
-TYPES = ["wizard", "soldier", "thief", "skeleton_F", "skeleton_R", "skeleton_W", "phantom_F", "phantom_R", "phantom_W", "goblin_F", "goblin_R", "goblin_W", "boss", "mini_boss"]
+TYPES = ["wizard", "soldier", "thief", "skeleton_F", "skeleton_R", "skeleton_W", "phantom_F",
+         "phantom_R", "phantom_W", "goblin_F", "goblin_R", "goblin_W", "boss", "mini_boss"]
 DIRECTIONS = ["up", "down", "left", "right", "idle"]
 
 ASSETS_SPRITES = {
@@ -608,6 +614,10 @@ ASSETS_CHEST = [pg.transform.scale(
     pg.image.load(path.join(sprites_folder, "chest", f"{i}.png")),
     (TILESIZE, TILESIZE)) for i in range(8)]
 
+ASSETS_TRAP = [pg.transform.scale(
+    pg.image.load(path.join(sprites_folder, "trap", f"{i}.png")),
+    (TILESIZE, TILESIZE)) for i in range(10)]
+
 ASSETS_FLAMES = [pg.image.load(path.join(sprites_folder, "flames", f"{i}.png"))
                  for i in range(6)]
 
@@ -624,3 +634,6 @@ ASSETS_BOOK_NEXT = [pg.image.load(path.join(sprites_folder, "book", "next",  f"{
 
 ASSETS_CIRCLE = [pg.image.load(path.join(sprites_folder, "circle", "{:04d}.png".format(i)))
                  for i in range(1, 60)]
+
+ASSETS_CONFETTI = [pg.image.load(path.join(sprites_folder, "confetti", "{:04d}.png".format(i)))
+                   for i in range(1, 170)]

@@ -1,10 +1,11 @@
 """Main file"""
 
-from config.screens import (CHARACTER_CREATION, CHOOSE_MAP, CREDITS, GAME,
-                            INTRODUCTION, LOAD_GAME, MENU, NEW_GAME,
-                            ONLINE_GAME, OPTIONS, SHORTCUTS)
+from config.screens import (CHARACTER_CREATION, CHOOSE_LEVEL, CHOOSE_MAP,
+                            CREDITS, GAME, INTRODUCTION, LOAD_GAME, MENU,
+                            NEW_GAME, ONLINE_GAME, OPTIONS, SHORTCUTS)
 from logger import logger
 from screens.character_creation import CharacterCreation
+from screens.choose_level import ChooseLevel
 from screens.choose_map import ChooseMap
 from screens.credits import Credits
 from screens.game import Game
@@ -19,7 +20,7 @@ from window import Window
 from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME
 from screens.options_music import Options_music
 from screens.introduction import Introduction
-from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME,OPTIONS_MUSIC,INTRODUCTION
+from config.screens import MENU, CREDITS, GAME, LOAD_GAME, SHORTCUTS, CHARACTER_CREATION, OPTIONS, NEW_GAME, OPTIONS_MUSIC, INTRODUCTION
 from logger import logger
 
 if __name__ == '__main__':
@@ -37,7 +38,8 @@ if __name__ == '__main__':
         NEW_GAME: NewGame(),
         CHOOSE_MAP: ChooseMap(),
         INTRODUCTION: Introduction(),
-        OPTIONS_MUSIC:Options_music(),
+        OPTIONS_MUSIC: Options_music(),
+        CHOOSE_LEVEL: ChooseLevel()
     }
     W.setup_states(STATES, MENU)
     W.main()

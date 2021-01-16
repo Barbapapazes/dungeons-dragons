@@ -22,13 +22,15 @@ class VersusManager:
         self.move_btn = pg.Rect((TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.spell_btn = pg.Rect((2 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.validate_btn = pg.Rect((3 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
+
+        self.new(game)
+
+    def new(self, game):
+        self.circle = Circle(game, 0, 0, 0)
         self.action = None
         self.last_player_pos = None
         self.selected_enemy = None
         self.border_enemy = None
-
-        self.circle = Circle(game, 0, 0, 0)
-
         self.warn = False
         self.active = False
 
@@ -39,33 +41,36 @@ class VersusManager:
         start = False
         for enemy in self.turn_manager.enemies:
             for player in self.turn_manager.players:
-                if self.is_distance(enemy.pos, player.pos, 300):
+                if self.is_distance(enemy.pos, player.pos, 500):
                     start = True
 
-        warning = False
-        warn_list = list()
-        for player in self.turn_manager.players:
-            for enemy in self.turn_manager.enemies:
-                if self.is_distance(player.pos, enemy.pos, 700):
-                    warn_list.append(True)
-                    warning = True
+        if not start:
+            warning = False
+            warn_list = list()
+            # used to be sure that every hero is at the right distance
+            for player in self.turn_manager.players:
+                for enemy in self.turn_manager.enemies:
+                    if self.is_distance(player.pos, enemy.pos, 700):
+                        warn_list.append(True)
+                        warning = True
+                        break
+                    else:
+                        warn_list.append(False)
+                if warning:
                     break
-                else:
-                    warn_list.append(False)
-            if warning:
-                break
 
-        found = False
-        for warn in warn_list:
-            if warn:
-                found = True
+            found = False
+            for warn in warn_list:
+                if warn:
+                    found = True
+                    break
 
-        if not found and self.warn:
-            self.warn = False
+            if not found and self.warn:
+                self.warn = False
 
-        if warning and not self.warn:
-            self.logs.add_log("You're near a battle")
-            self.warn = True
+            if warning and not self.warn:
+                self.logs.add_log("You're near a battle ! Be careful !")
+                self.warn = True
         if start and not self.active:
             self.start_versus()
         elif not start and self.active:
@@ -90,11 +95,11 @@ class VersusManager:
         self.active = True
         self.set_move_player(False)
         self.logs.add_log("Start the versus")
-        DATA_MUSIC["start_combat"]=True
+        DATA_MUSIC["start_combat"] = True
         self.add_actions()
 
     def add_actions(self):
-        if self.turn_manager.active_character().type == "Boss":
+        if self.turn_manager.active_character().type == "boss":
             self.turn_manager.active_character().number_actions = 1
             # self.logs.add_log("Add 1 action")
         else:
@@ -105,14 +110,14 @@ class VersusManager:
         """Finish the versus"""
         self.active = False
         self.free_all_players()
-        self.turn_manager.playable = self.turn_manager.players.index(self.turn_manager.active_character())
+        self.turn_manager.playable = self.turn_manager.players.index(self.turn_manager.active())
         self.turn_manager.vision = self.turn_manager.playable
         self.remove_selected_enemy()
         self.remove_last_player_pos()
         self.remove_action()
         self.remove_zones_effects()
         self.logs.add_log("Finish the versus")
-        DATA_MUSIC["end_combat"]=True
+        DATA_MUSIC["end_combat"] = True
 
     def remove_zones_effects(self):
         """Remove all zones"""
@@ -178,63 +183,89 @@ class VersusManager:
         if self.active and self.turn_manager.is_active_player():
             if not self.action:
                 if self.attack_btn.collidepoint(pos[0], pos[1]):
-                    self.action = 'attack'
-                    self.logs.add_log("Attack is selected")
-                    self.logs.add_log("Select a enemy")
-                    if self.turn_manager.get_active_weapon_type() in ["hand", "sword"]:
-                        self.circle.set_width(self.turn_manager.get_active_scope())
-                        self.circle.set_pos(self.turn_manager.active_character().pos)
-                    self.set_move_player(False)
+                    # il faut faire des fonctions de ça et dans le game, dans les events, si c'est le tour d'un joueur, alors en fonction de la touch, ça lance la fonction correspondante
+                    # utiliser entrer pour valider
+                    self.action_attack()
                 if self.move_btn.collidepoint(pos[0], pos[1]):
-                    self.action = 'move'
-                    self.logs.add_log("Move your hero")
-                    self.last_player_pos = vec(self.turn_manager.active_character().pos)
-                    self.circle.set_width(800)
-                    self.circle.set_pos(self.turn_manager.active_character().pos)
-                    self.set_move_player(True)
+                    self.action_move()
                 if self.spell_btn.collidepoint(pos[0], pos[1]) and not self.turn_manager.get_active_spell() is None:
-                    self.action = "spell"
-                    self.logs.add_log("Spell selected")
-                    self.logs.add_log("Select a zone")
-                    self.circle.set_width(self.turn_manager.get_active_spell().scope)
-                    self.circle.set_pos(self.turn_manager.active_character().pos)
-                    self.set_move_player(False)
-            if self.action == 'attack':
-                if self.validate_btn.collidepoint(pos[0], pos[1]):
-                    if not self.selected_enemy:
-                        self.logs.add_log("Select an enemy")
-                        return
+                    self.action_spell()
+            if self.validate_btn.collidepoint(pos[0], pos[1]):
+                self.validate()
 
-                    self.remove_action()
-                    if self.check_dice():
-                        self.logs.add_log("Enemy attacked")
-                        damage = self.calc_damage()
-                        self.turn_manager.remove_health(damage, self.selected_enemy)
-                        if self.selected_enemy.health <= 0:
-                            self.turn_manager.enemies.remove(self.selected_enemy)
-                            self.turn_manager.sorted.remove(self.selected_enemy)
-                            self.selected_enemy.kill()
-                    else:
-                        self.logs.add_log("Missed dice roll")
-                    self.check_characters_actions()
-            if self.action == 'move':
-                if self.validate_btn.collidepoint(pos[0], pos[1]):
-                    self.logs.add_log("Hero moved")
-                    self.remove_action()
-                    self.remove_last_player_pos()
-                    self.check_characters_actions()
-            if self.action == 'spell':
-                if not self.spell_pos:
-                    self.logs.add_log("Select a zone")
-                    return
+    def validate(self):
+        """Used to validate an action"""
+        if self.action == 'attack':
+            if not self.selected_enemy:
+                self.logs.add_log("Select an enemy")
+                return
 
-                EffectsZone(
-                    self.game, self.spell_pos[0],
-                    self.spell_pos[1],
-                    self.turn_manager.get_active_spell().type, self.turn_manager.get_active_spell().time_to_live, self.
-                    turn_manager.get_active_spell().number_dice, self.turn_manager.get_active_spell().dice_value)
-                self.remove_action()
-                self.check_characters_actions()
+            self.remove_action()
+            if self.check_dice():
+                self.logs.add_log("Enemy attacked")
+                damage = self.calc_damage()
+                self.turn_manager.remove_health(damage, self.selected_enemy)
+                if self.selected_enemy.health <= 0:
+                    self.kill_enemy()
+            else:
+                self.logs.add_log("Missed dice roll")
+            self.selected_enemy = None
+            self.check_characters_actions()
+        if self.action == 'move':
+            self.logs.add_log("Hero moved")
+            self.remove_action()
+            self.remove_last_player_pos()
+            self.check_characters_actions()
+        if self.action == 'spell':
+            if not self.spell_pos:
+                self.logs.add_log("Select a zone")
+                return
+
+            EffectsZone(
+                self.game, self.spell_pos[0],
+                self.spell_pos[1],
+                self.turn_manager.get_active_spell().type, self.turn_manager.get_active_spell().time_to_live, self.
+                turn_manager.get_active_spell().number_dice, self.turn_manager.get_active_spell().dice_value)
+            self.remove_action()
+            self.check_characters_actions()
+
+    def kill_enemy(self, enemy=None):
+        """Kill an enemy"""
+        to_kill = self.selected_enemy if enemy is None else enemy
+        self.turn_manager.enemies.remove(to_kill)
+        self.turn_manager.sorted.remove(to_kill)
+        to_kill.throw_inventory()
+        to_kill.throw_equipments()
+        to_kill.kill()
+        self.turn_manager.add_turn()
+
+    def action_attack(self):
+        """Used to start a action to attack"""
+        self.action = 'attack'
+        self.logs.add_log("Attack is selected")
+        self.logs.add_log("Select a enemy")
+        if self.turn_manager.get_active_weapon_type() in ["hand", "sword"]:
+            self.circle.set_width(self.turn_manager.get_active_scope())
+            self.circle.set_pos(self.turn_manager.active_character().pos)
+        self.set_move_player(False)
+
+    def action_move(self):
+        """Used to start a action to move"""
+        self.action = 'move'
+        self.logs.add_log("Move your hero")
+        self.last_player_pos = vec(self.turn_manager.active_character().pos)
+        self.circle.set_width(800)
+        self.circle.set_pos(self.turn_manager.active_character().pos)
+        self.set_move_player(True)
+
+    def action_spell(self):
+        """Used to start a action to spell"""
+        self.action = "spell"
+        self.logs.add_log("Spell selected")
+        self.logs.add_log("Select a zone")
+        self.circle.set_width(self.turn_manager.get_active_spell().scope)
+        self.circle.set_pos(self.turn_manager.active_character().pos)
+        self.set_move_player(False)
 
     def calc_damage(self):
         """Calc the damage depending of the weapon and the protection of the selected enemy
@@ -243,16 +274,16 @@ class VersusManager:
             int: damage, can be under 0
         """
         damage = self.turn_manager.get_active_weapon_damage()
-        if hasattr(self.turn_manager.active_character(), "goto"):
-            self.selected_enemy=self.turn_manager.active_character().player_spotted
         if self.turn_manager.get_active_weapon_type() == "arc":
-            dist = self.selected_enemy.pos - self.turn_manager.active_character().pos
+            dist = self.selected_enemy.pos - self.turn_manager.active().pos
             logger.debug("[sofiane] il faut ajuster la valuer de MALUS_ARC")
             scope = self.turn_manager.get_active_weapon().scope
             if dist.length_squared() > scope:
                 malus = -((dist.length_squared() - scope) // TILESIZE) * MALUS_ARC
                 damage -= malus
         protection = self.selected_enemy.get_protection()
+        self.logs.add_log(
+            f'The {self.turn_manager.active()} attacked {self.selected_enemy}, dealing {max(0, damage - protection)} ({damage} - {protection}).')
         return max(0, damage - protection)
 
     def check_dice(self):
@@ -267,11 +298,13 @@ class VersusManager:
 
     def check_characters_actions(self):
         """Check the action of the active character"""
-        self.turn_manager.active_character().number_actions -= 1
-        self.logs.add_log(f"Action remaining to {self.turn_manager.active_character()} : {self.turn_manager.active_character().number_actions}")
+        self.turn_manager.active().number_actions -= 1
         self.set_move_player(False)
-        if self.turn_manager.active_character().number_actions == 0:
+        if self.turn_manager.active().number_actions <= 0:
             self.add_turn()
+        else:
+            self.logs.add_log(
+                f"Action remaining to {self.turn_manager.active()} : {self.turn_manager.active().number_actions}")
 
     def select_enemy(self, pos):
         """Select an enemy
@@ -288,7 +321,6 @@ class VersusManager:
                         _y = pos[1] - self.game.camera.camera.y
                         if enemy.rect.collidepoint(_x, _y):
                             self.selected_enemy = enemy
-                            self.logs.add_log("Enemy selected")
                             break
                 else:
                     self.logs.add_log("Select an enemy in the range")
@@ -300,7 +332,6 @@ class VersusManager:
                     _y = pos[1] - self.game.camera.camera.y
                     if enemy.rect.collidepoint(_x, _y):
                         self.selected_enemy = enemy
-                        self.logs.add_log("Enemy selected")
                         break
 
     def update(self):
@@ -320,9 +351,11 @@ class VersusManager:
                 elif mouse_click[2]:
                     self.spell_pos = None
 
+        self.check_for_versus()
+
     def draw(self, screen):
         """Draw the versus"""
-        self.draw_range(screen)
+        # self.draw_range(screen)
         self.draw_btns(screen)
         if self.action == "spell":
             if self.spell_pos:
@@ -347,6 +380,7 @@ class VersusManager:
             rect.centerx -= 3
             rect.centery -= 3
             screen.blit(image, self.game.camera.apply_rect(rect))
+            screen.blit(self.selected_enemy.image, self.game.camera.apply_rect(rect))
 
     def create_border(self, surface, color):
         """Create the enemy border
@@ -418,11 +452,11 @@ class VersusManager:
         self.turn_manager.add_turn()
         if self.turn_manager.is_active_player():
             self.turn_manager.add_vision()
-        # add actions to the next character
         self.set_move_player(False)
         self.add_actions()
         self.check_effects_zones_hits()
         self.check_for_effects_zones()
+        self.logs.add_log(self.turn_manager.active())
 
     def check_for_effects_zones(self):
         """Check if the effets zone can live"""

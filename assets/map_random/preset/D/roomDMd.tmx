@@ -12,7 +12,7 @@
 0,17,17,17,17,17,17,0,
 0,17,17,17,17,17,17,0,
 0,17,17,17,17,17,17,0,
-0,0,0,6,6,0,0,0
+0,0,0,6,0,0,0,0
 </data>
  </layer>
  <layer id="2" name="Wall" width="8" height="8">
@@ -24,16 +24,16 @@
 13,0,0,0,0,0,0,13,
 13,0,0,0,0,0,0,13,
 13,0,0,0,0,0,0,13,
-13,13,13,0,0,13,13,13
+13,13,13,0,5,13,13,13
 </data>
  </layer>
  <objectgroup id="3" name="Obstacles">
   <object id="2" name="wall" x="448" y="1.33333" width="64.6667" height="508.667"/>
   <object id="3" name="wall" x="-1.33317" y="1.33335" width="448.353" height="61.3333"/>
   <object id="6" name="wall" x="-1.66668" y="62.9998" width="64.6667" height="448.409"/>
-  <object id="9" name="wall" x="319.334" y="447.333" width="128" height="61.3333"/>
+  <object id="9" name="wall" x="257.192" y="447.333" width="190.142" height="61.3333"/>
   <object id="10" name="wall" x="66.0002" y="450" width="124.666" height="61.3333"/>
-  <object id="11" name="door" x="189.909" y="451.252" width="127.187" height="60.98"/>
+  <object id="11" name="door" x="191.651" y="449.51" width="63.3032" height="60.98"/>
   <object id="12" name="red_potion_small" x="125.445" y="130.091"/>
   <object id="15" name="red_potion_small" x="397.241" y="132.414"/>
   <object id="16" name="merchant" x="256.116" y="191.652"/>

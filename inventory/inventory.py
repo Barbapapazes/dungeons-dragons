@@ -307,7 +307,6 @@ class Inventory:
                 if slot.rect.collidepoint(mouse_pos):
                     if action == ACTIONS['view']:
                         self.view_item = slot.item
-                        logger.debug(slot.item)
                     if action == ACTIONS['throw']:
                         self.throw_item(slot.item)
                     if isinstance(slot.item, Equipable):

@@ -1,14 +1,19 @@
 """Create the main window and the base for all screens"""
-from os import path
-import sys
 import json
+import sys
+from os import path
+
 import pygame as pg
 from pygame_widgets import Button
+
+from components.cursor import Cursor
+from config.buttons import (HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON,
+                            WIDTH_BUTTON)
+from config.colors import BEIGE, BLACK, GREEN_DARK, YELLOW_LIGHT
+from config.screens import (CHARACTER_CREATION, INTRODUCTION, NEW_GAME,
+                            SHORTCUTS, TRANSITION_IN, TRANSITION_OUT)
+from config.window import FPS, HEIGHT, TITLE, WIDTH
 from logger import logger
-from config.screens import TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
-from config.colors import BLACK, BEIGE, GREEN_DARK, YELLOW_LIGHT
-from config.window import WIDTH, HEIGHT, FPS, TITLE
-from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
 from utils.shortcuts import key_for, load_shortcuts
 from music.music import Music
 from data.music_data import DATA_SOUND
@@ -37,7 +42,7 @@ class Window():
 
         self.show_fps = False
 
-        self.M=Music(self)
+        self.M = Music(self)
 
         self.load_data()
 
@@ -111,6 +116,9 @@ class Window():
                     state = self.state.previous if self.state.name == SHORTCUTS else SHORTCUTS
                     self.flip_state(state)
                     logger.info('Toggle shortcuts : %s', state)
+                if event.key == pg.K_b:
+                    # utiliser un event global à la fin
+                    self.reset()
 
             elif event.type == pg.KEYUP:
                 self.keys = pg.key.get_pressed()
@@ -132,6 +140,14 @@ class Window():
                     if event.name == 'save':
                         logger.info("User event: save ")
                         self.save()
+                    if event.name == 'reset':
+                        logger.info("User event: reset ")
+                        self.reset()
+
+    def reset(self):
+        self.states_dict[NEW_GAME].new()
+        self.states_dict[CHARACTER_CREATION].new()
+        self.states_dict[INTRODUCTION].new()
 
     def save(self):
         """Used to save the game data"""
@@ -140,7 +156,7 @@ class Window():
 
     def save_minimap_data(self):
         """Save the fog and the cover from game_data"""
-        minimap_data = self.persist["minimap"]
+        minimap_data = self.state.game_data["minimap"]
         filename = self.persist["file_name"].split(".json")[0]
         minimap_types = ["cover", "fog"]
         for _type in minimap_types:
@@ -378,7 +394,7 @@ class _State():
         """
         sub_state = 'normal' if self.state == state else state
         logger.info('Start sub-state %s in %s', sub_state, self.name)
-        DATA_SOUND["click"]=True
+        DATA_SOUND["click"] = True
         self.set_state(sub_state)
 
 
@@ -452,7 +468,7 @@ class _Elements(_State):
     def load_next_state(self, *next_state):
         """Load the new state"""
         self.next = next_state[0]
-        DATA_SOUND["click"]=True
+        DATA_SOUND["click"] = True
         super().set_state(TRANSITION_OUT)
 
     def events_buttons(self, back=False):
@@ -558,4 +574,55 @@ class _Elements(_State):
             pressedColour=pressed_color,
             onClick=on_click,
             onClickParams=on_click_params)
-    
+
+    @staticmethod
+    def create_slider(
+            title,
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color):
+        """Create a slider
+
+        Args:
+            title (str)
+            name (str)
+            x (int)
+            y (int)
+            width (int)
+            height (int)
+            surface (Surface)
+            min (int)
+            max (int)
+            step (int)
+            start (int)
+            font (str)
+            draw_text (func)
+            color (tuple)
+            handle_color (tuple)
+
+        Returns:
+            Cursor
+        """
+        return Cursor(
+            title,
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color)

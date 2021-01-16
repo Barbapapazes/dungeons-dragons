@@ -58,5 +58,6 @@ class Merchant(pg.sprite.Sprite):
     def try_open(self):
         """Try to open a merchant"""
         logger.info("Open a merchant")
+        self.game.create_dim()
         self.game.merchant_open = True
         self.game.opened_merchant = self
