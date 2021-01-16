@@ -11,7 +11,7 @@ class Music():
         self.startup()
 
     def startup(self):
-        self.current_playing = "enchanted-forest-music.mp3"
+        self.current_playing = "enchanted-forest-music.ogg"
         self.enable = True
         self.state = "menu"
         self.lib_music = path.join('.', "music")

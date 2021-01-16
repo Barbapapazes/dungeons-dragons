@@ -6,13 +6,13 @@ DATA_MUSIC = {
     "start_combat":False,
     "end_combat":False,
     "piste":{
-        "menu":"enchanted-forest-music.mp3",
-        "options":"test.wav",
-        "options_music":"test.wav",
-        "new_game":"dark_piano.mp3",
-        "choose_map":"enchanted-forest-music.mp3",
-        "game":"dark_piano.mp3",
-        "combat": "combat.mp3",
+        "menu":"enchanted-forest-music.ogg",
+        "options":"test.ogg",
+        "options_music":"test.ogg",
+        "new_game":"dark_piano.ogg",
+        "choose_map":"enchanted-forest-music.ogg",
+        "game":"dark_piano.ogg",
+        "combat": "combat.ogg",
             },
 }
 
@@ -22,7 +22,7 @@ DATA_SOUND= {
     "click":False,
     "step":False,
     "piste":{
-        "click": "button_click.mp3",
-        "step":"foot_step.mp3",
+        "click": "button_click.ogg",
+        "step":"foot_step.ogg",
             },
 }
