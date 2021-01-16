@@ -180,32 +180,36 @@ class Enemy(Character):
 
     def update(self):
         # if trap nearby: flee(trap)
+        self.now = pg.time.get_ticks()
+        if self.last_timestamp2 is None:
+            self.last_timestamp2 = self.now
+        if self.now - self.last_timestamp > 5000:
+            self.last_timestamp = self.now
+            self.player_spotted = None
+            self.goto = []
+        
         if self.skip:
             self.end = False
             self.skip = False
+            self.last_timestamp2 = None
             self.game.versus_manager.check_characters_actions()
         elif self.end:
             if self.spawned:
                 self.number_actions = 0
             self.end_time += self.game.dt
             if self.end_time > (WAIT_TIME / 1000):
+                self.end_time = 0
                 self.end = False
+                self.last_timestamp2 = None
                 self.game.versus_manager.check_characters_actions()
         else:
             """ reset player spotted every 10 seconds
             """
-            self.now = pg.time.get_ticks()
-            if self.last_timestamp2 is None:
-                self.last_timestamp2 = self.now
-            if self.now - self.last_timestamp > 5000:
-                self.last_timestamp = self.now
-                self.player_spotted = None
-                self.goto = []
 
             if self.game.versus_manager.active:
                 """ If a player is in sight, evaluate whether he is worth attacking or not
                 """
-                if self.now - self.last_timestamp2 > 3000:
+                if self.now - self.last_timestamp2 > 3500:
                     self.end_move()
                 elif self.player_detection():
                     if self.evaluation() or self.fleeing:
@@ -569,7 +573,6 @@ class Enemy(Character):
         self.end_move()
 
     def end_move(self):
-        self.last_timestamp2 = None
         self.fleeing = False
         self.goto = []
         self.moving = False
