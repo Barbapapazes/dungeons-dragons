@@ -71,12 +71,13 @@ footer: Made by  with ❤️ by the group 10
 - choix du nom de la sauvegarde
 - possibilité d'avoir plusieurs sauvegardes
 - sauvegarde légères
-- sauvegardes complètes : items, ennemies, joueurs, minimap, notes
+- sauvegardes complètes : items, ennemies, joueurs, minimap, notes, paramètres
 
 ### Options
 
 - possibilité de personnalisation des shortcuts
 - choix de la résolution du jeux
+- possibilité de régler le son du jeu, de l'activer
 
 ### Cartes
 

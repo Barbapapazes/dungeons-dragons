@@ -1,15 +1,15 @@
 """Menu screen"""
 
+from data.music_data import CUSTOM_MUSIC_FILENAME
 import pygame as pg
-from window import _Elements
-from config.screens import GAME, MENU, NEW_GAME, OPTIONS, LOAD_GAME,OPTIONS_MUSIC
-from utils.shortcuts import load_shortcuts
-from data.music_data import DATA_MUSIC,DATA_SOUND
+from os import path
+import json
+from config.buttons import HEIGHT_SLIDER, WIDTH_SLIDER
+from config.colors import BLACK, LIGHTGREY
+from config.screens import OPTIONS, OPTIONS_MUSIC
+from config.window import HEIGHT, WIDTH
 from logger import logger
-from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
-from components.cursor import Cursor
-from config.window import WIDTH, HEIGHT
-from config.colors import LIGHTGREY, YELLOW_LIGHT, BLACK, BEIGE, GREEN_DARK, WHITE
+from window import _Elements
 
 
 class Options_music(_Elements):
@@ -18,27 +18,57 @@ class Options_music(_Elements):
     def __init__(self):
         self.name = OPTIONS_MUSIC
         self.next = None
-        print(DATA_MUSIC["is_enable"])
-        super(Options_music, self).__init__(self.name, self.next, 'options', 'background.jpg', self.create_buttons_dict())
+        super(Options_music, self).__init__(self.name, self.next,
+                                            'options', 'background.jpg', {})
+
+        # Background image
+        # used to avoid a persistence on the screen with the slider
+        self.background = pg.Surface((WIDTH, HEIGHT))
+        image = pg.image.load(
+            path.join(
+                self.img_folder,
+                'options',
+                'background.jpg')).convert()
+        self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
+
+    def startup(self, dt, game_data):
+        super().startup(dt, game_data)
+        self.btns_dict = self.create_buttons_dict()
+        self.create_buttons(self.background)
         self.create_back_button(self.background, self.load_next_state, [OPTIONS])
         self.create_sliders()
-        self.startup(0, load_shortcuts())
+
+    def get_events(self, event):
+        if event.type == pg.KEYUP:
+            if event.key == pg.K_s and pg.key.get_mods() & pg.KMOD_ALT:
+                self.save_settings()
+
+    def save_settings(self):
+        """Save settings from this screen"""
+        with open(path.join(self.saved_music, CUSTOM_MUSIC_FILENAME), 'w') as _f:
+            _f.write(json.dumps(self.game_data["music"]))
+            logger.info(
+                'Save music to %s',
+                path.join(
+                    self.saved_music,
+                    CUSTOM_MUSIC_FILENAME))
+        self.saved_file = True
 
     def create_buttons_dict(self):
         """Create the dict for all buttons"""
         return {
             "song": {
-                "text": "Song : On /Off ",
+                "text": "Song: " + ('Off' if self.game_data["music"]["song"]["is_enable"] else 'On'),
                 "on_click": self.status_music,
-                "on_click_params": "1",
+                "on_click_params": [],
             },
             "sound": {
-                "text": "Sound : On/Off",
+                "text": "Sound: " + ('Off' if self.game_data["music"]["sound"]["is_enable"] else 'On'),
                 "on_click": self.status_sound,
-                "on_click_params": "1",
+                "on_click_params": [],
             },
         }
-    
+
     def create_sliders_dict(self):
         """Create the dict for all sliders
 
@@ -49,19 +79,19 @@ class Options_music(_Elements):
             "Music": {
                 "name": "music",
                 "max": 100,
-                "start": DATA_MUSIC["volume"],
+                "start": self.game_data["music"]["song"]["volume"],
             },
-            
+
         }
 
     def create_sliders(self):
         """Create sliders"""
         self.sliders = list()
-        logger.info("Create all sliders from character creation")
+        logger.info("Create all sliders from option music")
         for index, (key, value) in enumerate(
                 self.create_sliders_dict().items()):
             y = 6 * HEIGHT // 10 + (index % 3) * 70
-            x=420
+            x = 420
             self.sliders.append(
                 self.create_slider(
                     key.upper(),
@@ -79,26 +109,25 @@ class Options_music(_Elements):
                     self.draw_text, BLACK, LIGHTGREY
 
                 ))
-    
-    def status_music(self,none):
-        if(DATA_MUSIC["is_enable"]):
-            DATA_MUSIC["is_enable"]=False
-            DATA_MUSIC["current_playing"]=None
-            logger.info("Musique false")
-        else:
-            DATA_MUSIC["is_enable"]=True
-            DATA_MUSIC["current_playing"]=None
-            logger.info("Musique true")
-        self.create_buttons_dict()
+
+    def status_music(self, *args):
+        self.game_data["music"]["song"]["is_enable"] = not self.game_data["music"]["song"]["is_enable"]
+        self.game_data["music"]["song"]["current_playing"] = None
+        pg.event.wait()
+        self.game_data["music"]["sound"]["click"] = True
+        logger.info("Toggle music status")
+        self.btns_dict = self.create_buttons_dict()
+        self.create_buttons(self.background)
         self.load_next_state(OPTIONS_MUSIC)
 
-    def  status_sound(self,none):
-        if(DATA_SOUND["is_enable"]):
-            DATA_SOUND["is_enable"]=False
-        else: 
-            DATA_SOUND["is_enable"] = True
-        print(DATA_SOUND["is_enable"])
-        
+    def status_sound(self, *args):
+        self.game_data["music"]["sound"]["is_enable"] = not self.game_data["music"]["sound"]["is_enable"]
+        pg.event.wait()
+        self.game_data["music"]["sound"]["click"] = True
+        logger.info("Toggle sound status")
+        self.btns_dict = self.create_buttons_dict()
+        self.create_buttons(self.background)
+        self.load_next_state(OPTIONS_MUSIC)
 
     def run(self, surface, keys, mouse, dt):
         """Run states"""
@@ -123,81 +152,22 @@ class Options_music(_Elements):
         """Update the content"""
         pass
 
-
     def draw_sliders(self):
         """Draw sliders"""
         for slider in self.sliders:
             slider.draw_without_text()
-    
+
     def events_sliders(self):
         """Events for sliders"""
         events = pg.event.get()
         for slider in self.sliders:
             slider.listen(events)
-        DATA_MUSIC["volume"]=self.sliders[0].getValue()
-        #print(DATA_MUSIC["volume"])
-            
+        self.game_data["music"]["song"]["volume"] = self.sliders[0].getValue()
 
     def draw(self):
         """Draw content"""
-        super().draw_elements("Options")
-        super().draw_subtitle("Musics & Sounds")
+        self.screen.blit(self.background, (0, 0))
+        self.background.blit(self.image, (0, 0))
+        super().draw_elements("Options", background=False, back=True)
+        super().draw_subtitle("Music & Sounds")
         self.draw_sliders()
-
-    @staticmethod
-    def stop_window():
-        """Quit the window using a user event"""
-        quit_event = pg.event.Event(pg.USEREVENT, code="_State", name="quit")
-        pg.event.post(quit_event)
-
-    @staticmethod
-    def create_slider(
-            title,
-            name,
-            x,
-            y,
-            width,
-            height,
-            surface,
-            min,
-            max,
-            step,
-            start,
-            font,
-            draw_text, color, handle_color):
-        """Create a slider
-
-        Args:
-            title (str)
-            name (str)
-            x (int)
-            y (int)
-            width (int)
-            height (int)
-            surface (Surface)
-            min (int)
-            max (int)
-            step (int)
-            start (int)
-            font (str)
-            draw_text (func)
-            color (tuple)
-            handle_color (tuple)
-
-        Returns:
-            Cursor
-        """
-        return Cursor(
-            title,
-            name,
-            x,
-            y,
-            width,
-            height,
-            surface,
-            min,
-            max,
-            step,
-            start,
-            font,
-            draw_text, color, handle_color)

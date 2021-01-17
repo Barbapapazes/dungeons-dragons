@@ -4,7 +4,8 @@ import pygame as pg
 SHORTCUTS_DEFAULT = {
     "window": {
         "fps": {"keys": [False, False, pg.K_EQUALS], "help": "Toggle the fps counter"},
-        "escape": {"keys": [False, False, pg.K_ESCAPE], "help": "Used to exit a menu"}
+        "escape": {"keys": [False, False, pg.K_ESCAPE], "help": "Used to exit a menu"},
+        "music": {"keys": [True, False, pg.K_m], "help": "Used to open the music option pane"}
     },
     "game": {
         "inventory": {"keys": [False, False, pg.K_i], "help": "Toggle the inventory"},

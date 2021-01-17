@@ -1,5 +1,6 @@
 """Menu screen"""
 
+from utils.music import load_music
 from config.window import HEIGHT, WIDTH
 import pygame as pg
 from window import _Elements
@@ -30,7 +31,7 @@ class Menu(_Elements):
         self.win.fill((0, 0, 0, 0))
         self.create_buttons(self.win)
 
-        self.startup(0, load_shortcuts())
+        self.startup(0, load_shortcuts() | load_music())
 
     def create_buttons_dict(self):
         """Create the dict for all buttons

@@ -3,7 +3,6 @@ import pygame as pg
 from config.colors import BLUE_MARTINA, ENERGOS, GLOOMY_PURPLE, RED_PIGMENT
 from config.sprites import ITEMS, MALUS_ARC
 from config.window import HEIGHT, TILESIZE
-from data.music_data import DATA_MUSIC
 from logger import logger
 from sprites.animated import Circle
 from sprites.effects_zone import EffectsZone
@@ -96,7 +95,7 @@ class VersusManager:
         self.active = True
         self.set_move_player(False)
         self.logs.add_log("Start the versus")
-        DATA_MUSIC["start_combat"] = True
+        self.game_data["music"]["song"]["start_combat"] = True
         self.add_actions()
 
     def add_actions(self):
@@ -118,7 +117,7 @@ class VersusManager:
         self.remove_action()
         self.remove_zones_effects()
         self.logs.add_log("Finish the versus")
-        DATA_MUSIC["end_combat"] = True
+        self.game_data["music"]["song"]["end_combat"] = True
 
     def remove_zones_effects(self):
         """Remove all zones"""
