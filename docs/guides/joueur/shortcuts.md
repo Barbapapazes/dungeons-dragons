@@ -4,10 +4,12 @@ Notre jeu s'utilise à la fois avec le clavier et la souris et combine les 2 la 
 
 ## Window
 
-|    Nom    | Raccourci | Aide                     |
-| :-------: | :-------: | ------------------------ |
-|    fps    |     =     | Toggle le conteur de fps |
-| shortcuts |  alt + s  | Toggle le conteur de fps |
+|    Nom    | Raccourci | Aide                            |
+| :-------: | :-------: | ------------------------------- |
+|    fps    |     =     | Toggle le conteur de fps        |
+| shortcuts |  alt + s  | Used to open the shortcuts menu |
+|   music   | ctrl + m  | Used to open the music menu     |
+|  escape   |  escape   | Used to close a menu            |
 
 ## Game
 
@@ -58,6 +60,12 @@ Notre jeu s'utilise à la fois avec le clavier et la souris et combine les 2 la 
 | show  |  ctrl+k   | Toggle le panneau de shortcuts        |
 | reset |   alt+r   | Permet de réinitialiser les shortcuts |
 | save  |   alt+s   | Sauvegarder les shortcuts             |
+
+## Music and sound
+
+| Nom  | Raccourci | Aide          |
+| :--: | :-------: | ------------- |
+| save |  alt + s  | Save settings |
 
 ## Personnalisation
 
