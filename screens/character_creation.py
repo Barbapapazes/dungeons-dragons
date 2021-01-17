@@ -201,7 +201,7 @@ class CharacterCreation(_Elements):
             "soldier": {
                 "name": "soldier",
                 "images": [pg.image.load(path.join(self.sprites_folder, "soldier", "idle", f"{i}.png")) for i in range(3)],
-                "description": "Chevaliers menant une quête, seigneurs conquérants, champions royaux, fantassins d'élite, mercenaires endurcis et rois-bandits,\ntous partagent une maîtrise inégalée des armes et des armures ainsi qu'une connaissance approfondie des compétences de combat.\nTous connaissent bien la mort, l'infligeant autant qu'ils lui font face.",
+                "description": "Chevaliers menant une quête, seigneurs conquérants, champions royaux, fantassins d'élite,\n mercenaires endurcis et rois-bandits,tous partagent une maîtrise inégalée des armes\n et des armures ainsi qu'une connaissance approfondie des compétences de combat.\nTous connaissent bien la mort, l'infligeant autant qu'ils lui font face.",
                 "characteristics": {
                     "str": {
                         "base": 30,
@@ -224,7 +224,7 @@ class CharacterCreation(_Elements):
             "wizard": {
                 "name": "wizard",
                 "images": [pg.image.load(path.join(self.sprites_folder, "wizard", "idle", f"{i}.png")) for i in range(3)],
-                "description": "",
+                "description": "Fort de ses pouvoirs en magies, le sorcier a une maîtrise sans précédent de ce pouvoir ! \nGrâce à un entrainement intensif, il est désormais capable de lancer des boules de feu et des sorts de soin, \nlui conféreant un atout sans comparaison sur le champ de battaille !",
                 "characteristics": {
                     "str": {
                         "base": 10,
@@ -247,7 +247,7 @@ class CharacterCreation(_Elements):
             "thief": {
                 "name": "thief",
                 "images": [pg.image.load(path.join(self.sprites_folder, "thief", "idle", f"{i}.png")) for i in range(3)],
-                "description": "",
+                "description": "Possédant une agilité hors norme, il est capable de commencer les combats à tous les coups, \nlui conférant un avantage certain sur le champ de bataille !",
                 "characteristics": {
                     "str": {
                         "base": 25,
