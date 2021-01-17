@@ -7,7 +7,7 @@ import json
 from config.buttons import HEIGHT_SLIDER, WIDTH_SLIDER
 from config.colors import BLACK, LIGHTGREY
 from config.screens import OPTIONS, OPTIONS_MUSIC
-from config.window import HEIGHT
+from config.window import HEIGHT, WIDTH
 from logger import logger
 from window import _Elements
 
@@ -20,6 +20,16 @@ class Options_music(_Elements):
         self.next = None
         super(Options_music, self).__init__(self.name, self.next,
                                             'options', 'background.jpg', {})
+
+        # Background image
+        # used to avoid a persistence on the screen with the slider
+        self.background = pg.Surface((WIDTH, HEIGHT))
+        image = pg.image.load(
+            path.join(
+                self.img_folder,
+                'options',
+                'background.jpg')).convert()
+        self.image = pg.transform.scale(image, (WIDTH, HEIGHT))
 
     def startup(self, dt, game_data):
         super().startup(dt, game_data)
@@ -156,12 +166,8 @@ class Options_music(_Elements):
 
     def draw(self):
         """Draw content"""
-        super().draw_elements("Options")
+        self.screen.blit(self.background, (0, 0))
+        self.background.blit(self.image, (0, 0))
+        super().draw_elements("Options", background=False, back=True)
         super().draw_subtitle("Music & Sounds")
         self.draw_sliders()
-
-    @staticmethod
-    def actualize():
-        """Actualize the settings"""
-        actu_event = pg.event.Event(pg.USEREVENT, code="_State", name="music")
-        pg.event.post(actu_event)
