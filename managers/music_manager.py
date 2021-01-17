@@ -80,6 +80,7 @@ class MusicManager():
         # appeler en boucle qui va lancer un son
         if(self.music_loaded["sound"]["click"] and self.music_loaded["sound"]["is_enable"]):
             click = pg.mixer.Sound(path.join(self.game.music_folder, self.music_loaded["sound"]["piste"]["click"]))
+            pg.mixer.Sound.set_volume(click,0.05)
             click.play()
             self.music_loaded["sound"]["click"] = False
 
