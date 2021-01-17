@@ -99,7 +99,7 @@ class VersusManager:
         self.logs.add_log("Start the versus")
         self.turn_manager.turn = 0
         self.turn_manager.sorted = False
-        self.game_data["music"]["song"]["start_combat"] = True
+        self.game.game_data["music"]["song"]["start_combat"] = True
         self.add_actions()
 
     def add_actions(self):
@@ -253,16 +253,17 @@ class VersusManager:
 
     def kill_enemy(self, enemy=None):
         """Kill an enemy"""
+        enemy = self.selected_enemy if enemy is None else enemy
         rel_turn = self.turn_manager.get_relative_turn()
         if self.turn_manager.sorted.index(
-                self.selected_enemy) < self.turn_manager.sorted.index(
+                enemy) < self.turn_manager.sorted.index(
                 self.turn_manager.active()):
             rel_turn -= 1
-        self.turn_manager.enemies.remove(self.selected_enemy)
-        self.turn_manager.sorted.remove(self.selected_enemy)
-        self.selected_enemy.throw_inventory()
-        self.selected_enemy.throw_equipments()
-        self.selected_enemy.kill()
+        self.turn_manager.enemies.remove(enemy)
+        self.turn_manager.sorted.remove(enemy)
+        enemy.throw_inventory()
+        enemy.throw_equipments()
+        enemy.kill()
         self.turn_manager.turn = len(self.turn_manager.sorted) + rel_turn
 
     def action_attack(self):
