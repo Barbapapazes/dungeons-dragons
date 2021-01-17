@@ -121,7 +121,7 @@ class VersusManager:
         self.remove_action()
         self.remove_zones_effects()
         self.logs.add_log("Finish the versus")
-        self.game_data["music"]["song"]["end_combat"] = True
+        self.game.game_data["music"]["song"]["end_combat"] = True
 
     def remove_zones_effects(self):
         """Remove all zones"""
