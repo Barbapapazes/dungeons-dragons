@@ -2,12 +2,13 @@ import socket
 import pickle
 from logger import logger
 from config.server import SERVER_IP, SERVER_PORT
+import os
 
 
 class Network:
     def __init__(self):
         self.client = socket.socket()
-        self.host = socket.gethostname()
+        self.host = socket.gethostname() if os.getenv("SERVER_IP") is None else os.getenv("SERVER_IP")
         self.port = 3000
         self.addr = (self.host, self.port)
 
