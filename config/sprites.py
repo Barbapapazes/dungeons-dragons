@@ -55,7 +55,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "sword",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 2,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -77,7 +77,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "sword",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 4,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -88,7 +88,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "sword",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 5,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
 
@@ -100,7 +100,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "sword",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 6,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -110,7 +110,7 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "number_dice": 1,
+        "number_dice": 2,
         "dice_value": 3,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
@@ -121,8 +121,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "number_dice": 1,
-        "dice_value": 3,
+        "number_dice": 2,
+        "dice_value": 4,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -132,8 +132,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "number_dice": 1,
-        "dice_value": 3,
+        "number_dice": 2,
+        "dice_value": 5,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -143,8 +143,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "number_dice": 1,
-        "dice_value": 3,
+        "number_dice": 2,
+        "dice_value": 6,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -154,8 +154,8 @@ WEAPONS = {
         "weight": 10,
         "slot": "weapon",
         "type": "sword",
-        "number_dice": 1,
-        "dice_value": 3,
+        "number_dice": 2,
+        "dice_value": 7,
         "scope": SCOPE_SWORD,
         "object_type": "weapon"
     },
@@ -176,7 +176,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 11,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -187,7 +187,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 12,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -198,7 +198,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 13,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -209,7 +209,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 14,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -220,7 +220,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 15,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -231,7 +231,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 16,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -242,7 +242,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 17,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -253,7 +253,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 18,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -264,7 +264,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "arc",
         "number_dice": 2,
-        "dice_value": 10,
+        "dice_value": 19,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -274,8 +274,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "number_dice": 2,
-        "dice_value": 10,
+        "number_dice": 3,
+        "dice_value": 15,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -285,8 +285,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "number_dice": 2,
-        "dice_value": 10,
+        "number_dice": 3,
+        "dice_value": 16,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -296,8 +296,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "number_dice": 2,
-        "dice_value": 10,
+        "number_dice": 3,
+        "dice_value": 17,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -307,8 +307,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "number_dice": 2,
-        "dice_value": 10,
+        "number_dice": 3,
+        "dice_value": 18,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -318,8 +318,8 @@ WEAPONS = {
         "weight": 15,
         "slot": "weapon",
         "type": "arc",
-        "number_dice": 2,
-        "dice_value": 10,
+        "number_dice": 3,
+        "dice_value": 19,
         "scope": SCOPE_ARC,
         "price": 10,
         "object_type": "weapon"
@@ -341,7 +341,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "dagger",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 4,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -352,7 +352,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "dagger",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 5,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -363,7 +363,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "dagger",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 6,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -374,7 +374,7 @@ WEAPONS = {
         "slot": "weapon",
         "type": "dagger",
         "number_dice": 1,
-        "dice_value": 3,
+        "dice_value": 7,
         "scope": SCOPE_SWORD,
         "price": 10,
         "object_type": "weapon"
@@ -576,8 +576,8 @@ ARMOR_COLS = WEAPONS_COLS
 CONSUMABLE_COLS = WEAPONS_COLS
 
 # Character
-WIDTH_CHARACTER = 150
-HEIGHT_CHARACTER = 150
+WIDTH_CHARACTER = 300
+HEIGHT_CHARACTER =300
 USABLE_POINTS = 100
 
 # Bounce

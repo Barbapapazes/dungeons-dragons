@@ -12,11 +12,12 @@ DEFAULT_SETTINGS = {
 }
 
 
-def get(_type):
+def get(_type, data):
     """Used to get value for the settings file 
 
     Args:
         _type (string)
+        data (dict)
 
     Returns:
         int | str
@@ -26,14 +27,14 @@ def get(_type):
         with open(path.join('.', 'assets', 'saved_settings', CUSTOM_SETTINGS_FILENAME), 'r') as _f:
             value = json.load(_f)[_type]
     except:
-        value = DEFAULT_SETTINGS[_type]
+        value = data[_type]
 
     logger.info("Load %s : %s", _type, value)
     return value
 
 
-WIDTH = get("width")
-HEIGHT = get("height")
+WIDTH = get("width", DEFAULT_SETTINGS)
+HEIGHT = get("height", DEFAULT_SETTINGS)
 
 
 FPS = 60

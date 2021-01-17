@@ -61,7 +61,7 @@ class Character(pg.sprite.Sprite):
             self.hit_rect = hit_rect
             self.hit_rect.center = self.rect.center
 
-        self.frame_time = 60 / 1000
+        self.frame_time = 180 / 1000
         self.frame_timer = 0
 
     def update(self):
@@ -121,9 +121,9 @@ class Character(pg.sprite.Sprite):
             hp_gain (int)
         """
         self.health += hp_gain
-        logger.debug(hp_gain)
         if self.health > self.max_HP:
             self.health = self.max_HP
+        self.game.logs.add_log(f'{self} has {self.health} remaining, (+{hp_gain})')
 
     def subHp(self, hp_lose):
         """Sub passed hp_lose to the player's health
@@ -135,7 +135,7 @@ class Character(pg.sprite.Sprite):
         if self.health < 0:
             self.health = 0
         else:
-            self.game.versus_manager.logs.add_log(f'{self} has {self.health} remaining')
+            self.game.logs.add_log(f'{self} has {self.health} remaining, (-{hp_lose})')
 
     def equip_armor(self, item):
         """Equip a passed armor item in the right armor slot,
@@ -176,8 +176,6 @@ class Character(pg.sprite.Sprite):
         _type = "success" if self.dice["success"] else "failed"
         self.game.logs.add_log(
             f"Dice {_type}, result {result_dice}/{value_dice}, under {self.characteristics[base_value] + mod} to success")
-        logger.info("Result dice : %d / %d (must be under %s to success)",
-                    result_dice, value_dice, self.characteristics[base_value] + mod)
 
     def get_protection(self):
         protection = self.characteristics['con'] // 5

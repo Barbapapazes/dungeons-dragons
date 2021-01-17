@@ -6,8 +6,10 @@ from config.screens import ONLINE_GAME
 from config.sprites import (ITEMS, PLAYER_HIT_RECT,
                             PLAYER_MAX_HP, PLAYER_MAX_MP,
                             PLAYER_SPEED)
-from logger import logger
 from sprites.character import Character, players
+from logger import logger
+
+from sprites.character import Character
 
 vec = pg.math.Vector2
 
@@ -64,15 +66,19 @@ class Player(Character):
             if keys[self.game.game_data["shortcuts"]["player"]["left"]["keys"][2]]:
                 self.direction = "left"
                 self.vel.x = -PLAYER_SPEED
+                self.game_data["music"]["sound"]["step"] = True
             if keys[self.game.game_data["shortcuts"]["player"]["right"]["keys"][2]]:
                 self.direction = "right"
                 self.vel.x = PLAYER_SPEED
+                self.game_data["music"]["sound"]["step"] = True
             if keys[self.game.game_data["shortcuts"]["player"]["up"]["keys"][2]]:
                 self.direction = "up"
                 self.vel.y = -PLAYER_SPEED
+                self.game_data["music"]["sound"]["step"] = True
             if keys[self.game.game_data["shortcuts"]["player"]["down"]["keys"][2]]:
                 self.direction = "down"
                 self.vel.y = PLAYER_SPEED
+                self.game_data["music"]["sound"]["step"] = True
             if self.vel.x != 0 and self.vel.y != 0:
                 self.vel *= 0.7071
             if self.game.name == ONLINE_GAME:

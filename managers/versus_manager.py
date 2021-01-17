@@ -1,12 +1,12 @@
 """Create the versus mananger"""
 import pygame as pg
-from sprites.effects_zone import EffectsZone
+from config.colors import BLUE_MARTINA, ENERGOS, GLOOMY_PURPLE, RED_PIGMENT
 from config.sprites import ITEMS, MALUS_ARC
-from config.colors import ENERGOS, GLOOMY_PURPLE, RED_PIGMENT, BLUE_MARTINA
 from config.window import HEIGHT, TILESIZE
-from sprites.animated import Circle
 from logger import logger
-from time import sleep
+from sprites.animated import Circle
+from sprites.effects_zone import EffectsZone
+
 vec = pg.Vector2
 
 
@@ -99,6 +99,7 @@ class VersusManager:
         self.logs.add_log("Start the versus")
         self.turn_manager.turn = 0
         self.turn_manager.sorted = False
+        self.game_data["music"]["song"]["start_combat"] = True
         self.add_actions()
 
     def add_actions(self):
@@ -120,6 +121,7 @@ class VersusManager:
         self.remove_action()
         self.remove_zones_effects()
         self.logs.add_log("Finish the versus")
+        self.game_data["music"]["song"]["end_combat"] = True
 
     def remove_zones_effects(self):
         """Remove all zones"""
@@ -249,7 +251,7 @@ class VersusManager:
             self.remove_action()
             self.check_characters_actions()
 
-    def kill_enemy(self):
+    def kill_enemy(self, enemy=None):
         """Kill an enemy"""
         rel_turn = self.turn_manager.get_relative_turn()
         if self.turn_manager.sorted.index(
