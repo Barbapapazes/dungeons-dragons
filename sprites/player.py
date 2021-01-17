@@ -211,13 +211,6 @@ class Player(Character):
         if self.spell is not None:
             self.spell = None
 
-    def level_up(self):
-        if self.xp > 100:
-            self.xp = self.xp % 100
-            for i in self.characteristics:
-                self.characteristics[i] += 5
-            self.game.logs.add_log(f"{self} leveled up !")
-
 
 class Arrow(pg.sprite.Sprite):
     """Create an arrow"""

@@ -33,6 +33,8 @@ class VersusManager:
         self.border_enemy = None
         self.warn = False
         self.active = False
+        self.soldier_bonus = False
+        self.wizard_bonus = False
 
         self.spell_pos = None
 
@@ -95,7 +97,9 @@ class VersusManager:
         self.active = True
         self.set_move_player(False)
         self.logs.add_log("Start the versus")
-        self.game_data["music"]["song"]["start_combat"] = True
+        self.turn_manager.turn = 0
+        self.turn_manager.sorted = False
+        self.game.game_data["music"]["song"]["start_combat"] = True
         self.add_actions()
 
     def add_actions(self):
@@ -182,15 +186,33 @@ class VersusManager:
         """
         if self.active and self.turn_manager.is_active_player():
             if not self.action:
-                if self.attack_btn.collidepoint(pos[0], pos[1]):
-                    # il faut faire des fonctions de ça et dans le game, dans les events, si c'est le tour d'un joueur, alors en fonction de la touch, ça lance la fonction correspondante
-                    # utiliser entrer pour valider
+                if self.attack_btn.collidepoint(
+                    pos[0],
+                    pos[1]) and not self.wizard_bonus or (
+                    self.attack_btn.collidepoint(pos[0],
+                                                 pos[1]) and self.soldier_bonus):
                     self.action_attack()
-                if self.move_btn.collidepoint(pos[0], pos[1]):
+                elif self.attack_btn.collidepoint(pos[0], pos[1]) and self.wizard_bonus:
+                    self.logs.add_log("This is a bonus, you have to use your spell !")
+
+                if self.move_btn.collidepoint(pos[0], pos[1]) and not self.soldier_bonus and not self.wizard_bonus:
                     self.action_move()
-                if self.spell_btn.collidepoint(pos[0], pos[1]) and not self.turn_manager.get_active_spell() is None:
+                elif self.move_btn.collidepoint(pos[0], pos[1]):
+                    if self.soldier_bonus:
+                        self.logs.add_log("This is a bonus, you have to fight !")
+                    elif self.wizard_bonus:
+                        self.logs.add_log("This is a bonus, you have to use your spell !")
+
+                if self.spell_btn.collidepoint(
+                    pos[0],
+                    pos[1]) and not self.soldier_bonus and not self.turn_manager.get_active_spell() is None or(
+                    self.spell_btn.collidepoint(pos[0],
+                                                pos[1]) and self.wizard_bonus):
                     self.action_spell()
+                elif self.spell_btn.collidepoint(pos[0], pos[1]) and self.soldier_bonus:
+                    self.logs.add_log("This is a bonus, you have to fight !")
             if self.validate_btn.collidepoint(pos[0], pos[1]):
+                logger.debug("%s, %s", self.soldier_bonus, self.wizard_bonus)
                 self.validate()
 
     def validate(self):
@@ -231,13 +253,18 @@ class VersusManager:
 
     def kill_enemy(self, enemy=None):
         """Kill an enemy"""
-        to_kill = self.selected_enemy if enemy is None else enemy
-        self.turn_manager.enemies.remove(to_kill)
-        self.turn_manager.sorted.remove(to_kill)
-        to_kill.throw_inventory()
-        to_kill.throw_equipments()
-        to_kill.kill()
-        self.turn_manager.add_turn()
+        enemy = self.selected_enemy if enemy is None else enemy
+        rel_turn = self.turn_manager.get_relative_turn()
+        if self.turn_manager.sorted.index(
+                enemy) < self.turn_manager.sorted.index(
+                self.turn_manager.active()):
+            rel_turn -= 1
+        self.turn_manager.enemies.remove(enemy)
+        self.turn_manager.sorted.remove(enemy)
+        enemy.throw_inventory()
+        enemy.throw_equipments()
+        enemy.kill()
+        self.turn_manager.turn = len(self.turn_manager.sorted) + rel_turn
 
     def action_attack(self):
         """Used to start a action to attack"""
@@ -282,6 +309,12 @@ class VersusManager:
                 malus = -((dist.length_squared() - scope) // TILESIZE) * MALUS_ARC
                 damage -= malus
         protection = self.selected_enemy.get_protection()
+
+        if self.turn_manager.active().type == "thief" and self.turn_manager.active().skill_bonus and self.turn_manager.turn < len(self.turn_manager.sorted):
+            self.turn_manager.active().skill_bonus = False
+            self.logs.add_log("Use huge attack from thief")
+            damage *= 2.2
+
         self.logs.add_log(
             f'The {self.turn_manager.active()} attacked {self.selected_enemy}, dealing {max(0, damage - protection)} ({damage} - {protection}).')
         return max(0, damage - protection)
@@ -300,6 +333,16 @@ class VersusManager:
         """Check the action of the active character"""
         self.turn_manager.active().number_actions -= 1
         self.set_move_player(False)
+
+        if self.turn_manager.is_active_player() and self.turn_manager.active().level_up() and self.turn_manager.active().number_actions == 0:
+            if not self.turn_manager.active().type == "thief":
+                self.turn_manager.active().number_actions += 1
+                if self.turn_manager.active().type == "soldier":
+                    self.soldier_bonus = True
+                elif self.turn_manager.active().type == "wizard":
+                    self.turn_manager.active().number_actions += 1
+                    self.wizard_bonus = True
+
         if self.turn_manager.active().number_actions <= 0:
             self.add_turn()
         else:
