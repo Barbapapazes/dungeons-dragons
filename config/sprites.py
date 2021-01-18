@@ -545,13 +545,23 @@ ARMOR = {  # on va utiliser ses champs là et faire des .keys pour la création 
 }
 
 SPELLS = {
-    "fire_ball": {
-        "image_name": "fireBall",
-        "type": "heal",
+    "fireball": {
+        "image_name": "fireball",
+        "type": "attack",
         "scope": 3 * TILESIZE,
         "slot": "spell",
         "object_type": "spell",
-        "time_to_live": 2,
+        "time_to_live": 4,
+        "number_dice": 2,
+        "dice_value": 10
+    },
+    "heal": {
+        "image_name": "heal",
+        "type": "heal",
+        "scope": 5 * TILESIZE,
+        "slot": "spell",
+        "object_type": "spell",
+        "time_to_live": 6,
         "number_dice": 2,
         "dice_value": 10
     }
@@ -577,7 +587,7 @@ CONSUMABLE_COLS = WEAPONS_COLS
 
 # Character
 WIDTH_CHARACTER = 300
-HEIGHT_CHARACTER =300
+HEIGHT_CHARACTER = 300
 USABLE_POINTS = 100
 
 # Bounce

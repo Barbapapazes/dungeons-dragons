@@ -244,8 +244,8 @@ class VersusManager:
                 return
 
             EffectsZone(
-                self.game, self.spell_pos[0],
-                self.spell_pos[1],
+                self.game, self.spell_pos[0] - self.game.camera.camera.x,
+                self.spell_pos[1] - self.game.camera.camera.y,
                 self.turn_manager.get_active_spell().type, self.turn_manager.get_active_spell().time_to_live, self.
                 turn_manager.get_active_spell().number_dice, self.turn_manager.get_active_spell().dice_value)
             self.remove_action()
