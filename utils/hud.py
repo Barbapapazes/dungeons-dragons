@@ -4,7 +4,7 @@ from sprites.player import Player
 from config.window import WIDTH, HEIGHT
 from config.colors import RED, GREEN, CYAN, DARKGREY, GOLD, BLACK
 from config.sprites import PLAYER_MAX_HP, PLAYER_MAX_MP
-from managers.stats_manager import StatsWindow
+# from managers.stats_manager import StatsWindow
 from utils.container import Container
 
 
@@ -13,9 +13,8 @@ class Hud:
 
     def __init__(self, game):
         self.game = game
-        self.screen = game.screen
         self.imgs = game.img_folder
-        self.stats = StatsWindow()
+        # self.stats = StatsWindow()
         self.button_dict = self.create_buttons_dict()
         self.buttons = list()
         self._size = WIDTH // 20 + WIDTH // 100

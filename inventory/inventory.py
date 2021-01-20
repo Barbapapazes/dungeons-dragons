@@ -386,7 +386,8 @@ class Inventory:
         if slot is not None:
             if slot.item is not None:
                 logger.info("Add %s to inventory", item)
-                self.moving_item_slot.item = slot.item
+                if self.moving_item_slot:
+                    self.moving_item_slot.item = slot.item
                 slot.item = item
             else:
                 slot.item = item

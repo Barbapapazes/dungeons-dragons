@@ -348,6 +348,7 @@ class Game(_Elements):
             'finish': self.finish_run,
             'game_over': self.game_over_run,
             'menu': self.menu_run,
+            'stats' : None
         }
 
         return previous_dict | add_dict
