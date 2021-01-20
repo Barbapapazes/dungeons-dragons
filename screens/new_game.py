@@ -53,6 +53,7 @@ class NewGame(_Elements):
         self.game_data['file_name'] = self.get_text_info() + '.json'
         self.game_data['num_heros'] = self.slider.getValue()
         logger.info("Filename : %s, Number of heros : %s", self.game_data['file_name'],  self.game_data['num_heros'])
+        self.game_data["music"]["sound"]["click"] = True
         self.load_next_state(state)
 
     def create_slider(self):

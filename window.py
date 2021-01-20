@@ -1,14 +1,21 @@
 """Create the main window and the base for all screens"""
-from os import path
-import sys
 import json
+import sys
+from os import path
+from utils.music import load_music
+
 import pygame as pg
 from pygame_widgets import Button
+
+from components.cursor import Cursor
+from config.buttons import (HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON,
+                            WIDTH_BUTTON)
+from config.colors import BEIGE, BLACK, GREEN_DARK, YELLOW_LIGHT
+from config.screens import (CHARACTER_CREATION, INTRODUCTION, NEW_GAME, OPTIONS_MUSIC,
+                            SHORTCUTS, TRANSITION_IN, TRANSITION_OUT)
+from config.window import FPS, HEIGHT, TITLE, WIDTH
 from logger import logger
-from config.screens import CHARACTER_CREATION, INTRODUCTION, NEW_GAME, TRANSITION_IN, TRANSITION_OUT, SHORTCUTS
-from config.colors import BLACK, BEIGE, GREEN_DARK, YELLOW_LIGHT
-from config.window import WIDTH, HEIGHT, FPS, TITLE
-from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, WIDTH_BUTTON
+from managers.music_manager import MusicManager
 from utils.shortcuts import key_for, load_shortcuts
 
 
@@ -34,6 +41,7 @@ class Window():
         self.state = None
 
         self.show_fps = False
+        self.previous = {}
 
         self.load_data()
 
@@ -43,12 +51,16 @@ class Window():
         game_folder = path.dirname('.')
         self.assets_folder = path.join(game_folder, 'assets')
         self.img_folder = path.join(self.assets_folder, 'img')
+        self.music_folder = path.join(self.assets_folder, 'music')
         self.saved_games = path.join(self.assets_folder, 'saved_games')
         self.saved_maps = path.join(self.assets_folder, 'saved_maps')
         self.saved_minimap = path.join(self.assets_folder, 'saved_minimap')
         self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
 
         self.shortcuts = load_shortcuts()["shortcuts"]
+        self.music_loaded = load_music()["music"]
+
+        self.music = MusicManager(self, self.music_loaded)
 
     def setup_states(self, states_dict, start_state):
         """Load all states"""
@@ -56,6 +68,7 @@ class Window():
         self.states_dict = states_dict
         self.state_name = start_state
         self.state = self.states_dict[self.state_name]
+        self.music.flip_music()
 
     def flip_state(self, state=None):
         """Change state to a new state"""
@@ -67,9 +80,12 @@ class Window():
         self.persist = self.state.cleanup()
         self.state = self.states_dict[self.state_name]
         self.shortcuts = self.persist["shortcuts"]
+        self.music_loaded = self.persist["music"]
+        self.music.set_data(self.music_loaded)
         self.state.previous = previous
         logger.info("Startup %s", self.state_name)
         self.state.startup(self.dt, self.persist)
+        self.music.flip_music()
 
     def run(self):
         """Run the state"""
@@ -79,6 +95,7 @@ class Window():
             self.flip_state()
         self.state.run(self.screen, self.keys, self.mouse, self.dt)
         self.show_fps_caption()
+        self.music.update()
 
     def events(self):
         """Manage the event"""
@@ -101,9 +118,10 @@ class Window():
                     state = self.state.previous if self.state.name == SHORTCUTS else SHORTCUTS
                     self.flip_state(state)
                     logger.info('Toggle shortcuts : %s', state)
-                if event.key == pg.K_b:
-                    # utiliser un event global à la fin
-                    self.reset()
+                if key_for(self.shortcuts["window"]["music"]["keys"], event):
+                    state = self.state.previous if self.state.name == OPTIONS_MUSIC else OPTIONS_MUSIC
+                    self.flip_state(state)
+                    logger.info('Toggle music option : %s', state)
 
             elif event.type == pg.KEYUP:
                 self.keys = pg.key.get_pressed()
@@ -118,15 +136,16 @@ class Window():
                 self.state.get_events(event)
 
             if event.type == pg.USEREVENT:
+                logger.debug(event)
                 if event.code == "_State":
                     if event.name == "quit":
                         logger.info("User event : quit")
                         self.done = True
                     if event.name == 'save':
-                        logger.info("User event: save ")
+                        logger.info("User event: save")
                         self.save()
                     if event.name == 'reset':
-                        logger.info("User event: reset ")
+                        logger.info("User event: reset")
                         self.reset()
 
     def reset(self):
@@ -158,6 +177,7 @@ class Window():
             with open(path.join(self.saved_games, self.persist['file_name']), "w") as outfile:
                 file_name = self.persist['file_name']
                 shortcuts = self.persist['shortcuts']
+                music = self.persist["music"]
                 del self.persist['file_name']
                 del self.persist['shortcuts']
                 # Remove the file name to be able to change manually the file name
@@ -165,6 +185,7 @@ class Window():
                 json.dump(self.persist["game_data"], outfile)
                 self.persist['file_name'] = file_name
                 self.persist['shortcuts'] = shortcuts
+                self.persist['music'] = music
                 logger.info('File %s saved', self.persist['file_name'])
         except EnvironmentError as e:
             logger.exception(e)
@@ -235,6 +256,7 @@ class _State():
         self.levels_maps = path.join(self.assets_folder, 'levels_maps')
         self.saved_minimap = path.join(self.assets_folder, 'saved_minimap')
         self.saved_shortcuts = path.join(self.assets_folder, 'saved_shortcuts')
+        self.saved_music = path.join(self.assets_folder, 'saved_music')
         self.saved_settings = path.join(self.assets_folder, 'saved_settings')
         self.fonts_folder = path.join(self.assets_folder, 'fonts')
         self.title_font = path.join(self.fonts_folder, 'Enchanted Land.otf')
@@ -379,6 +401,7 @@ class _State():
         """
         sub_state = 'normal' if self.state == state else state
         logger.info('Start sub-state %s in %s', sub_state, self.name)
+        self.game_data["music"]["sound"]["click"] = True
         self.set_state(sub_state)
 
 
@@ -452,6 +475,7 @@ class _Elements(_State):
     def load_next_state(self, *next_state):
         """Load the new state"""
         self.next = next_state[0]
+        self.game_data["music"]["sound"]["click"] = True
         super().set_state(TRANSITION_OUT)
 
     def events_buttons(self, back=False):
@@ -557,3 +581,55 @@ class _Elements(_State):
             pressedColour=pressed_color,
             onClick=on_click,
             onClickParams=on_click_params)
+
+    @staticmethod
+    def create_slider(
+            title,
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color):
+        """Create a slider
+
+        Args:
+            title (str)
+            name (str)
+            x (int)
+            y (int)
+            width (int)
+            height (int)
+            surface (Surface)
+            min (int)
+            max (int)
+            step (int)
+            start (int)
+            font (str)
+            draw_text (func)
+            color (tuple)
+            handle_color (tuple)
+
+        Returns:
+            Cursor
+        """
+        return Cursor(
+            title,
+            name,
+            x,
+            y,
+            width,
+            height,
+            surface,
+            min,
+            max,
+            step,
+            start,
+            font,
+            draw_text, color, handle_color)

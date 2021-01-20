@@ -65,8 +65,7 @@ class OnlineGame(_Elements):
         # current player
         self.player = Player(
             self, self.current_player["pos"]["x"], self.current_player["pos"]["y"],
-            '', {},
-            100, 0, 100, ASSETS_SPRITES["soldier"])
+            '', {}, ASSETS_SPRITES["soldier"])
 
         # all created arrows
         self.created_arrows = dict()
@@ -161,8 +160,7 @@ class OnlineGame(_Elements):
                 # create if not existe
                 p = Player(
                     self, player["pos"]["x"], player["pos"]["y"],
-                    '', {},
-                    100, 0, 100, ASSETS_SPRITES["soldier"])
+                    '', {}, ASSETS_SPRITES["soldier"])
                 p.set_vel((player["vel"]["x"], player["vel"]["y"]))
                 players_dict[key] = p
         return players_dict

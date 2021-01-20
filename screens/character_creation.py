@@ -1,20 +1,23 @@
 """Create a character screen"""
 
-from os import path
 from datetime import datetime
-from utils.shortcuts import key_for
-from sprites.animated import Flames
+from os import path
+
 import pygame as pg
-from pygame_widgets import Button
-from window import _Elements
-from logger import logger
-from components.cursor import Cursor
+from config.buttons import (HEIGHT_BUTTON, HEIGHT_SLIDER, MARGIN_BUTTON,
+                            RADIUS_BUTTON, WIDTH_BUTTON, WIDTH_SLIDER)
+from config.colors import (BEIGE, BLACK, GREEN_DARK, LIGHTGREY, WHITE,
+                           YELLOW_LIGHT)
+from config.screens import (CHARACTER_CREATION, CHOOSE_MAP, NEW_GAME,
+                            TRANSITION_OUT)
+from config.sprites import HEIGHT_CHARACTER, USABLE_POINTS, WIDTH_CHARACTER
+from config.window import HEIGHT, WIDTH
 from data.game_data import create_game_data
-from config.window import WIDTH, HEIGHT
-from config.screens import CHARACTER_CREATION, CHOOSE_MAP, NEW_GAME, TRANSITION_OUT
-from config.colors import LIGHTGREY, YELLOW_LIGHT, BLACK, BEIGE, GREEN_DARK, WHITE
-from config.sprites import WIDTH_CHARACTER, HEIGHT_CHARACTER, USABLE_POINTS
-from config.buttons import HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON, HEIGHT_SLIDER, WIDTH_BUTTON, WIDTH_SLIDER
+from logger import logger
+from pygame_widgets import Button
+from sprites.animated import Flames, IdleCharacter
+from utils.shortcuts import key_for
+from window import _Elements
 
 
 class CharacterCreation(_Elements):
@@ -63,6 +66,9 @@ class CharacterCreation(_Elements):
         self.create_animations()
         self.create_sliders()
         self.create_back_button(self.background, self.load_next_state, [NEW_GAME])
+        self.idle = IdleCharacter(
+            self, 6, self.selected_character["images"],
+            0, WIDTH // 2, 7 * HEIGHT / 10, WIDTH_CHARACTER)
 
     def all_events(self, events):
         for event in events:
@@ -194,10 +200,8 @@ class CharacterCreation(_Elements):
         return {
             "soldier": {
                 "name": "soldier",
-                "image": path.join(
-                    self.sprites_folder,
-                    "soldier", "down", "1.png"),
-                "description": "Chevaliers menant une quête, seigneurs conquérants, champions royaux, fantassins d'élite, mercenaires endurcis et rois-bandits,\ntous partagent une maîtrise inégalée des armes et des armures ainsi qu'une connaissance approfondie des compétences de combat.\nTous connaissent bien la mort, l'infligeant autant qu'ils lui font face.",
+                "images": [pg.image.load(path.join(self.sprites_folder, "soldier", "idle", f"{i}.png")) for i in range(3)],
+                "description": "Chevaliers menant une quête, seigneurs conquérants, champions royaux, fantassins d'élite,\n mercenaires endurcis et rois-bandits,tous partagent une maîtrise inégalée des armes\n et des armures ainsi qu'une connaissance approfondie des compétences de combat.\nTous connaissent bien la mort, l'infligeant autant qu'ils lui font face.",
                 "characteristics": {
                     "str": {
                         "base": 30,
@@ -219,10 +223,8 @@ class CharacterCreation(_Elements):
                         "max": 100}}},
             "wizard": {
                 "name": "wizard",
-                "image": path.join(
-                    self.sprites_folder,
-                    "wizard", "down", "1.png"),
-                "description": "",
+                "images": [pg.image.load(path.join(self.sprites_folder, "wizard", "idle", f"{i}.png")) for i in range(3)],
+                "description": "Fort de ses pouvoirs en magies, le sorcier a une maîtrise sans précédent de ce pouvoir ! \nGrâce à un entrainement intensif, il est désormais capable de lancer des boules de feu et des sorts de soin, \nlui conféreant un atout sans comparaison sur le champ de battaille !",
                 "characteristics": {
                     "str": {
                         "base": 10,
@@ -244,10 +246,8 @@ class CharacterCreation(_Elements):
                         "max": 100}}},
             "thief": {
                 "name": "thief",
-                "image": path.join(
-                    self.sprites_folder,
-                    "thief", "down", "1.png"),
-                "description": "",
+                "images": [pg.image.load(path.join(self.sprites_folder, "thief", "idle", f"{i}.png")) for i in range(3)],
+                "description": "Possédant une agilité hors norme, il est capable de commencer les combats à tous les coups, \nlui conférant un avantage certain sur le champ de bataille !",
                 "characteristics": {
                     "str": {
                         "base": 25,
@@ -333,6 +333,7 @@ class CharacterCreation(_Elements):
                 if self.selected > len(list(self.get_characters().keys())) - 1:
                     self.selected = len(list(self.get_characters().keys())) - 1
                 self.selected_character = self.get_selected_character()
+                self.idle.set_frames(self.selected_character["images"])
                 logger.info("Select the %s in the %s", self.selected_character["name"], CHARACTER_CREATION)
                 self.create_sliders()
             if key_for(self.game_data["shortcuts"]["character creation"]["class_l"]["keys"], event):
@@ -340,6 +341,7 @@ class CharacterCreation(_Elements):
                 if self.selected < 0:
                     self.selected = 0
                 self.selected_character = self.get_selected_character()
+                self.idle.set_frames(self.selected_character["images"])
                 logger.info("Select the %s in the %s", self.selected_character["name"], CHARACTER_CREATION)
                 self.create_sliders()
 
@@ -398,19 +400,6 @@ class CharacterCreation(_Elements):
                            WIDTH // 2,
                            7 * HEIGHT // 20 + 20 * index,
                            align="n")
-
-        image = pg.image.load(self.selected_character["image"]).convert_alpha()
-        image = pg.transform.scale(image, (WIDTH_CHARACTER, HEIGHT_CHARACTER))
-        self.screen.blit(
-            image,
-            (WIDTH //
-             2 -
-             WIDTH_CHARACTER //
-             2,
-             14 * HEIGHT //
-             20 -
-             HEIGHT_CHARACTER //
-             2))
 
     def draw_background(self):
         """Draw the background"""
@@ -474,6 +463,7 @@ class CharacterCreation(_Elements):
 
     def next_action(self):
         """Pass to the next screen or create a new hero"""
+        self.game_data["music"]["sound"]["click"] = True
         logger.info("Save data to game_data")
         # pour chaque perso à faire, il faut le faire, valider, sauvegarder, décrémenter le nombre restant de perso à faire
         # si le nombre est > 0 alors on renvoie sur le même screen pour faire les autres
@@ -500,101 +490,3 @@ class CharacterCreation(_Elements):
         if not self.game_data['file_name'] or self.game_data['file_name'] == '.json':
             self.game_data['file_name'] = self.create_file_name()
             logger.info("Update filename to %s", self.game_data["file_name"])
-
-    def output(self):
-        # Get text in the textbox
-        print("ok")
-
-    @staticmethod
-    def create_slider(
-            title,
-            name,
-            x,
-            y,
-            width,
-            height,
-            surface,
-            min,
-            max,
-            step,
-            start,
-            font,
-            draw_text, color, handle_color):
-        """Create a slider
-
-        Args:
-            title (str)
-            name (str)
-            x (int)
-            y (int)
-            width (int)
-            height (int)
-            surface (Surface)
-            min (int)
-            max (int)
-            step (int)
-            start (int)
-            font (str)
-            draw_text (func)
-            color (tuple)
-            handle_color (tuple)
-
-        Returns:
-            Cursor
-        """
-        return Cursor(
-            title,
-            name,
-            x,
-            y,
-            width,
-            height,
-            surface,
-            min,
-            max,
-            step,
-            start,
-            font,
-            draw_text, color, handle_color)
-
-
-# draw some text into an area of a surface
-# automatically wraps words
-# returns any text that didn't get blitted
-# def drawText(surface, text, color, rect, font, aa=False, bkg=None):
-#     rect = pg.Rect(rect)
-#     y = rect.top
-#     lineSpacing = -2
-
-#     # get the height of the font
-#     fontHeight = font.size("Tg")[1]
-
-#     while text:
-#         i = 1
-
-#         # determine if the row of text will be outside our area
-#         if y + fontHeight > rect.bottom:
-#             break
-
-#         # determine maximum width of line
-#         while font.size(text[:i])[0] < rect.width and i < len(text):
-#             i += 1
-
-#         # if we've wrapped the text, then adjust the wrap to the last word
-#         if i < len(text):
-#             i = text.rfind(" ", 0, i) + 1
-
-#         # render the line and blit it to the surface
-#         if bkg:
-#             image = font.render(text[:i], 1, color, bkg)
-#             image.set_colorkey(bkg)
-#         else:
-#             image = font.render(text[:i], aa, color)
-
-#         surface.blit(image, (rect.left, y))
-#         y += fontHeight + lineSpacing
-
-#         # remove the text we just blitted
-#         text = text[i:]
-
-#     return text

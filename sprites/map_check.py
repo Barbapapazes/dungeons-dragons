@@ -42,7 +42,8 @@ class MapCheck(pg.sprite.Sprite):
                     "map": {
                         "folder": self.folder,
                         "filename": self.filename
-                    }
+                    },
+                    "difficulty": self.game.difficulty
                 },
                 "minimap": {
                     "fog": None,
@@ -50,7 +51,8 @@ class MapCheck(pg.sprite.Sprite):
                 },
                 "next": True,
                 "loaded": False,
-                "shortcuts": self.game.game_data["shortcuts"]
+                "shortcuts": self.game.game_data["shortcuts"],
+                "music": self.game.game_data["music"],
             }
             self.game.game_data = data
             self.game.new()

@@ -12,6 +12,7 @@ assets/saved_maps/*.tmx
 assets/saved_games/*.json
 assets/saved_shortcuts/*.json
 assets/saved_settings/*.json
+assets/saved_music/*.json
 assets/saved_minimap/*.png
 assets/saved_notes/*.png
 assets/map_random/preset/GENERATED/*.tmx

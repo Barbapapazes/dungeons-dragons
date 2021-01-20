@@ -2,6 +2,7 @@
   "recommendations": [
     "ms-python.python",
     "kiteco.kite",
-    "njpwerner.autodocstring"
+    "njpwerner.autodocstring",
+    "ms-python.vscode-pylance"
   ]
 }

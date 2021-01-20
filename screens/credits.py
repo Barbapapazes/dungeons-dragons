@@ -1,5 +1,6 @@
 """Credits screen"""
 
+from config.colors import BEIGE, YELLOW_LIGHT
 from config.window import HEIGHT, WIDTH
 import pygame as pg
 from window import _Elements
@@ -14,6 +15,8 @@ class Credits(_Elements):
         self.name = CREDITS
         self.next = MENU
         super(Credits, self).__init__(self.name, self.next, 'credits', '0001.png', {})
+
+        self.names = ["Alyson", "Sang", "Younes", "Estéban", "Valentin", "Sofiane"]
 
         self.frames = list()
         for frame in BACKGROUND_CREDITS:
@@ -62,5 +65,8 @@ class Credits(_Elements):
     def draw(self):
         """Draw content"""
         super().draw_elements("Credits")
+        self.draw_text("Groupe 10 - 2020", self.text_font, 72, BEIGE, WIDTH//2, 4 * HEIGHT // 10, align="center")
+        for index, name in enumerate(self.names):
+            self.draw_text(name, self.text_font, 52, YELLOW_LIGHT, WIDTH//2, HEIGHT//2 + 58 * index, align="center")
         self.back_btn.draw()
         self.screen.blit(self.win, (0, 0))

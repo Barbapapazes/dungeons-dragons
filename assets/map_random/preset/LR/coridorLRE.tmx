@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="8" height="8" tilewidth="64" tileheight="64" infinite="0" nextlayerid="4" nextobjectid="14">
+ <tileset firstgid="1" name="tile_dungeons" tilewidth="64" tileheight="64" tilecount="18" columns="3">
+  <image source="../../../img/tile_dungeons.png" trans="ff00ff" width="192" height="384"/>
+ </tileset>
+ <layer id="1" name="Ground" width="8" height="8">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,6,6,6,6,6,6,0,
+6,6,6,6,6,6,6,6,
+6,6,6,6,6,6,6,6,
+0,6,6,6,6,6,6,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="2" name="Wall" width="8" height="8">
+  <data encoding="csv">
+1,1,1,1,1,1,1,1,
+1,1,12,1,11,1,1,1,
+2,0,0,0,0,0,0,12,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,12,
+1,1,11,1,1,11,1,1,
+1,1,1,1,1,1,1,1
+</data>
+ </layer>
+ <objectgroup id="3" name="Obstacles">
+  <object id="2" name="wall" x="448" y="1.33333" width="64.6667" height="188.667"/>
+  <object id="3" name="wall" x="64.6668" y="1.33335" width="382" height="126"/>
+  <object id="4" name="wall" x="448.333" y="322.333" width="64.6667" height="188.667"/>
+  <object id="5" name="wall" x="1.66665" y="321.666" width="64.6667" height="188.667"/>
+  <object id="6" name="wall" x="-1.66668" y="0.333133" width="64.6667" height="189.334"/>
+  <object id="9" name="wall" x="67.334" y="386" width="379.333" height="125.333"/>
+  <object id="12" name="goblin" x="207.332" y="229.401"/>
+  <object id="13" name="globin" x="339.746" y="308.966"/>
+ </objectgroup>
+</map>

@@ -183,3 +183,36 @@ class Circle(Animated):
                 tmp_frames.append(frame)
             self.frames = tmp_frames
             self.rect = self.frames[0].get_rect()
+
+
+class IdleCharacter(Animated):
+    def __init__(self, game, frame_per_image, frames, offset, x, y, width):
+        super().__init__(game, frame_per_image, frames, offset=offset)
+        self.x = x
+        self.y = y
+        self.width = width
+
+        updated_frames = list()
+
+        for frame in frames:
+            updated_frames.append(pg.transform.scale(frame, (self.width, int(
+                self.width * frame.get_height() / frame.get_width()))))
+
+        self.frames = updated_frames
+        super(IdleCharacter, self).__init__(game, frame_per_image, updated_frames)
+
+        self.rect.center = (self.x, self.y)
+
+    def set_frames(self, frames):
+        """Used to setup new frames
+
+        Args:
+            frames (list)
+        """
+        tmp_frames = list()
+        for frame in frames:
+            tmp_frames.append(pg.transform.scale(frame, (self.width, int(
+                self.width * frame.get_height() / frame.get_width()))))
+        self.frames = tmp_frames
+        self.frame_total = (len(frames) - 1) * self.frame_per_image
+        self.frame_count = 0

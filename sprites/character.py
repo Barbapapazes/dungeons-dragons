@@ -2,7 +2,7 @@
 from random import randint, uniform
 import pygame as pg
 from utils.tilemap import collide_with_walls
-from config.sprites import PLAYER_HIT_RECT
+from config.sprites import PLAYER_HIT_RECT, TYPES_HEROS
 from logger import logger
 from inventory.inventory import Inventory
 
@@ -35,6 +35,7 @@ class Character(pg.sprite.Sprite):
         self.spell = None
         self.shield = 0
 
+        self.xp = 0
         self.game = game
         self.type = _type
         self.direction = "idle"
@@ -51,6 +52,7 @@ class Character(pg.sprite.Sprite):
         self.pos = vec(x, y)
 
         self.number_actions = 0
+        self.skill_bonus = False
         if not hasattr(self, "goto"):
             self.images = images
             self.image = next(self.images[self.direction])
@@ -59,7 +61,7 @@ class Character(pg.sprite.Sprite):
             self.hit_rect = hit_rect
             self.hit_rect.center = self.rect.center
 
-        self.frame_time = 60 / 1000
+        self.frame_time = 210 / 1000
         self.frame_timer = 0
 
     def update(self):
@@ -119,9 +121,9 @@ class Character(pg.sprite.Sprite):
             hp_gain (int)
         """
         self.health += hp_gain
-        logger.debug(hp_gain)
         if self.health > self.max_HP:
             self.health = self.max_HP
+        self.game.logs.add_log(f'{self} has {self.health} remaining, (+{hp_gain})')
 
     def subHp(self, hp_lose):
         """Sub passed hp_lose to the player's health
@@ -133,7 +135,7 @@ class Character(pg.sprite.Sprite):
         if self.health < 0:
             self.health = 0
         else:
-            self.game.versus_manager.logs.add_log(f'{self} has {self.health} remaining')
+            self.game.logs.add_log(f'{self} has {self.health} remaining, (-{hp_lose})')
 
     def equip_armor(self, item):
         """Equip a passed armor item in the right armor slot,
@@ -174,8 +176,6 @@ class Character(pg.sprite.Sprite):
         _type = "success" if self.dice["success"] else "failed"
         self.game.logs.add_log(
             f"Dice {_type}, result {result_dice}/{value_dice}, under {self.characteristics[base_value] + mod} to success")
-        logger.info("Result dice : %d / %d (must be under %s to success)",
-                    result_dice, value_dice, self.characteristics[base_value] + mod)
 
     def get_protection(self):
         protection = self.characteristics['con'] // 5
@@ -201,3 +201,22 @@ class Character(pg.sprite.Sprite):
                     someone.player_spotted = self.player_spotted
                 return Character.groupCount(someone, grouplist, count)
         return count
+
+    def level_up(self):
+        logger.debug("%s, %s", self, self.xp)
+        if self.xp >= 100 and self.type in TYPES_HEROS:
+            self.xp = self.xp % 100
+            for i in self.characteristics:
+                self.characteristics[i] += 5
+            self.game.logs.add_log(f"{self} leveled up !")
+            self.game.notification_manager.active = True
+            self.game.notification_manager.content["title"] = "Level up !"
+            if self.type == "soldier":
+                self.game.notification_manager.content["content"] = "Unlock a fight action !"
+            elif self.type == "wizard":
+                self.game.notification_manager.content["content"] = "Unlock two spell actions !"
+            elif self.type == "thief":
+                self.skill_bonus = True
+                self.game.notification_manager.content["content"] = "Unlock a big punch next turn !"
+            return True
+        return False

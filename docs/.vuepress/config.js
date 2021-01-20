@@ -79,6 +79,7 @@ module.exports = {
             'dev/map',
             'dev/save_load',
             'dev/shortcuts',
+            'dev/music',
           ],
         },
       ],

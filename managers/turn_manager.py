@@ -173,6 +173,8 @@ class TurnManager:
         if self.get_active_weapon() is None:
             damage += self.active().characteristics['str'] // 5
         else:
+            self.game.logs.add_log(
+                f"Number of dice: {self.get_active_weapon().attack().number_dice}, Dice value: {self.get_active_weapon().attack().dice_value}")
             damage += self.get_active_weapon().attack()
         return damage
 
@@ -186,24 +188,24 @@ class TurnManager:
             return "hand"
         return self.get_active_weapon().type
 
-    def remove_health(self, damage, enemy):
-        """Remove life to enemy
+    def remove_health(self, damage, character):
+        """Remove life to a character
 
         Args:
             damage(int)
-            enemy(Enemy)
+            character(Character)
         """
-        enemy.subHp(damage)
-        if enemy.health == 0:
-            if not hasattr(self.active(), 'goto'):
-                self.active().xp += enemy.xp
-                self.active().level_up()
+        character.subHp(damage)
+        if character.health <= 0:
+            # if not hasattr(self.active(), 'goto'):
+            if self.is_active_player():
+                self.active().xp += character.xp
                 self.game.logs.add_log(
-                    f"{self.active()} killed {enemy} and gained {enemy.xp} exp !")
+                    f"{self.active()} killed {character} !")
             else:
-                self.game.logs.add_log(f"{enemy} was murdered by {self.active()}...")
+                self.game.logs.add_log(f"{character} was murdered by {self.active()}...")
         else:
-            self.game.logs.add_log(f"Remove {damage}, remaining {enemy.health}")
+            self.game.logs.add_log(f"Remove {damage}, remaining {character.health}")
 
     def is_active_player(self):
         """Check if the active character is a player

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="8" height="8" tilewidth="64" tileheight="64" infinite="0" nextlayerid="4" nextobjectid="14">
+ <tileset firstgid="1" name="tile_dungeons" tilewidth="64" tileheight="64" tilecount="18" columns="3">
+  <image source="../../../img/tile_dungeons.png" trans="ff00ff" width="192" height="384"/>
+ </tileset>
+ <layer id="1" name="Ground" width="8" height="8">
+  <data encoding="csv">
+0,0,0,6,6,0,0,0,
+0,0,0,6,6,0,0,0,
+0,0,0,6,6,6,0,0,
+0,0,0,6,6,6,6,6,
+0,6,6,6,6,6,6,6,
+0,6,6,6,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="2" name="Wall" width="8" height="8">
+  <data encoding="csv">
+1,1,8,0,0,1,1,1,
+1,1,1,0,0,12,1,1,
+1,1,4,0,0,0,12,1,
+1,1,1,0,0,0,0,0,
+1,0,0,0,0,0,0,0,
+1,0,0,0,4,1,1,1,
+1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1
+</data>
+ </layer>
+ <objectgroup id="3" name="Obstacles">
+  <object id="2" name="wall" x="318.667" y="1.33333" width="194" height="125.334"/>
+  <object id="3" name="wall" x="0.000163333" y="258" width="63.333" height="254"/>
+  <object id="4" name="wall" x="253.666" y="321.666" width="258.667" height="190"/>
+  <object id="5" name="wall" x="63.6666" y="386.333" width="188" height="124"/>
+  <object id="6" name="wall" x="-1.66668" y="0.333133" width="192" height="256"/>
+  <object id="9" name="wall" x="384.001" y="127.333" width="128" height="65.3333"/>
+  <object id="12" name="merchant" x="124" y="319.333"/>
+  <object id="13" name="phantom" x="324.065" y="184.682"/>
+ </objectgroup>
+</map>
