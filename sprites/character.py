@@ -127,23 +127,13 @@ class Character(pg.sprite.Sprite):
 
     def subHp(self, hp_lose):
         """Sub passed hp_lose to the player's health
+
         Args:
             hp_lose (int)
         """
         self.health -= hp_lose
-        if self.health <= 0:
+        if self.health < 0:
             self.health = 0
-            if enemies.has(self):
-                self.game.turn_manager.enemies.remove(self)
-                self.game.turn_manager.sorted.remove(self)
-                self.throw_inventory()
-                self.groups.remove(self)
-                self.kill()
-                # for i in enemies.sprites():
-                #     logger.debug(i)
-                enemies.remove_internal(self)
-                for i in enemies.sprites():
-                    logger.debug(i)
         else:
             self.game.logs.add_log(f'{self} has {self.health} remaining, (-{hp_lose})')
 
@@ -202,14 +192,11 @@ class Character(pg.sprite.Sprite):
         Returns:
             int: number of entities that can see one another
         """
-        # for i in grouplist:
-        #     logger.info(i)
-        # logger.info(count)
         for someone in grouplist:
             if someone == self:
                 grouplist.remove(someone)
                 count += 1
-            if (someone.pos - self.pos).length() <= self.view_range:
+            if (someone.pos - self.pos).length_squared() <= self.view_range:
                 if hasattr(someone, "goto"):
                     someone.player_spotted = self.player_spotted
                 return Character.groupCount(someone, grouplist, count)
