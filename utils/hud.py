@@ -4,7 +4,6 @@ from sprites.player import Player
 from config.window import WIDTH, HEIGHT
 from config.colors import RED, GREEN, CYAN, DARKGREY, GOLD, BLACK
 from config.sprites import PLAYER_MAX_HP, PLAYER_MAX_MP
-# from managers.stats_manager import StatsWindow
 from utils.container import Container
 
 
@@ -14,7 +13,6 @@ class Hud:
     def __init__(self, game):
         self.game = game
         self.imgs = game.img_folder
-        # self.stats = StatsWindow()
         self.button_dict = self.create_buttons_dict()
         self.buttons = list()
         self._size = WIDTH // 20 + WIDTH // 100
@@ -35,6 +33,7 @@ class Hud:
                 pg.draw.rect(screen, GREEN, (21.5*WIDTH // 24, (10 + i)*HEIGHT // 16, 
                     ((WIDTH // 12)*p.health) // PLAYER_MAX_HP, HEIGHT // 64))
                 i += 1
+
     def draw_manabars(self, screen):
         pg.draw.rect(screen, DARKGREY, 
                 (WIDTH // 3, 15.5*HEIGHT // 16, WIDTH //3, HEIGHT // 64))
@@ -49,6 +48,7 @@ class Hud:
                 pg.draw.rect(screen, CYAN, (21.5*WIDTH // 24, (10.25 + i)*HEIGHT // 16, 
                     ((WIDTH // 12)*p.MP) // PLAYER_MAX_MP, HEIGHT // 128))
                 i += 1
+
     def draw_xpbar(self, screen):
         pg.draw.rect(screen, DARKGREY, 
                 (WIDTH // 3, 14.75*HEIGHT // 16, WIDTH //3, HEIGHT // 128))
@@ -79,13 +79,13 @@ class Hud:
             },
             "inventory": {
                 "state": "inventory",
-                "on_click": print("inventory"),
+                "on_click": None,
                 "image": path.join(self.game.assets_folder, "sprites/chest/3.png"),
                 "rect": None
             },
             "stats": {
                 "state": "stats",
-                "on_click": None,#self.stats.print_characteristics(self.game.turn_manager.get_vision_character()),
+                "on_click": None,
                 "image": path.join(self.imgs, "items/cotton_01a.png"),
                 "rect": None
 
@@ -105,7 +105,6 @@ class Hud:
         max_y = self._size
         for _x in range(min_x, max_x, self._size):
             self.buttons.append(HudButton(_x, 0, self._size, BLACK))
-            print(_x)
         for i, (k, v) in enumerate(self.button_dict.items()):
             self.buttons[i].item = pg.image.load(self.button_dict[k]["image"]).convert_alpha()
             self.buttons[i].set_name(k)
@@ -120,7 +119,6 @@ class Hud:
     
     def get_relate_button_state(self, mouse_pos):
         for button in self.get_all_buttons():
-            print(button.name)
             if button.rect.collidepoint(mouse_pos):
                 return button.name
 
@@ -131,6 +129,7 @@ class Hud:
         self.draw_manabars(screen)
         self.draw_xpbar(screen)
         self.draw_all_buttons(screen)
+        self.draw_shapes(screen)
 
 class HudButton(Container):
 

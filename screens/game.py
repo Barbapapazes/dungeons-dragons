@@ -37,7 +37,7 @@ from sprites.enemy import Enemy, Boss
 from random import choice  # very temporary (just to create multiple type of enemies)
 from sprites.character import players, enemies
 
-from managers.stats_manager import StatsWindow
+from utils.stats_window import StatsWindow
 vec = pg.math.Vector2
 
 
@@ -333,6 +333,7 @@ class Game(_Elements):
             self.save_data_in_file()
 
         self.hud = Hud(self)
+        self.stats = StatsWindow(self)
 
     def make_states_dict(self):
         """Make the dictionary of state methods for the level.
@@ -350,7 +351,7 @@ class Game(_Elements):
             'finish': self.finish_run,
             'game_over': self.game_over_run,
             'menu': self.menu_run,
-            'stats' : None
+            'stats' : self.stats_run
         }
 
         return previous_dict | add_dict
@@ -446,6 +447,7 @@ class Game(_Elements):
                         logger.info("Toggle inventory from %s", self.turn_manager.active())
                         self.seller = False
                         self.map_viewer_manager.active = False
+                        self.turn_manager.active().inventory.display_inventory = True
                         self.create_dim()
                         super().toggle_sub_state('inventory')
                 if state == 'map': 
@@ -457,7 +459,13 @@ class Game(_Elements):
                 if state == 'quests':
                     pass
                 if state == 'stats':
-                    pass
+                    logger.info("Toggle stats from %s", self.turn_manager.active())
+                    self.stats.view_stats = True
+                    self.seller = False
+                    self.map_viewer_manager.active = False
+                    self.turn_manager.active().inventory.display_inventory = False
+                    self.create_dim()
+                    super().toggle_sub_state('stats')
 
     def events_inventory(self, event):
         """When the shop state is running"""
@@ -632,6 +640,10 @@ class Game(_Elements):
 
         self.draw_text("Game over", self.title_font, 128, BEIGE, WIDTH // 2, HEIGHT // 2, align="center")
         super().draw_buttons()
+
+    def stats_run(self):
+        self.screen.blit(self.previous_screen, (0, 0))
+        self.stats.draw(self.screen)
 
     def create_buttons_dict(self, state):
         """Create the dict for all buttons
