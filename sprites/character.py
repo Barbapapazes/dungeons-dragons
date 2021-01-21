@@ -2,7 +2,7 @@
 from random import randint, uniform
 import pygame as pg
 from utils.tilemap import collide_with_walls
-from config.sprites import PLAYER_HIT_RECT, TYPES_HEROS
+from config.sprites import PLAYER_HIT_RECT # , TYPES_HEROS
 from logger import logger
 from inventory.inventory import Inventory
 
@@ -196,7 +196,8 @@ class Character(pg.sprite.Sprite):
             if someone == self:
                 grouplist.remove(someone)
                 count += 1
-            if (someone.pos - self.pos).length_squared() <= self.view_range:
+        for someone in grouplist:
+            if (someone.pos - self.pos).length() <= self.view_range:
                 if hasattr(someone, "goto"):
                     someone.player_spotted = self.player_spotted
                 return Character.groupCount(someone, grouplist, count)

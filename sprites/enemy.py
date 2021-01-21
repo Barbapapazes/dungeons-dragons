@@ -16,15 +16,15 @@ vec = pg.math.Vector2
 MOB_HIT_RECT = pg.Rect(0, 0, 30, 30)
 SIZE = 8
 SEEK_FORCE = 0.25
-APPROACH_RADIUS = 50
-WANDER_RING_DISTANCE = 500
-WANDER_RING_RADIUS = 300
+APPROACH_RADIUS = TILESIZE
+WANDER_RING_DISTANCE = 5 * TILESIZE
+WANDER_RING_RADIUS = TILESIZE
 CLASSES = ["fighter", "rogue", "wizard", "boss"]
 TYPE = {
-    "skeleton": {"health": 10, "STR": 35, "DEX": 20, "CON": 20, "INT": 50, "WIS": 30, "CHA": 30},
-    "goblin":   {"health": 10, "STR": 45, "DEX": 50, "CON": 25, "INT": 20, "WIS": 15, "CHA": 10},
-    "phantom":   {"health": 10, "STR": 30, "DEX": 35, "CON": 30, "INT": 40, "WIS": 30, "CHA": 10},
-    "boss": {"health": 250, "STR": 70, "DEX": 25, "CON": 50, "INT": 20, "WIS": 10, "CHA": 40}
+    "skeleton": {"health": 10, "STR": 35, "DEX": 20, "CON": 15, "INT": 50, "WIS": 30, "CHA": 30},
+    "goblin":   {"health": 15, "STR": 45, "DEX": 50, "CON": 10, "INT": 20, "WIS": 15, "CHA": 10},
+    "phantom":   {"health": 20, "STR": 20, "DEX": 35, "CON": 20, "INT": 40, "WIS": 30, "CHA": 10},
+    "boss": {"health": 50, "STR": 70, "DEX": 25, "CON": 40, "INT": 20, "WIS": 10, "CHA": 40}
 }
 
 
@@ -65,7 +65,7 @@ class Enemy(Character):
         self.target = self.pos
         self.player_spotted = None
 
-        self.view_range = TILESIZE * 8
+        self.view_range = TILESIZE * 6
         self.moving = False
 
         if images[-1] == 'F':
@@ -181,8 +181,6 @@ class Enemy(Character):
     def update(self):
         # if trap nearby: flee(trap)
         self.now = pg.time.get_ticks()
-        if self.last_timestamp2 is None:
-            self.last_timestamp2 = self.now
         if self.now - self.last_timestamp > 5000:
             self.last_timestamp = self.now
             self.player_spotted = None
@@ -200,6 +198,7 @@ class Enemy(Character):
             if self.end_time > (WAIT_TIME / 1000):
                 self.end_time = 0
                 self.end = False
+                self.fleeing = False
                 self.last_timestamp2 = None
                 self.game.versus_manager.check_characters_actions()
         else:
@@ -209,6 +208,8 @@ class Enemy(Character):
             if self.game.versus_manager.active:
                 """ If a player is in sight, evaluate whether he is worth attacking or not
                 """
+                if self.last_timestamp2 is None:
+                    self.last_timestamp2 = self.now
                 if self.now - self.last_timestamp2 > 3500:
                     self.end_move()
                 elif self.player_detection():
@@ -539,7 +540,8 @@ class Enemy(Character):
         Returns:
             vec(x,y): acceleration vector following [the shortest path to the player / the optimal fleeing curve]
         """
-        return self.health_percentage()//25 - 4 + self.game.difficulty > (self.groupCount(enemies.sprites()) - Character.groupCount(self.player_spotted, players.sprites()))
+        logger.info(self.health_percentage()//25 - 5 + self.game.difficulty > (Character.groupCount(self.player_spotted, players.sprites()) - self.groupCount(enemies.sprites())))
+        return self.health_percentage()//25 - 5 + self.game.difficulty < (Character.groupCount(self.player_spotted, players.sprites()) - self.groupCount(enemies.sprites()))
 
     def move_or_attack(self):
         """decide whether to attack or move this turn

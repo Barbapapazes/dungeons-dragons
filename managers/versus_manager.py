@@ -52,7 +52,7 @@ class VersusManager:
             # used to be sure that every hero is at the right distance
             for player in self.turn_manager.players:
                 for enemy in self.turn_manager.enemies:
-                    if self.is_distance(player.pos, enemy.pos, 10 * TILESIZE):
+                    if self.is_distance(player.pos, enemy.pos, 5 * TILESIZE):
                         warn_list.append(True)
                         warning = True
                         break

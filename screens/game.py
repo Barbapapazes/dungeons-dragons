@@ -737,7 +737,7 @@ class Game(_Elements):
                 if isinstance(hit, CampFire):
                     if not self.versus_manager.active:
                         # restore the health of the player
-                        self.turn_manager.active_character().addHp(100)
+                        self.turn_manager.active().addHp(100)
                         self.logs.add_log("Restore the player health")
                         self.save_data()
                         self.save_data_in_file()
