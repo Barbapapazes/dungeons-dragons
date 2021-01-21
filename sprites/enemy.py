@@ -3,7 +3,7 @@
 from random import choice, choices, randint, random, uniform
 
 from config.colors import GREEN, RED, YELLOW
-from config.sprites import ARMOR, ASSETS_SPRITES, ITEMS, WAIT_TIME
+from config.sprites import ARMOR, ASSETS_SPRITES, ITEMS, WAIT_TIME, TYPES_HEROS
 from config.window import TILESIZE
 from inventory.inventory import Armor
 from utils.cell import Cell
@@ -18,7 +18,7 @@ SIZE = 8
 SEEK_FORCE = 0.25
 APPROACH_RADIUS = TILESIZE
 WANDER_RING_DISTANCE = 5 * TILESIZE
-WANDER_RING_RADIUS = TILESIZE
+WANDER_RING_RADIUS = TILESIZE * 1
 CLASSES = ["fighter", "rogue", "wizard", "boss"]
 TYPE = {
     "skeleton": {"health": 10, "STR": 35, "DEX": 20, "CON": 15, "INT": 50, "WIS": 30, "CHA": 30},
@@ -69,16 +69,16 @@ class Enemy(Character):
         self.moving = False
 
         if images[-1] == 'F':
-            self.classe = CLASSES[0]
-            self.xp = 10
+            self.classe = "fighter"
+            self.xp = 100
         elif images[-1] == 'R':
-            self.classe = CLASSES[1]
-            self.xp = 10
+            self.classe = "rogue"
+            self.xp = 100
         elif images[-1] == 'W':
-            self.classe = CLASSES[2]
+            self.classe = "wizard"
             self.xp = 20
         else:
-            self.classe = CLASSES[3]
+            self.classe = "boss"
             self.xp = 150
 
         self.health = TYPE.get(self.type).get("health")
@@ -143,7 +143,6 @@ class Enemy(Character):
                     value['weight'],
                     value['shield'],
                     value['slot']))
-
 
     def save(self):
         """saves the enemy's characteristic into game_data
@@ -223,10 +222,10 @@ class Enemy(Character):
                                 if self.goto:
                                     del self.goto[0]
                             if self.goto:
-                                if self.game.debug:
-                                    for i in self.goto:
-                                        rect = pg.Rect(i.coor, (SIZE, SIZE))
-                                        pg.draw.rect(self.game.screen, (255, 255, 255), rect)
+                                # if self.game.debug:
+                                #     for i in self.goto:
+                                #         rect = pg.Rect(i.coor, (SIZE, SIZE))
+                                #         pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
                                 self.acc = self.seek(self.goto[0].coor)
                                 if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
                                     del self.goto[0]
@@ -250,10 +249,10 @@ class Enemy(Character):
                         if self.goto:
                             del self.goto[0]
                     if self.goto:
-                        if self.game.debug:
-                            for i in self.goto:
-                                rect = pg.Rect(i.coor, (SIZE, SIZE))
-                                pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
+                        # if self.game.debug:
+                        #     for i in self.goto:
+                        #         rect = pg.Rect(i.coor, (SIZE, SIZE))
+                        #         pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
                         self.acc = self.seek(self.goto[0].coor)
                         if self.goto[0].coor.x - 32 <= self.pos.x <= self.goto[0].coor.x + 32 and self.goto[0].coor.y - 32 <= self.pos.y <= self.goto[0].coor.y + 32:
                             del self.goto[0]
@@ -278,8 +277,24 @@ class Enemy(Character):
             self.pos += self.vel * (self.game.dt * 100)
             self.rect = self.image.get_rect()
             self.rect.center = self.pos
-
+            if self.game.debug and pg.time.get_ticks()%2000< 100:
+                self.draw_vectors()
             self.update_collisions()
+
+    def draw_vectors(self):
+        scale = 100
+        # vel
+        pg.draw.line(self.game.map_img, GREEN, self.pos, (self.pos + self.vel * scale), 5)
+        # desired
+        pg.draw.line(self.game.map_img, RED, self.pos, (self.pos + self.desired * scale), 5)
+        # target
+        if not self.game.versus_manager.active and not self.goto:
+            center = self.pos + self.vel.normalize() * WANDER_RING_DISTANCE
+            pg.draw.circle(self.game.map_img, (255,255,255), (int(center.x), int(center.y)), WANDER_RING_RADIUS, 1)
+            pg.draw.line(self.game.map_img, YELLOW, center, self.displacement, 5)
+        for i in self.goto:
+            rect = pg.Rect(i.coor, (SIZE, SIZE))
+            pg.draw.rect(self.game.map_img, (255, 255, 255), rect)
 
     def get_direction(self):
         """get the direction which the sprite is currently facing
@@ -302,14 +317,14 @@ class Enemy(Character):
         Returns:
             vec(x,y): acceleration vector that self should use to reach the target
         """
-        desired = (target - self.pos)*2
-        distance = desired.length()
-        desired.normalize_ip()
+        self.desired = (target - self.pos)*2
+        distance = self.desired.length()
+        self.desired.normalize_ip()
         if distance < APPROACH_RADIUS:
-            desired *= distance / APPROACH_RADIUS * self.speed
+            self.desired *= distance / APPROACH_RADIUS * self.speed
         else:
-            desired *= self.speed
-        steer = (desired - self.vel)
+            self.desired *= self.speed
+        steer = (self.desired - self.vel)
         if steer.length() > SEEK_FORCE:
             steer.scale_to_length(SEEK_FORCE)
         return steer
@@ -322,6 +337,7 @@ class Enemy(Character):
         """
         circle_pos = self.pos + self.vel.normalize() * WANDER_RING_DISTANCE
         target = circle_pos + vec(WANDER_RING_RADIUS, 0).rotate(uniform(0, 360))
+        self.displacement = target
         return self.seek(target)
 
     def flee(self, target, FLEE_DISTANCE = 10*TILESIZE):
@@ -336,12 +352,12 @@ class Enemy(Character):
         steer = vec(0, 0)
         dist = self.pos - target
         if dist.length() < FLEE_DISTANCE and dist.length() != 0 :
-            desired = dist.normalize() * self.speed
+            self.desired = dist.normalize() * self.speed
         else:
             if self.vel == vec(0,0):
                 self.vel = vec(random(),random())
-            desired = self.vel.normalize() * self.speed
-        steer = (desired - self.vel)
+            self.desired = self.vel.normalize() * self.speed
+        steer = (self.desired - self.vel)
         if steer.length() > SEEK_FORCE:
             steer.scale_to_length(SEEK_FORCE)
         return steer
@@ -545,8 +561,8 @@ class Enemy(Character):
         """attack instructions
         """
         if self.classe == "wizard" and self.cooldown - self.game.turn_manager.turn < 0:
-            spawn = Enemy(self.game, self.pos.x + randint(-2*TILESIZE, 2*TILESIZE),
-                          self.pos.y + randint(-2*TILESIZE, 2*TILESIZE), self.type, f'{self.type}_F')
+            spawn = Enemy(self.game, self.pos.x + randint(-1*TILESIZE, 1*TILESIZE),
+                          self.pos.y + randint(-1*TILESIZE, 1*TILESIZE), self.type, f'{self.type}_F')
             self.game.turn_manager.add_character(spawn)
             self.game.versus_manager.logs.add_log(f"The {self} used magic to invoke a {spawn} !")
             self.cooldown += 20

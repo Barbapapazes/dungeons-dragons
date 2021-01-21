@@ -2,7 +2,7 @@
 from random import randint, uniform
 import pygame as pg
 from utils.tilemap import collide_with_walls
-from config.sprites import PLAYER_HIT_RECT # , TYPES_HEROS
+from config.sprites import PLAYER_HIT_RECT , TYPES_HEROS
 from logger import logger
 from inventory.inventory import Inventory
 
