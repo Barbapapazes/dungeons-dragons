@@ -142,10 +142,7 @@ class Enemy(Character):
                     value['price'],
                     value['weight'],
                     value['shield'],
-                    value['slot'])
-                logger.info(armor)
-                self.inventory.add_item(armor)
-                self.equip_armor(armor)
+                    value['slot']))
 
 
     def save(self):
@@ -348,16 +345,6 @@ class Enemy(Character):
         if steer.length() > SEEK_FORCE:
             steer.scale_to_length(SEEK_FORCE)
         return steer
-        # # logger.info(f'{self} flees {target}')
-        # steer = vec(0, 0)
-        # distance = self.pos - target
-        # logger.info(distance.length())
-        # if distance.length() < FLEE_DISTANCE:
-        #     desired = distance.normalize() * 2
-        #     steer = desired - self.vel
-        # if steer.length() > SEEK_FORCE:
-        #     steer.scale_to_length(SEEK_FORCE)
-        # return steer
 
     def path_finding(self, goalvec=vec(0, 0)):
         """implementation of the A* pathfinfind algorithm
@@ -525,7 +512,7 @@ class Enemy(Character):
         if collision is not []:
             for sprite in collision:
                 if sprite != self:
-                    logger.info(f'{self} avoids {sprite} at positions {self.pos} and {sprite.pos}')
+                    # logger.info(f'{self} avoids {sprite} at positions {self.pos} and {sprite.pos}')
                     return Enemy.flee(self, sprite.pos)
         return False
 
@@ -540,7 +527,7 @@ class Enemy(Character):
         Returns:
             vec(x,y): acceleration vector following [the shortest path to the player / the optimal fleeing curve]
         """
-        logger.info(self.health_percentage()//25 - 5 + self.game.difficulty > (Character.groupCount(self.player_spotted, players.sprites()) - self.groupCount(enemies.sprites())))
+        # logger.info(self.health_percentage()//25 - 5 + self.game.difficulty > (Character.groupCount(self.player_spotted, players.sprites()) - self.groupCount(enemies.sprites())))
         return self.health_percentage()//25 - 5 + self.game.difficulty < (Character.groupCount(self.player_spotted, players.sprites()) - self.groupCount(enemies.sprites()))
 
     def move_or_attack(self):
