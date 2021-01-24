@@ -18,7 +18,11 @@ class Hud:
         self.create_buttons()
 
     def draw_healthbars(self, screen):
-        """Draw a healthbar for each player of the game"""
+        """Draw health bars for all players
+
+        Args:
+            screen (Surface)
+        """
         pg.draw.rect(screen, RED,
                      (WIDTH // 3, 15*HEIGHT // 16, WIDTH // 3, HEIGHT // 32))
         pg.draw.rect(screen, GREEN, (WIDTH // 3, 15*HEIGHT // 16, ((WIDTH // 3)
@@ -34,6 +38,11 @@ class Hud:
                 i += 1
 
     def draw_manabars(self, screen):
+        """Draw the mana bar
+
+        Args:
+            screen (Surface)
+        """
         pg.draw.rect(screen, DARKGREY,
                      (WIDTH // 3, 15.5*HEIGHT // 16, WIDTH // 3, HEIGHT // 64))
         pg.draw.rect(screen, CYAN, (WIDTH // 3, 15.5*HEIGHT // 16, ((WIDTH // 3)
@@ -49,6 +58,11 @@ class Hud:
                 i += 1
 
     def draw_xpbar(self, screen):
+        """Draw the xp bar
+
+        Args:
+            screen (Surface)
+        """
         pg.draw.rect(screen, DARKGREY,
                      (WIDTH // 3, 14.75*HEIGHT // 16, WIDTH // 3, HEIGHT // 128))
         pg.draw.rect(screen, GOLD, (WIDTH // 3, 14.5*HEIGHT // 16, ((WIDTH // 3)
@@ -64,7 +78,12 @@ class Hud:
                 i += 1
 
     def draw_shapes(self, screen):
-        bar_img = pg.image.load('assets/img/bar.png').convert_alpha()
+        """Draw the background health bar
+
+        Args:
+            screen (Surface)
+        """
+        bar_img = pg.image.load(path.join("assets", "img", "bar.png")).convert_alpha()
         bar_img = pg.transform.scale(bar_img, (3*WIDTH // 8, 7*HEIGHT // 128))
         screen.blit(bar_img, (15*WIDTH // 48, 14.925*HEIGHT // 16))
 
@@ -110,11 +129,20 @@ class Hud:
         return self.buttons
 
     def draw_all_buttons(self, screen):
+        """Draw"""
         for b in self.get_all_buttons():
             b.draw(screen)
             b.draw_image(screen)
 
     def get_relate_button_state(self, mouse_pos):
+        """Get the pressed button
+
+        Args:
+            mouse_pos (typle): x, y
+
+        Returns:
+            str: the button pressed button
+        """
         for button in self.get_all_buttons():
             if button.rect.collidepoint(mouse_pos):
                 return button.name
@@ -135,8 +163,8 @@ class HudButton(Container):
         self.name = name
 
     def draw_image(self, screen):
+        """Draw the image"""
         if self.item:
-            offset = 12
             image = pg.transform.scale(self.item, (self.size, self.size))
             _x = image.get_width()
             _y = image.get_height()

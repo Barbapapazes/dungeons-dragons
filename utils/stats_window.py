@@ -7,6 +7,7 @@ from os import path
 
 
 class StatsWindow():
+    """Used to draw the stat window"""
 
     def __init__(self, game):
         self.game = game
@@ -16,6 +17,11 @@ class StatsWindow():
         self.view_stats = False
 
     def draw_active_player_stats(self, screen):
+        """Draw the active player
+
+        Args:
+            screen (Surface)
+        """
         p = self.game.turn_manager.get_vision_character()
 
         for index, (k, v) in enumerate(p.characteristics.items()):
@@ -38,6 +44,7 @@ class StatsWindow():
         screen.blit(p.image, (WIDTH // 3, 5*HEIGHT // 20))
 
     def draw(self, screen):
+        """Draw"""
         screen.blit(self.background, (WIDTH // 6, 3*HEIGHT // 20))
         if self.view_stats:
             self.game.draw_text(
