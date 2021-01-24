@@ -27,7 +27,7 @@ class Player(Character):
         self.characteristics = characteristics
         self.health = health
         self.xp = xp
-        self.gold = 3000
+        self.gold = gold
 
         self.last_shot = 0
 
