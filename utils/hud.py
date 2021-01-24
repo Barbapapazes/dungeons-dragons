@@ -168,6 +168,6 @@ class HudButton(Container):
             image = pg.transform.scale(self.item, (self.size, self.size))
             _x = image.get_width()
             _y = image.get_height()
-            pg.draw.rect(screen, (0, 255, 0), pg.Rect(self.x, self.y, _x, _y), 1)
+            # pg.draw.rect(screen, (0, 255, 0), pg.Rect(self.x, self.y, _x, _y), 1)
 
             screen.blit(image, (self.x, self.y))
