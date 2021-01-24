@@ -43,7 +43,7 @@ class VersusManager:
         start = False
         for enemy in self.turn_manager.enemies:
             for player in self.turn_manager.players:
-                if self.is_distance(enemy.pos, player.pos, 500):
+                if self.is_distance(enemy.pos, player.pos, 5 * TILESIZE):
                     start = True
 
         if not start:
@@ -52,7 +52,7 @@ class VersusManager:
             # used to be sure that every hero is at the right distance
             for player in self.turn_manager.players:
                 for enemy in self.turn_manager.enemies:
-                    if self.is_distance(player.pos, enemy.pos, 700):
+                    if self.is_distance(player.pos, enemy.pos, 5 * TILESIZE):
                         warn_list.append(True)
                         warning = True
                         break
@@ -90,7 +90,7 @@ class VersusManager:
             bool
         """
         dist = target_pos - base_pos
-        return dist.length_squared() < _range * _range
+        return dist.length() < _range
 
     def start_versus(self):
         """Start the versus"""

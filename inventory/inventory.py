@@ -521,7 +521,7 @@ class InventorySlot(Container):
             image_x = image.get_width()
             image_y = image.get_height()
 
-            pg.draw.rect(screen, (0, 255, 0), pg.Rect(self.x + offset / 2, self.y + offset / 2, image_x, image_y), 1)
+            # pg.draw.rect(screen, (0, 255, 0), pg.Rect(self.x + offset / 2, self.y + offset / 2, image_x, image_y), 1)
 
             screen.blit(image, (self.x + offset / 2, self.y + offset / 2))
 
