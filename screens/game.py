@@ -445,9 +445,6 @@ class Game(_Elements):
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
                 state = self.hud.get_relate_button_state(pg.mouse.get_pos())
-                self.seller = False
-                self.map_viewer_manager.active = False
-                self.stats.view_stats = False
                 if state == 'inventory':
                     if self.turn_manager.is_active_player():
                         logger.info("Toggle inventory from %s", self.turn_manager.active())
@@ -458,7 +455,7 @@ class Game(_Elements):
                         super().toggle_sub_state('inventory')
                 if state == 'map':
                     self.seller = False
-                    self.map_viewer_manager.active = True
+                    self.map_viewer_manager.active = not self.map_viewer_manager.active
                     self.turn_manager.active().inventory.display_inventory = False
                     self.create_dim()
                     super().toggle_sub_state('map')
@@ -558,7 +555,7 @@ class Game(_Elements):
             super().toggle_sub_state('inventory')
         if key_for(self.game_data["shortcuts"]["game"]["map"]["keys"], event):
             self.seller = False
-            self.map_viewer_manager.active = True
+            self.map_viewer_manager.active = not self.map_viewer_manager.active
             self.turn_manager.active().inventory.display_inventory = False
             self.create_dim()
             super().toggle_sub_state('map')
