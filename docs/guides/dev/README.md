@@ -2,7 +2,7 @@
 
 :::tip Guide pour les joueurs
 
-Si vous souhaitez comprendre comment jouer au jeu, vous pouvez lire ici [notre guide du joueur](/guides/joueur/)
+Si vous souhaitez comprendre comment jouer au jeu, vous pouvez lire ici [notre guide du joueur](../guides/joueur/)
 
 :::
 

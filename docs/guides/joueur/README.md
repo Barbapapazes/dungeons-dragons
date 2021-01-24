@@ -2,7 +2,7 @@
 
 :::tip Guide pour les développeur
 
-Si vous souhaitez contribuer à l'amélioration du jeu, vous pouvez lire ici [notre guide du développeur](/guides/dev/)
+Si vous souhaitez contribuer à l'amélioration du jeu, vous pouvez lire ici [notre guide du développeur](../guides/dev/)
 
 :::
 

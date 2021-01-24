@@ -28,11 +28,11 @@
 </data>
  </layer>
  <objectgroup id="3" name="Obstacles">
-  <object id="2" name="wall" x="448" y="0" width="64" height="192"/>
-  <object id="4" name="wall" x="448" y="320" width="64" height="192"/>
-  <object id="6" name="wall" x="0" y="64" width="64" height="448"/>
-  <object id="8" name="wall" x="1.333" y="1.66667e-05" width="446.666" height="64"/>
-  <object id="10" name="wall" x="66.0002" y="450" width="382" height="61.3333"/>
+  <object id="2" name="wall" x="448" y="1.33333" width="64.6667" height="188.667"/>
+  <object id="4" name="wall" x="448.333" y="322.333" width="64.6667" height="188.667"/>
+  <object id="6" name="wall" x="-1.66668" y="62.9998" width="64.6667" height="446"/>
+  <object id="8" name="wall" x="1.333" y="1.66667e-05" width="446.666" height="61.3333"/>
+  <object id="10" name="wall" x="66.0002" y="450" width="381.333" height="61.3333"/>
   <object id="11" name="player" x="94.6667" y="94.6667"/>
   <object id="12" name="player" x="413.333" y="96.6667"/>
   <object id="14" name="player" x="93.3333" y="413.333"/>
