@@ -354,7 +354,7 @@ class Game(_Elements):
             'finish': self.finish_run,
             'game_over': self.game_over_run,
             'menu': self.menu_run,
-            'stats' : self.stats_run
+            'stats': self.stats_run
         }
 
         return previous_dict | add_dict
@@ -403,8 +403,6 @@ class Game(_Elements):
                     if self.turn_manager.active().inventory.display_inventory:
                         logger.info("Select an item from the inventory")
                         self.turn_manager.active().inventory.move_item()
-        if self.map_viewer_manager.active:
-            self.map_viewer_manager.event(event)
         self.event_versus(event)
         self.logs.event(event)
         if self.turn_manager.is_active_player:
@@ -412,6 +410,8 @@ class Game(_Elements):
             self.events_shop(event)
             self.events_chest(event)
             self.events_hud(event)
+        if self.map_viewer_manager.active:
+            self.map_viewer_manager.event(event)
 
     def event_versus(self, event):
 
@@ -445,6 +445,9 @@ class Game(_Elements):
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
                 state = self.hud.get_relate_button_state(pg.mouse.get_pos())
+                self.seller = False
+                self.map_viewer_manager.active = False
+                self.stats.view_stats = False
                 if state == 'inventory':
                     if self.turn_manager.is_active_player():
                         logger.info("Toggle inventory from %s", self.turn_manager.active())
@@ -453,7 +456,7 @@ class Game(_Elements):
                         self.turn_manager.active().inventory.display_inventory = True
                         self.create_dim()
                         super().toggle_sub_state('inventory')
-                if state == 'map': 
+                if state == 'map':
                     self.seller = False
                     self.map_viewer_manager.active = True
                     self.turn_manager.active().inventory.display_inventory = False

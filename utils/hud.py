@@ -73,7 +73,7 @@ class Hud:
             "quests": {
                 "state": "menu",
                 "on_click": None,
-                "image": path.join(self.game.assets_folder, "items", "book_01g.png"),
+                "image": path.join(self.game.img_folder, "items", "book_01g.png"),
                 "rect": None
             },
             "inventory": {

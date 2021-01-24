@@ -2,16 +2,15 @@
 
 import pygame as pg
 from config.colors import YELLOW_LIGHT
-from config.inventory import INVENTORY_SLOT_GAP, INVENTORY_TILESIZE
 from config.window import HEIGHT, WIDTH
-from sprites import player
+from os import path
 
 
 class StatsWindow():
 
     def __init__(self, game):
         self.game = game
-        self.background = pg.image.load(self.game.img_folder, "store", "background.png").convert_alpha()
+        self.background = pg.image.load(path.join(self.game.img_folder, "store", "background.png")).convert_alpha()
         self.background = pg.transform.scale(self.background, (2*WIDTH // 3, 12*HEIGHT // 20))
 
         self.view_stats = False
