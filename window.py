@@ -10,7 +10,7 @@ from pygame_widgets import Button
 from components.cursor import Cursor
 from config.buttons import (HEIGHT_BUTTON, MARGIN_BUTTON, RADIUS_BUTTON,
                             WIDTH_BUTTON)
-from config.colors import BEIGE, BLACK, GREEN_DARK, YELLOW_LIGHT
+from config.colors import BEIGE, BLACK, GREEN_DARK, WHITE, YELLOW_LIGHT
 from config.screens import (CHARACTER_CREATION, INTRODUCTION, NEW_GAME, OPTIONS_MUSIC,
                             SHORTCUTS, TRANSITION_IN, TRANSITION_OUT)
 from config.window import FPS, HEIGHT, TITLE, WIDTH
@@ -424,6 +424,8 @@ class _Elements(_State):
 
         # button
         self.fontsize = 50
+        self.action = False
+        self.action_alpha = 0
 
         offset = kwargs.get('btns_offset', 80)
         width = kwargs.get('btns_width', WIDTH_BUTTON)
@@ -437,6 +439,29 @@ class _Elements(_State):
         self.back_btn = self.create_button(
             background, _x, _y, WIDTH_BUTTON // 2, HEIGHT_BUTTON // 2, "Back", self.button_font, self.fontsize // 2,
             MARGIN_BUTTON, RADIUS_BUTTON, BEIGE, YELLOW_LIGHT, GREEN_DARK, on_click, on_click_params)
+
+    def draw_action(self, content):
+        """Draw a screen with the content
+
+        Args:
+            content (str): message to show
+        """
+        if self.action:
+            self.action_alpha += 300 * self.dt
+
+        if self.action_alpha >= 255:
+            self.action = False
+
+        if self.action_alpha > 0 and not self.action:
+            self.action_alpha -= 300 * self.dt
+
+        if self.action or self.action_alpha > 0:
+            transition = pg.Surface((WIDTH, HEIGHT)).convert_alpha()
+            transition.fill(BLACK)
+            transition.set_alpha(self.action_alpha)
+            self.draw_text(content, self.title_font, 50, WHITE,
+                           WIDTH // 2, HEIGHT / 2, align="center", screen=transition)
+            self.screen.blit(transition, (0, 0))
 
     def create_buttons(self, background, start_y_offset=250, offset=80, width=WIDTH_BUTTON):
         """Create buttons"""
