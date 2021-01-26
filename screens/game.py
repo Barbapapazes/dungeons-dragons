@@ -405,7 +405,7 @@ class Game(_Elements):
                     if self.turn_manager.active().inventory.display_inventory:
                         logger.info("Select an item from the inventory")
                         self.turn_manager.active().inventory.move_item()
-        self.event_versus(event)
+        self.versus_manager.event(event)
         self.logs.event(event)
         if self.turn_manager.is_active_player:
             self.events_inventory(event)
@@ -415,33 +415,33 @@ class Game(_Elements):
         if self.map_viewer_manager.active:
             self.map_viewer_manager.event(event)
 
-    def event_versus(self, event):
+    # def events_versus(self, event):
 
-        if event.type == pg.KEYUP:
+    #     if event.type == pg.KEYUP:
 
-            if event.key == pg.K_TAB:
-                """Simulate begin versus"""
-                if self.versus_manager.active:
-                    self.versus_manager.finish_versus()
-                else:
-                    self.versus_manager.start_versus()
+    #         if event.key == pg.K_TAB:
+    #             """Simulate begin versus"""
+    #             if self.versus_manager.active:
+    #                 self.versus_manager.finish_versus()
+    #             else:
+    #                 self.versus_manager.start_versus()
 
-            if self.turn_manager.is_active_player():
-                if key_for(self.game_data["shortcuts"]["game"]["attack"]["keys"], event):
-                    self.versus_manager.action_attack()
-                if key_for(self.game_data["shortcuts"]["game"]["move"]["keys"], event):
-                    self.versus_manager.action_move()
-                if key_for(self.game_data["shortcuts"]["game"]["spell"]["keys"],
-                           event) and not self.turn_manager.get_active_spell() is None:
-                    self.versus_manager.action_spell()
+    #         if self.turn_manager.is_active_player():
+    #             if key_for(self.game_data["shortcuts"]["game"]["attack"]["keys"], event):
+    #                 self.versus_manager.action_attack()
+    #             if key_for(self.game_data["shortcuts"]["game"]["move"]["keys"], event):
+    #                 self.versus_manager.action_move()
+    #             if key_for(self.game_data["shortcuts"]["game"]["spell"]["keys"],
+    #                        event) and not self.turn_manager.get_active_spell() is None:
+    #                 self.versus_manager.action_spell()
 
-                if key_for(self.game_data["shortcuts"]["game"]["validate"]["keys"], event):
-                    self.versus_manager.validate()
+    #             if key_for(self.game_data["shortcuts"]["game"]["validate"]["keys"], event):
+    #                 self.versus_manager.validate()
 
-        if event.type == pg.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                mouse_pos = pg.mouse.get_pos()
-                self.versus_manager.events(mouse_pos)
+    #     if event.type == pg.MOUSEBUTTONDOWN:
+    #         if event.button == 1:
+    #             mouse_pos = pg.mouse.get_pos()
+    #             self.versus_manager.events(mouse_pos)
 
     def events_hud(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:

@@ -28,7 +28,8 @@ Notre jeu s'utilise à la fois avec le clavier et la souris et combine les 2 la 
 |    attack     |     1     | Permet d'initialiser une action d'attack (en tour par tour uniquement)                    |
 |     move      |     2     | Permet d'initialiser une action de mouvement (en tour par tour uniquement)                |
 |     spell     |     3     | Permet d'initialiser une action de spell (en tour par tour uniquement, pour les sorciers) |
-|   validate    |   enter   | Permet de valider une action (en tout par tour uniquement)                                |
+|   validate    |   enter   | Permet de valider une action (en tour par tour uniquement)                                |
+|   unselect    | backspace | Permet de désélectionner une action (en tour par tour uniquement)                         |
 | environnement |   space   | Permet d'interagir avec l'environnement                                                   |
 |    return     |  escape   | Permet de sortir des sous menu                                                            |
 

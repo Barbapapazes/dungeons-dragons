@@ -20,6 +20,8 @@ En temps réel, le joueur peut se déplacer comme il le souhaite en utilisant le
 
 En tour par tour, il vous faudra utiliser une action de mouvement afin de déplacer le hero librement dans un espace délimité par un cercle.
 
+Pour le reste du tour par tour, il vous sera possible de choisir votre action en utilisant les sélecteurs en bas à gauche de votre écran ou les raccourcis claviers. Il vous est possible de désélectionner une action, c'est notamment utile lors d'un levelup en fin de tour sans ennemies à attaquer autour ! Bien évidement, si vous avez bougé, ne pensez pas changer d'action !
+
 ## Heros
 
 Il existe 3 types de heros :

@@ -1,6 +1,7 @@
 """Create the versus mananger"""
+from utils.shortcuts import key_for
 import pygame as pg
-from config.colors import BLUE_MARTINA, ENERGOS, GLOOMY_PURPLE, RED_PIGMENT
+from config.colors import BLUE_MARTINA, ENERGOS, GLOOMY_PURPLE, RED_PIGMENT, YELLOW
 from config.sprites import ITEMS, MALUS_ARC
 from config.window import HEIGHT, TILESIZE
 from logger import logger
@@ -22,6 +23,7 @@ class VersusManager:
         self.move_btn = pg.Rect((TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.spell_btn = pg.Rect((2 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
         self.validate_btn = pg.Rect((3 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
+        self.unselect_btn = pg.Rect((4 * TILESIZE, HEIGHT - TILESIZE), (TILESIZE, TILESIZE))
 
         self.new(game)
 
@@ -156,8 +158,8 @@ class VersusManager:
         dist = updated_pos - self.turn_manager.active_character().pos
         return dist.length_squared() < _range * _range
 
-    def events(self, pos):
-        """Manage the events to
+    def event_pos(self, pos):
+        """Manage the event_pos to
 
         Args:
             pos (tuple)
@@ -214,6 +216,27 @@ class VersusManager:
             if self.validate_btn.collidepoint(pos[0], pos[1]):
                 logger.debug("%s, %s", self.soldier_bonus, self.wizard_bonus)
                 self.validate()
+            if self.unselect_btn.collidepoint(pos[0], pos[1]):
+                self.unselect()
+
+    def unselect(self):
+        #  if the player doesn't move, we can unselect
+        if self.last_player_pos == self.turn_manager.active().pos or self.last_player_pos is None:
+            self.logs.add_log("Unselect action")
+            self.action = None
+            self.last_player_pos = None
+            self.selected_enemy = None
+            self.set_move_player(False)
+            if self.soldier_bonus:
+                self.soldier_bonus = False
+                self.turn_manager.active().number_actions -= 1
+                self.check_characters_actions()
+            if self.wizard_bonus:
+                self.wizard_bonus = False
+                self.turn_manager.active().number_actions -= 2
+                self.check_characters_actions()
+        else:
+            self.logs.add_log("Can't unselect")
 
     def validate(self):
         """Used to validate an action"""
@@ -396,6 +419,41 @@ class VersusManager:
 
         self.check_for_versus()
 
+    def event(self, event):
+        """Manage event
+
+        Args:
+            event (Event)
+        """
+        if event.type == pg.KEYUP:
+
+            if event.key == pg.K_TAB:
+                """Simulate begin versus"""
+                if self.active:
+                    self.finish_versus()
+                else:
+                    self.start_versus()
+
+            if self.turn_manager.is_active_player():
+                if self.action is None:
+                    if key_for(self.game.game_data["shortcuts"]["game"]["attack"]["keys"], event):
+                        self.action_attack()
+                    if key_for(self.game.game_data["shortcuts"]["game"]["move"]["keys"], event):
+                        self.action_move()
+                    if key_for(self.game.game_data["shortcuts"]["game"]["spell"]["keys"],
+                               event) and not self.turn_manager.get_active_spell() is None:
+                        self.action_spell()
+
+                if key_for(self.game.game_data["shortcuts"]["game"]["validate"]["keys"], event):
+                    self.validate()
+                if key_for(self.game.game_data["shortcuts"]["game"]["unselect"]["keys"], event):
+                    self.unselect()
+
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                mouse_pos = pg.mouse.get_pos()
+                self.event_pos(mouse_pos)
+
     def draw(self, screen):
         """Draw the versus"""
         # self.draw_range(screen)
@@ -473,6 +531,11 @@ class VersusManager:
             surface.fill(ENERGOS)
             screen.blit(surface, self.validate_btn)
             screen.blit(pg.transform.scale(ITEMS["validate"], (TILESIZE, TILESIZE)), self.validate_btn)
+            surface.fill(YELLOW)
+            screen.blit(surface, self.unselect_btn)
+            screen.blit(pg.transform.scale(ITEMS["unselect"],
+                                           (TILESIZE - 10, TILESIZE - 10)),
+                        (self.unselect_btn.left + 5, self.unselect_btn.top + 5))
 
     def draw_range(self, screen):
         """Draw the range

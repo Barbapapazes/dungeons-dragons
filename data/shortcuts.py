@@ -22,6 +22,7 @@ SHORTCUTS_DEFAULT = {
         "move": {"keys": [False, False, pg.K_2], "help": "Start a move action"},
         "spell": {"keys": [False, False, pg.K_3], "help": "Start a spell action"},
         "validate": {"keys": [False, False, pg.K_RETURN], "help": "Validate an action"},
+        "unselect": {"keys": [False, False, pg.K_BACKSPACE], "help": "Unselect an action"},
         "environment": {"keys": [False, False, pg.K_SPACE], "help": "Interact with the environment"},
         "return": {"keys": [False, False, pg.K_ESCAPE], "help": "Quit a sub-state"},
     },
