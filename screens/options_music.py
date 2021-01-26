@@ -52,7 +52,7 @@ class Options_music(_Elements):
                 path.join(
                     self.saved_music,
                     CUSTOM_MUSIC_FILENAME))
-        self.saved_file = True
+        self.action = True
 
     def create_buttons_dict(self):
         """Create the dict for all buttons"""
@@ -91,7 +91,7 @@ class Options_music(_Elements):
         for index, (key, value) in enumerate(
                 self.create_sliders_dict().items()):
             y = 6 * HEIGHT // 10 + (index % 3) * 70
-            x = 420
+            x = WIDTH // 2 - (WIDTH_SLIDER // 2)
             self.sliders.append(
                 self.create_slider(
                     key.upper(),
@@ -171,3 +171,4 @@ class Options_music(_Elements):
         super().draw_elements("Options", background=False, back=True)
         super().draw_subtitle("Music & Sounds")
         self.draw_sliders()
+        super().draw_action("Saved")

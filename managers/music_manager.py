@@ -18,13 +18,14 @@ class MusicManager():
 
     def startup(self):
         self.current_playing = "enchanted-forest-music.ogg"
-        self.enable = True
+        self.enable = self.music_loaded["song"]["is_enable"]
         self.state = "menu"
 
         # chargement et lancement de la musique
         pg.mixer.music.set_volume(self.music_loaded["song"]["volume"])
         pg.mixer.music.load(path.join(self.game.music_folder, self.create_dict()[self.state]))
-        self.play()
+        if self.enable:
+            self.play()
         self.init_data()
 
     def create_dict(self):
@@ -80,7 +81,7 @@ class MusicManager():
         # appeler en boucle qui va lancer un son
         if(self.music_loaded["sound"]["click"] and self.music_loaded["sound"]["is_enable"]):
             click = pg.mixer.Sound(path.join(self.game.music_folder, self.music_loaded["sound"]["piste"]["click"]))
-            pg.mixer.Sound.set_volume(click,0.05)
+            pg.mixer.Sound.set_volume(click, 0.05)
             click.play()
             self.music_loaded["sound"]["click"] = False
 

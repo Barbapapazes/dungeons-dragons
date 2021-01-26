@@ -51,7 +51,7 @@ class Game(_Elements):
 
         self.all_sprites = None
 
-        self.logs = LogsManager(0, 0, 400, 6 * 16, self.text_font, 16,  self.draw_text, self)
+        self.logs = LogsManager(0, 0, 525, 6 * 16, self.text_font, 16,  self.draw_text, self)
         self.turn_manager = TurnManager(self)
         self.animated = pg.sprite.Group()
         self.all_sprites = pg.sprite.LayeredUpdates()
@@ -69,6 +69,8 @@ class Game(_Elements):
 
         self.debug = False
         self.previous_screen = None
+
+        self.action_message = ""
 
         self.states_dict = self.make_states_dict()
 
@@ -609,6 +611,7 @@ class Game(_Elements):
 
         self.map_viewer_manager.update()
         self.map_viewer_manager.draw(self.screen)
+        super().draw_action(self.action_message)
 
     def finish_run(self):
         """Run the finish state"""
@@ -683,6 +686,8 @@ class Game(_Elements):
             return {}
 
     def save_data_in_file(self):
+        self.action = True
+        self.action_message = "Save game in file"
         self.logs.add_log("Save the game in file")
         save_event = pg.event.Event(pg.USEREVENT, code="_State", name="save")
         pg.event.post(save_event)
@@ -789,62 +794,64 @@ class Game(_Elements):
             self.press_space = False
 
     def hit_items(self):
-        hits = pg.sprite.spritecollide(self.turn_manager.active(), self.items, False)
-        for hit in hits:
-            if hit.properties["object_type"] == "other":
-                if self.turn_manager.is_active_player():
+        for sprite in self.turn_manager.players + self.turn_manager.enemies:
+            hits = pg.sprite.spritecollide(sprite, self.items, False)
+            for hit in hits:
+                if hit.properties["object_type"] == "other":
+                    if isinstance(sprite, Player):
+                        hit.kill()
+                        sprite.inventory.add_item(
+                            InventoryItem(
+                                hit.name, hit.image.copy(),
+                                hit.image_name, hit.properties["price"],
+                                hit.properties["weight"]))
+                if hit.properties["object_type"] == "consumable":
                     hit.kill()
-                    self.turn_manager.active().inventory.add_item(InventoryItem(
-                        hit.name, hit.image.copy(), hit.image_name, hit.properties["price"], hit.properties["weight"]
+                    sprite.inventory.add_item(
+                        Consumable(
+                            hit.name, hit.image.copy(),
+                            hit.image_name, hit.properties["price"],
+                            hit.properties["weight"],
+                            hit.properties["heal"],
+                            hit.properties["shield"])
                     )
+                if hit.properties["object_type"] == "weapon":
+                    hit.kill()
+                    sprite.inventory.add_item(
+                        Weapon(
+                            hit.name, hit.image.copy(),
+                            hit.image_name, hit.properties["price"],
+                            hit.properties["slot"],
+                            hit.properties["type"],
+                            hit.properties["type"],
+                            hit.properties["weight"],
+                            hit.properties["dice_value"],
+                            hit.properties["scope"]
+                        )
                     )
-            if hit.properties["object_type"] == "consumable":
-                hit.kill()
-                self.turn_manager.active().inventory.add_item(
-                    Consumable(
-                        hit.name, hit.image.copy(),
-                        hit.image_name, hit.properties["price"],
-                        hit.properties["weight"],
-                        hit.properties["heal"],
-                        hit.properties["shield"])
-                )
-            if hit.properties["object_type"] == "weapon":
-                hit.kill()
-                self.turn_manager.active().inventory.add_item(
-                    Weapon(
-                        hit.name, hit.image.copy(),
-                        hit.image_name, hit.properties["price"],
-                        hit.properties["slot"],
-                        hit.properties["type"],
-                        hit.properties["type"],
-                        hit.properties["weight"],
-                        hit.properties["dice_value"],
-                        hit.properties["scope"]
+                if hit.properties["object_type"] == "armor":
+                    hit.kill()
+                    sprite.inventory.add_item(
+                        Armor(
+                            hit.name, hit.image.copy(),
+                            hit.image_name, hit.properties["price"],
+                            hit.properties["weight"],
+                            hit.properties["shield"],
+                            hit.properties["slot"]
+                        )
                     )
-                )
-            if hit.properties["object_type"] == "armor":
-                hit.kill()
-                self.turn_manager.active().inventory.add_item(
-                    Armor(
-                        hit.name, hit.image.copy(),
-                        hit.image_name, hit.properties["price"],
-                        hit.properties["weight"],
-                        hit.properties["shield"],
-                        hit.properties["slot"]
-                    )
-                )
-            if hit.properties["object_type"] == "spell":
-                hit.kill()
-                self.turn_manager.active().inventory.add_item(
-                    Spell(
-                        hit.name, hit.image.copy(),
-                        hit.image_name,
-                        hit.properties["slot"],
-                        hit.properties["type"],
-                        hit.properties["scope"],
-                        hit.properties["time_to_live"],
-                        hit.properties["number_dice"],
-                        hit.properties["dice_value"]))
+                if hit.properties["object_type"] == "spell":
+                    hit.kill()
+                    sprite.inventory.add_item(
+                        Spell(
+                            hit.name, hit.image.copy(),
+                            hit.image_name,
+                            hit.properties["slot"],
+                            hit.properties["type"],
+                            hit.properties["scope"],
+                            hit.properties["time_to_live"],
+                            hit.properties["number_dice"],
+                            hit.properties["dice_value"]))
 
     def check_for_chest_open(self):
         if self.chest_open:
@@ -892,13 +899,14 @@ class Game(_Elements):
     def draw(self):
         """Draw all"""
         self.draw_map()
-        self.hud.draw(self.screen)
         self.draw_all_sprites()
 
         self.versus_manager.draw(self.screen)
         self.minimap.draw(self.screen)
         self.logs.draw(self.screen)
+        self.hud.draw(self.screen)
         self.notification_manager.draw(self.screen)
+        super().draw_action(self.action_message)
 
         self.draw_debug()
 

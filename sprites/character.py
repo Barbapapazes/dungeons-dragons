@@ -2,7 +2,7 @@
 from random import randint, uniform
 import pygame as pg
 from utils.tilemap import collide_with_walls
-from config.sprites import PLAYER_HIT_RECT , TYPES_HEROS
+from config.sprites import PLAYER_HIT_RECT, TYPES_HEROS
 from logger import logger
 from inventory.inventory import Inventory
 
@@ -105,10 +105,10 @@ class Character(pg.sprite.Sprite):
         """Manage the collisions"""
         self.hit_rect.centerx = self.pos.x
         if collide_with_walls(self, self.game.walls, 'x'):
-            self.vel.x = -self.vel.x/2
+            self.vel.x = - self.vel.x / 2
         self.hit_rect.centery = self.pos.y
         if collide_with_walls(self, self.game.walls, 'y'):
-            self.vel.y = -self.vel.y/2
+            self.vel.y = - self.vel.y / 2
         self.rect.center = self.hit_rect.center
 
     def __str__(self):

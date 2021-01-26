@@ -114,7 +114,7 @@ class Player(Character):
         if self.health <= 0:
             self.throw_inventory()
             self.kill()
-            self.game.turn_manager.remove(self)
+            # self.game.turn_manager.remove(self)  sûrement en trop
         self.get_keys()
         super().update()
 

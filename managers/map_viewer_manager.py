@@ -52,6 +52,8 @@ class MapViewerManager:
             _path = path.join(self.saved_notes, name)
             pg.image.save(self.canvas, _path)
             logger.info("Saved notes %s, in %s", name, path.abspath(_path))
+            self.game.action = True
+            self.game.action_message = "Save notes in file"
         except EnvironmentError as e:
             logger.exception(e)
 

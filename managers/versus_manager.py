@@ -171,7 +171,7 @@ class VersusManager:
         Args:
             _bool (bool)
         """
-        self.turn_manager.active_character().can_move = _bool
+        self.turn_manager.active().can_move = _bool
 
     def free_all_players(self):
         """All payers can move"""

@@ -1,7 +1,7 @@
 import pygame as pg
 from os import path
 from sprites.player import Player
-from config.window import WIDTH, HEIGHT
+from config.window import TILESIZE, WIDTH, HEIGHT
 from config.colors import RED, GREEN, CYAN, DARKGREY, GOLD, BLACK
 from config.sprites import ITEMS, PLAYER_MAX_HP, PLAYER_MAX_MP
 from utils.container import Container
@@ -24,17 +24,17 @@ class Hud:
             screen (Surface)
         """
         pg.draw.rect(screen, RED,
-                     (WIDTH // 3, 15*HEIGHT // 16, WIDTH // 3, HEIGHT // 32))
-        pg.draw.rect(screen, GREEN, (WIDTH // 3, 15*HEIGHT // 16, ((WIDTH // 3)
-                                                                   * self.game.turn_manager.get_vision_character().health) // PLAYER_MAX_HP, HEIGHT // 32))
+                     (WIDTH // 3, 15*HEIGHT // 16, WIDTH // 3, HEIGHT // 36))
+        pg.draw.rect(screen, GREEN, (WIDTH // 3, 15 * HEIGHT // 16, ((WIDTH // 3)
+                                                                     * self.game.turn_manager.get_vision_character().health) // PLAYER_MAX_HP, HEIGHT // 36))
         for i in range(1, len(self.game.turn_manager.players)):
             pg.draw.rect(screen, RED,
-                         (21.5*WIDTH // 24, (10 + i)*HEIGHT // 16, WIDTH // 12, HEIGHT // 64))
+                         (21.5*WIDTH // 24, (10 + i) * HEIGHT // 16, WIDTH // 12, HEIGHT // 64))
         i = 1
         for p in self.game.turn_manager.players:
             if p != self.game.turn_manager.get_vision_character():
-                pg.draw.rect(screen, GREEN, (21.5*WIDTH // 24, (10 + i)*HEIGHT // 16,
-                                             ((WIDTH // 12)*p.health) // PLAYER_MAX_HP, HEIGHT // 64))
+                pg.draw.rect(screen, GREEN, (21.5 * WIDTH // 24, (10 + i) * HEIGHT // 16,
+                                             ((WIDTH // 12) * p.health) // PLAYER_MAX_HP, HEIGHT // 64))
                 i += 1
 
     def draw_manabars(self, screen):
@@ -44,9 +44,9 @@ class Hud:
             screen (Surface)
         """
         pg.draw.rect(screen, DARKGREY,
-                     (WIDTH // 3, 15.5*HEIGHT // 16, WIDTH // 3, HEIGHT // 64))
+                     (WIDTH // 3, 15.5*HEIGHT // 16, WIDTH // 3, HEIGHT // 66))
         pg.draw.rect(screen, CYAN, (WIDTH // 3, 15.5*HEIGHT // 16, ((WIDTH // 3)
-                                                                    * self.game.turn_manager.get_vision_character().health) // PLAYER_MAX_HP, HEIGHT // 64))
+                                                                    * self.game.turn_manager.get_vision_character().MP) // PLAYER_MAX_MP, HEIGHT // 68))
         for i in range(1, len(self.game.turn_manager.players)):
             pg.draw.rect(screen, DARKGREY,
                          (21.5*WIDTH // 24, (10.25 + i)*HEIGHT // 16, WIDTH // 12, HEIGHT // 128))
@@ -84,8 +84,8 @@ class Hud:
             screen (Surface)
         """
         bar_img = pg.image.load(path.join("assets", "img", "bar.png")).convert_alpha()
-        bar_img = pg.transform.scale(bar_img, (3*WIDTH // 8, 7*HEIGHT // 128))
-        screen.blit(bar_img, (15*WIDTH // 48, 14.925*HEIGHT // 16))
+        bar_img = pg.transform.scale(bar_img, (3 * WIDTH // 8, 7 * HEIGHT // 128))
+        screen.blit(bar_img, (15*WIDTH // 48, 14.90 * HEIGHT // 16))
 
     def create_buttons_dict(self):
         return {
@@ -164,10 +164,11 @@ class HudButton(Container):
 
     def draw_image(self, screen):
         """Draw the image"""
+        self.offset = 14
         if self.item:
-            image = pg.transform.scale(self.item, (self.size, self.size))
+            image = pg.transform.scale(self.item, (self.size - self.offset, self.size - self.offset))
             _x = image.get_width()
             _y = image.get_height()
             # pg.draw.rect(screen, (0, 255, 0), pg.Rect(self.x, self.y, _x, _y), 1)
 
-            screen.blit(image, (self.x, self.y))
+            screen.blit(image, (self.x + self.offset // 2, self.y + self.offset // 2))

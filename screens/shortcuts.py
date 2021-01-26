@@ -47,7 +47,7 @@ class Shortcuts(_Elements):
         self.saved_file = False
         self.saved_memory = False
         self.reset_memory = False
-        self.alpha_actions = 0
+        self.action_message = ""
 
         self.create_back_button(self.screen_menu, self.load_next_state, [OPTIONS])
 
@@ -126,7 +126,8 @@ class Shortcuts(_Elements):
             logger.info(
                 "Save %s to %s in %s, memory", self.create_shortcut(), shortcut, menu)
             self.create_shortcuts()
-            self.saved_memory = True
+            self.action = True
+            self.action_message = "Saved in memory"
 
     def set_selected_menu(self, index):
         """Change the selected menu"""
@@ -212,7 +213,8 @@ class Shortcuts(_Elements):
         """Reset shortcuts in memory"""
         self.game_data["shortcut"] = SHORTCUTS_DEFAULT
         self.shortcuts = SHORTCUTS_DEFAULT
-        self.reset_memory = True
+        self.action = True
+        self.action_message = "Reset in memory"
         logger.info("Reset shortcuts")
 
     def capture_new_shortcuts(self, event):
@@ -244,7 +246,8 @@ class Shortcuts(_Elements):
                 path.join(
                     self.saved_shortcuts,
                     CUSTOM_SHORTCUTS_FILENAME))
-        self.saved_file = True
+        self.action = True
+        self.action_message = "Saved in file"
 
     def create_shortcut(self):
         """Create the array for a shortcut
@@ -274,7 +277,7 @@ class Shortcuts(_Elements):
         if self.is_shortcut_selected:
             self.draw_to_save()
 
-        self.draw_saved()
+        super().draw_action(self.action_message)
 
     def draw_to_save(self):
         """Draw text explanation to save a shortcut"""
@@ -358,31 +361,6 @@ class Shortcuts(_Elements):
                 _x,
                 _y + 5 + 60 * (index % 7),
                 align="n")
-
-    def draw_saved(self):
-        """Draw the saved page"""
-        if self.saved_file or self.saved_memory or self.reset_memory:
-            self.alpha_actions += 8
-        if self.alpha_actions >= 255:
-            self.saved_file = False
-            self.saved_memory = False
-            self.reset_memory = False
-        if self.alpha_actions > 0 and not self.saved_file and not self.saved_memory and not self.reset_memory:
-            self.alpha_actions -= 16
-        if self.saved_file or self.alpha_actions > 0 or self.saved_memory or self.reset_memory:
-            transition = pg.Surface((WIDTH, HEIGHT))
-            transition.fill(BLACK)
-            transition.set_alpha(self.alpha_actions)
-            self.screen.blit(transition, (0, 0))
-            text = ''
-            if self.saved_file:
-                text = "Saved in a file"
-            elif self.saved_memory:
-                text = "Saved in memory"
-            elif self.reset_memory:
-                text = "Reset in memory"
-            self.draw_text(text, self.title_font, 150, WHITE,
-                           WIDTH // 2, HEIGHT // 2, align="center")
 
     @staticmethod
     def create_text_shortcut(ctrl, alt, key):

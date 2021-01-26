@@ -32,6 +32,8 @@ class ChooseMap(_Elements):
 
         self.type_maps = None
 
+        self.action_message = ""
+
         self.maps = [
             f for f in os.listdir(
                 self.levels_maps) if f.endswith('.tmx')]
@@ -186,14 +188,23 @@ class ChooseMap(_Elements):
                 self.size_map_width = slider.getValue()
             elif slider.name == "height":
                 self.size_map_height = slider.getValue()
+
+        if self.size_map_width < 10:
+            self.action = True
+            self.action_message = "Map is too small"
+        if self.size_map_height < 10:
+            self.action = True
+            self.action_message = "Map is too small"
         logger.info("Generate random map...")
         if self.map_name.getText() == '':
             generate_map(self.size_map_height, self.size_map_width)
+            logger.info("Map is generated !")
+            self.refresh()
         else:
             _path = path.join(self.random_maps, self.map_name.getText() + '.tmx')
             generate_map(self.size_map_height, self.size_map_width, _path)
-        logger.info("Map is generated !")
-        self.refresh()
+            logger.info("Map is generated !")
+            self.refresh()
 
     def create_slider(self, x, y, name):
         return Cursor(
@@ -205,9 +216,9 @@ class ChooseMap(_Elements):
             HEIGHT_SLIDER,
             self.background,
             1,
-            30,
+            20,
             1,
-            1,
+            10,
             self.text_font,
             self.draw_text, GREEN_DARK, YELLOW_LIGHT)
 
@@ -257,6 +268,9 @@ class ChooseMap(_Elements):
         self.sliders = self.create_sliders_for_size_map()
         self.draw_sliders()
         self.create_name_box()
+
+        self.action = True
+        self.action_message = "Map is generated"
 
         logger.info("Refresh the info")
 
@@ -362,6 +376,7 @@ class ChooseMap(_Elements):
         super().events_buttons(back=True)
         super().draw_title("Random Maps")
         self.draw_random_maps()
+        super().draw_action(self.action_message)
 
     def draw_random_maps(self):
         self.draw_sliders()
