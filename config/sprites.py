@@ -41,7 +41,23 @@ CONSUMABLE = {
         "heal": 30,
         "shield": 0,
         "object_type": "consumable"
-    }
+    },
+    "blue_potion_small": {
+        "image_name": "potion_02b",
+        "price": 10,
+        "weight": 2,
+        "heal": 0,
+        "shield": 15,
+        "object_type": "consumable"
+    },
+    "cookie_small": {
+        "image_name": "cookie_01a",
+        "price": 10,
+        "weight": 2,
+        "heal": 10,
+        "shield": 0,
+        "object_type": "consumable"
+    },
 }
 SCOPE_HAND = 3 * TILESIZE
 SCOPE_SWORD = 5 * TILESIZE
@@ -608,7 +624,7 @@ ASSETS_SPRITES = {
     } for _type in TYPES if _type != 'boss'
 }
 
-ASSET_BOSS =  {
+ASSET_BOSS = {
     'boss': {
         key: cycle([pg.transform.scale(pg.image.load(path.join(
             sprites_folder, 'boss', key, f"{i}.png")), (96, 96)) for i in range(3)]) for key in DIRECTIONS
