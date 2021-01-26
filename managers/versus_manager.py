@@ -352,7 +352,7 @@ class VersusManager:
 
         return self.turn_manager.active_character().dice["success"]
 
-    def check_characters_actions(self):
+    def check_characters_actions(self, show=True):
         """Check the action of the active character"""
         self.turn_manager.active().number_actions -= 1
         self.set_move_player(False)
@@ -367,7 +367,7 @@ class VersusManager:
                     self.wizard_bonus = True
 
         if self.turn_manager.active().number_actions <= 0:
-            self.add_turn()
+            self.add_turn(show=show)
         else:
             self.logs.add_log(
                 f"Action remaining to {self.turn_manager.active()} : {self.turn_manager.active().number_actions}")
@@ -550,11 +550,12 @@ class VersusManager:
                 if isinstance(animated, Circle):
                     screen.blit(animated.image, self.game.camera.apply(animated))
 
-    def add_turn(self):
+    def add_turn(self, show=True):
         """Add a turn"""
         self.selected_enemy = None
         self.border_enemy = None
-        self.logs.add_log("Next turn")
+        if show:
+            self.logs.add_log("Next turn")
         self.turn_manager.add_turn()
         if self.turn_manager.is_active_player():
             self.turn_manager.add_vision()
@@ -562,7 +563,6 @@ class VersusManager:
         self.add_actions()
         self.check_effects_zones_hits()
         self.check_for_effects_zones()
-        self.logs.add_log(self.turn_manager.active())
 
     def check_for_effects_zones(self):
         """Check if the effets zone can live"""

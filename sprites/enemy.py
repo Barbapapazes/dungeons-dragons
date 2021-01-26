@@ -193,7 +193,7 @@ class Enemy(Character):
             self.end = False
             self.skip = False
             self.last_timestamp2 = None
-            self.game.versus_manager.check_characters_actions()
+            self.game.versus_manager.check_characters_actions(show=False)
         elif self.end:
             if self.spawned:
                 self.number_actions = 0
