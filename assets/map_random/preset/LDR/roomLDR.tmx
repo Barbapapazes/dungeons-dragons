@@ -33,7 +33,7 @@
   <object id="4" name="wall" x="448.333" y="320" width="63.667" height="192"/>
   <object id="5" name="wall" x="0" y="320" width="64" height="192"/>
   <object id="6" name="wall" x="0" y="0" width="64" height="192"/>
-  <object id="9" name="wall" x="319.334" y="447.333" width="128" height="64.667"/>
+  <object id="9" name="wall" x="320" y="448" width="128" height="64.667"/>
   <object id="10" name="wall" x="64" y="448" width="128" height="64"/>
  </objectgroup>
 </map>
