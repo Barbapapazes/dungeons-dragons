@@ -4,7 +4,7 @@
 
 ## Build Setup
 
-You need **python 3** and **pip** installed on your machine.
+You need **python 3.9** and **pip** installed on your machine.
 
 ```sh
 # install pipenv
