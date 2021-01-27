@@ -21,9 +21,9 @@ WANDER_RING_DISTANCE = 5 * TILESIZE
 WANDER_RING_RADIUS = TILESIZE * 1
 CLASSES = ["fighter", "rogue", "wizard", "boss"]
 TYPE = {
-    "skeleton": {"health": 10, "STR": 35, "DEX": 20, "CON": 15, "INT": 50, "WIS": 30, "CHA": 30},
-    "goblin":   {"health": 15, "STR": 45, "DEX": 50, "CON": 10, "INT": 20, "WIS": 15, "CHA": 10},
-    "phantom":   {"health": 20, "STR": 20, "DEX": 35, "CON": 20, "INT": 40, "WIS": 30, "CHA": 10},
+    "skeleton": {"health": 10, "STR": 45, "DEX": 20, "CON": 15, "INT": 50, "WIS": 30, "CHA": 30},
+    "goblin":   {"health": 15, "STR": 55, "DEX": 50, "CON": 10, "INT": 20, "WIS": 15, "CHA": 10},
+    "phantom":   {"health": 20, "STR": 25, "DEX": 35, "CON": 20, "INT": 40, "WIS": 30, "CHA": 10},
     "boss": {"health": 50, "STR": 70, "DEX": 25, "CON": 40, "INT": 20, "WIS": 10, "CHA": 40}
 }
 

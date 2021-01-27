@@ -592,8 +592,9 @@ OTHERS = {
     }
 }
 
-ITEMS_PROPERTIES = ARMOR | WEAPONS | SPELLS | OTHERS
-ITEMS_NAMES = list(ARMOR.keys()) + list(WEAPONS.keys()) + list(SPELLS.keys()) + list(OTHERS.keys())
+ITEMS_PROPERTIES = ARMOR | WEAPONS | SPELLS | OTHERS | CONSUMABLE
+ITEMS_NAMES = list(ARMOR.keys()) + list(WEAPONS.keys()) + list(SPELLS.keys()
+                                                               ) + list(OTHERS.keys()) + list(CONSUMABLE.keys())
 
 WEAPONS_COLS = 5
 

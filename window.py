@@ -143,7 +143,7 @@ class Window():
                         self.done = True
                     if event.name == 'save':
                         logger.info("User event: save")
-                        self.save()
+                        self.save(event.data)
                     if event.name == 'reset':
                         logger.info("User event: reset")
                         self.reset()
@@ -153,9 +153,9 @@ class Window():
         self.states_dict[CHARACTER_CREATION].new()
         self.states_dict[INTRODUCTION].new()
 
-    def save(self):
+    def save(self, data):
         """Used to save the game data"""
-        self.save_game_data()
+        self.save_game_data(data)
         self.save_minimap_data()
 
     def save_minimap_data(self):
@@ -171,21 +171,11 @@ class Window():
             except EnvironmentError as e:
                 logger.exception(e)
 
-    def save_game_data(self):
+    def save_game_data(self, data):
         """Save game_data"""
         try:
             with open(path.join(self.saved_games, self.persist['file_name']), "w") as outfile:
-                file_name = self.persist['file_name']
-                shortcuts = self.persist['shortcuts']
-                music = self.persist["music"]
-                del self.persist['file_name']
-                del self.persist['shortcuts']
-                # Remove the file name to be able to change manually the file name
-                # Remove shortcuts because they have their own file
-                json.dump(self.persist["game_data"], outfile)
-                self.persist['file_name'] = file_name
-                self.persist['shortcuts'] = shortcuts
-                self.persist['music'] = music
+                json.dump(data, outfile)
                 logger.info('File %s saved', self.persist['file_name'])
         except EnvironmentError as e:
             logger.exception(e)

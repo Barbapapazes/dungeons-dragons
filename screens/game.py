@@ -334,8 +334,8 @@ class Game(_Elements):
                         self.turn_manager.players.append(
                             Player(self, _x, _y, _class, _characteristics, _images))
 
-            self.save_data()
-            self.save_data_in_file()
+        self.save_data()
+        self.save_data_in_file()
 
         self.hud = Hud(self)
         self.stats = StatsWindow(self)
@@ -689,7 +689,7 @@ class Game(_Elements):
         self.action = True
         self.action_message = "Save game in file"
         self.logs.add_log("Save the game in file")
-        save_event = pg.event.Event(pg.USEREVENT, code="_State", name="save")
+        save_event = pg.event.Event(pg.USEREVENT, code="_State", name="save", data=self.game_data["game_data"])
         pg.event.post(save_event)
 
     def update(self):
