@@ -294,18 +294,19 @@ class VersusManager:
         self.action = 'attack'
         self.logs.add_log("Attack is selected")
         self.logs.add_log("Select a enemy")
-        if self.turn_manager.get_active_weapon_type() in ["hand", "sword"]:
+        if self.turn_manager.get_active_weapon_type() in ["hand", "sword", "dagger"]:
+            logger.debug(self.turn_manager.get_active_scope())
             self.circle.set_width(self.turn_manager.get_active_scope())
-            self.circle.set_pos(self.turn_manager.active_character().pos)
+            self.circle.set_pos(self.turn_manager.active().pos)
         self.set_move_player(False)
 
     def action_move(self):
         """Used to start a action to move"""
         self.action = 'move'
         self.logs.add_log("Move your hero")
-        self.last_player_pos = vec(self.turn_manager.active_character().pos)
+        self.last_player_pos = vec(self.turn_manager.active().pos)
         self.circle.set_width(800)
-        self.circle.set_pos(self.turn_manager.active_character().pos)
+        self.circle.set_pos(self.turn_manager.active().pos)
         self.set_move_player(True)
 
     def action_spell(self):
@@ -545,7 +546,7 @@ class VersusManager:
         """
         if self.action in["move", "spell"] or (
                 self.action ==
-                "attack" and self.turn_manager.get_active_weapon_type() in ["hand", "sword"]):
+                "attack" and self.turn_manager.get_active_weapon_type() in ["hand", "sword", "dagger"]):
             for animated in self.game.animated:
                 if isinstance(animated, Circle):
                     screen.blit(animated.image, self.game.camera.apply(animated))
