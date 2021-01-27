@@ -705,6 +705,10 @@ class Game(_Elements):
         self.turn_manager.update(self.versus_manager.active)
         self.notification_manager.update()
 
+        for player in self.turn_manager.players:
+            if player.health == 0:
+                self.turn_manager.remove(player)
+
     def update_camera(self):
         if self.turn_manager.get_vision_character():
             self.camera.update(self.turn_manager.get_vision_character())

@@ -4,6 +4,7 @@ from random import randint
 import pygame as pg
 from config.sprites import ASSETS_FIRE_BALL, ASSETS_HEAL
 from config.window import TILESIZE
+from logger import logger
 
 default_fn = lambda *args: None
 
@@ -59,5 +60,6 @@ class EffectsZone(pg.sprite.Sprite):
     def check_time_to_live(self):
         """Check and update the time to live of the effects zone"""
         self.time_to_live -= 1
+        logger.debug(self.time_to_live)
         if self.time_to_live == 0:
             self.kill()

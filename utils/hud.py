@@ -23,10 +23,12 @@ class Hud:
         Args:
             screen (Surface)
         """
+        player = self.game.turn_manager.get_vision_character()
+        health = player.health if player is not None else 0
         pg.draw.rect(screen, RED,
                      (WIDTH // 3, 15*HEIGHT // 16, WIDTH // 3, HEIGHT // 36))
         pg.draw.rect(screen, GREEN, (WIDTH // 3, 15 * HEIGHT // 16, ((WIDTH // 3)
-                                                                     * self.game.turn_manager.get_vision_character().health) // PLAYER_MAX_HP, HEIGHT // 36))
+                                                                     * health) // PLAYER_MAX_HP, HEIGHT // 36))
         for i in range(1, len(self.game.turn_manager.players)):
             pg.draw.rect(screen, RED,
                          (21.5*WIDTH // 24, (10 + i) * HEIGHT // 16, WIDTH // 12, HEIGHT // 64))
@@ -43,10 +45,12 @@ class Hud:
         Args:
             screen (Surface)
         """
+        player = self.game.turn_manager.get_vision_character()
+        mana = player.MP if player is not None else 0
         pg.draw.rect(screen, DARKGREY,
                      (WIDTH // 3, 15.5*HEIGHT // 16, WIDTH // 3, HEIGHT // 66))
         pg.draw.rect(screen, CYAN, (WIDTH // 3, 15.5*HEIGHT // 16, ((WIDTH // 3)
-                                                                    * self.game.turn_manager.get_vision_character().MP) // PLAYER_MAX_MP, HEIGHT // 68))
+                                                                    * mana) // PLAYER_MAX_MP, HEIGHT // 68))
         for i in range(1, len(self.game.turn_manager.players)):
             pg.draw.rect(screen, DARKGREY,
                          (21.5*WIDTH // 24, (10.25 + i)*HEIGHT // 16, WIDTH // 12, HEIGHT // 128))
@@ -63,10 +67,12 @@ class Hud:
         Args:
             screen (Surface)
         """
+        player = self.game.turn_manager.get_vision_character()
+        xp = player.xp if player is not None else 0
         pg.draw.rect(screen, DARKGREY,
                      (WIDTH // 3, 14.75*HEIGHT // 16, WIDTH // 3, HEIGHT // 128))
         pg.draw.rect(screen, GOLD, (WIDTH // 3, 14.5*HEIGHT // 16, ((WIDTH // 3)
-                                                                    * self.game.turn_manager.get_vision_character().xp) // 100, HEIGHT // 128))
+                                                                    * xp) // 100, HEIGHT // 128))
         for i in range(1, len(self.game.turn_manager.players)):
             pg.draw.rect(screen, DARKGREY,
                          (21.5*WIDTH // 24, (9.9 + i)*HEIGHT // 16, WIDTH // 12, HEIGHT // 254))

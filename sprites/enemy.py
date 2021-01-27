@@ -99,19 +99,6 @@ class Enemy(Character):
         if not equipments:
             self.difficulty_tweeking()
 
-    def throw_inventory(self):
-        """drop every item stored inside the enemy's inventory"""
-        for slot in self.inventory.slots:
-            if slot.item:
-                self.inventory.throw_item(slot.item)
-
-    def throw_equipments(self):
-        """drops armor
-        """
-        for value in self.armor.values():
-            if value is not None:
-                self.inventory.throw_item(value)
-
     def __str__(self):
         """default displayed text whenever printing the enemy
         """
@@ -593,6 +580,8 @@ class Enemy(Character):
             if self.game.versus_manager.check_dice():
                 damage = self.game.versus_manager.calc_damage()
                 self.game.turn_manager.remove_health(damage, self.player_spotted)
+                # if self.player_spotted.health <= 0:
+                #     self.game.versus_manager.kill_enemy(self.player_spotted)
             else:
                 self.game.versus_manager.calc_damage()
                 self.game.versus_manager.logs.add_log(f'The {self} missed his attack...')

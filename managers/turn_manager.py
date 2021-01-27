@@ -252,7 +252,13 @@ class TurnManager:
     def remove(self, character):
         """Remove a character"""
         if isinstance(character, Player):
+            character.throw_inventory()
+            character.throw_equipments()
             self.players.remove(character)
+            if character in self.sorted:
+                self.sorted.remove(character)
+                self.add_turn()
+            character.kill()
             if len(self.players) == 0:
                 reset_event = pg.event.Event(pg.USEREVENT, code="_State", name="reset")
                 pg.event.post(reset_event)
