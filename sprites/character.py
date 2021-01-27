@@ -88,11 +88,17 @@ class Character(pg.sprite.Sprite):
         }
 
     def throw_inventory(self):
-        """drop every item stored inside the enemy's inventory
-        """
+        """drop every item stored inside the enemy's inventory"""
         for slot in self.inventory.slots:
             if slot.item:
                 self.inventory.throw_item(slot.item)
+
+    def throw_equipments(self):
+        """drops armor
+        """
+        for value in self.armor.values():
+            if value is not None:
+                self.inventory.throw_item(value)
 
     def update_image(self):
         """Update the image sprite"""

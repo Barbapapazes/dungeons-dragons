@@ -1,4 +1,6 @@
 """Create the versus mananger"""
+from sprites.enemy import Enemy
+from sprites.player import Player
 from utils.shortcuts import key_for
 import pygame as pg
 from config.colors import BLUE_MARTINA, ENERGOS, GLOOMY_PURPLE, RED_PIGMENT, YELLOW
@@ -116,8 +118,10 @@ class VersusManager:
         """Finish the versus"""
         self.active = False
         self.free_all_players()
-        self.turn_manager.playable = self.turn_manager.players.index(self.turn_manager.active())
-        self.turn_manager.vision = self.turn_manager.playable
+        active = self.turn_manager.active()
+        if active != -1:
+            self.turn_manager.playable = self.turn_manager.players.index(self.turn_manager.active())
+            self.turn_manager.vision = self.turn_manager.playable
         self.remove_selected_enemy()
         self.remove_last_player_pos()
         self.remove_action()
@@ -265,6 +269,11 @@ class VersusManager:
                 self.logs.add_log("Select a zone")
                 return
 
+            if (self.turn_manager.active().MP < 10):
+                self.logs.add_logs("Not enough mana")
+                return
+
+            self.turn_manager.active().subMP(10)
             EffectsZone(
                 self.game, self.spell_pos[0] - self.game.camera.camera.x,
                 self.spell_pos[1] - self.game.camera.camera.y,
@@ -277,11 +286,15 @@ class VersusManager:
         """Kill an enemy"""
         enemy = self.selected_enemy if enemy is None else enemy
         rel_turn = self.turn_manager.get_relative_turn()
-        if self.turn_manager.sorted.index(
-                enemy) < self.turn_manager.sorted.index(
-                self.turn_manager.active()):
-            rel_turn -= 1
-        self.turn_manager.enemies.remove(enemy)
+        if self.turn_manager.active() != -1:
+            if self.turn_manager.sorted.index(
+                    enemy) < self.turn_manager.sorted.index(
+                    self.turn_manager.active()):
+                rel_turn -= 1
+        if isinstance(enemy, Enemy):
+            self.turn_manager.enemies.remove(enemy)
+        if isinstance(enemy, Player):
+            self.turn_manager.players.remove(enemy)
         self.turn_manager.sorted.remove(enemy)
         enemy.throw_inventory()
         enemy.throw_equipments()
@@ -559,8 +572,9 @@ class VersusManager:
             self.turn_manager.add_vision()
         self.set_move_player(False)
         self.add_actions()
-        self.check_effects_zones_hits()
-        self.check_for_effects_zones()
+        if show:  # avoid other caracter in map to trigger this if they don't play !
+            self.check_effects_zones_hits()
+            self.check_for_effects_zones()
 
     def check_for_effects_zones(self):
         """Check if the effets zone can live"""
