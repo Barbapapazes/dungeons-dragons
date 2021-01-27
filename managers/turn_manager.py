@@ -45,10 +45,7 @@ class TurnManager:
             Player
         """
         len_players = len(self.players)
-        if len_players == 0:
-            return -1
         playable_to_number = self.playable % len_players
-
         return self.players[playable_to_number]
 
     def add_vision(self):
@@ -236,8 +233,7 @@ class TurnManager:
         else:
             for enemy in self.enemies:
                 enemy.update()
-            if self.get_playable_character() != -1:
-                self.get_playable_character().update()
+            self.get_playable_character().update()
 
     def get_pos_player(self):
         """Get the player position in the characters list, but count only the player

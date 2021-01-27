@@ -118,10 +118,8 @@ class VersusManager:
         """Finish the versus"""
         self.active = False
         self.free_all_players()
-        active = self.turn_manager.active()
-        if active != -1:
-            self.turn_manager.playable = self.turn_manager.players.index(self.turn_manager.active())
-            self.turn_manager.vision = self.turn_manager.playable
+        self.turn_manager.playable = self.turn_manager.players.index(self.turn_manager.active())
+        self.turn_manager.vision = self.turn_manager.playable
         self.remove_selected_enemy()
         self.remove_last_player_pos()
         self.remove_action()
@@ -286,15 +284,12 @@ class VersusManager:
         """Kill an enemy"""
         enemy = self.selected_enemy if enemy is None else enemy
         rel_turn = self.turn_manager.get_relative_turn()
-        if self.turn_manager.active() != -1:
-            if self.turn_manager.sorted.index(
-                    enemy) < self.turn_manager.sorted.index(
-                    self.turn_manager.active()):
-                rel_turn -= 1
+        if self.turn_manager.sorted.index(
+                enemy) < self.turn_manager.sorted.index(
+                self.turn_manager.active()):
+            rel_turn -= 1
         if isinstance(enemy, Enemy):
             self.turn_manager.enemies.remove(enemy)
-        if isinstance(enemy, Player):
-            self.turn_manager.players.remove(enemy)
         self.turn_manager.sorted.remove(enemy)
         enemy.throw_inventory()
         enemy.throw_equipments()

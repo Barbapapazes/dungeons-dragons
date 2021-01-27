@@ -730,14 +730,13 @@ class Game(_Elements):
 
     def check_hits(self):
         """Check all hit in the game"""
-        if self.turn_manager.active() != -1:
-            self.hit_chests()
-            self.hit_map_checks()
-            self.hit_doors()
-            self.hit_merchants()
-            self.hit_animated()
-            self.hit_items()
-            self.hit_traps()
+        self.hit_chests()
+        self.hit_map_checks()
+        self.hit_doors()
+        self.hit_merchants()
+        self.hit_animated()
+        self.hit_items()
+        self.hit_traps()
 
     def hit_traps(self):
         hits = pg.sprite.spritecollide(self.turn_manager.active(), self.traps, False, collide_hit_rect)
