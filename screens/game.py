@@ -376,10 +376,6 @@ class Game(_Elements):
         if event.type == pg.KEYUP:
             if event.key == pg.K_a:
                 self.turn_manager.get_playable_character().xp += 10
-                logger.debug(self.turn_manager.get_playable_character().xp)
-                logger.debug(type(self.turn_manager.get_playable_character()))
-            if event.key == pg.K_l:
-                logger.debug(self.turn_manager.get_playable_character().health)
             if event.key == pg.K_EQUALS:
                 self.debug = not self.debug
             if self.turn_manager.is_active_player():

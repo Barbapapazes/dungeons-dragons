@@ -136,7 +136,6 @@ class Window():
                 self.state.get_events(event)
 
             if event.type == pg.USEREVENT:
-                logger.debug(event)
                 if event.code == "_State":
                     if event.name == "quit":
                         logger.info("User event : quit")

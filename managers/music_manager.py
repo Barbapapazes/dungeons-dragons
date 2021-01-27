@@ -13,7 +13,6 @@ class MusicManager():
         self.startup()
 
     def set_data(self, data):
-        logger.debug(data)
         self.music_loaded = data
 
     def startup(self):

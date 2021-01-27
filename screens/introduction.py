@@ -39,8 +39,6 @@ class Introduction(_Elements):
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.book = Book(self, WIDTH // 2, HEIGHT // 2, 2 * WIDTH // 4)
 
-        logger.debug("il faut écrire sur l'image")
-
         self.win = pg.Surface((WIDTH, HEIGHT)).convert_alpha()
 
     def run(self, surface, keys, mouse, dt):

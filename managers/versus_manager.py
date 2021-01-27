@@ -214,7 +214,6 @@ class VersusManager:
                 elif self.spell_btn.collidepoint(pos[0], pos[1]) and self.soldier_bonus:
                     self.logs.add_log("This is a bonus, you have to fight !")
             if self.validate_btn.collidepoint(pos[0], pos[1]):
-                logger.debug("%s, %s", self.soldier_bonus, self.wizard_bonus)
                 self.validate()
             if self.unselect_btn.collidepoint(pos[0], pos[1]):
                 self.unselect()
@@ -295,7 +294,6 @@ class VersusManager:
         self.logs.add_log("Attack is selected")
         self.logs.add_log("Select a enemy")
         if self.turn_manager.get_active_weapon_type() in ["hand", "sword", "dagger"]:
-            logger.debug(self.turn_manager.get_active_scope())
             self.circle.set_width(self.turn_manager.get_active_scope())
             self.circle.set_pos(self.turn_manager.active().pos)
         self.set_move_player(False)
@@ -327,7 +325,6 @@ class VersusManager:
         damage = self.turn_manager.get_active_weapon_damage()
         if self.turn_manager.get_active_weapon_type() == "arc":
             dist = self.selected_enemy.pos - self.turn_manager.active().pos
-            logger.debug("[sofiane] il faut ajuster la valuer de MALUS_ARC")
             scope = self.turn_manager.get_active_weapon().scope
             if dist.length_squared() > scope:
                 malus = -((dist.length_squared() - scope) // TILESIZE) * MALUS_ARC

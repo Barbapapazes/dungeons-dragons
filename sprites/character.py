@@ -204,7 +204,6 @@ class Character(pg.sprite.Sprite):
         return count
 
     def level_up(self):
-        logger.debug("%s, %s", self, self.xp)
         if self.xp >= 100 and self.type in TYPES_HEROS:
             self.xp = self.xp % 100
             for i in self.characteristics:
