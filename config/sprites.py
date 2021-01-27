@@ -22,7 +22,7 @@ PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
 # enemy
 WAIT_TIME = 800
 
-MALUS_ARC = 2
+MALUS_ARC = 0.001
 
 # trap
 TRAP_DAMAGE = 10

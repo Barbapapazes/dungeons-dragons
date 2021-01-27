@@ -823,8 +823,8 @@ class Game(_Elements):
                             hit.image_name, hit.properties["price"],
                             hit.properties["slot"],
                             hit.properties["type"],
-                            hit.properties["type"],
                             hit.properties["weight"],
+                            hit.properties["number_dice"],
                             hit.properties["dice_value"],
                             hit.properties["scope"]
                         )

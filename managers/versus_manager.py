@@ -336,7 +336,7 @@ class VersusManager:
             scope = self.turn_manager.get_active_weapon().scope
             if dist.length_squared() > scope:
                 malus = -((dist.length_squared() - scope) // TILESIZE) * MALUS_ARC
-                damage -= malus
+                damage -= int(malus)
         protection = self.selected_enemy.get_protection()
 
         if self.turn_manager.active().type == "thief" and self.turn_manager.active().skill_bonus and self.turn_manager.turn < len(self.turn_manager.sorted):
