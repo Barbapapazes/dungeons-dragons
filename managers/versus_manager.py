@@ -380,7 +380,7 @@ class VersusManager:
             pos (tuple)
         """
         if self.action == "attack":
-            if self.turn_manager.get_active_weapon_type() in ["hand", "sword"]:
+            if self.turn_manager.get_active_weapon_type() in ["hand", "sword", "dagger"]:
                 if self.is_in_range(
                         pos, self.turn_manager.get_active_scope() // 2):  # warning, c'est la moitier de la taille du cercle
                     for enemy in self.turn_manager.enemies:
